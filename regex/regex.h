@@ -66,6 +66,11 @@ struct Regex {
   {
     return this->expression('*', A, Re());
   }
+
+  Re optional(Re A)
+  {
+    return this->alternate(this->empty, A);
+  }
 };
 
 #endif

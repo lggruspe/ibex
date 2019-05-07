@@ -9,7 +9,7 @@ struct Dfa {
   int start;
   std::set<int> accept;
   std::map<int, std::map<char, int> > delta;
-  //std::set<char> symbols;
+  std::set<char> symbols;
 
   int add_state(int q)
   {
@@ -28,7 +28,7 @@ struct Dfa {
     this->add_state(q);
     this->add_state(r);
     this->delta[q][a] = r;
-    //this->symbols.insert(a);
+    this->symbols.insert(a);  // check if a != '\0'?
   }
 };
 
