@@ -26,7 +26,9 @@ struct Nfa {
     this->add_state(q);
     this->add_state(r);
     this->delta[q][a].insert(r);
-    this->symbols.insert(a);
+    if (a != '\0') {
+      this->symbols.insert(a);
+    }
   }
 };
 
