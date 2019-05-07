@@ -9,7 +9,7 @@
 int main()
 {
   re_load_predefined();
-  Re re = real;
+  Re re = identifier;
   Nfa nfa = thompson(re);
   Dfa dfa = minimize(subset_construction(nfa));
   generate("scanner", dfa);

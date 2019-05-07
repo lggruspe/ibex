@@ -17,4 +17,6 @@ Nfa thompson(Re re)
     Nfa A = thompson(sp->lhs);
     return nfa_closure(A);
   }
+
+  return Nfa();
 }

@@ -14,7 +14,7 @@ void headers()
     << std::endl;
 }
 
-void transitions(int q, const std::map<char, int>& trans)
+void transitions(const std::map<char, int>& trans)
 {
   std::map<int, std::set<char>> dests;   // invert transition
   for (auto it = trans.begin(); it != trans.end(); ++it) {
@@ -50,7 +50,7 @@ void state(const Dfa& dfa, int q)
     "\tcheckpoint.push_back(c);\n";
 
   const std::map<char, int>& trans = dfa.delta.at(q);
-  transitions(q, trans);
+  transitions(trans);
 
   std::cout << "\tgoto se;\n" << std::endl;
 }

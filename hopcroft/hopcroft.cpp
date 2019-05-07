@@ -1,11 +1,12 @@
 #include "hopcroft.h"
 #include <iterator>
+#include <list>
 #include <map>
 #include <set>
 
 int dfa_transition(const Dfa& dfa, int q, int a)
 {
-  // -1 means the delta(q, a) dne
+  // -1 means delta(q, a) dne
   auto it = dfa.delta.find(q);
   if (it != dfa.delta.end()) {
     auto jt = it->second.find(a);
@@ -16,67 +17,50 @@ int dfa_transition(const Dfa& dfa, int q, int a)
   return -1;
 }
 
-// TODO should cls be an iterator instead?
-bool split_by_symbol(const Dfa& dfa, const std::set<int>& cls,
-    std::set<std::set<int> >& partition, char a)
+std::list<std::set<int> >::iterator split(const Dfa& dfa,
+    std::list<std::set<int> >::iterator it, std::list<std::set<int> >& partition, char a)
 {
-  // return true if modified
-  // assume cls is nonempty
-  int q = *(cls.begin());
+  int q = *(it->begin());
   std::set<int> eq, neq;
-  eq.insert(q);
-  for (auto it = std::next(cls.begin()); it != cls.end(); ++it) {
-    if (dfa_transition(dfa, q, a) == dfa_transition(dfa, *it, a)) {
-      eq.insert(*it);
+  for (auto r: *it) {
+    if (dfa_transition(dfa, q, a) == dfa_transition(dfa, r, a)) {
+      eq.insert(r);
     } else {
-      neq.insert(*it);
+      neq.insert(r);
     }
-  } 
+  }
 
   if (neq.empty()) {
-    return false;
+    return std::next(it);
   }
 
-  partition.erase(cls);
-  partition.insert(eq);
-  partition.insert(neq);
-  return false;
-}
-
-bool split(const Dfa& dfa, const std::set<int>& cls, 
-    std::set<std::set<int> >& partition)
-{
-  for (char a: dfa.symbols) {
-    if (split_by_symbol(dfa, cls, partition, a)) {
-      return true;
-    }
-  }
-  return false;
+  it = partition.erase(it);
+  partition.push_back(eq);
+  partition.push_back(neq);
+  return it;
 }
 
 Dfa minimize(const Dfa& dfa)
 {
-  std::set<std::set<int> > partition;
+  std::list<std::set<int> > partition;
   std::set<int> nonaccept;
   for (auto it = dfa.delta.begin(); it != dfa.delta.end(); ++it) {
     if (dfa.accept.find(it->first) == dfa.accept.end()) {
       nonaccept.insert(it->first);
     }
   }
-  partition.insert(dfa.accept);
-  partition.insert(nonaccept);
+  partition.push_back(dfa.accept);
+  partition.push_back(nonaccept);
 
-  bool changed = true;
-  while (changed) {
-    changed = false;
-    for (auto cls: partition) {
-      if (changed = split(dfa, cls, partition)) {
-        break;
-      }
+  for (auto a: dfa.symbols) {
+    auto it = partition.begin();
+    while (it != partition.end()) {
+      it = split(dfa, it, partition, a);
     }
   }
 
   // construct M
+
   Dfa M;
   std::map<int, int> reps;    // state classes
   for (auto it = partition.begin(); it != partition.end(); ++it) {
