@@ -1,9 +1,10 @@
-#include "hopcroft.h"
-#include "../regex/regex.h"
-#include "../regex/utilities.h"
-#include "../thompson/thompson.h"
+#include "generate.h"
 #include "../dfa/dfa.h"
-#include "../dfa/test_dfa.h"
+#include "../regex/utilities.h"
+#include "../regex/regex.h"
+#include "../nfa/nfa.h"
+#include "../thompson/thompson.h"
+#include "../hopcroft/hopcroft.h"
 
 int main()
 {
@@ -11,5 +12,6 @@ int main()
   Re re = real;
   Nfa nfa = thompson(re);
   Dfa dfa = minimize(subset_construction(nfa));
-  print_dfa(dfa);
+  generate("scanner", dfa);
+  extra("scanner");
 }

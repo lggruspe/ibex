@@ -3,7 +3,9 @@
 Nfa thompson(Re re)
 {
   auto sp = re.lock();
-  if (sp->value == '+') {
+  if (sp->leaf) {
+    return nfa_symbol(sp->value);
+  } else if (sp->value == '+') {
     Nfa A = thompson(sp->lhs);
     Nfa B = thompson(sp->rhs);
     return nfa_concatenation(A, B);
@@ -14,7 +16,5 @@ Nfa thompson(Re re)
   } else if (sp->value == '*') {
     Nfa A = thompson(sp->lhs);
     return nfa_closure(A);
-  } else {
-    return nfa_symbol(sp->value);
   }
 }
