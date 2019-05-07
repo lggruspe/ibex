@@ -6,6 +6,8 @@ void print_regex(Re re)
   auto sp = re.lock();
   if (!sp) {
     std::cout << "nil";
+  } else if (sp->leaf) {
+    std::cout << sp->value;
   } else if (sp->value == '*') {
     std::cout << "(*, ";
     print_regex(sp->lhs);
@@ -22,8 +24,6 @@ void print_regex(Re re)
     std::cout << ", ";
     print_regex(sp->rhs);
     std::cout << ")";
-  } else {
-    std::cout << sp->value;
   }
   sp.reset();
 }

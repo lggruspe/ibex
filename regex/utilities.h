@@ -15,6 +15,6 @@ extern Re upper;
 extern Re letter;
 extern Re identifier;
 
-void re_load_defaults();
+void re_load_predefined();
 
 #endif

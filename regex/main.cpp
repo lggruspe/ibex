@@ -5,7 +5,7 @@
 
 int main()
 {
-  re_load_defaults();
+  re_load_predefined();
   print_regex(real);
   std::cout << std::endl;
 }

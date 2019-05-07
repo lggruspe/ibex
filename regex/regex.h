@@ -8,12 +8,14 @@
 #include <vector>
 
 struct RegexTree {
+  bool leaf;
   char value;
   typedef std::weak_ptr<RegexTree> Re;
   Re lhs, rhs;
 
   RegexTree(char value, Re lhs=Re(), Re rhs=Re())
   {
+    this->leaf = false;
     this->value = value;
     this->lhs = lhs;
     this->rhs = rhs;
@@ -43,6 +45,7 @@ struct Regex {
 
     std::shared_ptr<RegexTree> symbol = std::make_shared<RegexTree>(a);
     this->symbols[a] = symbol;
+    symbol->leaf = true;
     return symbol;    // do shared_ptrs get freed when goign out of scope?
   }
 

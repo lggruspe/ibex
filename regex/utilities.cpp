@@ -14,7 +14,7 @@ Re upper;
 Re letter;
 Re identifier;
 
-void re_load_defaults()
+void re_load_predefined()
 {
   empty = regex.symbol('\0');
   zero = regex.symbol('0');
