@@ -4,6 +4,7 @@
 #include <iostream>
 #include <memory>
 #include <map>
+#include <string>
 #include <vector>
 
 struct RegexTree {
@@ -24,6 +25,7 @@ typedef std::weak_ptr<RegexTree> Re;
 struct Regex {
   std::map<char, std::shared_ptr<RegexTree> > symbols;
   std::vector<std::shared_ptr<RegexTree> > expressions;  // excludes symbols
+  std::map<std::string, Re> named_expressions;
   Re empty;
 
   Regex()
@@ -70,6 +72,27 @@ struct Regex {
   Re optional(Re A)
   {
     return this->alternate(this->empty, A);
+  }
+
+  Re set(const std::string& name, Re re)
+  {
+    this->named_expressions[name] = re;
+    return re;
+  }
+
+  Re get(const std::string& name)
+  {
+    return this->named_expressions[name];
+  }
+
+  Re get(const std::string& name, Re re)
+  {
+    // get, set if not defined
+    auto it = this->named_expressions.find(name);
+    if (it == this->named_expressions.end()) {
+      return this->set(name, re);
+    }
+    return it->second;
   }
 };
 
