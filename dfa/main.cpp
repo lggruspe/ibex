@@ -2,17 +2,18 @@
 #include "test_dfa.h"
 #include "../nfa/nfa.h"
 #include "../regex/regex.h"
-#include "../thompson/thompson.h"
+#include "../nfa/thompson.h"
+
+using namespace re;
 
 int main()
 {
-  Regex regex;
-  Re a = regex.symbol('a');
-  Re b = regex.symbol('b');
-  Re c = regex.symbol('c');
-  Re re = regex.concatenate(regex.alternate(a, b), regex.closure(c));
-  Nfa nfa = thompson(re);
-  Dfa dfa = subset_construction(nfa);
+    Re a = symbol("a");
+    Re b = symbol("b");
+    Re c = symbol("c");
+    Re re = concatenate(alternate(a, b), closure(c));
 
-  print_dfa(dfa);
+    nfa::Nfa n = nfa::thompson(re);
+    Dfa dfa = subset_construction(n);
+    print_dfa(dfa);
 }

@@ -1,37 +1,36 @@
-#ifndef DFA_H
-#define DFA_H
-
+#pragma once
 #include "../nfa/nfa.h"
 #include <map>
 #include <set>
+#include <string>
 
 struct Dfa {
-  int start;
-  std::set<int> accept;
-  std::map<int, std::map<char, int> > delta;
-  std::set<char> symbols;
+    int start;
+    std::set<int> accept;
+    std::map<int, std::map<std::string, int> > delta;
+    std::set<std::string> symbols;
 
-  int add_state(int q)
-  {
-    this->delta[q];
-    return q;
-  }
+    int add_state(int q)
+    {
+        this->delta[q];
+        return q;
+    }
 
-  int add_state()
-  {
-    int q = this->delta.empty() ? 0 : this->delta.rbegin()->first + 1;
-    return this->add_state(q);
-  }
+    int add_state()
+    {
+        int q = this->delta.empty() ? 0 : this->delta.rbegin()->first + 1;
+        return this->add_state(q);
+    }
 
-  void add_transition(int q, int a, int r)
-  {
-    this->add_state(q);
-    this->add_state(r);
-    this->delta[q][a] = r;
-    this->symbols.insert(a);  // check if a != '\0'?
-  }
+    void add_transition(int q, const std::string& a, int r)
+    {
+        this->add_state(q);
+        this->add_state(r);
+        this->delta[q][a] = r;
+        if (!a.empty()) {
+            this->symbols.insert(a);
+        }
+    }
 };
 
-Dfa subset_construction(const Nfa&);
-
-#endif
+Dfa subset_construction(const nfa::Nfa&);
