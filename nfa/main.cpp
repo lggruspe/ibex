@@ -1,13 +1,21 @@
 #include "nfa.h"
+#include "thompson.h"
+#include "../regex/regex.h"
+#include "../regex/utilities.h"
 #include "test_nfa.h"
 
 int main()
 {
-    nfa::Nfa a = nfa::symbol("a");
-    nfa::print(a);
-    nfa::Nfa b = nfa::symbol("b");
-    nfa::print(b);
+    re::Re integer = re::integer();
+    re::Re real = re::real();
+    re::Re identifier = re::identifier();
 
-    nfa::Nfa c = nfa::alternate(a, a);
-    nfa::print(c);
+    nfa::Nfa N = nfa::thompson(integer);
+    nfa::print(N);
+
+    N = nfa::thompson(real);
+    nfa::print(N);
+
+    N = nfa::thompson(identifier);
+    nfa::print(N);
 }

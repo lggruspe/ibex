@@ -1,23 +1,26 @@
 #pragma once
-#include "../nfa/nfa.h"
+#include "nfa.h"
 #include "../regex/regex.h"
 
-Nfa thompson(std::weak_ptr<RegexTree> expr)
-{
-  auto sp = expr.lock();
-  if (sp->leaf) {
-    return nfa_symbol(sp->value);
-  } else if (sp->value == '+') {
-    Nfa A = thompson(sp->lhs);
-    Nfa B = thompson(sp->rhs);
-    return nfa_concatenation(A, B);
-  } else if (sp->value == '|') {
-    Nfa A = thompson(sp->lhs);
-    Nfa B = thompson(sp->rhs);
-    return nfa_union(A, B);
-  } else if (sp->value == '*') {
-    Nfa A = thompson(sp->lhs);
-    return nfa_closure(A);
-  }
-  return Nfa();
+namespace nfa {
+    Nfa thompson(std::weak_ptr<re::RegexTree> expr)
+    {
+        if (expr.expired()) {
+            return Nfa();
+        }
+        auto sp = expr.lock();
+        if (sp->lhs == nullptr) {
+            return symbol(sp->value);
+        }
+        if (sp->value == "*") {
+            Nfa A = thompson(sp->lhs);
+            return closure(A);
+        }
+        if (sp->rhs == nullptr || (sp->value != "+" && sp->value != "|")) {
+            return Nfa();
+        }
+        Nfa A = thompson(sp->lhs);
+        Nfa B = thompson(sp->rhs);
+        return sp->value == "+" ? concatenate(A, B) : alternate(A, B);
+    }
 }
