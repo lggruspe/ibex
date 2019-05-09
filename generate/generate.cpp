@@ -1,69 +1,69 @@
 #include "generate.h"
+#include <fstream>
 #include <iostream>
 #include <iterator>
 #include <map>
 #include <set>
 
-void headers()
+void transitions(std::ofstream& out, const std::map<std::string, int>& trans)
 {
-  std::cout <<
-    "#include <iostream>\n"
-    "#include <string>\n"
-    "#include <utility>\n"
-    "#include <vector>\n"
-    << std::endl;
-}
-
-void transitions(const std::map<char, int>& trans)
-{
-  std::map<int, std::set<char>> dests;   // invert transition
+  std::map<int, std::set<std::string>> dests;   // invert transition
   for (auto it = trans.begin(); it != trans.end(); ++it) {
     dests[it->second].insert(it->first);
   }
 
   for (auto it = dests.begin(); it != dests.end(); ++it) {
-    std::cout << "\tif (c == '" << *(it->second.begin()) << "'";
+    out << "\tif (cat == \"" << *(it->second.begin()) << "\"";
     for (auto jt = std::next(it->second.begin()); jt != it->second.end();
         ++jt) {
-      std::cout << " || c == '" << *jt << "'";
+      out << " || cat == \"" << *jt << "\"";
     }
-    std::cout << ") {\n";
-    std::cout << "\t\tgoto s" << it->first << ";\n";
-    std::cout << "\t}\n";
+    out << ") {\n";
+    out << "\t\tgoto s" << it->first << ";\n";
+    out << "\t}\n";
   }
 }
 
-void state(const Dfa& dfa, int q)
+void state(std::ofstream& out, const automata::Dfa& dfa, int q)
 {
-  std::cout <<
+  out <<
     "s" << q << ":\n"
     "\tstd::cin.get(c);\n"
     "\tlexeme += c;\n";
 
   if (dfa.accept.find(q) != dfa.accept.end()) {
-    std::cout << 
+    out << 
       "\tcheckpoint.clear();\n"
       "\taccept = true;\n";
   }
 
-  std::cout <<
-    "\tcheckpoint.push_back(c);\n";
+  out <<
+    "\tcheckpoint.push_back(c);\n"
+    "\tcat = category(c);\n";
 
-  const std::map<char, int>& trans = dfa.delta.at(q);
-  transitions(trans);
+  const std::map<std::string, int>& trans = dfa.delta.at(q);
+  transitions(out, trans);
 
-  std::cout << "\tgoto se;\n" << std::endl;
+  out << "\tgoto se;\n" << std::endl;
 }
 
-void generate(const std::string& name, const Dfa& dfa)
+void generate(std::ofstream& out, const std::string& name, const automata::Dfa& dfa)
 {
   // TODO check if name is an identifier?
-  headers();
+  out <<
+    "#include \"category.h\"\n"
+    "#include <iostream>\n"
+    "#include <string>\n"
+    "#include <utility>\n"
+    "#include <vector>\n"
+    << std::endl;
 
-  std::cout <<
+
+  out <<
     "std::pair<bool, std::string> " << name << "()\n"
     "{\n"
     "\tchar c;\n"
+    "\tstd::string cat;\n"      // TODO new
     "\tstd::vector<char> checkpoint;\n"
     "\tstd::string lexeme;\n"
     "\tbool accept = false;\n"
@@ -71,10 +71,10 @@ void generate(const std::string& name, const Dfa& dfa)
     << std::endl;
 
   for (auto it = dfa.delta.begin(); it != dfa.delta.end(); ++it) {
-    state(dfa, it->first);
+    state(out, dfa, it->first);
   }
 
-  std::cout <<
+  out <<
     "se:\n"
     "\twhile (!checkpoint.empty()) {\n"
     "\t\tc = checkpoint.back();\n"
@@ -87,9 +87,9 @@ void generate(const std::string& name, const Dfa& dfa)
     << std::endl;
 }
 
-void extra(const std::string& name)
+void extra(std::ofstream& out, const std::string& name)
 {
-  std::cout <<
+  out <<
     "int main()\n"
     "{\n"
     "\tstd::pair<bool, std::string> res = " << name << "();\n"
