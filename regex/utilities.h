@@ -34,6 +34,7 @@ namespace regex {
         
         Re sign = alternate(eps, symbol("sign"));
         Re exponent = concatenate(symbol("exponent"), concatenate(sign, intgr));
+        exponent = alternate(eps, exponent);
         return concatenate(intgr, concatenate(decimal, exponent));
     }
 }

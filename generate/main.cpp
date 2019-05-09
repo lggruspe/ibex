@@ -18,8 +18,8 @@ int main(int argc, char **argv)
         return 1;
     }
 
-    regex::Re identifier = regex::identifier();
-    Nfa nfa = thompson(identifier);
+    regex::Re re = regex::real();
+    Nfa nfa = thompson(re);
     Dfa dfa = minimize(subset_construction(nfa));
     
     std::ofstream out;
@@ -31,8 +31,19 @@ int main(int argc, char **argv)
 
 
     std::map<std::string, std::string> categories;
+    /*
     categories["letter"] = "_abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
     categories["digit"] = "1234567890";     // TODO do this with regex (regex.categories() to get table)
+    */
+    categories["zero"] = "0";
+    categories["nonzero"] = "123456789";
+    categories["exponent"] = "eE";
+    categories["sign"] = "+-";
+    categories["."] = ".";
+    /*
+    categories["zero"] = "0";
+    categories["nonzero"] = "123456789";
+    */
 
     out.open("category.h");
     generate(out, dfa, categories);
