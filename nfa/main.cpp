@@ -6,16 +6,16 @@
 
 int main()
 {
-    re::Re integer = re::integer();
-    re::Re real = re::real();
-    re::Re identifier = re::identifier();
+    regex::Re integer = regex::integer();
+    regex::Re real = regex::real();
+    regex::Re identifier = regex::identifier();
 
-    nfa::Nfa N = nfa::thompson(integer);
-    nfa::print(N);
+    automata::Nfa N = automata::thompson(integer);
+    automata::print(N);
 
-    N = nfa::thompson(real);
-    nfa::print(N);
+    N = automata::thompson(real);
+    automata::print(N);
 
-    N = nfa::thompson(identifier);
-    nfa::print(N);
+    N = automata::thompson(identifier);
+    automata::print(N);
 }

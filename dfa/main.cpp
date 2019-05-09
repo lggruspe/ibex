@@ -4,16 +4,17 @@
 #include "../regex/regex.h"
 #include "../nfa/thompson.h"
 
-using namespace re;
+using namespace automata;
 
 int main()
 {
-    Re a = symbol("a");
-    Re b = symbol("b");
-    Re c = symbol("c");
-    Re re = concatenate(alternate(a, b), closure(c));
+    regex::Re a = regex::symbol("a");
+    regex::Re b = regex::symbol("b");
+    regex::Re c = regex::symbol("c");
+    regex::Re re = regex::concatenate(regex::alternate(a, b), 
+            regex::closure(c));
 
-    nfa::Nfa n = nfa::thompson(re);
-    Dfa dfa = subset_construction(n);
-    print_dfa(dfa);
+    Nfa nfa = thompson(re);
+    Dfa dfa = subset_construction(nfa);
+    print(dfa);
 }

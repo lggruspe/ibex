@@ -1,6 +1,6 @@
 #include "nfa.h"
 
-namespace nfa {
+namespace automata {
     int merge(Nfa& A, const Nfa& B)
     {
       // add states of B into this (with renamed states)

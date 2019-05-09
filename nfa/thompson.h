@@ -2,8 +2,8 @@
 #include "nfa.h"
 #include "../regex/regex.h"
 
-namespace nfa {
-    Nfa thompson(std::weak_ptr<re::RegexTree> expr)
+namespace automata {
+    Nfa thompson(std::weak_ptr<regex::RegexTree> expr)
     {
         if (expr.expired()) {
             return Nfa();

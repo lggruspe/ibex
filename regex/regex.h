@@ -2,7 +2,7 @@
 #include <memory>
 #include <string>
 
-namespace re {
+namespace regex {
 
     class RegexTree {
         typedef std::shared_ptr<RegexTree> Re;

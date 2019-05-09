@@ -2,7 +2,7 @@
 #include "utilities.h"
 #include <iostream>
 
-using namespace re;
+using namespace regex;
 
 int main()
 {

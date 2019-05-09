@@ -2,7 +2,7 @@
 #include "regex.h"
 #include <exception>
 
-namespace re {
+namespace regex {
     Re empty()
     {
         return symbol("");

@@ -3,7 +3,7 @@
 #include <set>
 #include <string>
 
-namespace nfa {
+namespace automata {
 
     struct Nfa {
       std::map<int, std::map<std::string, std::set<int> > > delta;

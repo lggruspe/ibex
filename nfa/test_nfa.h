@@ -2,19 +2,19 @@
 #include "nfa.h"
 #include <iostream>
 
-namespace nfa {
-    void print(const Nfa& N)
+namespace automata {
+    void print(const Nfa& nfa)
     {
-      std::cout << "start: " << N.start << std::endl;
-      std::cout << "accept: " << N.accept << std::endl;
+      std::cout << "start: " << nfa.start << std::endl;
+      std::cout << "accept: " << nfa.accept << std::endl;
       std::cout << "symbols: ";
-      for (auto a: N.symbols) {
+      for (auto a: nfa.symbols) {
         std::cout << a << " ";
       }
       std::cout << std::endl;
       std::cout << "transitions:" << std::endl;
 
-      for (auto it = N.delta.begin(); it != N.delta.end(); ++it) {
+      for (auto it = nfa.delta.begin(); it != nfa.delta.end(); ++it) {
         int q = it->first;
         for (auto jt = it->second.begin(); jt != it->second.end(); ++jt) {
           std::string a = jt->first;
