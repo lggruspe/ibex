@@ -1,8 +1,10 @@
-#include "thompson.h"
+#pragma once
+#include "../nfa/nfa.h"
+#include "../regex/regex.h"
 
-Nfa thompson(Re re)
+Nfa thompson(std::weak_ptr<RegexTree> expr)
 {
-  auto sp = re.lock();
+  auto sp = expr.lock();
   if (sp->leaf) {
     return nfa_symbol(sp->value);
   } else if (sp->value == '+') {
@@ -17,6 +19,5 @@ Nfa thompson(Re re)
     Nfa A = thompson(sp->lhs);
     return nfa_closure(A);
   }
-
   return Nfa();
 }

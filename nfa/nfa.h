@@ -1,40 +1,40 @@
-#ifndef NFA_H
-#define NFA_H
-
+#pragma once
 #include <map>
 #include <set>
+#include <string>
 
-struct Nfa {
-  std::map<int, std::map<char, std::set<int> > > delta;
-  int start, accept;
-  std::set<char> symbols;
+namespace nfa {
 
-  int add_state(int q)
-  {
-    this->delta[q];
-    return q;
-  }
+    struct Nfa {
+      std::map<int, std::map<std::string, std::set<int> > > delta;
+      int start, accept;
+      std::set<std::string> symbols;
 
-  int add_state()
-  {
-    int q = this->delta.empty() ? 0 : this->delta.rbegin()->first + 1;
-    return this->add_state(q);
-  }
+      int add_state(int q)
+      {
+        this->delta[q];
+        return q;
+      }
 
-  void add_transition(int q, char a, int r)
-  {
-    this->add_state(q);
-    this->add_state(r);
-    this->delta[q][a].insert(r);
-    if (a != '\0') {
-      this->symbols.insert(a);
-    }
-  }
-};
+      int add_state()
+      {
+        int q = this->delta.empty() ? 0 : this->delta.rbegin()->first + 1;
+        return this->add_state(q);
+      }
 
-Nfa nfa_symbol(char);
-Nfa nfa_union(Nfa&, const Nfa&);
-Nfa nfa_concatenation(Nfa&, const Nfa&);
-Nfa nfa_closure(Nfa&);
+      void add_transition(int q, const std::string& a, int r)
+      {
+        this->add_state(q);
+        this->add_state(r);
+        this->delta[q][a].insert(r);
+        if (!a.empty()) {
+          this->symbols.insert(a);
+        }
+      }
+    };
 
-#endif
+    Nfa symbol(const std::string&);
+    Nfa alternate(Nfa&, const Nfa&);
+    Nfa concatenate(Nfa&, const Nfa&);
+    Nfa closure(Nfa&);
+}

@@ -3,11 +3,11 @@
 
 int main()
 {
-  Nfa a = nfa_symbol('a');
-  print_nfa(a);
-  Nfa b = nfa_symbol('b');
-  print_nfa(b);
+    nfa::Nfa a = nfa::symbol("a");
+    nfa::print(a);
+    nfa::Nfa b = nfa::symbol("b");
+    nfa::print(b);
 
-  Nfa c = nfa_union(a, a);
-  print_nfa(c);
+    nfa::Nfa c = nfa::alternate(a, a);
+    nfa::print(c);
 }
