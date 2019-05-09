@@ -15,4 +15,9 @@ int main()
     std::cout << tostring(ident) << std::endl;
     std::cout << tostring(intgr) << std::endl;
     std::cout << tostring(re) << std::endl;
+
+    Re a = symbol("a");
+    Re b = alternate(a, eps);
+    std::cout << tostring(a) << std::endl;
+    std::cout << tostring(b) << std::endl;
 }

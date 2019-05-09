@@ -45,16 +45,12 @@ namespace regex {
             return "";
         }
         auto sp = a.lock();
-        std::string s = sp->value;
-        std::string lhs = tostring(sp->lhs);
-        if (lhs == "") {
-            return s;
+        if (sp->lhs == nullptr) {
+            return sp->value;
         }
-        s = "(" + s + ", " + lhs;
-        std::string rhs = tostring(sp->rhs);
-        if (rhs != "") {
-            s += ", " + rhs + ")";
+        if (sp->rhs == nullptr) {
+            return "(" + sp->value + ", " + tostring(sp->lhs) + ")";
         }
-        return s;
+        return "(" + sp->value + ", " + tostring(sp->lhs) + ", " + tostring(sp->rhs) + ")";
     }
 }

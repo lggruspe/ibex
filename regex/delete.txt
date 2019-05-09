@@ -1,0 +1,3 @@
+(+, (|, zero, (+, nonzero, (*, (|, zero, nonzero)))), (+, |, (+, exponent, (+, |, (|, zero, (+, nonzero, (*, (|, zero, nonzero))))))))
+
+(+, (|, zero, (+, nonzero, (*, (|, zero, nonzero)))), (+, |, (+, exponent, (+, |, integer))))
