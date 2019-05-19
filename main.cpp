@@ -22,8 +22,8 @@ int main()
     grammar.add_variable("goal");
     grammar.start = "goal";
     grammar.add_rule("goal", {"list"});
-    grammar.compute_rule_numbers();
-    grammar.compute_first_sets();
-    lr1::Parser parser;
-    parser.construct_automaton(grammar);
+
+    //grammar.compute_first_sets();
+    //lr1::Parser parser;
+    //parser.construct_automaton(grammar);
 }

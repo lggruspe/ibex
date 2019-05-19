@@ -1,5 +1,5 @@
 #pragma once
-#include "bimap.h"
+#include "enumeration.h"
 #include <algorithm>
 #include <map>
 #include <set>
@@ -18,21 +18,19 @@ typedef std::pair<Symbol, Sentence> Rule;
 class Grammar {
     std::set<Symbol> variables;
     std::set<Symbol> terminals;
-    std::map<Symbol, std::set<Sentence>> rules;
+    Enumeration<Rule> rules;
     std::map<Symbol,std::set<Symbol>> first_sets;
-    Bimap<int, Rule> rule_numbers;
     bool first_sets_valid;
-    bool rule_numbers_valid;
 
     std::set<Symbol> unchecked_first(const Sentence& sent) const;
 public:
     Symbol start;
-    Grammar(): first_sets_valid(false), rule_numbers_valid(false) {}
+    Grammar(): first_sets_valid(false){}
 
     void add_terminal(const Symbol& sym);
     void add_variable(const Symbol& sym);
     void add_rule(const Rule& rule);
-    void add_rule(const Symbol& lhs, const std::vector<Symbol>& rhs);
+    void add_rule(const Symbol& lhs, const Sentence& rhs);
     void set_start(const Symbol& sym);
 
     bool is_variable(const Symbol& sym) const;
@@ -41,11 +39,9 @@ public:
 
     std::set<Symbol> first(const Sentence& sent) const;
     std::set<Symbol> first(const Symbol& sym) const;
-    int rule_number(const Rule& rule) const;
 
     void compute_first_sets();      // TODO call this in first
                                     // if first_sets_valid is false
-    void compute_rule_numbers();    // TODO same
 };
 
 void Grammar::add_terminal(const Symbol& sym)
@@ -60,17 +56,16 @@ void Grammar::add_variable(const Symbol& sym)
     variables.insert(sym);
 }
 
-void Grammar::add_rule(const Symbol& lhs, const Sentence& rhs)
+void Grammar::add_rule(const Rule& rule)
 {
     // TODO check if lhs is a variable
     first_sets_valid = false;
-    rule_numbers_valid = false;
-    rules[lhs].insert(rhs);
+    rules.insert(rule);
 }
 
-void Grammar::add_rule(const Rule& rule)
+void Grammar::add_rule(const Symbol& lhs, const Sentence& rhs)
 {
-    add_rule(rule.first, rule.second);
+    add_rule(Rule(lhs, rhs));
 }
 
 void Grammar::set_start(const Symbol& sym)
@@ -96,7 +91,16 @@ std::set<Sentence> Grammar::get_substitutes(const Symbol& sym) const
     if (!is_variable(sym)) {
         throw std::invalid_argument("input symbol is not a variable");
     }
-    return rules.at(sym);
+
+    std::set<Sentence> res;
+    auto it = std::find_if(rules.ibegin(), rules.iend(),
+            rule_predicate(sym, true));
+    auto jt = std::find_if(it, rules.iend(),
+            rule_predicate(sym, false));
+    for (; it != jt; ++it) {
+        res.insert(it->second);
+    }
+    return res;
 }
 
 std::set<Symbol> Grammar::first(const Symbol& sym) const
@@ -163,27 +167,4 @@ void Grammar::compute_first_sets()
     }
     first_sets_valid = true;
 }
-
-void Grammar::compute_rule_numbers()
-{
-    rule_numbers.clear();
-    for (const auto& rule: rules) {
-        const Symbol& lhs = rule.first;
-        for (const Sentence& rhs: rule.second) {
-            rule_numbers.insert(Rule(lhs, rhs));
-        }
-    }
-    rule_numbers_valid = true;
-}
-
-
-int Grammar::rule_number(const Rule& rule) const
-{
-    if (!rule_numbers_valid) {
-        throw std::logic_error("called rule_number before"
-                "compute_rule_numbers");
-    }
-    return rule_numbers.rget(rule);
-}
-
 } // end namespace

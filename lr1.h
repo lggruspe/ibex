@@ -60,7 +60,7 @@ public:
         cfg::Sentence rhs = before;
         std::copy(after.begin(), after.end(), std::back_inserter(rhs));
         cfg::Rule rule = cfg::Rule(lhs, rhs);
-        return grammar.rule_number(rule);
+        return grammar.rules.index(Rhs(lhs, rhs));
     }
 };
 
@@ -117,7 +117,6 @@ public:
 
     void construct_parser(cfg::Grammar& grammar) {
         construct_automaton(grammar);
-        grammar.compute_rule_numbers();
         table.clear();
         for (const auto& transitions: delta) {
             int pname = transitions.first;
