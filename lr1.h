@@ -66,8 +66,11 @@ public:
     }
 
     int rule(cfg::Grammar& grammar) {
-        cfg::Sentence rhs = before;
-        std::copy(after.begin(), after.end(), std::back_inserter(rhs));
+        cfg::Sentence rhs;
+        std::remove_copy(before.begin(), before.end(), 
+                std::back_inserter(rhs), cfg::Symbol());
+        std::remove_copy(after.begin(), after.end(), 
+                std::back_inserter(rhs), cfg::Symbol());
         return grammar.rule(cfg::Rule(lhs, rhs));
     }
 
@@ -116,11 +119,6 @@ public:
         take_closure(grammar, start);
         std::vector<int> states = {names.insert(start)};
 
-        if (start.size() != 9) {
-            print_state(start);
-            throw std::logic_error("start state should have 9 items");
-        }
-
         while (!states.empty()) {
             int name = states.back();
             states.pop_back();
@@ -149,13 +147,6 @@ public:
                 const cfg::Symbol& sym = pair.first;
                 int qname = pair.second;
 
-                if (grammar.is_terminal(sym)) {
-                    table[pname][sym] = Action("shift", qname);
-                } else if (grammar.is_variable(sym)) {
-                    // compute goto first
-                    table[pname][sym] = Action("goto", qname);
-                }
-
                 // compute reduce actions
                 // TODO detect shift/reduce and reduce/reduce conflicts
                 for (const auto& name_pair: names) {
@@ -165,14 +156,21 @@ public:
                         if (!item.is_reduce()) {
                             continue;
                         }
-                        if (item.lhs == grammar.start && item.lookahead.empty()) {
-                            // check if accept
+                        if (item.lhs == grammar.start && item.lookahead.empty()
+                                && item.after.empty()) {
                             table[pname][sym] = Action("accept", qname);
                         } else {
                             // regular reduce
                             table[pname][item.lookahead] = Action("reduce", item.rule(grammar));
                         }
                     }
+                }
+
+                if (grammar.is_terminal(sym)) {
+                    table[pname][sym] = Action("shift", qname);
+                } else if (grammar.is_variable(sym)) {
+                    // compute goto first
+                    table[pname][sym] = Action("goto", qname);
                 }
             }
         }
@@ -272,13 +270,43 @@ void print_sentence(const cfg::Sentence& sent)
 
 void print_collections(const Parser& parser)
 {
+    std::cout << "Parser states" << std::endl;
     for (const auto& state: parser.names) {
         std::cout << state.first << std::endl;
         print_state(state.second);
         std::cout << std::endl;
     }
-
+    std::cout << std::endl;
 }
+
+void print_automaton(const Parser& parser)
+{
+    std::cout << "Parser automaton" << std::endl;
+    const std::map<int, std::map<cfg::Symbol, int>>& delta = parser.delta;
+
+    for (const auto &transitions: delta) {
+        for (const auto& sym: transitions.second) {
+            std::cout << "(" << transitions.first << ", " << sym.first 
+                << ") = " << sym.second << std::endl;
+        }
+    }
+    std::cout << std::endl;
+}
+
+void print_table(const Parser& parser)
+{
+    std::cout << "Parser table" << std::endl;
+    for (const auto& p: parser.table) {
+        for (const auto& q: p.second) {
+            std::cout << "(" << p.first << ", ";
+            std::cout << q.first << ") = "
+                << q.second.first << ' ' << q.second.second
+                << std::endl;
+        }
+    }
+    std::cout << std::endl;
+}
+
 ////////////
 /////
 

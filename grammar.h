@@ -31,13 +31,14 @@ private:
 class Grammar {
     std::set<Symbol> variables;
     std::set<Symbol> terminals;
-    Enumeration<Rule> rules;
     std::map<Symbol,std::set<Symbol>> first_sets;
     bool first_sets_valid;
 
     std::set<Symbol> unchecked_first(const Sentence& sent) const;
     void compute_first_sets();
 public:
+
+    Enumeration<Rule> rules;    // TODO private
     Symbol start;
     Grammar(): first_sets_valid(false){}
 

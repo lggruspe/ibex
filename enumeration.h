@@ -46,8 +46,8 @@ public:
         return values[ind];
     }
 
-    int index(const T& val) {
-        return indices[val];
+    int index(const T& val) const {
+        return indices.at(val);
     }
 
     void clear() {
