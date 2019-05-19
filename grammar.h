@@ -62,6 +62,7 @@ void Grammar::add_variable(const Symbol& sym)
 
 void Grammar::add_rule(const Symbol& lhs, const Sentence& rhs)
 {
+    // TODO check if lhs is a variable
     first_sets_valid = false;
     rule_numbers_valid = false;
     rules[lhs].insert(rhs);
@@ -92,6 +93,9 @@ bool Grammar::is_terminal(const Symbol& sym) const
 
 std::set<Sentence> Grammar::get_substitutes(const Symbol& sym) const
 {
+    if (!is_variable(sym)) {
+        throw std::invalid_argument("input symbol is not a variable");
+    }
     return rules.at(sym);
 }
 
@@ -100,13 +104,17 @@ std::set<Symbol> Grammar::first(const Symbol& sym) const
     if (!first_sets_valid) {
         throw std::logic_error("called first before compute_first_sets");
     }
-    return first_sets.at(sym);
+    std::set<Symbol> res = first_sets.at(sym);
+    return res;
 }
 
 std::set<Symbol> Grammar::unchecked_first(const Sentence& sent) const
 {
     std::set<Symbol> res;
     for (const Symbol& sym: sent) {
+        if (first_sets.find(sym) == first_sets.end()) { // because first_sets.at causes an error
+            continue;                                   //
+        }                                               //
         const auto& first_set = first_sets.at(sym);
         std::copy(first_set.begin(), first_set.end(),
                 std::inserter(res, res.begin()));
@@ -137,7 +145,6 @@ void Grammar::compute_first_sets()
         for (const Symbol& sym: variables) {
             std::set<Sentence> subs = get_substitutes(sym);
             std::set<Symbol> first_set;
-
             for (const Sentence& sub: subs) {
                 if (is_terminal(sub[0])) {
                     first_set.insert(sub[0]);
@@ -148,8 +155,8 @@ void Grammar::compute_first_sets()
                 }
             }
 
-            if (first_set != first_sets.at(sym)) {
-                changed = false;
+            if (first_set != first_sets[sym]) {
+                changed = true;
                 first_sets[sym] = first_set;
             }
         }

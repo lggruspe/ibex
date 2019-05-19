@@ -44,6 +44,9 @@ public:
     }
 
     T next() const {
+        if (left.empty()) {
+            return 0;
+        }
         return left.rbegin()->first + 1;    // doesn't always make sense
     }
 

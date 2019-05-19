@@ -7,6 +7,8 @@
 #include <utility>
 #include <vector>
 
+#include <iostream> //////////////
+
 namespace lr1
 {
 
@@ -49,55 +51,117 @@ public:
         Item res(lhs, before, after, lookahead);
         return res;
     }
+
+    bool is_reduce() const {
+        return after.empty();
+    }
+
+    int rule_number(const cfg::Grammar& grammar) const {
+        cfg::Sentence rhs = before;
+        std::copy(after.begin(), after.end(), std::back_inserter(rhs));
+        cfg::Rule rule = cfg::Rule(lhs, rhs);
+        return grammar.rule_number(rule);
+    }
 };
 
-void take_closure(const cfg::Grammar&, std::vector<Item>&);
+void take_closure(cfg::Grammar&, std::vector<Item>&);
 std::map<cfg::Symbol, std::vector<Item>> 
-transition(const cfg::Grammar&, const std::vector<Item>&);
+transition(cfg::Grammar&, const std::vector<Item>&);
 
 typedef std::pair<std::string, int> Action;
 // first can only be shift, reduce, accept, goto or ""
 
 class Parser {
     std::map<int, std::map<cfg::Symbol, Action>> table;
+    std::map<int, std::map<cfg::Symbol, int>> delta;
+    Bimap<int, std::vector<Item>> names;    // one-to-one map between int and collections
 
 public:
     Parser() {}
-    Parser(const cfg::Grammar& grammar) { construct(grammar); } 
+    Parser(cfg::Grammar& grammar) { construct_parser(grammar); }
 
-    void construct(const cfg::Grammar& grammar)
+    void construct_automaton(cfg::Grammar& grammar)
     {
         // assume the grammar is augmented
+        // rebuilds automaton (delta) and names
+        delta.clear();
+        names.clear();
         std::vector<Item> start = { 
             Item(grammar.start, {""}, 
             *(grammar.get_substitutes(grammar.start).begin()), "")
         };
         take_closure(grammar, start);
-        Bimap<int, std::vector<Item>> names;        // acts as history
-        names.insert(start);
+        names.insert(start);        // acts as history
         std::vector<int> states = {names.rget(start)};
 
+        std::cout << "foo1" << std::endl;;//////////
         while (!states.empty()) {
             int name = states.back();
             states.pop_back();
             std::vector<Item> state = names.get(name);
+            std::map<cfg::Symbol, std::vector<Item>> transitions = transition(grammar, state);
 
-            std::map<cfg::Symbol, std::vector<Item>> delta = transition(grammar, state);
-            for (const auto& p: delta) {
+            std::cout << "foo2" << std::endl;    /////
+            for (const auto& p: transitions) {
                 if (!names.rcontains(p.second)) {
                     states.push_back(names.insert(p.second));
                 }
                 int pname = names.rget(p.second);
-                table[name][p.first] = std::pair<std::string,int>("goto", pname);
+                delta[name][p.first] = pname;
             }
-            // TODO Continue here
+            std::cout << "bar2" << std::endl;    ///////
+        }
+
+        std::cout << "bar1" << std::endl;;////////////
+    }
+
+    void construct_parser(cfg::Grammar& grammar) {
+        construct_automaton(grammar);
+        grammar.compute_rule_numbers();
+        table.clear();
+        for (const auto& transitions: delta) {
+            int pname = transitions.first;
+            for (const auto& pair: transitions.second) {
+                const cfg::Symbol& sym = pair.first;
+                int qname = pair.second;
+
+                if (grammar.is_terminal(sym)) {
+                    table[pname][sym] = Action("shift", qname);
+                } else if (grammar.is_variable(sym)) {
+                    // compute goto first
+                    table[pname][sym] = Action("goto", qname);
+                }
+
+                // compute reduce actions
+                // TODO detect shift/reduce and reduce/reduce conflicts
+                for (const auto& name_pair: names) {
+                    // go through each item in the state
+                    const auto& items = name_pair.second;
+                    for (const auto& item: items) {
+                        if (!item.is_reduce()) {
+                            continue;
+                        }
+                        if (item.lhs == grammar.start && item.lookahead.empty()) {
+                            // check if accept
+                            table[pname][sym] = Action("accept", qname);
+                        } else {
+                            // regular reduce
+                            table[pname][item.lookahead] = Action("reduce", item.rule_number(grammar));
+                        }
+                    }
+                }
+            }
         }
     }
 };
 
-void take_closure(const cfg::Grammar& grammar, std::vector<Item>& closure)
+void take_closure(cfg::Grammar& grammar, std::vector<Item>& closure)
 {
+    grammar.compute_first_sets();
     for (const Item& item: closure) {
+        if (item.after.empty()) {
+            continue;
+        }
         auto variable = item.after.front();
         if (!grammar.is_variable(variable)) {
             continue;
@@ -135,19 +199,19 @@ std::vector<Item> transition(const Item& item, const cfg::Symbol& sym)
 }
 
 std::map<cfg::Symbol, std::vector<Item>> 
-transition(const cfg::Grammar& grammar, const std::vector<Item>& state)
+transition(cfg::Grammar& grammar, const std::vector<Item>& state)
 {
-    std::map<cfg::Symbol, std::vector<Item>> delta;
+    std::map<cfg::Symbol, std::vector<Item>> transitions;
     std::set<cfg::Symbol> symbols = leading_symbols(state);
     for (const cfg::Symbol& sym: symbols) {
         for (const Item& item: state) {
             std::vector<Item> new_items = transition(item, sym);
             std::copy(new_items.begin(), new_items.end(), 
-                    std::back_inserter(delta[sym]));
+                    std::back_inserter(transitions[sym]));
         }
-        take_closure(grammar, delta[sym]);
+        take_closure(grammar, transitions[sym]);
     }
-    return delta;
+    return transitions;
 }
 
 } // end namespace
