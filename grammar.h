@@ -1,4 +1,5 @@
 #pragma once
+#include "bimap.h"
 #include <algorithm>
 #include <map>
 #include <set>
@@ -19,13 +20,14 @@ class Grammar {
     std::set<Symbol> terminals;
     std::map<Symbol, std::set<Sentence>> rules;
     std::map<Symbol,std::set<Symbol>> first_sets;
-    void compute_first_sets();
+    Bimap<int, Rule> rule_numbers;
     bool first_sets_valid;
+    bool rule_numbers_valid;
 
     std::set<Symbol> unchecked_first(const Sentence& sent) const;
 public:
     Symbol start;
-    Grammar(): first_sets_valid(false) {}
+    Grammar(): first_sets_valid(false), rule_numbers_valid(false) {}
 
     void add_terminal(const Symbol& sym);
     void add_variable(const Symbol& sym);
@@ -39,6 +41,11 @@ public:
 
     std::set<Symbol> first(const Sentence& sent) const;
     std::set<Symbol> first(const Symbol& sym) const;
+    int rule_number(const Rule& rule) const;
+
+    void compute_first_sets();      // TODO call this in first
+                                    // if first_sets_valid is false
+    void compute_rule_numbers();    // TODO same
 };
 
 void Grammar::add_terminal(const Symbol& sym)
@@ -56,6 +63,7 @@ void Grammar::add_variable(const Symbol& sym)
 void Grammar::add_rule(const Symbol& lhs, const Sentence& rhs)
 {
     first_sets_valid = false;
+    rule_numbers_valid = false;
     rules[lhs].insert(rhs);
 }
 
@@ -147,6 +155,28 @@ void Grammar::compute_first_sets()
         }
     }
     first_sets_valid = true;
+}
+
+void Grammar::compute_rule_numbers()
+{
+    rule_numbers.clear();
+    for (const auto& rule: rules) {
+        const Symbol& lhs = rule.first;
+        for (const Sentence& rhs: rule.second) {
+            rule_numbers.insert(Rule(lhs, rhs));
+        }
+    }
+    rule_numbers_valid = true;
+}
+
+
+int Grammar::rule_number(const Rule& rule) const
+{
+    if (!rule_numbers_valid) {
+        throw std::logic_error("called rule_number before"
+                "compute_rule_numbers");
+    }
+    return rule_numbers.rget(rule);
 }
 
 } // end namespace

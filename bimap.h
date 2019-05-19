@@ -8,6 +8,14 @@ class Bimap {
     std::map<U, T> right;
 
 public:
+    using iterator = typename std::map<T, U>::iterator;
+    using const_iterator = typename std::map<T, U>::const_iterator;
+
+    iterator begin() { return left.begin(); }
+    iterator end() { return left.end(); }
+    const_iterator begin() const { return left.begin(); }
+    const_iterator end() const { return left.end(); }
+
     const U& get(const T& a) const { 
         return left.at(a); 
     }
@@ -44,5 +52,10 @@ public:
         T a = next();
         set(a, b);
         return a;
+    }
+
+    void clear() {
+        left.clear();
+        right.clear();
     }
 };
