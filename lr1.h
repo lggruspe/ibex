@@ -8,8 +8,6 @@
 #include <utility>
 #include <vector>
 
-#include <iostream>//////////
-
 namespace lr1
 {
 
@@ -85,11 +83,6 @@ public:
 
 typedef std::set<Item> Collection;
 
-void print_state(const Collection& state);   ///////
-void print_item(const Item& item);  ////////////////////
-void print_sentence(const cfg::Sentence& sent);/////////////
-
-
 void take_closure(cfg::Grammar&, Collection&);
 std::map<cfg::Symbol, Collection> 
 transition(cfg::Grammar&, const Collection&);
@@ -98,10 +91,14 @@ typedef std::pair<std::string, int> Action;
 // first can only be shift, reduce, accept, goto or ""
 
 class Parser {
+    std::map<int, std::map<cfg::Symbol, Action>> table;
+    Enumeration<Collection> names;
+    std::map<int, std::map<cfg::Symbol, int>> delta;
+
+    friend void print_collections(const Parser&);
+    friend void print_automaton(const Parser&);
+    friend void print_table(const Parser&);
 public:
-    std::map<int, std::map<cfg::Symbol, Action>> table; // TODO make priv.
-    Enumeration<Collection> names;// TODO move to private
-    std::map<int, std::map<cfg::Symbol, int>> delta;    /// TODO Move to private
 
     Parser() {}
     Parser(cfg::Grammar& grammar) { construct_parser(grammar); }
@@ -138,41 +135,36 @@ public:
         }
     }
 
+    void fill_in_row(int ind, cfg::Grammar& grammar) {
+        // compute shifts and gotos
+        for (const auto& transition: delta[ind]) {
+            const auto& sym = transition.first;
+            int next_state = transition.second;
+            table[ind][sym] = Action(
+                    (grammar.is_variable(sym) ? "goto" : "shift"), next_state);
+        }
+
+        // compute reductions and accepts
+        for (auto item: names.value(ind)) {
+            if (!item.is_reduce()) {
+                continue;
+            }
+            if (item.lhs == grammar.start && item.after.empty() 
+                    && item.lookahead.empty()) {
+                table[ind][item.lookahead] = Action("accept", 0);
+            } else {
+                // regular reduction
+                table[ind][item.lookahead] = Action("reduce", item.rule(grammar));
+            }
+        }
+    }
+
     void construct_parser(cfg::Grammar& grammar) {
         construct_automaton(grammar);
         table.clear();
-        for (const auto& transitions: delta) {
-            int pname = transitions.first;
-            for (const auto& pair: transitions.second) {
-                const cfg::Symbol& sym = pair.first;
-                int qname = pair.second;
 
-                // compute reduce actions
-                // TODO detect shift/reduce and reduce/reduce conflicts
-                for (const auto& name_pair: names) {
-                    // go through each item in the state
-                    const auto& items = name_pair.second;
-                    for (auto item: items) {
-                        if (!item.is_reduce()) {
-                            continue;
-                        }
-                        if (item.lhs == grammar.start && item.lookahead.empty()
-                                && item.after.empty()) {
-                            table[pname][sym] = Action("accept", qname);
-                        } else {
-                            // regular reduce
-                            table[pname][item.lookahead] = Action("reduce", item.rule(grammar));
-                        }
-                    }
-                }
-
-                if (grammar.is_terminal(sym)) {
-                    table[pname][sym] = Action("shift", qname);
-                } else if (grammar.is_variable(sym)) {
-                    // compute goto first
-                    table[pname][sym] = Action("goto", qname);
-                }
-            }
+        for (const auto& state: names) {
+            fill_in_row(state.first, grammar);
         }
     }
 };
@@ -237,77 +229,5 @@ transition(cfg::Grammar& grammar, const Collection& state)
     }
     return transitions;
 }
-
-
-////
-void print_item(const Item& item)
-{
-    std::cout << "{" << item.lhs << " -> ";
-    for (const auto& sym: item.before) {
-        std::cout << sym << ' ';
-    }
-    std::cout << ".";
-    for (const auto& sym: item.after) {
-        std::cout << sym << ' ';
-    }
-    std::cout << ", " << item.lookahead << "}" << std::endl;
-}
-
-void print_state(const Collection& state)
-{
-    for (const auto& item: state) {
-        print_item(item);
-    }
-}
-
-void print_sentence(const cfg::Sentence& sent)
-{
-    for (const auto& sym: sent) {
-        std::cout << sym << ' ';
-    }
-    std::cout << std::endl;
-}
-
-void print_collections(const Parser& parser)
-{
-    std::cout << "Parser states" << std::endl;
-    for (const auto& state: parser.names) {
-        std::cout << state.first << std::endl;
-        print_state(state.second);
-        std::cout << std::endl;
-    }
-    std::cout << std::endl;
-}
-
-void print_automaton(const Parser& parser)
-{
-    std::cout << "Parser automaton" << std::endl;
-    const std::map<int, std::map<cfg::Symbol, int>>& delta = parser.delta;
-
-    for (const auto &transitions: delta) {
-        for (const auto& sym: transitions.second) {
-            std::cout << "(" << transitions.first << ", " << sym.first 
-                << ") = " << sym.second << std::endl;
-        }
-    }
-    std::cout << std::endl;
-}
-
-void print_table(const Parser& parser)
-{
-    std::cout << "Parser table" << std::endl;
-    for (const auto& p: parser.table) {
-        for (const auto& q: p.second) {
-            std::cout << "(" << p.first << ", ";
-            std::cout << q.first << ") = "
-                << q.second.first << ' ' << q.second.second
-                << std::endl;
-        }
-    }
-    std::cout << std::endl;
-}
-
-////////////
-/////
 
 } // end namespace

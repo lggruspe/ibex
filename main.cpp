@@ -1,5 +1,6 @@
 #include "grammar.h"
 #include "lr1.h"
+#include "print.h"
 #include <iostream>
 
 /*0 goal -> list
@@ -27,7 +28,7 @@ int main()
 
     lr1::Parser parser(grammar);
 
-    print_automaton(parser);
-    print_collections(parser);
-    print_table(parser);
+    lr1::print_automaton(parser);
+    lr1::print_collections(parser);
+    lr1::print_table(parser);
 }
