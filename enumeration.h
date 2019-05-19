@@ -72,4 +72,12 @@ public:
         return std::find_if(indices.begin(), indices.end(),
                 PredicateWrapper(pred));
     }
+
+    bool has_value(const T& val) const {
+        return indices.find(val) != indices.end();
+    }
+
+    bool has_index(int ind) const {
+        return values.find(ind) != values.end();
+    }
 };

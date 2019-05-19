@@ -1,5 +1,5 @@
 #pragma once
-#include "bimap.h"
+#include "enumeration.h"
 #include "grammar.h"
 #include <algorithm>
 #include <map>
@@ -7,7 +7,7 @@
 #include <utility>
 #include <vector>
 
-#include <iostream> //////////////
+#include <iostream>//////////
 
 namespace lr1
 {
@@ -56,13 +56,18 @@ public:
         return after.empty();
     }
 
-    int rule_number(const cfg::Grammar& grammar) const {
+    int rule(cfg::Grammar& grammar) {
         cfg::Sentence rhs = before;
         std::copy(after.begin(), after.end(), std::back_inserter(rhs));
-        cfg::Rule rule = cfg::Rule(lhs, rhs);
-        return grammar.rules.index(Rhs(lhs, rhs));
+        return grammar.rule(cfg::Rule(lhs, rhs));
     }
 };
+
+
+void print_state(const std::vector<Item>& state);   ///////
+void print_item(const Item& item);  ////////////////////
+void print_sentence(const cfg::Sentence& sent);/////////////
+
 
 void take_closure(cfg::Grammar&, std::vector<Item>&);
 std::map<cfg::Symbol, std::vector<Item>> 
@@ -73,10 +78,11 @@ typedef std::pair<std::string, int> Action;
 
 class Parser {
     std::map<int, std::map<cfg::Symbol, Action>> table;
-    std::map<int, std::map<cfg::Symbol, int>> delta;
-    Bimap<int, std::vector<Item>> names;    // one-to-one map between int and collections
+    Enumeration<std::vector<Item>> names;
 
 public:
+    std::map<int, std::map<cfg::Symbol, int>> delta;    /// TODO Move to private
+
     Parser() {}
     Parser(cfg::Grammar& grammar) { construct_parser(grammar); }
 
@@ -85,34 +91,33 @@ public:
         // assume the grammar is augmented
         // rebuilds automaton (delta) and names
         delta.clear();
-        names.clear();
+        names.clear();  // acts as history
         std::vector<Item> start = { 
             Item(grammar.start, {""}, 
-            *(grammar.get_substitutes(grammar.start).begin()), "")
+            *(grammar.productions(grammar.start).begin()), "")
         };
         take_closure(grammar, start);
-        names.insert(start);        // acts as history
-        std::vector<int> states = {names.rget(start)};
+        std::vector<int> states = {names.insert(start)};
 
-        std::cout << "foo1" << std::endl;;//////////
+        if (start.size() != 9) {
+            print_state(start);
+            throw std::logic_error("start state should have 9 items");
+        }
+
         while (!states.empty()) {
             int name = states.back();
             states.pop_back();
-            std::vector<Item> state = names.get(name);
+            std::vector<Item> state = names.value(name);
             std::map<cfg::Symbol, std::vector<Item>> transitions = transition(grammar, state);
 
-            std::cout << "foo2" << std::endl;    /////
             for (const auto& p: transitions) {
-                if (!names.rcontains(p.second)) {
+                if (!names.has_value(p.second)) {
                     states.push_back(names.insert(p.second));
                 }
-                int pname = names.rget(p.second);
+                int pname = names.insert(p.second);
                 delta[name][p.first] = pname;
             }
-            std::cout << "bar2" << std::endl;    ///////
         }
-
-        std::cout << "bar1" << std::endl;;////////////
     }
 
     void construct_parser(cfg::Grammar& grammar) {
@@ -136,7 +141,7 @@ public:
                 for (const auto& name_pair: names) {
                     // go through each item in the state
                     const auto& items = name_pair.second;
-                    for (const auto& item: items) {
+                    for (auto item: items) {
                         if (!item.is_reduce()) {
                             continue;
                         }
@@ -145,7 +150,7 @@ public:
                             table[pname][sym] = Action("accept", qname);
                         } else {
                             // regular reduce
-                            table[pname][item.lookahead] = Action("reduce", item.rule_number(grammar));
+                            table[pname][item.lookahead] = Action("reduce", item.rule(grammar));
                         }
                     }
                 }
@@ -156,7 +161,14 @@ public:
 
 void take_closure(cfg::Grammar& grammar, std::vector<Item>& closure)
 {
-    grammar.compute_first_sets();
+    /*
+    std::cout << "____________________________________" << std::endl;////
+    std::cout << "foo1" << std::endl;   ///
+    print_state(closure);               ///
+    std::cout << "bar1" << std::endl;   ///
+    std::cout << std::endl;
+    */
+
     for (const Item& item: closure) {
         if (item.after.empty()) {
             continue;
@@ -165,10 +177,15 @@ void take_closure(cfg::Grammar& grammar, std::vector<Item>& closure)
         if (!grammar.is_variable(variable)) {
             continue;
         }
+
         // expand variable
-        auto subs = grammar.get_substitutes(variable);
+        auto subs = grammar.productions(variable);
         for (const cfg::Sentence& sub: subs) {
-            cfg::Sentence temp(item.after.begin() + 1, item.after.end());
+            cfg::Sentence temp;
+            if (!item.after.empty()) {
+                std::copy(item.after.begin() + 1, item.after.end(), 
+                        std::back_inserter(temp));
+            }
             temp.push_back(item.lookahead);
             auto first_set = grammar.first(temp);
             for (const cfg::Symbol& sym: first_set) {
@@ -177,13 +194,22 @@ void take_closure(cfg::Grammar& grammar, std::vector<Item>& closure)
             }
         }
     }
+
+    /*
+    std::cout << "foo2" << std::endl;   ///
+    print_state(closure);               ///
+    std::cout << "bar2" << std::endl;   ///
+    std::cout << "____________________________________" << std::endl;////
+    */
 }
 
 std::set<cfg::Symbol> leading_symbols(const std::vector<Item>& state)
 {
     std::set<cfg::Symbol> symbols;
     for (const Item& item: state) {
-        symbols.insert(item.after.front());
+        if (!item.after.empty()) {  // TODO check lookahead?
+            symbols.insert(item.after.front());
+        }
     }
     return symbols;
 }
@@ -212,5 +238,36 @@ transition(cfg::Grammar& grammar, const std::vector<Item>& state)
     }
     return transitions;
 }
+
+
+////
+void print_item(const Item& item)
+{
+    std::cout << "{" << item.lhs << " -> ";
+    for (const auto& sym: item.before) {
+        std::cout << sym << ' ';
+    }
+    std::cout << ".";
+    for (const auto& sym: item.after) {
+        std::cout << sym << ' ';
+    }
+    std::cout << ", " << item.lookahead << "}" << std::endl;
+}
+
+void print_state(const std::vector<Item>& state)
+{
+    for (const auto& item: state) {
+        print_item(item);
+    }
+}
+
+void print_sentence(const cfg::Sentence& sent)
+{
+    for (const auto& sym: sent) {
+        std::cout << sym << ' ';
+    }
+    std::cout << std::endl;
+}
+/////
 
 } // end namespace
