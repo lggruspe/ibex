@@ -24,10 +24,6 @@ int main()
     grammar.start = "goal";
     grammar.add_rule("goal", {"list"});
 
-    for (const auto& sym: grammar.first("list")) {
-        std::cout << sym << ' ';
-    }
-    std::cout << std::endl;
     lr1::Parser parser(grammar);
 
     /*
@@ -40,7 +36,6 @@ int main()
     }
     */
 
-    /*
     for (const auto& p: parser.table) {
         std::cout << "(" << p.first << ", ";
         for (const auto& q: p.second) {
@@ -49,25 +44,4 @@ int main()
                 << std::endl;
         }
     }
-    */
-
-
-    /*
-    std::cout << "Parser automaton:" << std::endl;
-    for (const auto& p: parser.delta) {
-        std::cout << "(" << p.first << ", ";
-        for (const auto& q: p.second) {
-            std::cout << q.first << ") = " << q.second
-                << std::endl;
-        }
-    }
-    */
-    /*
-    std::vector<lr1::Item> start = {
-        lr1::Item(grammar.start, {""}, 
-        *(grammar.productions(grammar.start).begin()), "")
-    };
-    */
-
-    //lr1::take_closure(grammar, start);
 }
