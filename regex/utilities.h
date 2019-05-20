@@ -12,7 +12,7 @@ Expr identifier()
 {
     Expr letter = symbol("letter");
     Expr digit = symbol("digit");
-    return letter | closure(letter | digit);
+    return letter + closure(letter | digit);
 }
 
 Expr integer()
