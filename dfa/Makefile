@@ -13,7 +13,7 @@ bin/hopcroft.o:	bin/dfa.o hopcroft.cpp hopcroft.h
 bin/regex.o:	../regex/regex.h ../regex/regex.cpp
 	${CC} ${CFLAGS} -c -o bin/regex.o ../regex/regex.cpp
 
-bin/dfa.o:	dfa.cpp dfa.h bin/nfa.o bimap.h
+bin/dfa.o:	dfa.cpp dfa.h bin/nfa.o enumeration.h
 	${CC} ${CFLAGS} -c -o bin/dfa.o dfa.cpp
 
 bin/nfa.o:	../nfa/nfa.cpp ../nfa/nfa.h bin/regex.o 

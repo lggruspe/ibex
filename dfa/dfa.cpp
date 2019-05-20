@@ -1,5 +1,5 @@
 #include "dfa.h"
-#include "bimap.h"
+#include "enumeration.h"
 #include <algorithm>
 #include <list>
 
@@ -86,11 +86,10 @@ std::set<int> next_state(const Nfa& nfa, const std::set<int>& Q, const std::stri
 Dfa subset_construction(const Nfa& nfa)
 {
     std::map<int, std::set<int> > closures = epsilon_closure(nfa);
-    Bimap names;        // int to std::set<int>
+    Enumeration<std::set<int>> names;
     
     Dfa dfa;
-    dfa.start = dfa.add_state(nfa.start); 
-    names.set(dfa.start, closures[dfa.start]);
+    dfa.start = dfa.add_state(names.insert(closures[nfa.start]));
 
     std::list<int> queue;
     queue.push_back(dfa.start);
@@ -99,23 +98,22 @@ Dfa subset_construction(const Nfa& nfa)
         int Q = queue.front();
         queue.pop_front();
         for (const std::string& a: nfa.symbols) {
-            std::set<int> R = next_state(nfa, names.get(Q), a, closures);
+            std::set<int> R = next_state(nfa, names.value(Q), a, closures);
             if (R.empty()) {
                 continue;
             }
 
-            if (!names.rcontains(R)) {
-                int name = dfa.add_state();
-                names.force_set(name, R);
+            if (!names.has_value(R)) {
+                int name = names.insert(R);
+                dfa.add_state(name);
                 queue.push_back(name);
                 for (auto r: R) {
                     if (r == nfa.accept) {
-                        // add accept state
                         dfa.accept.insert(name);
                     }
                 }
             }
-            dfa.add_transition(Q, a, names.rget(R));
+            dfa.add_transition(Q, a, names.index(R));
         }
     }
     return dfa;
