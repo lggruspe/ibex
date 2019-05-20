@@ -1,40 +1,41 @@
 #pragma once
 #include "regex.h"
-#include <exception>
 
 namespace regex {
-    Re empty()
-    {
-        return symbol("");
-    }
 
-    Re identifier()
-    {
-        Re letter = symbol("letter");
-        Re digit = symbol("digit");
-        return concatenate(letter, closure(alternate(letter, digit)));
-    }
+Expr empty()
+{
+    return symbol("");
+}
 
-    Re integer()
-    {
-        Re zero = symbol("zero");
-        Re nonzero = symbol("nonzero");
-        return alternate(zero, concatenate(nonzero, closure(alternate(zero, nonzero))));
-    }
+Expr identifier()
+{
+    Expr letter = symbol("letter");
+    Expr digit = symbol("digit");
+    return letter | closure(letter | digit);
+}
 
-    Re real()
-    {
-        Re intgr = integer();
-        Re zero = symbol("zero");
-        Re nonzero = symbol("nonzero");
-        Re digit = alternate(zero, nonzero);
+Expr integer()
+{
+    Expr zero = symbol("zero");
+    Expr nonzero = symbol("nonzero");
+    return zero | (nonzero + closure(zero | nonzero));
+}
 
-        Re eps = empty();
-        Re decimal = alternate(eps, concatenate(symbol("."), concatenate(digit, closure(digit))));
-        
-        Re sign = alternate(eps, symbol("sign"));
-        Re exponent = concatenate(symbol("exponent"), concatenate(sign, intgr));
-        exponent = alternate(eps, exponent);
-        return concatenate(intgr, concatenate(decimal, exponent));
-    }
+Expr real()
+{
+    Expr intgr = integer();
+    Expr zero = symbol("zero");
+    Expr nonzero = symbol("nonzero");
+    Expr digit = zero | nonzero;
+
+    Expr eps = empty();
+    Expr decimal = eps | (symbol(".") + digit + closure(digit));
+    
+    Expr sign = eps | symbol("sign");
+    Expr exponent = symbol("exponent") + sign + intgr;
+    exponent = eps | exponent;
+    return intgr + decimal + exponent;
+}
+
 }

@@ -1,56 +1,31 @@
 #pragma once
+#include <iostream>
 #include <memory>
 #include <string>
 
 namespace regex {
 
-    class RegexTree {
-        typedef std::shared_ptr<RegexTree> Re;
-    public:
-        std::string value;
-        Re lhs, rhs;
-        RegexTree(const std::string& symbol="", Re lhs=nullptr, Re rhs=nullptr)
-        {
-            this->value = symbol;
-            this->lhs = lhs;
-            this->rhs = rhs;
-        }
-    };
-
-    typedef std::shared_ptr<RegexTree> Re;
-
-    Re alternate(Re a, Re b)
+class Tree {
+    typedef std::shared_ptr<Tree> Expr;
+public:
+    std::string value;
+    Expr lhs, rhs;
+    Tree(const std::string& symbol="", Expr lhs=nullptr, Expr rhs=nullptr)
     {
-        return std::make_shared<RegexTree>("|", a, b);
+        this->value = symbol;
+        this->lhs = lhs;
+        this->rhs = rhs;
     }
+};
 
-    Re concatenate(Re a, Re b)
-    {
-        return std::make_shared<RegexTree>("+", a, b);
-    }
+typedef std::shared_ptr<Tree> Expr;
 
-    Re closure(Re a)
-    {
-        return std::make_shared<RegexTree>("*", a);
-    }
+Expr operator|(Expr, Expr);
+Expr operator+(Expr, Expr);
+Expr closure(Expr);
+Expr symbol(const std::string&);
+std::ostream& operator<<(std::ostream&, std::weak_ptr<Tree>);
 
-    Re symbol(const std::string& s)
-    {
-        return std::make_shared<RegexTree>(s);
-    }
+std::string to_string(std::weak_ptr<Tree>);
 
-    std::string tostring(std::weak_ptr<RegexTree> a)
-    {
-        if (a.expired()) {
-            return "";
-        }
-        auto sp = a.lock();
-        if (sp->lhs == nullptr) {
-            return sp->value;
-        }
-        if (sp->rhs == nullptr) {
-            return "(" + sp->value + ", " + tostring(sp->lhs) + ")";
-        }
-        return "(" + sp->value + ", " + tostring(sp->lhs) + ", " + tostring(sp->rhs) + ")";
-    }
-}
+} // end namespace

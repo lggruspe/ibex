@@ -1,3 +1,5 @@
 compile
 *.swp
 *.out
+bin
+build
