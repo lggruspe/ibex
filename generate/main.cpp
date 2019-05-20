@@ -1,12 +1,10 @@
 #include "generate.h"
 #include "generate_category.h"
-#include "../dfa/dfa.h"
-#include "../regex/utilities.h"
-#include "../regex/regex.h"
-#include "../nfa/nfa.h"
-#include "../nfa/thompson.h"
-#include "../dfa/hopcroft.h"
-
+#include "dfa.h"
+#include "utilities.h"
+#include "regex.h"
+#include "nfa.h"
+#include "hopcroft.h"
 #include <fstream>
 
 using namespace automata;
@@ -18,22 +16,19 @@ int main(int argc, char **argv)
         return 1;
     }
 
-    regex::Re re = regex::real();
+    regex::Expr re = regex::real();
     Nfa nfa = thompson(re);
     Dfa dfa = minimize(subset_construction(nfa));
     
-    std::ofstream out;
-    out.open(argv[1]);
-
+    std::ofstream out(argv[1]);
     generate(out, "scanner", dfa);
     extra(out, "scanner");
     out.close();
 
-
     std::map<std::string, std::string> categories;
     /*
     categories["letter"] = "_abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    categories["digit"] = "1234567890";     // TODO do this with regex (regex.categories() to get table)
+    categories["digit"] = "1234567890";
     */
     categories["zero"] = "0";
     categories["nonzero"] = "123456789";

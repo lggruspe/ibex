@@ -1,5 +1,5 @@
 #pragma once
-#include "../dfa/dfa.h"
+#include "dfa.h"
 #include <fstream>
 #include <iostream>
 #include <map>
