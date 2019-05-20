@@ -5,87 +5,90 @@
 #include <set>
 #include <string>
 
-namespace automata {
-    int dfa_transition(const Dfa& dfa, int q, const std::string& a)
-    {
-      // -1 means delta(q, a) dne
-      auto it = dfa.delta.find(q);
-      if (it != dfa.delta.end()) {
+namespace automata 
+{
+
+int dfa_transition(const Dfa& dfa, int q, const std::string& a)
+{
+    // -1 means delta(q, a) dne
+    auto it = dfa.delta.find(q);
+    if (it != dfa.delta.end()) {
         auto jt = it->second.find(a);
         if (jt != it->second.end()) {
-          return jt->second;
+            return jt->second;
         }
-      }
-      return -1;
     }
+    return -1;
+}
 
-    std::list<std::set<int> >::iterator split(const Dfa& dfa,
+std::list<std::set<int> >::iterator split(const Dfa& dfa,
         std::list<std::set<int> >::iterator it, std::list<std::set<int> >& partition, 
         const std::string& a)
-    {
-      int q = *(it->begin());
-      std::set<int> eq, neq;
-      for (auto r: *it) {
+{
+    int q = *(it->begin());
+    std::set<int> eq, neq;
+    for (auto r: *it) {
         if (dfa_transition(dfa, q, a) == dfa_transition(dfa, r, a)) {
-          eq.insert(r);
+            eq.insert(r);
         } else {
-          neq.insert(r);
+            neq.insert(r);
         }
-      }
-
-      if (neq.empty()) {
-        return std::next(it);
-      }
-
-      it = partition.erase(it);
-      partition.push_back(eq);
-      partition.push_back(neq);
-      return it;
     }
 
-    Dfa minimize(const Dfa& dfa)
-    {
-      std::list<std::set<int> > partition;
-      std::set<int> nonaccept;
-      for (auto it = dfa.delta.begin(); it != dfa.delta.end(); ++it) {
-        if (dfa.accept.find(it->first) == dfa.accept.end()) {
-          nonaccept.insert(it->first);
-        }
-      }
-      partition.push_back(dfa.accept);
-      partition.push_back(nonaccept);
+    if (neq.empty()) {
+        return std::next(it);
+    }
 
-      for (auto a: dfa.symbols) {
+    it = partition.erase(it);
+    partition.push_back(eq);
+    partition.push_back(neq);
+    return it;
+}
+
+Dfa minimize(const Dfa& dfa)
+{
+    std::list<std::set<int> > partition;
+    std::set<int> nonaccept;
+    for (auto it = dfa.delta.begin(); it != dfa.delta.end(); ++it) {
+        if (dfa.accept.find(it->first) == dfa.accept.end()) {
+            nonaccept.insert(it->first);
+        }
+    }
+    partition.push_back(dfa.accept);
+    partition.push_back(nonaccept);
+
+    for (auto a: dfa.symbols) {
         auto it = partition.begin();
         while (it != partition.end()) {
-          it = split(dfa, it, partition, a);
+            it = split(dfa, it, partition, a);
         }
-      }
+    }
 
-      // construct M
+    // construct M
 
-      Dfa M;
-      std::map<int, int> reps;    // state classes
-      for (auto it = partition.begin(); it != partition.end(); ++it) {
+    Dfa M;
+    std::map<int, int> reps;        // state classes
+    for (auto it = partition.begin(); it != partition.end(); ++it) {
         int rep = M.add_state();
         for (auto q: *it) {
-          reps[q] = rep;
+            reps[q] = rep;
         }
-      }
+    }
 
-      M.start = reps[dfa.start];
-      for (auto f: dfa.accept) {
+    M.start = reps[dfa.start];
+    for (auto f: dfa.accept) {
         M.accept.insert(reps[f]);
-      }
+    }
 
-      for (auto it = dfa.delta.begin(); it != dfa.delta.end(); ++it) {
+    for (auto it = dfa.delta.begin(); it != dfa.delta.end(); ++it) {
         int q = reps[it->first];
         for (auto jt = it->second.begin(); jt != it->second.end(); ++jt) {
-          int r = reps[jt->second];
-          M.add_transition(q, jt->first, r);
+            int r = reps[jt->second];
+            M.add_transition(q, jt->first, r);
         }
-      }
-
-      return M;
     }
+
+    return M;
 }
+
+} // end namespace
