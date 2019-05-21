@@ -1,3 +1,4 @@
+#include "partition.h"
 #include "hopcroft.h"
 #include <iterator>
 #include <list>
@@ -21,73 +22,51 @@ int dfa_transition(const Dfa& dfa, int q, const std::string& a)
     return -1;
 }
 
-std::list<std::set<int> >::iterator split(const Dfa& dfa,
-        std::list<std::set<int> >::iterator it, std::list<std::set<int> >& partition, 
-        const std::string& a)
-{
-    int q = *(it->begin());
-    std::set<int> eq, neq;
-    for (auto r: *it) {
-        if (dfa_transition(dfa, q, a) == dfa_transition(dfa, r, a)) {
-            eq.insert(r);
-        } else {
-            neq.insert(r);
-        }
-    }
-
-    if (neq.empty()) {
-        return std::next(it);
-    }
-
-    it = partition.erase(it);
-    partition.push_back(eq);
-    partition.push_back(neq);
-    return it;
-}
-
 Dfa minimize(const Dfa& dfa)
 {
-    std::list<std::set<int> > partition;
-    std::set<int> nonaccept;
-    for (auto it = dfa.delta.begin(); it != dfa.delta.end(); ++it) {
-        if (dfa.accept.find(it->first) == dfa.accept.end()) {
-            nonaccept.insert(it->first);
-        }
-    }
-    partition.push_back(dfa.accept);
-    partition.push_back(nonaccept);
+    // get dfa states (keys of dfa.delta)
+    std::vector<int> states;
+    std::transform(dfa.delta.begin(), dfa.delta.end(),
+            std::back_inserter(states),
+            [](const std::pair<int, std::map<std::string, int>>& pair) {
+                return pair.first;
+            });
 
+    // split partition between accept and nonaccept states
+    Partition<int> partition(states.begin(), states.end());
+    partition.split_by_set(dfa.accept);
+    // split according to behavior on a (by pairwise comparisons)
+    
     for (auto a: dfa.symbols) {
-        auto it = partition.begin();
-        while (it != partition.end()) {
-            it = split(dfa, it, partition, a);
-        }
+        partition.split_by_comparison([&dfa, &a, &partition](const int& p, const int& q) {
+                    int pr = dfa_transition(dfa, p, a);
+                    int qr = dfa_transition(dfa, q, a);
+                    if (pr*qr < 0) {
+                        return false;
+                    }
+                    if (pr < 0) {
+                        return true;
+                    }
+                    return partition.index(pr) == partition.index(qr);
+                });
     }
 
-    // construct M
-
+    // set start and accept states
     Dfa M;
-    std::map<int, int> reps;        // state classes
-    for (auto it = partition.begin(); it != partition.end(); ++it) {
-        int rep = M.add_state();
-        for (auto q: *it) {
-            reps[q] = rep;
-        }
-    }
-
-    M.start = reps[dfa.start];
+    M.start = partition.index(dfa.start);
     for (auto f: dfa.accept) {
-        M.accept.insert(reps[f]);
+        M.accept.insert(partition.index(f));
     }
 
-    for (auto it = dfa.delta.begin(); it != dfa.delta.end(); ++it) {
-        int q = reps[it->first];
-        for (auto jt = it->second.begin(); jt != it->second.end(); ++jt) {
-            int r = reps[jt->second];
-            M.add_transition(q, jt->first, r);
+    // set transitions
+    for (const auto& trans: dfa.delta) {
+        int q = partition.index(trans.first);
+        for (const auto& tran: trans.second) {
+            const auto& a = tran.first;
+            int r = partition.index(tran.second);
+            M.add_transition(q, a, r);
         }
     }
-
     return M;
 }
 

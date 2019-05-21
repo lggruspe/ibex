@@ -1,5 +1,5 @@
-CC = g++
-CFLAGS = -g -Wall -I ../dfa -I ../regex -I ../nfa -I .
+CC = clang++-4.0
+CFLAGS = -g -Wall -std=c++1z -I ../dfa -I ../regex -I ../nfa -I .
 
 bin/main:	bin/main.o bin/generate.o bin/dfa.o bin/regex.o bin/nfa.o bin/hopcroft.o
 	${CC} ${CFLAGS} -o bin/main bin/main.o bin/generate.o bin/dfa.o bin/regex.o bin/nfa.o bin/hopcroft.o
