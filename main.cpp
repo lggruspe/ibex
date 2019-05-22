@@ -1,7 +1,9 @@
 #include "grammar.h"
-#include "lr1.h"
-#include "print.h"
+//#include "lr1.h"
+//#include "print.h"
+#include <memory>
 #include <iostream>
+#include <string>
 
 /*0 goal -> list
  *1 list -> list pair
@@ -12,7 +14,7 @@
 
 int main()
 {
-    cfg::Grammar grammar;
+    cfg::Grammar<std::string> grammar;
     grammar.add_variable("goal");
     grammar.add_variable("list");
     grammar.add_variable("pair");
@@ -24,11 +26,12 @@ int main()
     grammar.add_rule("list", {"pair"});
     grammar.add_rule("pair", {"(", "pair", ")"});
     grammar.add_rule("pair", {"(", ")"});
-    grammar.start = "goal";
 
+    /*
     lr1::Parser parser(grammar);
 
     lr1::print_automaton(parser);
     lr1::print_collections(parser);
     lr1::print_table(parser);
+    */
 }
