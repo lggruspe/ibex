@@ -142,16 +142,15 @@ public:
             compute_first_sets();
         }
         return unchecked_first(sent);
+    }
 
-
+    std::set<Symbol> first(const Symbol& sym)
+    {
+        if (!first_sets_valid) {
+            compute_first_sets();
         }
-        std::set<Symbol> first(const Symbol& sym)
-        {
-            if (!first_sets_valid) {
-                compute_first_sets();
-            }
-            std::set<Symbol> res = first_sets.at(sym);
-            return res;
+        std::set<Symbol> res = first_sets.at(sym);
+        return res;
     }
 
     int rule(const Rule& rule) { return rules.index(rule); }
