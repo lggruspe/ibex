@@ -1,4 +1,4 @@
-CC = g++ -I .
+CC = clang++-4.0 -I .
 CFLAGS = -g -Wall -std=c++1z -O0
 
 main:	build/main.o

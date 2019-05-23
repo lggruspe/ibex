@@ -3,6 +3,8 @@
 #include "lr1/item.h"
 #include "lr1/collection.h"
 #include "print.h"
+#include <algorithm>
+#include <cctype>
 #include <memory>
 #include <iostream>
 #include <string>
@@ -13,6 +15,23 @@
  *3 pair -> ( pair )
  *4 pair -> ()
  */
+
+class Scanner {
+    std::string stream;
+public:
+    Scanner(const char* stream) : stream(stream) {}
+    std::string operator()() {
+        auto it = std::find_if(stream.begin(), stream.end(), [](char c) {
+                    return !isspace(c);
+                });
+        auto jt = std::find_if(it, stream.end(), [](char c) {
+                    return isspace(c);
+                });
+        std::string ret(it, jt);
+        stream.erase(stream.begin(), jt);
+        return ret;
+    }
+};
 
 int main()
 {
@@ -41,10 +60,15 @@ int main()
     coll.items.insert(item);
     coll.closure(grammar);
 
-    lr1::Parser parser(grammar);
+    lr1::Parser<std::string> parser(grammar);
     parser.construct("goal");
 
+    /*
     lr1::print_automaton(parser);
     lr1::print_collections(parser);
     lr1::print_table(parser);
+    */
+
+    bool passed = parser.parse(Scanner("( ( ( ) ) ) ( )"));
+    std::cout << passed << std::endl;
 }

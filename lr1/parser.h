@@ -46,7 +46,7 @@ class Parser {
                 table[ind][item.lookahead] = Action('a', 0);
             } else {
                 // regular reduction
-                table[ind][item.lookahead] = Action('r', grammar.rule(item.rule()));
+                table[ind][item.lookahead] = Action('r', grammar.rules.index(item.rule()));
             }
         }
     }
@@ -89,11 +89,47 @@ public:
 
     void construct(const Symbol& start) 
     {
+        if (!grammar.is_variable(start)) {
+            throw "given start symbol is not a variable";
+        }
         construct_automaton(start);
         table.clear();
         for (const auto& state: collections) {
             fill_in_row(state.first, start);
         }
+    }
+
+    template <class Scanner>
+    // a scanner is a functor/function that returns a new symbol
+    // everytime it is called
+    bool parse(Scanner scan)
+    {
+        // assumes 0 is the start state
+        std::vector<int> states = {0};
+        std::vector<Symbol> symbols;
+        Symbol lookahead = scan();
+        for (;;) {
+            int state = states.back();
+            Action action = table[state][lookahead];
+            if (action.first == 'a') {
+                return true;
+            } else if (action.first == 's') {
+                states.push_back(action.second);
+                symbols.push_back(lookahead);
+                lookahead = scan();
+            } else if (action.first == 'r') {
+                auto rule = grammar.rules.value(action.second);
+                for (auto i = 0; i < rule.second.size(); ++i) {
+                    states.pop_back();
+                    symbols.pop_back();
+                }
+                symbols.push_back(rule.first);
+                states.push_back(table[states.back()][rule.first].second);
+            } else {
+                return false;
+            }
+        }
+
     }
 };
 

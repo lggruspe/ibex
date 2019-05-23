@@ -16,7 +16,6 @@ class Grammar {
 
     std::set<Symbol> variables;
     std::set<Symbol> terminals;
-    Enumeration<Rule> rules;
     std::map<Symbol,std::set<Symbol>> first_sets;
     bool first_sets_valid;
 
@@ -69,6 +68,7 @@ class Grammar {
     }
 
 public:
+    Enumeration<Rule> rules;
     Grammar(): first_sets_valid(false){}
     void add_terminal(const Symbol& sym) 
     {
