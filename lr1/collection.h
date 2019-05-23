@@ -39,8 +39,7 @@ struct Collection {
                 auto first_set = grammar.first(temp);
                 for (const auto& sym: first_set) {
                     Item<Symbol> new_item = Item<Symbol>(variable, Sentence(), sub, sym);
-                    if (items.find(new_item) == items.end()) {
-                        items.insert(new_item);
+                    if (items.insert(new_item).second) {
                         queue.push_back(new_item);
                     } 
                 }
@@ -83,7 +82,7 @@ Collection<Symbol>::transition(cfg::Grammar<Symbol>& grammar)
     std::set<Symbol> symbols = transition_symbols(*this);
     for (const Symbol& sym: symbols) {
         for (const auto& item: items) {
-            if (!item.is_reduce()) {
+            if (item.symbol_after_dot() == sym) {
                 transitions[sym].items.insert(item.shifted());
             }
         }

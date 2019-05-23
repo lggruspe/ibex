@@ -1,11 +1,13 @@
 #pragma once
-#include "lr1.h"
+#include "lr1/item.h"
+#include "lr1/parser.h"
 #include <iostream>
 
 namespace lr1
 {
 
-void print_item(const Item& item)
+template <class Symbol>
+void print_item(const Item<Symbol>& item)
 {
     std::cout << "{" << item.lhs << " -> ";
     for (const auto& sym: item.before) {
@@ -18,25 +20,19 @@ void print_item(const Item& item)
     std::cout << ", " << item.lookahead << "}" << std::endl;
 }
 
-void print_state(const Collection& state)
+template <class Symbol>
+void print_state(const Collection<Symbol>& state)
 {
-    for (const auto& item: state) {
+    for (const auto& item: state.items) {
         print_item(item);
     }
 }
 
-void print_sentence(const cfg::Sentence& sent)
-{
-    for (const auto& sym: sent) {
-        std::cout << sym << ' ';
-    }
-    std::cout << std::endl;
-}
-
-void print_collections(const Parser& parser)
+template <class Symbol>
+void print_collections(const Parser<Symbol>& parser)
 {
     std::cout << "Parser states" << std::endl;
-    for (const auto& state: parser.names) {
+    for (const auto& state: parser.collections) {
         std::cout << state.first << std::endl;
         print_state(state.second);
         std::cout << std::endl;
@@ -44,10 +40,11 @@ void print_collections(const Parser& parser)
     std::cout << std::endl;
 }
 
-void print_automaton(const Parser& parser)
+template <class Symbol>
+void print_automaton(const Parser<Symbol>& parser)
 {
     std::cout << "Parser automaton" << std::endl;
-    const std::map<int, std::map<cfg::Symbol, int>>& delta = parser.delta;
+    const std::map<int, std::map<Symbol, int>>& delta = parser.delta;
 
     for (const auto &transitions: delta) {
         for (const auto& sym: transitions.second) {
@@ -58,7 +55,8 @@ void print_automaton(const Parser& parser)
     std::cout << std::endl;
 }
 
-void print_table(const Parser& parser)
+template <class Symbol>
+void print_table(const Parser<Symbol>& parser)
 {
     std::cout << "Parser table" << std::endl;
     for (const auto& p: parser.table) {

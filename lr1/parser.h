@@ -20,11 +20,12 @@ class Parser {
     std::map<int, std::map<Symbol, int>> delta;
     cfg::Grammar<Symbol> grammar;
 
-    /*
-    friend void print_collections(const Parser<Symbol>&);
-    friend void print_automaton(const Parser<Symbol>&);
-    friend void print_table(const Parser<Symbol>&);
-    */
+    template<class T>
+    friend void print_collections(const Parser<T>&);
+    template<class T>
+    friend void print_automaton(const Parser<T>&);
+    template<class T>
+    friend void print_table(const Parser<T>&);
 
     void fill_in_row(int ind, const Symbol& start) 
     {

@@ -2,7 +2,7 @@
 #include "lr1/parser.h"
 #include "lr1/item.h"
 #include "lr1/collection.h"
-//#include "print.h"
+#include "print.h"
 #include <memory>
 #include <iostream>
 #include <string>
@@ -41,27 +41,10 @@ int main()
     coll.items.insert(item);
     coll.closure(grammar);
 
-    for (const auto& item: coll.items) {
-        std::cout << "{" << item.lhs << " -> ";
-        for (const auto& sym: item.before) {
-            std::cout << sym << ' ';
-        }
-        std::cout << " .";
-        for (const auto& sym: item.after) {
-            std::cout << ' ' << sym;
-        }
-        std::cout << ", " << item.lookahead << "}" << std::endl;
-    }
-    std::cout << std::endl;
-
-    /*
     lr1::Parser parser(grammar);
     parser.construct("goal");
-    */
 
-    /*
     lr1::print_automaton(parser);
     lr1::print_collections(parser);
     lr1::print_table(parser);
-    */
 }
