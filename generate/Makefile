@@ -1,14 +1,14 @@
 CC = clang++-4.0
-CFLAGS = -g -Wall -std=c++1z -I ../dfa -I ../regex -I ../nfa -I .
+CFLAGS = -g -Wall -std=c++1z -I ../dfa -I ../regex -I ../nfa -I . -I ./generator
 
 bin/main:	bin/main.o bin/generate.o bin/dfa.o bin/regex.o bin/nfa.o bin/hopcroft.o
 	${CC} ${CFLAGS} -o bin/main bin/main.o bin/generate.o bin/dfa.o bin/regex.o bin/nfa.o bin/hopcroft.o
 
-bin/main.o:	main.cpp generate_category.h ../regex/utilities.h
+bin/main.o:	main.cpp generator/generate_category.h ../regex/utilities.h
 	${CC} ${CFLAGS} -c -o bin/main.o main.cpp
 
-bin/generate.o:	generate.h generate.cpp
-	${CC} ${CFLAGS} -c -o bin/generate.o generate.cpp
+bin/generate.o:	generator/generate.h generator/generate.cpp
+	${CC} ${CFLAGS} -c -o bin/generate.o generator/generate.cpp
 
 bin/dfa.o: ../dfa/dfa.cpp ../dfa/dfa.h
 	${CC} ${CFLAGS} -c -o bin/dfa.o ../dfa/dfa.cpp
