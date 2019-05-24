@@ -1,9 +1,13 @@
-#include "foobar.h"
-#include <iostream>
+#include "test.h"
 
 int main()
 {
-    floatScanner scan(std::cin);
-    auto res = scan();
-    std::cout << res.first << ' ' << res.second << std::endl;
+    ScannerCollection scanners;
+    integerScanner inscanner("integer");
+    floatScanner flscanner("float");
+    identifierScanner idscanner("identifier");
+    scanners.add_scanner(flscanner);
+    scanners.add_scanner(inscanner);
+    scanners.add_scanner(idscanner);
+    scanners.scan();
 }

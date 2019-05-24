@@ -24,26 +24,12 @@ void generate_includes(std::ostream& out, bool header=false)
 )VOGON" << std::endl;
 }
 
-void generate_attributes(std::ostream& out, std::string::size_type indent=4)
-{
-    indented(out, "std::istream* in;", indent);
-}
 
-void generate_constructor(std::ostream& out, const std::string& token,
-        std::string::size_type indent=4)
+void generate_base_scanner_class(std::ostream& out, std::string::size_type indent=4)
 {
-    indented(out, token + "Scanner(std::istream& in)", indent);
-    indented(out, "{", indent);
-    indented(out, "this->in = &in;", 2*indent);
-    indented(out, "}", indent);
-    out << std::endl;
-}
-
-void generate_categories(std::ostream& out,
-        const std::map<std::string, std::string>& categories,
-        std::string::size_type indent=4)
-{
-    indented(out, "bool contains(const char *s, char c)", indent);
+    out << "class Scanner {" << std::endl;
+    out << "protected:" << std::endl;
+    indented(out, "bool contains(const char* s, char c)", indent);
     indented(out, "{", indent);
     indented(out, "auto it = s;", 2*indent);
     indented(out, "while (*it && *it != c) {", 2*indent);
@@ -53,6 +39,66 @@ void generate_categories(std::ostream& out,
     indented(out, "}", indent);
     out << std::endl;
 
+    out << "public:" << std::endl;
+    indented(out, "std::string token;", indent);
+    indented(out, "Scanner(const std::string& token) : token(token) {}", indent);
+    indented(out, "virtual std::string operator()(std::istream&) = 0;", indent);
+    out << "};\n" << std::endl;
+}
+
+void generate_collection_class(std::ostream& out, std::string::size_type indent=4)
+{
+    out << "class ScannerCollection {" << std::endl;
+    indented(out, "std::vector<Scanner*> scanners;", indent);
+    indented(out, "std::istream* in;", indent);
+
+    out << "\npublic:" << std::endl;
+    indented(out, "ScannerCollection(std::istream& in=std::cin) : in(&in) {};", indent);
+
+    // void add_scanner(Scanner&)
+    indented(out, "void add_scanner(Scanner& scanner)", indent);
+    indented(out, "{", indent);
+    indented(out, "scanners.push_back(&scanner);", 2*indent);
+    indented(out, "}", indent);
+    out << std::endl;
+
+    // operator()
+    indented(out, "std::pair<std::string, std::string> operator()()", indent);
+    indented(out, "{", indent);
+    indented(out, "for (auto& p: scanners) {", 2*indent);
+
+    indented(out, "Scanner& scanner = *p;", 3*indent);
+    indented(out, "std::string lexeme = scanner(*in);", 3*indent);
+    indented(out, "if (!lexeme.empty()) {", 3*indent);
+    indented(out, "return std::pair<std::string, std::string>(scanner.token, lexeme);", 4*indent);
+    indented(out, "}", 3*indent);
+
+    indented(out, "}", 2*indent);
+    indented(out, "throw \"syntax error\";", 2*indent);
+    indented(out, "}", indent);
+    out << std::endl;
+
+    // void scan();
+    indented(out, "void scan()", indent);
+    indented(out, "{", indent);
+    indented(out, "for (;;) {", 2*indent);
+    indented(out, "try {", 3*indent);
+    indented(out, "auto [token, lexeme] = (*this)();", 4*indent);
+    indented(out, "std::cout << \"token: \" << token << std::endl;", 4*indent);
+    indented(out, "std::cout << \"lexeme: \" << lexeme << std::endl;", 4*indent);
+    indented(out, "std::cout << std::endl;", 4*indent);
+    indented(out, "} catch (const char* e) {", 3*indent);
+    indented(out, "in->ignore(1, '\\n');", 4*indent);
+    indented(out, "}", 3*indent);
+    indented(out, "}", 2*indent);
+    indented(out, "}", indent);
+    out << "};\n" << std::endl;
+}
+
+void generate_categories(std::ostream& out,
+        const std::map<std::string, std::string>& categories,
+        std::string::size_type indent=4)
+{
     indented(out, "std::string category(char c)", indent);
     indented(out, "{", indent);
     for (const auto& cat: categories) {
@@ -91,11 +137,10 @@ void generate_scanner_state(std::ostream& out, const automata::Dfa& dfa,
     int state, std::string::size_type indent=4)
 {
     indented(out, std::string("s") + (char)(state + '0') + ":", indent);
-    indented(out, "in->get(c);", 2*indent);
+    indented(out, "in.get(c);", 2*indent);
     indented(out, "lexeme += c;", 2*indent);
     if (dfa.accept.count(state)) {
         indented(out, "checkpoint.clear();", 2*indent);
-        indented(out, "accept = true;", 2*indent);
     }
     indented(out, "checkpoint.push_back(c);", 2*indent);
     indented(out, "cat = category(c);", 2*indent);
@@ -120,7 +165,7 @@ void generate_scanner_rollback(std::ostream& out,
     indented(out, "while (!checkpoint.empty()) {", 2*indent);
     indented(out, "c = checkpoint.back();", 3*indent);
     indented(out, "checkpoint.pop_back();", 3*indent);
-    indented(out, "in->putback(c);", 3*indent);
+    indented(out, "in.putback(c);", 3*indent);
     indented(out, "lexeme.pop_back();", 3*indent);
     indented(out, "}", 2*indent);
 }
@@ -128,34 +173,34 @@ void generate_scanner_rollback(std::ostream& out,
 void generate_scanner(std::ostream& out, const std::string& token,
     const automata::Dfa& dfa, std::string::size_type indent=4)
 {
-    indented(out, "std::pair<std::string, std::string> operator()()", 
-            indent);
+
+    indented(out, "std::string operator()(std::istream& in)", indent);
     indented(out, "{", indent);
 
     indented(out, "char c;", 2*indent);
     indented(out, "std::string cat;", 2*indent);
     indented(out, "std::vector<char> checkpoint;", 2*indent);
     indented(out, "std::string lexeme;", 2*indent);
-    indented(out, "bool accept = false;", 2*indent);
     indented(out, std::string("goto s") + (char)(dfa.start + '0') + ";", 2*indent);
 
     generate_scanner_states(out, dfa, indent);
     generate_scanner_rollback(out, indent);
 
-    indented(out, "return std::pair<std::string, std::string>"
-            "(\"float\", lexeme);", 2*indent);
+    indented(out, "return lexeme;", 2*indent);
     indented(out, "}", indent);
 }
 
-void generate_class(std::ostream& out, const std::string& token, 
+void generate_scanner_class(std::ostream& out, const std::string& token, 
         const automata::Dfa& dfa, 
         const std::map<std::string, std::string>& categories,
         std::string::size_type indent=4)
 {
-    out << "struct " + token + "Scanner {\n";
-    generate_attributes(out, indent);
-    generate_constructor(out, token, indent);
+    out << "class " + token + "Scanner: public Scanner {" << std::endl;
     generate_categories(out, categories, indent);
+
+    out << "public:" << std::endl;
+    indented(out, "using Scanner::Scanner;", indent);
+
     generate_scanner(out, token, dfa, indent);
     out << "};\n" << std::endl;
 }

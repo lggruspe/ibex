@@ -1,11 +1,11 @@
-CC = clang++-4.0
+CC = clang++
 CFLAGS = -g -Wall -std=c++1z -I ../dfa -I ../regex -I ../nfa -I . -I ./generator
 
-test:	bin/test.o bin/generator.o bin/dfa.o bin/regex.o bin/nfa.o bin/hopcroft.o
-	${CC} ${CFLAGS} -o bin/test bin/test.o bin/generator.o bin/dfa.o bin/regex.o bin/nfa.o bin/hopcroft.o
+main:	bin/main.o bin/generator.o bin/dfa.o bin/regex.o bin/nfa.o bin/hopcroft.o
+	${CC} ${CFLAGS} -o bin/main bin/main.o bin/generator.o bin/dfa.o bin/regex.o bin/nfa.o bin/hopcroft.o
 
-bin/test.o:	test.cpp ../regex/utilities.h
-	${CC} ${CFLAGS} -c -o bin/test.o test.cpp
+bin/main.o:	main.cpp ../regex/utilities.h
+	${CC} ${CFLAGS} -c -o bin/main.o main.cpp
 
 bin/generator.o:	generator/generator.h generator/generator.cpp
 	${CC} ${CFLAGS} -c -o bin/generator.o generator/generator.cpp
@@ -24,3 +24,11 @@ bin/hopcroft.o:	../dfa/hopcroft.h ../dfa/hopcroft.cpp
 
 clean:
 	rm bin/*
+
+maketest:	main
+	rm sample/test.h
+	./bin/main >> sample/test.h
+	g++ sample/test.cpp -o bin/test -std=gnu++17
+
+test:	maketest
+	./bin/test
