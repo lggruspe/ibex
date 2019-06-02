@@ -8,6 +8,22 @@
 
 using namespace automata;
 
+Dfa regex_to_dfa(regex::Expr re)
+{
+    Nfa nfa = thompson(re);
+    return minimize(subset_construction(nfa));
+}
+
+void generate_whitespace_scanner()
+{
+    Dfa dfa = regex_to_dfa(regex::whitespace());
+    std::map<std::string, std::string> categories;
+    categories["newline"] = "\\n";  // take note of the double slash
+    categories["space"] = " ";
+    categories["tab"] = "\\t";
+    generate_scanner_class(std::cout, "whitespace", dfa, categories, 4);
+}
+
 void generate_float_scanner()
 {
     regex::Expr re = regex::real();
@@ -52,6 +68,7 @@ int main()
     generate_includes(std::cout, true);
     generate_base_scanner_class(std::cout, 4);
 
+    generate_whitespace_scanner();
     generate_integer_scanner();
     generate_float_scanner();
     generate_identifier_scanner();

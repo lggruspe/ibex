@@ -38,4 +38,9 @@ Expr real()
     return intgr + decimal + exponent;
 }
 
+Expr whitespace()
+{
+    return symbol("newline") | symbol("space") | symbol("tab");
+}
+
 }

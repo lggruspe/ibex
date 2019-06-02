@@ -3,8 +3,16 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include <ios>
+#include <unicode/unistd.h>
+#include <unicode/schriter.h>
+#include <list>
+
+#include <courier-unicode.h>
 
 class Scanner {
+    icu::UnicodeString buffer;
+
 protected:
     bool contains(const char* s, char c)
     {
@@ -15,63 +23,34 @@ protected:
         return *it == c;
     }
 
+    std::string first()
+    {
+        // get first unicode character in buffer, and remove it
+        std::string s;
+        char32_t a = 
+        return s;
+    }
+
+    std::string getchar(std::istream& in)
+    {
+        if (buffer.isEmpty()) {
+            std::string temp;
+            in >> temp;
+
+            icu::UnicodeString unistr(temp.c_str());
+            icu::StringCharacterIterator it(unistr);
+            for (char32_t c = it.first(); c != it.DONE; c = it.next()) {
+                buffer.push_back(c);
+            }
+
+        }
+        return buffer.isEmpty() ? "" : first();
+    }
+
 public:
     std::string token;
     Scanner(const std::string& token) : token(token) {}
     virtual std::string operator()(std::istream&) = 0;
-};
-
-class whitespaceScanner: public Scanner {
-    std::string category(char c)
-    {
-        if (contains("\n", c)) {
-            return "newline";
-        }
-        if (contains(" ", c)) {
-            return "space";
-        }
-        if (contains("\t", c)) {
-            return "tab";
-        }
-        return "other";
-    }
-
-public:
-    using Scanner::Scanner;
-    std::string operator()(std::istream& in)
-    {
-        char c;
-        std::string cat;
-        std::vector<char> checkpoint;
-        std::string lexeme;
-        goto s0;
-    s0:
-        in.get(c);
-        lexeme += c;
-        checkpoint.push_back(c);
-        cat = category(c);
-        if (cat == "newline" || cat == "space" || cat == "tab") {
-            goto s1;
-        }
-        goto se;
-
-    s1:
-        in.get(c);
-        lexeme += c;
-        checkpoint.clear();
-        checkpoint.push_back(c);
-        cat = category(c);
-        goto se;
-
-    se:
-        while (!checkpoint.empty()) {
-            c = checkpoint.back();
-            checkpoint.pop_back();
-            in.putback(c);
-            lexeme.pop_back();
-        }
-        return lexeme;
-    }
 };
 
 class integerScanner: public Scanner {

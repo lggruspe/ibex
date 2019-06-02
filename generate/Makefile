@@ -1,4 +1,4 @@
-CC = clang++
+CC = clang++-4.0
 CFLAGS = -g -Wall -std=c++1z -I ../dfa -I ../regex -I ../nfa -I . -I ./generator
 
 main:	bin/main.o bin/generator.o bin/dfa.o bin/regex.o bin/nfa.o bin/hopcroft.o
@@ -28,7 +28,7 @@ clean:
 maketest:	main
 	rm sample/test.h
 	./bin/main >> sample/test.h
-	g++ sample/test.cpp -o bin/test -std=gnu++17
+	${CC} sample/test.cpp -o bin/test -std=c++1z
 
 test:	maketest
 	./bin/test
