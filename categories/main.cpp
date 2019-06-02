@@ -48,4 +48,9 @@ int main()
     auto Y = symbol('4', '9');
     std::cout << (X | Y)->alphabet << std::endl;
     std::cout << (X | Y) << std::endl;
+
+
+    // for empty transition:
+    auto interval = boost::icl::interval<char>::right_open(0, 0);
+    std::cout << interval << std::endl;
 }

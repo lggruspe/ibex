@@ -3,3 +3,5 @@ compile
 *.out
 bin
 build
+main
+test
