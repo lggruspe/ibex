@@ -1,3 +1,3 @@
 
 test:	test.cpp test.h
-	g++ test.cpp -o test -std=gnu++17
+	clang++-4.0 test.cpp -o test -std=c++1z

@@ -74,7 +74,15 @@ void generate_collection_class(std::ostream& out, std::string::size_type indent=
     indented(out, "}", 3*indent);
 
     indented(out, "}", 2*indent);
-    indented(out, "throw \"syntax error\";", 2*indent);
+    indented(out, "if (in->eof()) {", 2*indent);
+
+    indented(out, "return std::pair<std::string, std::string>(\"\", \"\");", 3*indent);
+
+    indented(out, "}", 2*indent);
+    indented(out, "char c;", 2*indent);
+    indented(out, "in->get(c);", 2*indent);
+    indented(out, "return std::pair<std::string, std::string>(\"other\", std::string(1, c));", 2*indent);
+
     indented(out, "}", indent);
     out << std::endl;
 

@@ -24,14 +24,8 @@ public:
 class whitespaceScanner: public Scanner {
     std::string category(char c)
     {
-        if (contains("\n", c)) {
-            return "newline";
-        }
-        if (contains(" ", c)) {
-            return "space";
-        }
-        if (contains("\t", c)) {
-            return "tab";
+        if (contains("\n \t", c)) {
+            return "whitespace";
         }
         return "other";
     }
@@ -50,7 +44,7 @@ public:
         lexeme += c;
         checkpoint.push_back(c);
         cat = category(c);
-        if (cat == "newline" || cat == "space" || cat == "tab") {
+        if (cat == "whitespace") {
             goto s1;
         }
         goto se;
@@ -368,7 +362,12 @@ public:
                 return std::pair<std::string, std::string>(scanner.token, lexeme);
             }
         }
-        throw "syntax error";
+        if (in->eof()) {
+            return std::pair<std::string, std::string>("", "");
+        }
+        char c;
+        in->get(c);
+        return std::pair<std::string, std::string>("other", std::string(1, c));
     }
 
     void scan()

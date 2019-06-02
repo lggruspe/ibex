@@ -40,7 +40,7 @@ Expr real()
 
 Expr whitespace()
 {
-    return symbol("newline") | symbol("space") | symbol("tab");
+    return symbol("whitespace");
 }
 
 }

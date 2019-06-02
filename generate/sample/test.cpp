@@ -6,7 +6,7 @@ int main()
     integerScanner inscanner("integer");
     floatScanner flscanner("float");
     identifierScanner idscanner("identifier");
-    whitespaceScanner wsscanner("whitespace");
+    whitespaceScanner wsscanner("");
     scanners.add_scanner(flscanner);
     scanners.add_scanner(inscanner);
     scanners.add_scanner(idscanner);
