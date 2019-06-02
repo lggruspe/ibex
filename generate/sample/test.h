@@ -359,7 +359,10 @@ public:
             Scanner& scanner = *p;
             std::string lexeme = scanner(*in);
             if (!lexeme.empty()) {
-                return std::pair<std::string, std::string>(scanner.token, lexeme);
+                if (!scanner.token.empty()) {
+                    return std::pair<std::string, std::string>(scanner.token, lexeme);
+                }
+                return (*this)();
             }
         }
         if (in->eof()) {

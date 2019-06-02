@@ -70,7 +70,12 @@ void generate_collection_class(std::ostream& out, std::string::size_type indent=
     indented(out, "Scanner& scanner = *p;", 3*indent);
     indented(out, "std::string lexeme = scanner(*in);", 3*indent);
     indented(out, "if (!lexeme.empty()) {", 3*indent);
-    indented(out, "return std::pair<std::string, std::string>(scanner.token, lexeme);", 4*indent);
+
+    indented(out, "if (!scanner.token.empty()) {", 4*indent);
+    indented(out, "return std::pair<std::string, std::string>(scanner.token, lexeme);", 5*indent);
+    indented(out, "}", 4*indent);
+    indented(out, "return (*this)();", 4*indent);
+
     indented(out, "}", 3*indent);
 
     indented(out, "}", 2*indent);

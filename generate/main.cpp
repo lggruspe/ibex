@@ -18,7 +18,7 @@ void generate_whitespace_scanner()
 {
     Dfa dfa = regex_to_dfa(regex::whitespace());
     std::map<std::string, std::string> categories;
-    categories[""] = "\\n \\t";  // take note of the double slash
+    categories["whitespace"] = "\\n \\t";  // take note of the double slash
     generate_scanner_class(std::cout, "whitespace", dfa, categories, 4);
 }
 
