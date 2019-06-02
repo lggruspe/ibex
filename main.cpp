@@ -8,6 +8,7 @@
 #include <memory>
 #include <iostream>
 #include <string>
+#include <utility>
 
 /*0 goal -> list
  *1 list -> list pair
@@ -20,7 +21,7 @@ class Scanner {
     std::string stream;
 public:
     Scanner(const char* stream) : stream(stream) {}
-    std::string operator()() {
+    std::pair<std::string,std::string> operator()() {
         auto it = std::find_if(stream.begin(), stream.end(), [](char c) {
                     return !isspace(c);
                 });
@@ -29,7 +30,7 @@ public:
                 });
         std::string ret(it, jt);
         stream.erase(stream.begin(), jt);
-        return ret;
+        return std::pair<std::string, std::string>(ret, ret);
     }
 };
 

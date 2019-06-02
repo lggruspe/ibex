@@ -9,4 +9,4 @@ build/main.o:	main.cpp grammar.h lr1/parser.h lr1/item.h lr1/collection.h
 
 clean:
 	rm build/*
-
+	rm main

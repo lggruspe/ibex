@@ -6,6 +6,7 @@
 #include <map>
 #include <utility>
 #include <vector>
+#include <iostream>
 
 namespace lr1
 {
@@ -100,14 +101,13 @@ public:
     }
 
     template <class Scanner>
-    // a scanner is a functor/function that returns a new symbol
-    // everytime it is called
+    // a scanner is a functor/function that returns a token-lexeme pair
     bool parse(Scanner scan)
     {
         // assumes 0 is the start state
         std::vector<int> states = {0};
         std::vector<Symbol> symbols;
-        Symbol lookahead = scan();
+        Symbol lookahead = scan().first;
         for (;;) {
             int state = states.back();
             Action action = table[state][lookahead];
@@ -116,7 +116,7 @@ public:
             } else if (action.first == 's') {
                 states.push_back(action.second);
                 symbols.push_back(lookahead);
-                lookahead = scan();
+                lookahead = scan().first;
             } else if (action.first == 'r') {
                 auto rule = grammar.rules.value(action.second);
                 for (auto i = 0; i < rule.second.size(); ++i) {
@@ -130,6 +130,29 @@ public:
             }
         }
 
+    }
+
+private:
+    // for printing parse trace
+    template <class ValueType>
+    void _print_vector(const std::vector<ValueType>& vec) const
+    {
+        // assume members are printable
+        for (const auto& x: vec) {
+            std::cout << x << ' ';
+        }
+        std::cout << std::endl;
+    }
+
+    void _trace(const std::vector<int>& states, const std::vector<Symbol>& symbols,
+            const Symbol& lookahead) const
+    {
+        std::cout << "states: ";
+        _print_vector(states);
+        std::cout << "symbols: ";
+        _print_vector(symbols);
+        std::cout << "lookahead: " << lookahead << std::endl;
+        std::cout << std::endl;
     }
 };
 
