@@ -368,9 +368,12 @@ public:
         if (in->eof()) {
             return std::pair<std::string, std::string>("", "");
         }
-        char c;
-        in->get(c);
-        return std::pair<std::string, std::string>("other", std::string(1, c));
+        int c = in->get();
+        if (c == std::char_traits<char>::eof()) {
+            in->clear();
+            return std::pair<std::string, std::string>("", "");
+        }
+        return std::pair<std::string, std::string>("other", std::string(1, (char)c));
     }
 
     void scan()

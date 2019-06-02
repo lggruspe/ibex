@@ -84,10 +84,13 @@ void generate_collection_class(std::ostream& out, std::string::size_type indent=
     indented(out, "return std::pair<std::string, std::string>(\"\", \"\");", 3*indent);
 
     indented(out, "}", 2*indent);
-    indented(out, "char c;", 2*indent);
-    indented(out, "in->get(c);", 2*indent);
-    indented(out, "return std::pair<std::string, std::string>(\"other\", std::string(1, c));", 2*indent);
 
+    indented(out, "int c = in->get();", 2*indent);
+    indented(out, "if (c == std::char_traits<char>::eof()) {", 2*indent);
+    indented(out, "in->clear();", 3*indent);
+    indented(out, "return std::pair<std::string, std::string>(\"\", \"\");", 3*indent);
+    indented(out, "}", 2*indent);
+    indented(out, "return std::pair<std::string, std::string>(\"other\", std::string(1, (char)c));", 2*indent);
     indented(out, "}", indent);
     out << std::endl;
 
