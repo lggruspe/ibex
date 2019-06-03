@@ -6,6 +6,12 @@
 namespace regex2
 {
 
+void combine_alphabets(std::shared_ptr<Alphabet> alpha, std::shared_ptr<Alphabet>& beta)
+{
+    *alpha += *beta;
+    beta = alpha;
+}
+
 template <class ExprContainer>
 Expr _alternate(ExprContainer exprs)
 {
@@ -15,7 +21,6 @@ Expr _alternate(ExprContainer exprs)
     // note: assumes all the exprs are disjoint
     // (should only be called from split_leaves
     assert(!exprs.empty());
-
     while (exprs.size() > 1) {
         auto a = exprs.front();
         exprs.pop_front();
@@ -23,7 +28,8 @@ Expr _alternate(ExprContainer exprs)
         exprs.pop_front();
 
         // construct their union
-        auto c = std::make_shared<_Expr>(a->alphabet + b->alphabet);
+        combine_alphabets(a->alphabet, b->alphabet);
+        auto c = std::make_shared<_Expr>(a->alphabet);
         c->type = Union;
         c->lhs = a;
         c->rhs = b;
@@ -40,7 +46,6 @@ void split_leaves(Expr expr, const Alphabet& alphabet)
     if (expr == nullptr) {
         return;
     }
-
     if (expr->type == Symbol) {
         Alphabet singleton;     // contains only expr->value
         singleton += expr->value;
@@ -60,7 +65,7 @@ void split_leaves(Expr expr, const Alphabet& alphabet)
         expr->lhs = temp->lhs;
         expr->rhs = temp->rhs;
     } else {
-        expr->alphabet = alphabet;
+        *(expr->alphabet) = alphabet;
         split_leaves(expr->lhs, alphabet);
         split_leaves(expr->rhs, alphabet);
     }
@@ -68,21 +73,23 @@ void split_leaves(Expr expr, const Alphabet& alphabet)
 
 Expr operator|(Expr a, Expr b)
 {
-    Expr c = std::make_shared<_Expr>(a->alphabet + b->alphabet);
+    combine_alphabets(a->alphabet, b->alphabet);
+    Expr c = std::make_shared<_Expr>(a->alphabet);
     c->type = Union;
     c->lhs = a;
     c->rhs = b;
-    split_leaves(c, c->alphabet);
+    split_leaves(c, *(c->alphabet));
     return c;
 }
 
 Expr operator+(Expr a, Expr b)
 {
-    Expr c = std::make_shared<_Expr>(a->alphabet + b->alphabet);
+    combine_alphabets(a->alphabet, b->alphabet);
+    Expr c = std::make_shared<_Expr>(a->alphabet);
     c->type = Concatenation;
     c->lhs = a;
     c->rhs = b;
-    split_leaves(c, c->alphabet);
+    split_leaves(c, *(c->alphabet));
     return c;
 }
 
@@ -97,9 +104,7 @@ Expr closure(Expr a)
 
 Expr symbol(boost::icl::interval<char>::type value)
 {
-    Alphabet alphabet;
-    alphabet += value;
-    Expr expr = std::make_shared<_Expr>(alphabet);
+    Expr expr = std::make_shared<_Expr>(value);
     expr->type = Symbol;
     expr->value = value;
     expr->lhs = nullptr;

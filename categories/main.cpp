@@ -23,7 +23,7 @@ void test_alternate()
     std::cout << std::endl;
     auto expr = _alternate(list);
     std::cout << "expr: " << expr << std::endl;
-    std::cout << "alphabet: " << expr->alphabet << std::endl;
+    std::cout << "alphabet: " << *(expr->alphabet) << std::endl;
 
     std::cout << "---------------------" << std::endl;
 }
@@ -51,29 +51,24 @@ void test_print()
 {
     auto X = symbol('0', '6');
     auto Y = symbol('4', '9');
-    std::cout << (X | Y)->alphabet << std::endl;
+    std::cout << *((X | Y)->alphabet) << std::endl;
     std::cout << (X | Y) << std::endl;
 }
 
 int main()
 {
-    test_alternate();
-    bool passed = test_categorize();
-    std::cout << passed << std::endl;
-    test_print();
-
     auto re = integer();
     std::cout << "integer" << std::endl;
     std::cout << re << std::endl;
-    std::cout << re->alphabet << std::endl;
+    std::cout << *(re->alphabet) << std::endl;
 
     re = number();
     std::cout << "number" << std::endl;
     std::cout << re << std::endl;
-    std::cout << re->alphabet << std::endl;
+    std::cout << *(re->alphabet) << std::endl;
 
     re = identifier();
     std::cout << "identifier" << std::endl;
     std::cout << re << std::endl;
-    std::cout << re->alphabet << std::endl;
+    std::cout << *(re->alphabet) << std::endl;
 }

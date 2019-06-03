@@ -11,5 +11,5 @@ bin/regex.o:	regex.cpp regex.h
 clean:
 	rm bin/*
 
-test:
+test:	bin/test
 	./bin/test

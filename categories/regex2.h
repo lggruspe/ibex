@@ -22,12 +22,18 @@ class _Expr {
 
 public:
     Type type;
-    Alphabet alphabet;  // TODO use pointer instead
+    std::shared_ptr<Alphabet> alphabet;
     CharInterval::type value;   // only access if type == Symbol
 
     std::shared_ptr<_Expr> lhs;
     std::shared_ptr<_Expr> rhs;
-    _Expr(const Alphabet& alphabet) : alphabet(alphabet) {}
+    _Expr(std::shared_ptr<Alphabet> alphabet) : alphabet(alphabet) {}
+
+    _Expr(CharInterval::type value) : value(value)
+    {
+        alphabet = std::make_shared<Alphabet>();
+        *alphabet += value;
+    }
 };
 
 using Expr = typename std::shared_ptr<_Expr>;
