@@ -3,6 +3,8 @@
 #include "cats.h"
 #include <memory>
 
+#include <stdexcept>
+
 #include <cassert>
 #include <iostream>
 
@@ -27,6 +29,21 @@ public:
 };
 
 using Expr = typename std::shared_ptr<_Expr>;
+
+void split_leaves(Expr expr, const Alphabet& alphabet)
+{
+    assert(expr != nullptr);
+
+    if (expr.type == Symbol) {
+        // TODO continue here
+        Alphabet A; // subset of alphabet whose intervals intersect with expr->value
+        // TODO continue here
+    } else {
+        expr->alphabet = alphabet;
+        split_leaves(expr->lhs, alphabet);
+        split_leaves(expr->rhs, alphabet);
+    }
+}
 
 Expr operator|(Expr a, Expr b)
 {
@@ -61,7 +78,7 @@ Expr symbol(char start, char end)
     // (including end)
     assert(start <= end);
     Alphabet alphabet;
-    alphabet.insert(start, end);
+    insert(alphabet, start, end);
     Expr expr = std::make_shared<_Expr>(alphabet);
     expr->type = Symbol;
     expr->value = boost::icl::interval<char>::closed(start, end);
@@ -80,9 +97,18 @@ std::ostream& operator<<(std::ostream& out, Expr re)
     if (re == nullptr) {
         return (out << "null");
     }
-    out << "(" << re->value << ", ";
-    out << re->lhs << ", " << re->rhs << ")";
-    return out;
+    switch (re->type) {
+    case Symbol:    
+        return (out << re->value);
+    case Union:
+        return out << "(union, " << re->lhs << ", " << re->rhs << ")";
+    case Concatenation:
+        return out << "(concatenation, " << re->lhs << ", " << re->rhs << ")";
+    case Closure:
+        return out << "(closure, " << re->lhs << ")";
+    default:
+        throw std::invalid_argument("input expression has bad type");
+    }
 }
 
 } // end namespace

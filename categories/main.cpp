@@ -11,15 +11,15 @@ using namespace regex2;
 bool test_categorize()
 {
     Alphabet alphabet;
-    alphabet.insert('a', 'z');
-    alphabet.insert('A', 'Z');
-    alphabet.insert('0', '9');
-    std::cout << alphabet.intervals << std::endl;
+    insert(alphabet, 'a', 'z');
+    insert(alphabet, 'A', 'Z');
+    insert(alphabet, '0', '9');
+    std::cout << alphabet << std::endl;
 
     std::vector<char> test = {'f', 'H', 'o', '3', ' ', '!'};
     std::vector<int> res = {'a', 'A', 'a', '0', -1, -1};
     for (auto i = 0; i < test.size(); ++i) {
-        int cat = alphabet.categorize(test[i]);
+        int cat = categorize(alphabet, test[i]);
         if (cat != res[i]) {
             return false;
         }
@@ -42,13 +42,13 @@ int main()
     std::cout << zero->alphabet << std::endl;
 
     auto re = (lower | upper) + zero;
+    std::cout << "re: " << re << std::endl;
     std::cout << re->alphabet << std::endl;
 
     auto X = symbol('0', '6');
     auto Y = symbol('4', '9');
     std::cout << (X | Y)->alphabet << std::endl;
     std::cout << (X | Y) << std::endl;
-
 
     // for empty transition:
     auto interval = boost::icl::interval<char>::right_open(0, 0);
