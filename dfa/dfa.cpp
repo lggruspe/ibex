@@ -1,5 +1,5 @@
 #include "dfa.h"
-#include "enumeration.h"
+#include "enumeration2.h"
 #include <algorithm>
 #include <list>
 

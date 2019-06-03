@@ -4,6 +4,7 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <stdexcept>
 
 namespace automata 
 {
@@ -109,5 +110,17 @@ Nfa thompson(std::weak_ptr<regex::Tree> expr)
     Nfa B = thompson(sp->rhs);
     return sp->value == "+" ? concatenate(A, B) : alternate(A, B);
 }
+
+//Nfa thompson(regex2::Expr expr)
+//{
+//    switch (expr->type) {
+//    case Symbol:
+//    case Concatenation:
+//    case Closure:
+//    case Union:
+//    default:
+//        throw std::invalid_argument("bad expression type");
+//    }
+//}
 
 } // end namespace
