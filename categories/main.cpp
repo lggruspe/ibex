@@ -5,8 +5,27 @@
 #include "regex2.h"
 #include <iostream>
 #include <vector>
+#include <list>
 
 using namespace regex2;
+
+void test_alternate()
+{
+    std::list<Expr> list;
+    for (char c = 'a'; c != 'f'; ++c) {
+        list.push_back(symbol(c));
+    }
+
+    for (const auto& re: list) {
+        std::cout << re << ' ';
+    }
+    std::cout << std::endl;
+    auto expr = _alternate(list);
+    std::cout << "expr: " << expr << std::endl;
+    std::cout << "alphabet: " << expr->alphabet << std::endl;
+
+    std::cout << "---------------------" << std::endl;
+}
 
 bool test_categorize()
 {
@@ -29,6 +48,8 @@ bool test_categorize()
 
 int main()
 {
+    test_alternate();
+
     bool passed = test_categorize();
     std::cout << passed << std::endl;
 
