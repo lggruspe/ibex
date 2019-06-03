@@ -44,11 +44,7 @@ void split_leaves(Expr expr, const Alphabet& alphabet)
     if (expr->type == Symbol) {
         Alphabet singleton;     // contains only expr->value
         singleton += expr->value;
-        auto intersecting = singleton & alphabet;   // subset of alphabet that intersect with expr->value
-        auto missing = singleton - intersecting;
-        auto values = intersecting + missing;
-
-        // or auto values = singleton + (singleton & alphabet)?
+        auto values = singleton + (singleton & alphabet);
 
         // get regex union of intervals in values
         // but first, turn the intervals into expressions
@@ -122,7 +118,6 @@ Expr symbol(char start)
 {
     return symbol(start, start);
 }
-
 
 std::ostream& operator<<(std::ostream& out, Expr re)
 {
