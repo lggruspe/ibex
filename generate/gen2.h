@@ -38,7 +38,7 @@ void _range(std::ostream& out, char symbol, const Alphabet& alphabet)
     // find interval in alphabet that contains symbol
     auto it = alphabet.find(symbol);
     if (it == alphabet.end()) {
-        throw std::
+        throw std::invalid_argument("symbol not found in any character range");
     }
     auto low = it->lower();
     auto high = it->upper();
@@ -85,7 +85,7 @@ void _scanner_state(std::ostream& out, bool accept, int state,
         const std::map<char, int>& trans, const Alphabet& alphabet)
 {
     out << "    s" << state << ":" << std::endl;
-    out << R"VOGON(     in.get(c);
+    out << R"VOGON(        in.get(c);
         lexeme += c;)VOGON" << std::endl;
 
     if (accept) {
@@ -97,12 +97,12 @@ void _scanner_state(std::ostream& out, bool accept, int state,
 }
 
 
-void scanner(std::ostream& out, const std::string& name, const Dfa& dfa,
+void scanner(std::ostream& out, const std::string& name, const automata::Dfa& dfa,
         const Alphabet& alphabet)
 {
     // TODO check if name is a valid identifier
     out << "struct ";
-    out << name << 
+    out << name; 
     out << R"VOGON(Scanner: public Scanner {
     using Scanner::Scanner;
     std::string operator()(std::istream& in)
@@ -129,7 +129,7 @@ void scanner(std::ostream& out, const std::string& name, const Dfa& dfa,
         return lexeme;
     }
 };
-)VOGON"
+)VOGON" << std::endl;
 }
 
 void scanner_collection(std::ostream& out)
@@ -158,14 +158,12 @@ public:
                 return (*this)();
             }
         }
-        if (in->eof()) {
-            return std::pair<Token, std::string>(Empty, "");
-        }
         int c = in->get();
         if (c == std::char_traits<char>::eof()) {
             in->clear();
-            return std::pair<Token, std::string>(Other, std::string(1, (char)c));
+            return std::pair<Token, std::string>(Empty, "");
         }
+        return std::pair<Token, std::string>(Other, std::string(1, (char)c));
     }
 
     void scan()

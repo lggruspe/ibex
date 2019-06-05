@@ -1,34 +1,29 @@
 CC = clang++-4.0
-CFLAGS = -g -Wall -std=c++1z -I ../dfa -I ../regex -I ../nfa -I . -I ./generator -I ../categories
+CFLAGS = -g -Wall -std=c++1z -I . -I ../categories -I ../dfa -I ../enumeration2 -I ../nfa
 
-main:	bin/main.o bin/generator.o bin/dfa.o bin/regex.o bin/nfa.o bin/hopcroft.o
-	${CC} ${CFLAGS} -o bin/main bin/main.o bin/generator.o bin/dfa.o bin/regex.o bin/nfa.o bin/hopcroft.o
+main:	main.o dfa.o hopcroft.o nfa.o _nfa.o regex2.o cats.o
+	${CC} ${CFLAGS} -o bin/main bin/main.o bin/dfa.o bin/hopcroft.o bin/nfa.o bin/_nfa.o bin/regex2.o bin/cats.o
 
-bin/main.o:	main.cpp ../regex/utilities.h
+main.o:	main.cpp ../categories/utilities.h gen2.h
 	${CC} ${CFLAGS} -c -o bin/main.o main.cpp
 
-bin/generator.o:	generator/generator.h generator/generator.cpp
-	${CC} ${CFLAGS} -c -o bin/generator.o generator/generator.cpp
-
-bin/dfa.o: ../dfa/dfa.cpp ../dfa/dfa.h
+dfa.o:	../dfa/dfa.cpp ../dfa/dfa.h ../enumeration2/enumeration2.h
 	${CC} ${CFLAGS} -c -o bin/dfa.o ../dfa/dfa.cpp
 
-bin/regex.o:	../regex/regex.cpp ../regex/regex.h
-	${CC} ${CFLAGS} -c -o bin/regex.o ../regex/regex.cpp
+hopcroft.o:	../dfa/hopcroft.cpp ../dfa/hopcroft.h ../dfa/partition.h
+	${CC} ${CFLAGS} -c -o bin/hopcroft.o ../dfa/hopcroft.cpp
 
-bin/nfa.o:	../nfa/nfa.cpp ../nfa/nfa.h
+nfa.o:	../nfa/nfa.cpp ../nfa/nfa.h
 	${CC} ${CFLAGS} -c -o bin/nfa.o ../nfa/nfa.cpp
 
-bin/hopcroft.o:	../dfa/hopcroft.h ../dfa/hopcroft.cpp
-	${CC} ${CFLAGS} -c -o bin/hopcroft.o ../dfa/hopcroft.cpp
+_nfa.o:	../nfa/_nfa.cpp ../nfa/_nfa.h
+	${CC} ${CFLAGS} -c -o bin/_nfa.o ../nfa/_nfa.cpp
+
+regex2.o:	../categories/regex2.cpp ../categories/regex2.h
+	${CC} ${CFLAGS} -c -o bin/regex2.o ../categories/regex2.cpp
+
+cats.o:	../categories/cats.cpp ../categories/cats.h
+	${CC} ${CFLAGS} -c -o bin/cats.o ../categories/cats.cpp
 
 clean:
 	rm bin/*
-
-maketest:	main
-	rm sample/test.h
-	./bin/main >> sample/test.h
-	${CC} sample/test.cpp -o bin/test -std=c++1z
-
-test:	maketest
-	./bin/test

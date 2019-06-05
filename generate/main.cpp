@@ -1,75 +1,49 @@
 #include "dfa.h"
 #include "hopcroft.h"
 #include "nfa.h"
-#include "regex.h"
+#include "_nfa.h"
+#include "gen2.h"
+#include "regex2.h"
 #include "utilities.h"
-#include "generator.h"
 #include <iostream>
 
+using namespace regex2;
 using namespace automata;
+using namespace gen2;
 
-Dfa regex_to_dfa(regex::Expr re)
+Dfa regex_to_dfa(Expr re)
 {
-    Nfa nfa = thompson(re);
+    auto nfa = thompson(re);
     return minimize(subset_construction(nfa));
 }
 
-void generate_whitespace_scanner()
+void whitespace_scanner()
 {
-    Dfa dfa = regex_to_dfa(regex::whitespace());
-    std::map<std::string, std::string> categories;
-    categories["whitespace"] = "\\n \\t";  // take note of the double slash
-    generate_scanner_class(std::cout, "whitespace", dfa, categories, 4);
+    auto re = whitespace();
+    auto dfa = regex_to_dfa(re);
+    scanner(std::cout, "whitespace", dfa, *(re->alphabet));
 }
 
-void generate_float_scanner()
+void number_scanner()
 {
-    regex::Expr re = regex::real();
-    Nfa nfa = thompson(re);
-    Dfa dfa = minimize(subset_construction(nfa));
-
-    std::map<std::string, std::string> categories;
-    categories["zero"] = "0";
-    categories["nonzero"] = "123456789";
-    categories["exponent"] = "eE";
-    categories["sign"] = "+-";
-    categories["."] = ".";
-    generate_scanner_class(std::cout, "float", dfa, categories, 4);
+    auto re = number();
+    auto dfa = regex_to_dfa(re);
+    scanner(std::cout, "number", dfa, *(re->alphabet));
 }
 
-void generate_integer_scanner()
+void identifier_scanner()
 {
-    regex::Expr re = regex::integer();
-    Nfa nfa = thompson(re);
-    Dfa dfa = minimize(subset_construction(nfa));
-
-    std::map<std::string, std::string> categories;
-    categories["zero"] = "0";
-    categories["nonzero"] = "123456789";
-    generate_scanner_class(std::cout, "integer", dfa, categories, 4);
-}
-
-void generate_identifier_scanner()
-{
-    regex::Expr re = regex::identifier();
-    Nfa nfa = thompson(re);
-    Dfa dfa = minimize(subset_construction(nfa));
-
-    std::map<std::string, std::string> categories;
-    categories["letter"] = "_abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    categories["digit"] = "1234567890";
-    generate_scanner_class(std::cout, "identifier", dfa, categories, 4);
+    auto re = identifier();
+    auto dfa = regex_to_dfa(re);
+    scanner(std::cout, "identifier", dfa, *(re->alphabet));
 }
 
 int main()
 {
-    generate_includes(std::cout, true);
-    generate_base_scanner_class(std::cout, 4);
-
-    generate_whitespace_scanner();
-    generate_integer_scanner();
-    generate_float_scanner();
-    generate_identifier_scanner();
-
-    generate_collection_class(std::cout, 4);
+    includes(std::cout, true);
+    base_scanner(std::cout);
+    whitespace_scanner();
+    number_scanner();
+    identifier_scanner();
+    scanner_collection(std::cout);
 }
