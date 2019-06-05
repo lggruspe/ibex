@@ -9,6 +9,6 @@ int main()
     gen2::generate(std::cout, {
             {"Number", number()},
             {"Identifier", identifier()},
-            {"Whitespace", whitespace()}
+            {"Ignore", whitespace()}    // alternate regex to be ignored
     });
 }

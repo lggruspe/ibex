@@ -201,12 +201,17 @@ void tokens(std::ostream& out, const std::vector<std::string>& names)
         }
         out << ",\n    " << name;
     }
+    // make sure Ignore is included
+    if (std::find(names.begin(), names.end(), "Ignore") == names.end()) {
+        out << ",\n    Ignore";
+    }
     out << "\n};\n" << std::endl;
 }
 
 void token_printer(std::ostream& out, const std::vector<std::string>& names)
 {
     // assumes tokens has been called, and all names are valid
+    // notice how the Ignore token is conveniently ignored
     out << R"VOGON(std::ostream& operator<<(std::ostream& out, Token token)
 {
     switch(token) {
@@ -216,6 +221,9 @@ void token_printer(std::ostream& out, const std::vector<std::string>& names)
         return out << "Empty" << std::endl;
 )VOGON";
     for (const auto& name: names) {
+        if (name == "Ignore") {
+            continue;
+        }
         out << "    case " << name << ":" << std::endl;
         out << "        return out << \"" << name << "\" << std::endl;" << std::endl;
     }
