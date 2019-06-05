@@ -18,6 +18,7 @@ void includes(std::ostream& out, bool header=false)
     }
 
     out << R"VOGON(#include <iostream>
+#include <memory>
 #include <string>
 #include <utility>
 #include <vector>
@@ -134,28 +135,29 @@ void scanner(std::ostream& out, const std::string& name, const automata::Dfa& df
 )VOGON" << std::endl;
 }
 
-void scanner_collection(std::ostream& out)
+void scanner_collection(std::ostream& out, const std::vector<std::string>& names)
 {
-    out << R"VOGON(class ScannerCollection {
-    std::vector<Scanner*> scanners;
+    out << R"VOGON(struct ScannerCollection {
+    std::vector<std::shared_ptr<Scanner>> scanners;
     std::istream* in;
 
-public:
-    ScannerCollection(std::istream& in=std::cin) : in(&in) {}
-
-    void add_scanner(Scanner& scanner)
-    {
-        scanners.push_back(&scanner);
+    ScannerCollection(std::istream& in=std::cin) : in(&in) 
+    {)VOGON" << std::endl;
+    
+    for (const auto& name: names) {
+        out << "        scanners.push_back(std::make_shared<" << name 
+            << "Scanner>(" << name << "));" << std::endl;
     }
+    
+    out << R"VOGON(    }
 
     std::pair<Token, std::string> operator()()
     {
-        for (auto& p: scanners) {
-            Scanner& scanner = *p;
-            std::string lexeme = scanner(*in);
+        for (auto scanner: scanners) {
+            std::string lexeme = (*scanner)(*in);
             if (!lexeme.empty()) {
-                if (scanner.token != Ignore) {
-                    return std::pair<Token, std::string>(scanner.token, lexeme);
+                if (scanner->token != Ignore) {
+                    return std::pair<Token, std::string>(scanner->token, lexeme);
                 }
                 return (*this)();
             }

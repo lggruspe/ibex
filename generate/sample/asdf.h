@@ -1,5 +1,6 @@
 #pragma once
 #include <iostream>
+#include <memory>
 #include <string>
 #include <utility>
 #include <vector>
@@ -220,26 +221,24 @@ struct NumberScanner: public Scanner {
     }
 };
 
-class ScannerCollection {
-    std::vector<Scanner*> scanners;
+struct ScannerCollection {
+    std::vector<std::shared_ptr<Scanner>> scanners;
     std::istream* in;
 
-public:
-    ScannerCollection(std::istream& in=std::cin) : in(&in) {}
-
-    void add_scanner(Scanner& scanner)
+    ScannerCollection(std::istream& in=std::cin) : in(&in) 
     {
-        scanners.push_back(&scanner);
+        scanners.push_back(std::make_shared<IdentifierScanner>(Identifier));
+        scanners.push_back(std::make_shared<IgnoreScanner>(Ignore));
+        scanners.push_back(std::make_shared<NumberScanner>(Number));
     }
 
     std::pair<Token, std::string> operator()()
     {
-        for (auto& p: scanners) {
-            Scanner& scanner = *p;
-            std::string lexeme = scanner(*in);
+        for (auto scanner: scanners) {
+            std::string lexeme = (*scanner)(*in);
             if (!lexeme.empty()) {
-                if (scanner.token != Ignore) {
-                    return std::pair<Token, std::string>(scanner.token, lexeme);
+                if (scanner->token != Ignore) {
+                    return std::pair<Token, std::string>(scanner->token, lexeme);
                 }
                 return (*this)();
             }

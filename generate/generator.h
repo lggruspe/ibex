@@ -33,7 +33,7 @@ void generate(std::ostream& out,
     for (const auto& [name, re]: res) {
         scanner(out, name, _regex_to_dfa(re), *(re->alphabet));
     }
-    scanner_collection(out);
+    scanner_collection(out, names);
 }
 
 }
