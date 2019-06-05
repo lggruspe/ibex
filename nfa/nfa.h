@@ -1,17 +1,18 @@
 #pragma once
-#include "regex.h"
+#include "regex2.h"
 #include <map>
 #include <memory>
 #include <set>
 #include <string>
+#include <iostream>
 
 namespace automata 
 {
 
 struct Nfa {
-    std::map<int, std::map<std::string, std::set<int>>> delta;
+    std::map<int, std::map<char, std::set<int>>> delta;
     int start, accept;
-    std::set<std::string> symbols;
+    std::set<char> symbols;
 
     int add_state(int q)
     {
@@ -25,17 +26,18 @@ struct Nfa {
         return this->add_state(q);
     }
 
-    void add_transition(int q, const std::string& a, int r)
+    void add_transition(int q, int r, char a='\0')
     {
         this->add_state(q);
         this->add_state(r);
         this->delta[q][a].insert(r);
-        if (!a.empty()) {
+        if (a) {
             this->symbols.insert(a);
         }
     }
 };
 
-Nfa thompson(std::weak_ptr<regex::Tree>);
+Nfa thompson(regex2::Expr);
 
+std::ostream& operator<<(std::ostream&, const Nfa&);
 } // end namespace
