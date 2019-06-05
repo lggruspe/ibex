@@ -44,7 +44,9 @@ void _range(std::ostream& out, char symbol, const Alphabet& alphabet)
     auto high = it->upper();
     // TODO check if endpoints are open
     // also check if low = high
-    out << "('" << (char)low << "' <= c && c <= '" << high << "')";
+    // TODO print character representation (need to deal with special cases:
+    // whitespace, escape characters, etc.)
+    out << "(" << (int)low << " <= c && c <= " << (int)high << ")";
 }
 
 void _category_condition(std::ostream& out,

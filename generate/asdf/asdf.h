@@ -4,24 +4,6 @@
 #include <utility>
 #include <vector>
 
-enum Token { Whitespace, Number, Identifier, Other, Empty, Ignore };
-
-std::ostream& operator<<(std::ostream& out, Token token)
-{
-    switch (token) {
-    case Whitespace:
-        return out << "whitespace" << std::endl;
-    case Number:
-        return out << "number" << std::endl;
-    case Identifier:
-        return out << "identifier" << std::endl;
-    case Other:
-        return out << "other" << std::endl;
-    default:
-        return out;
-    }
-}
-
 struct Scanner {
     Token token;
     Scanner(Token token) : token(token) {}
@@ -41,7 +23,7 @@ struct whitespaceScanner: public Scanner {
         in.get(c);
         lexeme += c;
         checkpoint.push_back(c);
-        if (('\t' <= c && c <= '\t') || ('\n' <= c && c <= '\n') || (' ' <= c && c <= ' ')) {
+        if ((9 <= c && c <= 9) || (10 <= c && c <= 10) || (32 <= c && c <= 32)) {
             goto s1;
         }
         goto se;
@@ -76,10 +58,10 @@ struct numberScanner: public Scanner {
         in.get(c);
         lexeme += c;
         checkpoint.push_back(c);
-        if (('1' <= c && c <= '9')) {
+        if ((49 <= c && c <= 57)) {
             goto s1;
         }
-        if (('0' <= c && c <= '0')) {
+        if ((48 <= c && c <= 48)) {
             goto s5;
         }
         goto se;
@@ -88,13 +70,13 @@ struct numberScanner: public Scanner {
         lexeme += c;
         checkpoint.clear();
         checkpoint.push_back(c);
-        if (('0' <= c && c <= '0') || ('1' <= c && c <= '9')) {
+        if ((48 <= c && c <= 48) || (49 <= c && c <= 57)) {
             goto s1;
         }
-        if (('E' <= c && c <= 'E') || ('e' <= c && c <= 'e')) {
+        if ((69 <= c && c <= 69) || (101 <= c && c <= 101)) {
             goto s2;
         }
-        if (('.' <= c && c <= '.')) {
+        if ((46 <= c && c <= 46)) {
             goto s7;
         }
         goto se;
@@ -102,13 +84,13 @@ struct numberScanner: public Scanner {
         in.get(c);
         lexeme += c;
         checkpoint.push_back(c);
-        if (('+' <= c && c <= '+') || ('-' <= c && c <= '-')) {
+        if ((43 <= c && c <= 43) || (45 <= c && c <= 45)) {
             goto s4;
         }
-        if (('0' <= c && c <= '0')) {
+        if ((48 <= c && c <= 48)) {
             goto s6;
         }
-        if (('1' <= c && c <= '9')) {
+        if ((49 <= c && c <= 57)) {
             goto s8;
         }
         goto se;
@@ -117,10 +99,10 @@ struct numberScanner: public Scanner {
         lexeme += c;
         checkpoint.clear();
         checkpoint.push_back(c);
-        if (('E' <= c && c <= 'E') || ('e' <= c && c <= 'e')) {
+        if ((69 <= c && c <= 69) || (101 <= c && c <= 101)) {
             goto s2;
         }
-        if (('0' <= c && c <= '0') || ('1' <= c && c <= '9')) {
+        if ((48 <= c && c <= 48) || (49 <= c && c <= 57)) {
             goto s3;
         }
         goto se;
@@ -128,10 +110,10 @@ struct numberScanner: public Scanner {
         in.get(c);
         lexeme += c;
         checkpoint.push_back(c);
-        if (('0' <= c && c <= '0')) {
+        if ((48 <= c && c <= 48)) {
             goto s6;
         }
-        if (('1' <= c && c <= '9')) {
+        if ((49 <= c && c <= 57)) {
             goto s8;
         }
         goto se;
@@ -140,10 +122,10 @@ struct numberScanner: public Scanner {
         lexeme += c;
         checkpoint.clear();
         checkpoint.push_back(c);
-        if (('E' <= c && c <= 'E') || ('e' <= c && c <= 'e')) {
+        if ((69 <= c && c <= 69) || (101 <= c && c <= 101)) {
             goto s2;
         }
-        if (('.' <= c && c <= '.')) {
+        if ((46 <= c && c <= 46)) {
             goto s7;
         }
         goto se;
@@ -157,7 +139,7 @@ struct numberScanner: public Scanner {
         in.get(c);
         lexeme += c;
         checkpoint.push_back(c);
-        if (('0' <= c && c <= '0') || ('1' <= c && c <= '9')) {
+        if ((48 <= c && c <= 48) || (49 <= c && c <= 57)) {
             goto s3;
         }
         goto se;
@@ -166,7 +148,7 @@ struct numberScanner: public Scanner {
         lexeme += c;
         checkpoint.clear();
         checkpoint.push_back(c);
-        if (('0' <= c && c <= '0') || ('1' <= c && c <= '9')) {
+        if ((48 <= c && c <= 48) || (49 <= c && c <= 57)) {
             goto s8;
         }
         goto se;
@@ -195,7 +177,7 @@ struct identifierScanner: public Scanner {
         in.get(c);
         lexeme += c;
         checkpoint.push_back(c);
-        if (('A' <= c && c <= 'Z') || ('_' <= c && c <= '_') || ('a' <= c && c <= 'z')) {
+        if ((65 <= c && c <= 90) || (95 <= c && c <= 95) || (97 <= c && c <= 122)) {
             goto s1;
         }
         goto se;
@@ -204,7 +186,7 @@ struct identifierScanner: public Scanner {
         lexeme += c;
         checkpoint.clear();
         checkpoint.push_back(c);
-        if (('0' <= c && c <= '9') || ('A' <= c && c <= 'Z') || ('_' <= c && c <= '_') || ('a' <= c && c <= 'z')) {
+        if ((48 <= c && c <= 57) || (65 <= c && c <= 90) || (95 <= c && c <= 95) || (97 <= c && c <= 122)) {
             goto s1;
         }
         goto se;
