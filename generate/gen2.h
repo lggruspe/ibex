@@ -5,6 +5,7 @@
 #include <map>
 #include <set>
 #include <string>
+#include <vector>
 
 namespace gen2
 {
@@ -111,8 +112,8 @@ void scanner(std::ostream& out, const std::string& name, const automata::Dfa& df
     {
         char c;
         std::vector<char> checkpoint;
-        std::string lexeme;
-)VOGON" << std::endl;
+        std::string lexeme;)VOGON" << std::endl;
+
     out << "        goto s" << dfa.start << ";" << std::endl;
 
     for (const auto& [state, trans]: dfa.delta) {
@@ -120,8 +121,7 @@ void scanner(std::ostream& out, const std::string& name, const automata::Dfa& df
         _scanner_state(out, accept, state, trans, alphabet);
     }
 
-    out << R"VOGON(
-    se:
+    out << R"VOGON(    se:
         while (!checkpoint.empty()) {
             c = checkpoint.back();
             checkpoint.pop_back();
@@ -182,6 +182,47 @@ public:
         }
     }
 };
+)VOGON" << std::endl;
+}
+
+bool _is_valid_token(const std::string& name)
+{
+    return name != "Other" && name != "Empty";
+}
+
+void tokens(std::ostream& out, const std::vector<std::string>& names)
+{
+    out << R"VOGON(enum Token {
+    Empty,
+    Other)VOGON";
+    for (const auto& name: names) {
+        if (!_is_valid_token(name)) {
+            throw std::invalid_argument("invalid (reserved) token name");
+        }
+        out << ",\n    " << name;
+    }
+    out << "\n};\n" << std::endl;
+}
+
+void token_printer(std::ostream& out, const std::vector<std::string>& names)
+{
+    // assumes tokens has been called, and all names are valid
+    out << R"VOGON(std::ostream& operator<<(std::ostream& out, Token token)
+{
+    switch(token) {
+    case Other:
+        return out << "Other" << std::endl;
+    case Empty:
+        return out << "Empty" << std::endl;
+)VOGON";
+    for (const auto& name: names) {
+        out << "    case " << name << ":" << std::endl;
+        out << "        return out << \"" << name << "\" << std::endl;" << std::endl;
+    }
+    out << R"VOGON(    default:
+        return out;
+    }
+}
 )VOGON" << std::endl;
 }
 

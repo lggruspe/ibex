@@ -1,12 +1,11 @@
-#include "token.h"
 #include "asdf.h"
 
 int main()
 {
     ScannerCollection scanners;
-    numberScanner numscanner(Number);
-    identifierScanner idscanner(Identifier);
-    whitespaceScanner wsscanner(Ignore);
+    NumberScanner numscanner(Number);
+    IdentifierScanner idscanner(Identifier);
+    WhitespaceScanner wsscanner(Whitespace);
     scanners.add_scanner(numscanner);
     scanners.add_scanner(idscanner);
     scanners.add_scanner(wsscanner);

@@ -4,26 +4,52 @@
 #include <utility>
 #include <vector>
 
+enum Token {
+    Ignore,
+    Empty,
+    Other,
+    Identifier,
+    Number,
+    Whitespace
+};
+
+std::ostream& operator<<(std::ostream& out, Token token)
+{
+    switch(token) {
+    case Other:
+        return out << "Other" << std::endl;
+    case Empty:
+        return out << "Empty" << std::endl;
+    case Identifier:
+        return out << "Identifier" << std::endl;
+    case Number:
+        return out << "Number" << std::endl;
+    case Whitespace:
+        return out << "Whitespace" << std::endl;
+    default:
+        return out;
+    }
+}
+
 struct Scanner {
     Token token;
     Scanner(Token token) : token(token) {}
     virtual std::string operator()(std::istream&) = 0;
 };
 
-struct whitespaceScanner: public Scanner {
+struct IdentifierScanner: public Scanner {
     using Scanner::Scanner;
     std::string operator()(std::istream& in)
     {
         char c;
         std::vector<char> checkpoint;
         std::string lexeme;
-
         goto s0;
     s0:
         in.get(c);
         lexeme += c;
         checkpoint.push_back(c);
-        if ((9 <= c && c <= 9) || (10 <= c && c <= 10) || (32 <= c && c <= 32)) {
+        if ((65 <= c && c <= 90) || (95 <= c && c <= 95) || (97 <= c && c <= 122)) {
             goto s1;
         }
         goto se;
@@ -32,8 +58,10 @@ struct whitespaceScanner: public Scanner {
         lexeme += c;
         checkpoint.clear();
         checkpoint.push_back(c);
+        if ((48 <= c && c <= 57) || (65 <= c && c <= 90) || (95 <= c && c <= 95) || (97 <= c && c <= 122)) {
+            goto s1;
+        }
         goto se;
-
     se:
         while (!checkpoint.empty()) {
             c = checkpoint.back();
@@ -45,14 +73,13 @@ struct whitespaceScanner: public Scanner {
     }
 };
 
-struct numberScanner: public Scanner {
+struct NumberScanner: public Scanner {
     using Scanner::Scanner;
     std::string operator()(std::istream& in)
     {
         char c;
         std::vector<char> checkpoint;
         std::string lexeme;
-
         goto s0;
     s0:
         in.get(c);
@@ -152,7 +179,6 @@ struct numberScanner: public Scanner {
             goto s8;
         }
         goto se;
-
     se:
         while (!checkpoint.empty()) {
             c = checkpoint.back();
@@ -164,20 +190,19 @@ struct numberScanner: public Scanner {
     }
 };
 
-struct identifierScanner: public Scanner {
+struct WhitespaceScanner: public Scanner {
     using Scanner::Scanner;
     std::string operator()(std::istream& in)
     {
         char c;
         std::vector<char> checkpoint;
         std::string lexeme;
-
         goto s0;
     s0:
         in.get(c);
         lexeme += c;
         checkpoint.push_back(c);
-        if ((65 <= c && c <= 90) || (95 <= c && c <= 95) || (97 <= c && c <= 122)) {
+        if ((9 <= c && c <= 9) || (10 <= c && c <= 10) || (32 <= c && c <= 32)) {
             goto s1;
         }
         goto se;
@@ -186,11 +211,7 @@ struct identifierScanner: public Scanner {
         lexeme += c;
         checkpoint.clear();
         checkpoint.push_back(c);
-        if ((48 <= c && c <= 57) || (65 <= c && c <= 90) || (95 <= c && c <= 95) || (97 <= c && c <= 122)) {
-            goto s1;
-        }
         goto se;
-
     se:
         while (!checkpoint.empty()) {
             c = checkpoint.back();

@@ -4,7 +4,7 @@ CFLAGS = -g -Wall -std=c++1z -I . -I ../categories -I ../dfa -I ../enumeration2 
 main:	main.o dfa.o hopcroft.o nfa.o _nfa.o regex2.o cats.o
 	${CC} ${CFLAGS} -o bin/main bin/main.o bin/dfa.o bin/hopcroft.o bin/nfa.o bin/_nfa.o bin/regex2.o bin/cats.o
 
-main.o:	main.cpp ../categories/utilities.h gen2.h
+main.o:	main.cpp ../categories/utilities.h gen2.h generator.h
 	${CC} ${CFLAGS} -c -o bin/main.o main.cpp
 
 dfa.o:	../dfa/dfa.cpp ../dfa/dfa.h ../enumeration2/enumeration2.h
