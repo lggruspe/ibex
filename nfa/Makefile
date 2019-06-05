@@ -1,5 +1,5 @@
 CC = g++
-CFLAGS = -g -Wall -I ../regex -I .
+CFLAGS = -g -Wall -I ../regex -I . -I ../enumeration2
 
 bin/test:	bin/test.o bin/nfa.o bin/regex.o
 	${CC} ${CFLAGS} -o bin/test bin/test.o bin/nfa.o bin/regex.o
