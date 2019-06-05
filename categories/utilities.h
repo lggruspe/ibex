@@ -37,4 +37,9 @@ Expr identifier()
     return letter + closure(letter | symbol('0', '9'));
 }
 
+Expr whitespace()
+{
+    return symbol(' ') | symbol('\t') | symbol('\n');
+}
+
 }   // end namespace
