@@ -1,76 +1,43 @@
+// weird behavior when scanning for numbers (1+1 gets recognized)
 #pragma once
 #include <iostream>
 #include <string>
 #include <utility>
 #include <vector>
-#include <ios>
-#include <unicode/unistd.h>
-#include <unicode/schriter.h>
-#include <list>
 
-#include <courier-unicode.h>
+enum Token { Whitespace, Integer, Number, Identifier, Ignore, Empty, Other };
+
+std::ostream& operator<<(std::ostream& out, Token token)
+{
+    switch (token) {
+    case Whitespace:
+        return out << "whitespace";
+    case Integer:
+        return out << "integer";
+    case Number:
+        return out << "number";
+    case Identifier:
+        return out << "identifier";
+    case Other:
+        return out << "other";
+    default:
+        return out;
+    }
+}
 
 class Scanner {
-    icu::UnicodeString buffer;
-
-protected:
-    bool contains(const char* s, char c)
-    {
-        auto it = s;
-        while (*it && *it != c) {
-            ++it;
-        }
-        return *it == c;
-    }
-
-    std::string first()
-    {
-        // get first unicode character in buffer, and remove it
-        std::string s;
-        char32_t a = 
-        return s;
-    }
-
-    std::string getchar(std::istream& in)
-    {
-        if (buffer.isEmpty()) {
-            std::string temp;
-            in >> temp;
-
-            icu::UnicodeString unistr(temp.c_str());
-            icu::StringCharacterIterator it(unistr);
-            for (char32_t c = it.first(); c != it.DONE; c = it.next()) {
-                buffer.push_back(c);
-            }
-
-        }
-        return buffer.isEmpty() ? "" : first();
-    }
-
 public:
-    std::string token;
-    Scanner(const std::string& token) : token(token) {}
+    Token token;
+    Scanner(Token token) : token(token) {}
     virtual std::string operator()(std::istream&) = 0;
 };
 
-class integerScanner: public Scanner {
-    std::string category(char c)
-    {
-        if (contains("123456789", c)) {
-            return "nonzero";
-        }
-        if (contains("0", c)) {
-            return "zero";
-        }
-        return "other";
-    }
-
+class whitespaceScanner: public Scanner {
 public:
     using Scanner::Scanner;
     std::string operator()(std::istream& in)
     {
         char c;
-        std::string cat;
         std::vector<char> checkpoint;
         std::string lexeme;
         goto s0;
@@ -78,11 +45,46 @@ public:
         in.get(c);
         lexeme += c;
         checkpoint.push_back(c);
-        cat = category(c);
-        if (cat == "nonzero") {
+        if ('\n' <= c && c <= '\n' || ' ' <= c && c <= ' ' || '\t' <= c && c <= '\t') {
             goto s1;
         }
-        if (cat == "zero") {
+        goto se;
+
+    s1:
+        in.get(c);
+        lexeme += c;
+        checkpoint.clear();
+        checkpoint.push_back(c);
+        goto se;
+
+    se:
+        while (!checkpoint.empty()) {
+            c = checkpoint.back();
+            checkpoint.pop_back();
+            in.putback(c);
+            lexeme.pop_back();
+        }
+        return lexeme;
+    }
+};
+
+class integerScanner: public Scanner {
+public:
+    using Scanner::Scanner;
+    std::string operator()(std::istream& in)
+    {
+        char c;
+        std::vector<char> checkpoint;
+        std::string lexeme;
+        goto s0;
+    s0:
+        in.get(c);
+        lexeme += c;
+        checkpoint.push_back(c);
+        if ('1' <= c && c <= '9') {
+            goto s1;
+        }
+        if ('0' <= c && c <= '0') {
             goto s2;
         }
         goto se;
@@ -92,8 +94,7 @@ public:
         lexeme += c;
         checkpoint.clear();
         checkpoint.push_back(c);
-        cat = category(c);
-        if (cat == "nonzero" || cat == "zero") {
+        if ('1' <= c && c <= '9' || '0' <= c && c <= '0') {
             goto s1;
         }
         goto se;
@@ -103,7 +104,6 @@ public:
         lexeme += c;
         checkpoint.clear();
         checkpoint.push_back(c);
-        cat = category(c);
         goto se;
 
     se:
@@ -118,32 +118,11 @@ public:
 };
 
 class floatScanner: public Scanner {
-    std::string category(char c)
-    {
-        if (contains(".", c)) {
-            return ".";
-        }
-        if (contains("eE", c)) {
-            return "exponent";
-        }
-        if (contains("123456789", c)) {
-            return "nonzero";
-        }
-        if (contains("+-", c)) {
-            return "sign";
-        }
-        if (contains("0", c)) {
-            return "zero";
-        }
-        return "other";
-    }
-
 public:
     using Scanner::Scanner;
     std::string operator()(std::istream& in)
     {
         char c;
-        std::string cat;
         std::vector<char> checkpoint;
         std::string lexeme;
         goto s0;
@@ -151,11 +130,10 @@ public:
         in.get(c);
         lexeme += c;
         checkpoint.push_back(c);
-        cat = category(c);
-        if (cat == "zero") {
+        if ('0' <= c && c <= '0') {
             goto s1;
         }
-        if (cat == "nonzero") {
+        if ('1' <= c && c <= '9') {
             goto s5;
         }
         goto se;
@@ -165,11 +143,10 @@ public:
         lexeme += c;
         checkpoint.clear();
         checkpoint.push_back(c);
-        cat = category(c);
-        if (cat == ".") {
+        if ('.' <= c && c <= '.') {
             goto s7;
         }
-        if (cat == "exponent") {
+        if ('e' <= c && c <= 'e' || 'E' <= c && c <= 'E') {
             goto s8;
         }
         goto se;
@@ -179,11 +156,10 @@ public:
         lexeme += c;
         checkpoint.clear();
         checkpoint.push_back(c);
-        cat = category(c);
-        if (cat == "nonzero" || cat == "zero") {
+        if ('1' <= c && c <= '9' || '0' <= c && c <= '0') {
             goto s2;
         }
-        if (cat == "exponent") {
+        if ('e' <= c && c <= 'e' || 'E' <= c && c <= 'E') {
             goto s8;
         }
         goto se;
@@ -193,18 +169,16 @@ public:
         lexeme += c;
         checkpoint.clear();
         checkpoint.push_back(c);
-        cat = category(c);
         goto se;
 
     s4:
         in.get(c);
         lexeme += c;
         checkpoint.push_back(c);
-        cat = category(c);
-        if (cat == "zero") {
+        if ('0' <= c && c <= '0') {
             goto s3;
         }
-        if (cat == "nonzero") {
+        if ('1' <= c && c <= '9') {
             goto s6;
         }
         goto se;
@@ -214,14 +188,13 @@ public:
         lexeme += c;
         checkpoint.clear();
         checkpoint.push_back(c);
-        cat = category(c);
-        if (cat == "nonzero" || cat == "zero") {
+        if ('1' <= c && c <= '9' || '0' <= c && c <= '0') {
             goto s5;
         }
-        if (cat == ".") {
+        if ('.' <= c <= '.') {
             goto s7;
         }
-        if (cat == "exponent") {
+        if ('e' <= c && c <= 'e' || 'E' <= c && c <= 'E') {
             goto s8;
         }
         goto se;
@@ -231,8 +204,7 @@ public:
         lexeme += c;
         checkpoint.clear();
         checkpoint.push_back(c);
-        cat = category(c);
-        if (cat == "nonzero" || cat == "zero") {
+        if ('1' <= c && c <= '9' || '0' <= c && c <= '0') {
             goto s6;
         }
         goto se;
@@ -241,8 +213,7 @@ public:
         in.get(c);
         lexeme += c;
         checkpoint.push_back(c);
-        cat = category(c);
-        if (cat == "nonzero" || cat == "zero") {
+        if ('1' <= c && c <= '9' || '0' <= c && c <= '0') {
             goto s2;
         }
         goto se;
@@ -251,14 +222,13 @@ public:
         in.get(c);
         lexeme += c;
         checkpoint.push_back(c);
-        cat = category(c);
-        if (cat == "zero") {
+        if ('0' <= c && c <= '0') {
             goto s3;
         }
-        if (cat == "sign") {
+        if ('+' <= c && c <= '+' || '-' <= c && c <= '-') {
             goto s4;
         }
-        if (cat == "nonzero") {
+        if ('1' <= c && c <= '9' || '0' <= c && c <= '0') {
             goto s6;
         }
         goto se;
@@ -275,23 +245,11 @@ public:
 };
 
 class identifierScanner: public Scanner {
-    std::string category(char c)
-    {
-        if (contains("1234567890", c)) {
-            return "digit";
-        }
-        if (contains("_abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ", c)) {
-            return "letter";
-        }
-        return "other";
-    }
-
 public:
     using Scanner::Scanner;
     std::string operator()(std::istream& in)
     {
         char c;
-        std::string cat;
         std::vector<char> checkpoint;
         std::string lexeme;
         goto s0;
@@ -299,8 +257,7 @@ public:
         in.get(c);
         lexeme += c;
         checkpoint.push_back(c);
-        cat = category(c);
-        if (cat == "letter") {
+        if ('_' <= c && c <= '_' || 'a' <= c && c <= 'z' || 'A' <= c && c <= 'Z') {
             goto s1;
         }
         goto se;
@@ -310,8 +267,7 @@ public:
         lexeme += c;
         checkpoint.clear();
         checkpoint.push_back(c);
-        cat = category(c);
-        if (cat == "digit" || cat == "letter") {
+        if ('0' <= c && c <= '9' || '_' <= c && c <= '_' || 'a' <= c && c <= 'z' || 'A' <= c && c <= 'Z') {
             goto s1;
         }
         goto se;
@@ -338,16 +294,27 @@ public:
         scanners.push_back(&scanner);
     }
 
-    std::pair<std::string, std::string> operator()()
+    std::pair<Token, std::string> operator()()
     {
         for (auto& p: scanners) {
             Scanner& scanner = *p;
             std::string lexeme = scanner(*in);
             if (!lexeme.empty()) {
-                return std::pair<std::string, std::string>(scanner.token, lexeme);
+                if (scanner.token != Ignore) {
+                    return std::pair<Token, std::string>(scanner.token, lexeme);
+                }
+                return (*this)();
             }
         }
-        throw "syntax error";
+        if (in->eof()) {
+            return std::pair<Token, std::string>(Empty, "");
+        }
+        int c = in->get();
+        if (c == std::char_traits<char>::eof()) {
+            in->clear();
+            return std::pair<Token, std::string>(Empty, "");
+        }
+        return std::pair<Token, std::string>(Other, std::string(1, (char)c));
     }
 
     void scan()
