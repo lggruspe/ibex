@@ -1,4 +1,3 @@
-// weird behavior when scanning for numbers (1+1 gets recognized)
 #pragma once
 #include <iostream>
 #include <string>
@@ -191,7 +190,7 @@ public:
         if ('1' <= c && c <= '9' || '0' <= c && c <= '0') {
             goto s5;
         }
-        if ('.' <= c <= '.') {
+        if ('.' <= c && c <= '.') {
             goto s7;
         }
         if ('e' <= c && c <= 'e' || 'E' <= c && c <= 'E') {
@@ -228,7 +227,7 @@ public:
         if ('+' <= c && c <= '+' || '-' <= c && c <= '-') {
             goto s4;
         }
-        if ('1' <= c && c <= '9' || '0' <= c && c <= '0') {
+        if ('1' <= c && c <= '9') {
             goto s6;
         }
         goto se;
