@@ -24,15 +24,13 @@ std::ostream& operator<<(std::ostream& out, Token token)
     }
 }
 
-class Scanner {
-public:
+struct Scanner {
     Token token;
     Scanner(Token token) : token(token) {}
     virtual std::string operator()(std::istream&) = 0;
 };
 
-class whitespaceScanner: public Scanner {
-public:
+struct whitespaceScanner: public Scanner {
     using Scanner::Scanner;
     std::string operator()(std::istream& in)
     {
@@ -67,8 +65,7 @@ public:
     }
 };
 
-class integerScanner: public Scanner {
-public:
+struct integerScanner: public Scanner {
     using Scanner::Scanner;
     std::string operator()(std::istream& in)
     {
@@ -116,8 +113,7 @@ public:
     }
 };
 
-class floatScanner: public Scanner {
-public:
+struct floatScanner: public Scanner {
     using Scanner::Scanner;
     std::string operator()(std::istream& in)
     {
@@ -243,8 +239,7 @@ public:
     }
 };
 
-class identifierScanner: public Scanner {
-public:
+struct identifierScanner: public Scanner {
     using Scanner::Scanner;
     std::string operator()(std::istream& in)
     {
@@ -287,7 +282,7 @@ class ScannerCollection {
     std::istream* in;
 
 public:
-    ScannerCollection(std::istream& in=std::cin) : in(&in) {};
+    ScannerCollection(std::istream& in=std::cin) : in(&in) {}
     void add_scanner(Scanner& scanner)
     {
         scanners.push_back(&scanner);
