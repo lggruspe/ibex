@@ -1,16 +1,16 @@
 #pragma once
 #include "nfa.h"
+#include <iostream>
 #include <map>
 #include <set>
-#include <string>
 
 namespace automata 
 {
 struct Dfa {
     int start;
     std::set<int> accept;
-    std::map<int, std::map<std::string, int> > delta;
-    std::set<std::string> symbols;
+    std::map<int, std::map<char, int> > delta;
+    std::set<char> symbols;
 
     int add_state(int q)
     {
@@ -24,17 +24,18 @@ struct Dfa {
         return this->add_state(q);
     }
 
-    void add_transition(int q, const std::string& a, int r)
+    void add_transition(int q, int r, char a)
     {
         this->add_state(q);
         this->add_state(r);
         this->delta[q][a] = r;
-        if (!a.empty()) {
+        if (a) {
             this->symbols.insert(a);
         }
     }
 };
 
 Dfa subset_construction(const Nfa&);
+std::ostream& operator<<(std::ostream&, const Dfa&);
 
 } // end namespace

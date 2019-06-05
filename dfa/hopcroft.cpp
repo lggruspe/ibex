@@ -4,12 +4,11 @@
 #include <list>
 #include <map>
 #include <set>
-#include <string>
 
 namespace automata 
 {
 
-int dfa_transition(const Dfa& dfa, int q, const std::string& a)
+int dfa_transition(const Dfa& dfa, int q, char a)
 {
     // -1 means delta(q, a) dne
     auto it = dfa.delta.find(q);
@@ -28,7 +27,7 @@ Dfa minimize(const Dfa& dfa)
     std::vector<int> states;
     std::transform(dfa.delta.begin(), dfa.delta.end(),
             std::back_inserter(states),
-            [](const std::pair<int, std::map<std::string, int>>& pair) {
+            [](const std::pair<int, std::map<char, int>>& pair) {
                 return pair.first;
             });
 
@@ -64,7 +63,7 @@ Dfa minimize(const Dfa& dfa)
         for (const auto& tran: trans.second) {
             const auto& a = tran.first;
             int r = partition.index(tran.second);
-            M.add_transition(q, a, r);
+            M.add_transition(q, r, a);
         }
     }
     return M;

@@ -1,6 +1,7 @@
 #include "dfa.h"
 #include "enumeration2.h"
 #include <algorithm>
+#include <iostream>
 #include <list>
 
 namespace automata 
@@ -11,8 +12,8 @@ void compute_predecessors(const Nfa& nfa,
     // assume predecessors is empty
     for (auto it = nfa.delta.begin(); it != nfa.delta.end(); ++it) {
         int p = it->first;
-        if (it->second.count("") > 0) {     // TODO don't search entire it->second
-            for (auto q: it->second.at("")) {
+        if (it->second.count('\0') > 0) {     // TODO don't search entire it->second
+            for (auto q: it->second.at('\0')) {
                 predecessors[q].insert(p);
             }
         }
@@ -39,8 +40,8 @@ std::map<int, std::set<int> > epsilon_closure(const Nfa& nfa)
         std::set<int> closure;
         closure.insert(q);
 
-        if (nfa.delta.at(q).count("") > 0) {        // TODO Only count one
-            for (auto r: nfa.delta.at(q).at("")) {
+        if (nfa.delta.at(q).count('\0') > 0) {        // TODO Only count one
+            for (auto r: nfa.delta.at(q).at('\0')) {
                 // closure = closure.union(closures[r])
                 std::copy(closures[r].begin(), closures[r].end(),
                         std::inserter(closure, closure.begin()));
@@ -57,7 +58,7 @@ std::map<int, std::set<int> > epsilon_closure(const Nfa& nfa)
     return closures;
 }
 
-std::set<int> next_state(const Nfa& nfa, const std::set<int>& Q, const std::string& a,
+std::set<int> next_state(const Nfa& nfa, const std::set<int>& Q, char a,
         const std::map<int, std::set<int> >& closures)
 {
     // TODO pass R by ref?
@@ -97,7 +98,7 @@ Dfa subset_construction(const Nfa& nfa)
     while (!queue.empty()) {
         int Q = queue.front();
         queue.pop_front();
-        for (const std::string& a: nfa.symbols) {
+        for (const auto& a: nfa.symbols) {
             std::set<int> R = next_state(nfa, names.value(Q), a, closures);
             if (R.empty()) {
                 continue;
@@ -113,10 +114,31 @@ Dfa subset_construction(const Nfa& nfa)
                     }
                 }
             }
-            dfa.add_transition(Q, a, names.index(R));
+            dfa.add_transition(Q, names.index(R), a);
         }
     }
     return dfa;
+}
+
+std::ostream& operator<<(std::ostream& out, const Dfa& dfa)
+{
+    out << "start: " << dfa.start << std::endl;
+    out << "accept: ";
+    for (auto f: dfa.accept) {
+        out << f << " ";
+    }
+    out << std::endl;
+    out << "delta: " << std::endl;
+    for (auto it = dfa.delta.begin(); it != dfa.delta.end(); ++it) {
+        int q = it->first;
+        for (auto jt = it->second.begin(); jt != it->second.end(); ++jt) {
+            auto a = jt->first;
+            int r = jt->second;
+            out << "d(" << q << ", " << a << ") = " << r << std::endl;
+        }
+    }
+    out << std::endl;
+    return out;
 }
 
 } // end namespace
