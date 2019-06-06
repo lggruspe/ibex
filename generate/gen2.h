@@ -146,7 +146,7 @@ void scanner_collection(std::ostream& out, const std::vector<std::string>& names
     
     for (const auto& name: names) {
         out << "        scanners.push_back(std::make_shared<" << name 
-            << "Scanner>(" << name << "));" << std::endl;
+            << "Scanner>(Token::" << name << "));" << std::endl;
     }
     
     out << R"VOGON(    }
@@ -156,7 +156,7 @@ void scanner_collection(std::ostream& out, const std::vector<std::string>& names
         for (auto scanner: scanners) {
             std::string lexeme = (*scanner)(*in);
             if (!lexeme.empty()) {
-                if (scanner->token != Ignore) {
+                if (scanner->token != Token::Ignore) {
                     return std::pair<Token, std::string>(scanner->token, lexeme);
                 }
                 return (*this)();
@@ -165,9 +165,9 @@ void scanner_collection(std::ostream& out, const std::vector<std::string>& names
         int c = in->get();
         if (c == std::char_traits<char>::eof()) {
             in->clear();
-            return std::pair<Token, std::string>(Empty, "");
+            return std::pair<Token, std::string>(Token::Empty, "");
         }
-        return std::pair<Token, std::string>(Other, std::string(1, (char)c));
+        return std::pair<Token, std::string>(Token::Other, std::string(1, (char)c));
     }
 
     void scan()
@@ -194,7 +194,7 @@ bool _is_valid_token(const std::string& name)
 
 void tokens(std::ostream& out, const std::vector<std::string>& names)
 {
-    out << R"VOGON(enum Token {
+    out << R"VOGON(enum class Token {
     Empty,
     Other)VOGON";
     for (const auto& name: names) {
@@ -217,17 +217,17 @@ void token_printer(std::ostream& out, const std::vector<std::string>& names)
     out << R"VOGON(std::ostream& operator<<(std::ostream& out, Token token)
 {
     switch(token) {
-    case Other:
-        return out << "Other" << std::endl;
-    case Empty:
-        return out << "Empty" << std::endl;
+    case Token::Other:
+        return out << "Other";
+    case Token::Empty:
+        return out << "Empty";
 )VOGON";
     for (const auto& name: names) {
         if (name == "Ignore") {
             continue;
         }
-        out << "    case " << name << ":" << std::endl;
-        out << "        return out << \"" << name << "\" << std::endl;" << std::endl;
+        out << "    case Token::" << name << ":" << std::endl;
+        out << "        return out << \"" << name << "\";" << std::endl;
     }
     out << R"VOGON(    default:
         return out;

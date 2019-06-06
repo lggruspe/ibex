@@ -5,7 +5,7 @@
 #include <utility>
 #include <vector>
 
-enum Token {
+enum class Token {
     Empty,
     Other,
     Identifier,
@@ -16,14 +16,14 @@ enum Token {
 std::ostream& operator<<(std::ostream& out, Token token)
 {
     switch(token) {
-    case Other:
-        return out << "Other" << std::endl;
-    case Empty:
-        return out << "Empty" << std::endl;
-    case Identifier:
-        return out << "Identifier" << std::endl;
-    case Number:
-        return out << "Number" << std::endl;
+    case Token::Other:
+        return out << "Other";
+    case Token::Empty:
+        return out << "Empty";
+    case Token::Identifier:
+        return out << "Identifier";
+    case Token::Number:
+        return out << "Number";
     default:
         return out;
     }
@@ -227,9 +227,9 @@ struct ScannerCollection {
 
     ScannerCollection(std::istream& in=std::cin) : in(&in) 
     {
-        scanners.push_back(std::make_shared<IdentifierScanner>(Identifier));
-        scanners.push_back(std::make_shared<IgnoreScanner>(Ignore));
-        scanners.push_back(std::make_shared<NumberScanner>(Number));
+        scanners.push_back(std::make_shared<IdentifierScanner>(Token::Identifier));
+        scanners.push_back(std::make_shared<IgnoreScanner>(Token::Ignore));
+        scanners.push_back(std::make_shared<NumberScanner>(Token::Number));
     }
 
     std::pair<Token, std::string> operator()()
@@ -237,7 +237,7 @@ struct ScannerCollection {
         for (auto scanner: scanners) {
             std::string lexeme = (*scanner)(*in);
             if (!lexeme.empty()) {
-                if (scanner->token != Ignore) {
+                if (scanner->token != Token::Ignore) {
                     return std::pair<Token, std::string>(scanner->token, lexeme);
                 }
                 return (*this)();
@@ -246,9 +246,9 @@ struct ScannerCollection {
         int c = in->get();
         if (c == std::char_traits<char>::eof()) {
             in->clear();
-            return std::pair<Token, std::string>(Empty, "");
+            return std::pair<Token, std::string>(Token::Empty, "");
         }
-        return std::pair<Token, std::string>(Other, std::string(1, (char)c));
+        return std::pair<Token, std::string>(Token::Other, std::string(1, (char)c));
     }
 
     void scan()
