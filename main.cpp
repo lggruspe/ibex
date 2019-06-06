@@ -1,6 +1,5 @@
 #include "grammar.h"
 #include "lr1/parser.h"
-#include "lr1/item.h"
 #include "lr1/collection.h"
 #include "print.h"
 #include <algorithm>

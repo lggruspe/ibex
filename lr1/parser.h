@@ -1,97 +1,131 @@
 #pragma once
 #include "collection.h"
 #include "enumeration.h"
-#include "item.h"
 #include "grammar.h"
 #include <map>
 #include <utility>
 #include <vector>
 #include <iostream>
-
+   
 namespace lr1
 {
 
-typedef std::pair<char, int> Action;
-// first can only be s, r, a, g, or '\0' (shift, reduce, accept, goto)
+template <class Token, class Variable>
+struct RulesTable {
+    // wrapper for Enumeration<Rule>
+    using Sym = cfg::Symbol<Token, Variable>;
+    using Sentence = typename std::vector<Sym>;
+    using Rule = typename std::pair<Variable, Sentence>;
+    Enumeration<Rule> rules;
+    Token empty;
 
-template <class Symbol>
+    RulesTable(const cfg::Grammar<Token, Variable>& grammar)
+    {
+        for (const auto& [var, prods]: grammar.rules) {
+            for (const auto& rhs: prods) {
+                rules.insert({var, rhs});
+            }
+        }
+        empty = grammar.empty;
+    }
+
+    int index(const Rule& rule) const
+    {
+        return rules.index(rule);
+    }
+
+    int index(const Item<Token, Variable>& item) const
+    {
+        // construct rule
+        Sentence rhs;
+        std::remove_copy(item.before.begin(), item.before.end(), 
+                std::back_inserter(rhs), empty);
+        std::remove_copy(item.after.begin(), item.after.end(), 
+                std::back_inserter(rhs), empty);
+        return index({item.lhs, rhs});
+    }
+
+    const Rule& value(int ind) const 
+    {
+        return rules.value(ind);
+    }
+};
+
+enum class Action { Error, Shift, Reduce, Accept, Goto };
+
+template <class Token, class Variable>
 class Parser {
-    std::map<int, std::map<Symbol, Action>> table;
-    Enumeration<Collection<Symbol>> collections;
-    std::map<int, std::map<Symbol, int>> delta;
-    cfg::Grammar<Symbol> grammar;
+    using Sym = cfg::Symbol<Token, Variable>;
+    std::map<int, std::map<Sym, std::pair<Action, int>>> table;
+    Enumeration<Collection<Token, Variable>> collections;
+    std::map<int, std::map<Sym, int>> delta;
+    cfg::Grammar<Token, Variable> grammar;
+    RulesTable<Token, Variable> rules;
 
-    template<class T>
-    friend void print_collections(const Parser<T>&);
-    template<class T>
-    friend void print_automaton(const Parser<T>&);
-    template<class T>
-    friend void print_table(const Parser<T>&);
-
-    void fill_in_row(int ind, const Symbol& start) 
+    void fill_in_row(int ind, const Sym& start) 
     {
         // compute shifts and gotos
-        for (const auto& transition: delta[ind]) {
-            const auto& sym = transition.first;
-            int next_state = transition.second;
-            table[ind][sym] = Action(
-                    (grammar.is_variable(sym) ? 'g' : 's'), next_state);
+        for (const auto& [sym, next_state]: delta[ind]) {
+            table[ind][sym] = { 
+                sym.is_variable() ? Action::Goto : Action::Shift,
+                next_state
+            };
         }
 
         // compute reductions and accepts
-        for (auto item: collections.value(ind).items) {
+        for (const auto& item: collections.value(ind).items) {
             if (!item.is_reduce()) {
                 continue;
             }
-            if (item.lhs == start && item.lookahead.empty()) {
-                table[ind][item.lookahead] = Action('a', 0);
+            if (item.lhs == start.variable() && item.lookahead.empty()) {
+                table[ind][item.lookahead] = { Action::Accept, 0 };
             } else {
                 // regular reduction
-                table[ind][item.lookahead] = Action('r', grammar.rules.index(item.rule()));
+                table[ind][item.lookahead] = { Action::Reduce, rules.index(item) };
             }
         }
     }
 
-    void construct_automaton(const Symbol& start)
+    void construct_automaton(const Sym& start)
     {
         // assume the grammar is augmented
         // rebuilds automaton (delta) and collections
         delta.clear();
         collections.clear();  // acts as history
-        Collection<Symbol> state;
-        state.items.insert(Item<Symbol>(start, {""}, *(grammar.productions(start).begin()), ""));
+        Collection<Token, Variable> state;
+        state.items.insert(Item<Token, Variable>(start.variable(), 
+                    {grammar.empty}, *(grammar.rules[start].begin()), 
+                    grammar.empty));
+
         state.closure(grammar);
         std::vector<int> states = {collections.insert(state)};
 
         while (!states.empty()) {
-            int name = states.back();
+            int id = states.back();
             states.pop_back();
-            state = collections.value(name);
-            std::map<Symbol, Collection<Symbol>> transitions = state.transition(grammar);
-            for (const auto& p: transitions) {
-                int pname;
-                if (!collections.has_value(p.second)) {
-                    pname = collections.insert(p.second);
-                    states.push_back(pname);
+            state = collections.value(id);
+            std::map<Sym, Collection<Token, Variable>> transitions = state.transition(grammar);
+            for (const auto& [sym, next_state]: transitions) {
+                int sid;
+                if (!collections.has_value(next_state)) {
+                    sid = collections.insert(next_state);
+                    states.push_back(sid);
                 } else {
-                    pname = collections.index(p.second);
+                    sid = collections.index(next_state);
                 }
-                delta[name][p.first] = pname;
+                delta[id][sym] = sid;
             }
         }
     }
 
 public:
+    Parser(const cfg::Grammar<Token, Variable>& grammar) : 
+        grammar(grammar), rules(grammar) {}
 
-    Parser(const cfg::Grammar<Symbol>& grammar) 
+    void construct(const Sym& start) 
     {
-        this->grammar = grammar;
-    }
-
-    void construct(const Symbol& start) 
-    {
-        if (!grammar.is_variable(start)) {
-            throw "given start symbol is not a variable";
+        if (!start.is_variable()) {
+            throw std::invalid_argument("start symbol must be a variable");
         }
         construct_automaton(start);
         table.clear();
@@ -106,20 +140,21 @@ public:
     {
         // assumes 0 is the start state
         std::vector<int> states = {0};
-        std::vector<Symbol> symbols;
-        Symbol lookahead = scan().first;
+        std::vector<Sym> symbols;
+        Sym lookahead = scan().first;
         for (;;) {
             int state = states.back();
-            Action action = table[state][lookahead];
-            if (action.first == 'a') {
+            auto [action, next_state] = table[state][lookahead];
+
+            if (action == Action::Accept) {
                 return true;
-            } else if (action.first == 's') {
-                states.push_back(action.second);
+            } else if (action == Action::Shift) {
+                states.push_back(next_state);
                 symbols.push_back(lookahead);
                 lookahead = scan().first;
-            } else if (action.first == 'r') {
-                auto rule = grammar.rules.value(action.second);
-                for (auto i = 0; i < rule.second.size(); ++i) {
+            } else if (action == Action::Reduce) {
+                auto rule = rules.value(next_state);
+                for (const auto& _: rule.second) {
                     states.pop_back();
                     symbols.pop_back();
                 }
@@ -129,7 +164,6 @@ public:
                 return false;
             }
         }
-
     }
 
 private:
@@ -144,8 +178,8 @@ private:
         std::cout << std::endl;
     }
 
-    void _trace(const std::vector<int>& states, const std::vector<Symbol>& symbols,
-            const Symbol& lookahead) const
+    void _trace(const std::vector<int>& states, const std::vector<Sym>& symbols,
+            const Sym& lookahead) const
     {
         std::cout << "states: ";
         _print_vector(states);
@@ -154,6 +188,13 @@ private:
         std::cout << "lookahead: " << lookahead << std::endl;
         std::cout << std::endl;
     }
+
+    template<class T, class U>
+    friend void print_collections(const Parser<T, U>&);
+    template<class T, class U>
+    friend void print_automaton(const Parser<T, U>&);
+    template<class T, class U>
+    friend void print_table(const Parser<T, U>&);
 };
 
 } // end namespace

@@ -1,35 +1,95 @@
 #pragma once
 #include "grammar.h"
-#include "item.h"
 #include <algorithm>
 #include <list>
 #include <map>
 #include <set>
+#include <utility>
 #include <vector>
+#include <tuple>
 
 namespace lr1
 {
 
-template <class Symbol>
-struct Collection {
-    std::set<Item<Symbol>> items;
-    //std::map<Symbol, CollectionSymbol>> transitions;    // TODO only store pointers to neighbors
-    using Sentence = typename std::vector<Symbol>;
+template <class Token, class Variable>
+struct Item {
+    using Sym = cfg::Symbol<Token, Variable>;
+    using Sentence = typename std::vector<Sym>;
 
-    void closure(cfg::Grammar<Symbol>& grammar)
+    Variable lhs;
+    Sentence before;
+    Sentence after;
+    Sym lookahead;
+
+    Item() {}
+    Item(const Variable& lhs, const Sentence& before,
+            const Sentence& after, const Sym& lookahead)
     {
-        std::list<Item<Symbol>> queue(items.begin(), items.end());
+        this->lhs = lhs;
+        this->before = before;
+        this->after = after;
+        this->lookahead = lookahead;
+    }
+
+    bool operator<(const Item<Token, Variable>& other) const 
+    {
+        return std::tie(lhs, before, after, lookahead) 
+            < std::tie(other.lhs, other.before, other.after, 
+                    other.lookahead);
+    }
+
+    bool operator==(const Item<Token, Variable>& other) const
+    {
+        return !(*this < other || other < *this);
+    }
+
+    Item<Token, Variable> shifted() const 
+    {
+        // creates copy with shifted dot
+        // after must be nonempty
+        if (after.empty()) {
+            throw std::logic_error("can't shift before empty string");
+        }
+
+        Sentence before = this->before;
+        before.push_back(this->after.front());
+        Sentence after(this->after.begin() + 1, this->after.end());
+        return {lhs, before, after, lookahead};
+    }
+
+    bool is_reduce() const 
+    {
+        return after.empty();
+    }
+};
+
+template <class Token, class Variable>
+cfg::Symbol<Token, Variable> symbol_after_dot(const Item<Token, Variable>& item,
+        const cfg::Symbol<Token, Variable>& if_empty)
+{
+    return item.after.empty() ? if_empty : item.after.front();
+}
+
+template <class Token, class Variable>
+struct Collection {
+    using Sym = cfg::Symbol<Token, Variable>;
+    std::set<Item<Token, Variable>> items;
+    //std::map<Sym, CollectionSym>> transitions;    // TODO only store pointers to neighbors
+    using Sentence = typename std::vector<Sym>;
+
+    void closure(cfg::Grammar<Token, Variable>& grammar)
+    {
+        std::list<Item<Token, Variable>> queue(items.begin(), items.end());
         while (!queue.empty()) {
             auto item = queue.front();
             queue.pop_front();
-            Symbol variable = item.symbol_after_dot();
+            Sym variable = symbol_after_dot(item, grammar.empty);
             if (!variable.is_variable()) {
                 continue;
             }
 
             // expand variable
-            auto subs = grammar.productions(variable);
-            for (const auto& sub: subs) {
+            for (const auto& sub: grammar.rules[variable]) {
                 Sentence temp = Sentence();// lookahead of new item = grammar.first(temp)
                 if (!item.after.empty()) {
                     std::copy(item.after.begin() + 1, item.after.end(), 
@@ -38,7 +98,7 @@ struct Collection {
                 temp.push_back(item.lookahead);
                 auto first_set = grammar.first(temp);
                 for (const auto& sym: first_set) {
-                    Item<Symbol> new_item = Item<Symbol>(variable, Sentence(), sub, sym);
+                    Item<Token, Variable> new_item(variable, Sentence(), sub, sym);
                     if (items.insert(new_item).second) {
                         queue.push_back(new_item);
                     } 
@@ -57,38 +117,32 @@ struct Collection {
         return items == coll.items;
     }
 
-    std::map<Symbol, Collection<Symbol>> transition(cfg::Grammar<Symbol>&);
-};
-
-
-template <class Symbol>
-std::set<Symbol> transition_symbols(const Collection<Symbol>& state)
-{
-    std::set<Symbol> symbols;
-    for (const auto& item: state.items) {
-        Symbol after = item.symbol_after_dot();
-        if (!after.empty()) {
-            symbols.insert(after);
-        }
-    }
-    return symbols;
-}
-
-template <class Symbol>
-std::map<Symbol, Collection<Symbol>> 
-Collection<Symbol>::transition(cfg::Grammar<Symbol>& grammar)
-{
-    std::map<Symbol, Collection<Symbol>> transitions;
-    std::set<Symbol> symbols = transition_symbols(*this);
-    for (const Symbol& sym: symbols) {
+    std::set<Sym> _transition_symbols()
+    {
+        std::set<Sym> symbols;
         for (const auto& item: items) {
-            if (item.symbol_after_dot() == sym) {
-                transitions[sym].items.insert(item.shifted());
+            if (!item.after.empty()) {
+                symbols.insert(item.after.front());
             }
         }
-        transitions[sym].closure(grammar);
+        return symbols;
     }
-    return transitions;
-}
+
+    std::map<Sym, Collection<Token, Variable>> transition(
+            cfg::Grammar<Token, Variable>& grammar)
+    {
+        std::map<Sym, Collection<Token, Variable>> transitions;
+        std::set<Sym> symbols = _transition_symbols();
+        for (const auto& sym: symbols) {
+            for (const auto& item: items) {
+                if (symbol_after_dot(item, grammar.empty) == sym) {
+                    transitions[sym].items.insert(item.shifted());
+                }
+            }
+            transitions[sym].closure(grammar);
+        }
+        return transitions;
+    }
+};
 
 } // end namespace

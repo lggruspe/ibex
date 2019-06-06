@@ -1,13 +1,13 @@
 #pragma once
-#include "lr1/item.h"
+#include "lr1/collection.h"
 #include "lr1/parser.h"
 #include <iostream>
 
 namespace lr1
 {
 
-template <class Symbol>
-void print_item(const Item<Symbol>& item)
+template <class Token, class Variable>
+void print_item(const Item<Token, Variable>& item)
 {
     std::cout << "{" << item.lhs << " -> ";
     for (const auto& sym: item.before) {
@@ -20,16 +20,16 @@ void print_item(const Item<Symbol>& item)
     std::cout << ", " << item.lookahead << "}" << std::endl;
 }
 
-template <class Symbol>
-void print_state(const Collection<Symbol>& state)
+template <class Token, class Variable>
+void print_state(const Collection<Token, Variable>& state)
 {
     for (const auto& item: state.items) {
         print_item(item);
     }
 }
 
-template <class Symbol>
-void print_collections(const Parser<Symbol>& parser)
+template <class Token, class Variable>
+void print_collections(const Parser<Token, Variable>& parser)
 {
     std::cout << "Parser states" << std::endl;
     for (const auto& state: parser.collections) {
@@ -40,12 +40,11 @@ void print_collections(const Parser<Symbol>& parser)
     std::cout << std::endl;
 }
 
-template <class Symbol>
-void print_automaton(const Parser<Symbol>& parser)
+template <class Token, class Variable>
+void print_automaton(const Parser<Token, Variable>& parser)
 {
     std::cout << "Parser automaton" << std::endl;
-    const std::map<int, std::map<Symbol, int>>& delta = parser.delta;
-
+    const auto& delta = parser.delta;
     for (const auto &transitions: delta) {
         for (const auto& sym: transitions.second) {
             std::cout << "(" << transitions.first << ", " << sym.first 
@@ -55,8 +54,8 @@ void print_automaton(const Parser<Symbol>& parser)
     std::cout << std::endl;
 }
 
-template <class Symbol>
-void print_table(const Parser<Symbol>& parser)
+template <class Token, class Variable>
+void print_table(const Parser<Token, Variable>& parser)
 {
     std::cout << "Parser table" << std::endl;
     for (const auto& p: parser.table) {

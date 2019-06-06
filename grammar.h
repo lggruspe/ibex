@@ -51,9 +51,8 @@ public:
 };
 
 template <class Token, class Variable>
-class Grammar {
-    Token _empty;
-public:
+struct Grammar {
+    Token empty;
     using Sym = Symbol<Token, Variable>;
     using Sentence = typename std::vector<Sym>;
     std::set<Variable> variables;
@@ -61,9 +60,9 @@ public:
     std::map<Variable, std::set<Sentence>> rules;
     std::map<Sym,std::set<Sym>>first_sets;
 
-    Grammar(const Token& _empty) : _empty(_empty) 
+    Grammar(const Token& empty) : empty(empty) 
     {
-        add(_empty);
+        add(empty);
     }
 
     void add(const Token& token)
@@ -110,7 +109,7 @@ public:
         for (const auto& sym: sent) {
             const auto& first_set = first(sym);
             res.insert(first_set.begin(), first_set.end());
-            if (!first_set.count(_empty)) {
+            if (!first_set.count(empty)) {
                 break;
 
             }
