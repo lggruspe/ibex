@@ -10,27 +10,25 @@ namespace cfg
 {
 
 template <class T, class V>
-struct Symbol {
+class Symbol {
     enum class Type { Token, Variable };
-    union _Symbol {
-        T t;
-        V v;
-    };
+    T _token;
+    V _variable;
     Type type;
-    _Symbol _symbol;
 
+public:
     Symbol(const T& t) : type(Type::Token)
     {
-        _symbol.t = t;
+        _token = t;
     }
 
     Symbol(const V& v) : type(Type::Variable)
     {
-        _symbol.v = v;
+        _variable = v;
     }
 
-    V variable() const { return _symbol.v; }
-    T token() const { return _symbol.t; }
+    const V& variable() const { return _variable; }
+    const T& token() const { return _token; }
 
     bool operator<(const Symbol& other) const
     {
@@ -38,9 +36,9 @@ struct Symbol {
             return type == Type::Token;
         }
         if (type == Type::Token) {
-            return _symbol.t < other._symbol.t;
+            return token() < other.token();
         }
-        return _symbol.v < other._symbol.v;
+        return variable() < other.variable();
     }
 
     bool operator==(const Symbol& other) const 
@@ -92,21 +90,15 @@ public:
         bool changed = true;
         while (changed) {
             changed = false;
-            for (const auto& sym: variables) {
+            for (const auto& var: variables) {
                 std::set<Sym> first_set;
-                for (const Sentence& sub: rules[sym]) {
-                    if (sub[0].is_token()) {
-                        first_set.insert(sub[0]);
-                    } else {
-                        auto temp = first(sub);
-                        std::copy(temp.begin(), temp.end(),
-                                std::inserter(first_set, first_set.begin()));
-                    }
+                for (const Sentence& sub: rules[var]) {
+                    auto temp = first(sub);
+                    first_set.insert(temp.begin(), temp.end());
                 }
-
-                if (first_set != first_sets[sym]) {
+                if (first_set != first_sets[var]) {
                     changed = true;
-                    first_sets[sym] = first_set;
+                    first_sets[var] = first_set;
                 }
             }
         }

@@ -2,6 +2,7 @@
 //#include "target/asdf.h"
 #include <set>
 #include <iostream>
+#include <string>
 
 using namespace cfg;
 
@@ -76,7 +77,9 @@ void test_first()
 }
 */
 
-enum Token { Lparen, Rparen, Empty };
+//enum Token { Lparen, Rparen, Empty };
+
+typedef std::string Token;
 
 enum Variable { Goal, List, Pair };
 
@@ -96,6 +99,9 @@ void print(const T& first_set)
 
 void test_paren()
 {
+    Token Empty = "";
+    Token Lparen = "(";
+    Token Rparen = ")";
     Grammar<Token, Variable> grammar(Empty);
     grammar.add(Lparen);
     grammar.add(Rparen);
