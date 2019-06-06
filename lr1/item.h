@@ -11,7 +11,6 @@ template <class Symbol>
 class Item {
 public:
     using Sentence = typename std::vector<Symbol>;
-    using Rule = typename std::pair<Symbol, Sentence>;
 
     Symbol lhs;
     Sentence before;
@@ -56,8 +55,8 @@ public:
     {
         return after.empty();
     }
-
-    Rule rule() const
+    
+    std::pair<Symbol, Sentence> rule() const
     {
         Sentence rhs;
         std::remove_copy(before.begin(), before.end(), 

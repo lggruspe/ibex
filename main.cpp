@@ -54,12 +54,6 @@ int main()
     }
     std::cout << std::endl;
 
-    lr1::Item<std::string> item("goal", {""}, {"list"}, "");
-    lr1::Item<std::string> jtem("goal", {""}, {"list"}, "");
-
-    lr1::Collection<std::string> coll;
-    coll.items.insert(item);
-    coll.closure(grammar);
 
     lr1::Parser<std::string> parser(grammar);
     parser.construct("goal");

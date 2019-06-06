@@ -23,7 +23,7 @@ struct Collection {
             auto item = queue.front();
             queue.pop_front();
             Symbol variable = item.symbol_after_dot();
-            if (!grammar.is_variable(variable)) {
+            if (!variable.is_variable()) {
                 continue;
             }
 
