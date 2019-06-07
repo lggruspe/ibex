@@ -2,6 +2,7 @@
 #include "collection.h"
 #include "enumeration.h"
 #include "grammar.h"
+#include <algorithm>
 #include <map>
 #include <utility>
 #include <vector>
@@ -154,10 +155,11 @@ public:
                 lookahead = scan().first;
             } else if (action == Action::Reduce) {
                 auto rule = rules.value(next_state);
-                for (const auto& _: rule.second) {
-                    states.pop_back();
-                    symbols.pop_back();
-                }
+                std::for_each(rule.second.begin(), rule.second.end(),
+                        [&states, &symbols](const auto&) {
+                            states.pop_back();
+                            symbols.pop_back();
+                        });
                 symbols.push_back(rule.first);
                 states.push_back(table[states.back()][rule.first].second);
             } else {
