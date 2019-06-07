@@ -1,12 +1,13 @@
 #include "grammar.h"
-//#include "target/asdf.h"
+#include "target/asdf.h"
+#include "lr1/collection.h"
+#include "lr1/parser.h"
 #include <set>
 #include <iostream>
 #include <string>
 
 using namespace cfg;
 
-/*
 enum Variable { Start, Literal };
 
 std::ostream& operator<<(std::ostream& out, Variable var)
@@ -75,8 +76,8 @@ void test_first()
     print(grammar.first(Start));
 
 }
-*/
 
+/*
 //enum Token { Lparen, Rparen, Empty };
 
 typedef std::string Token;
@@ -125,8 +126,31 @@ void test_paren()
     std::cout << Pair << ": ";
     print(grammar.first(Pair));
 }
+*/
+
+void test_lr1()
+{
+    Grammar<Token, Variable> grammar(Token::Empty);
+    grammar.add(Token::Number);
+    grammar.add(Token::Identifier);
+    grammar.add(Token::Empty);
+    grammar.add(Token::Ignore);
+    grammar.add(Token::Other);
+
+    // add rule
+    grammar.add(Literal, {Token::Identifier});
+    grammar.add(Literal, {Token::Number});
+    grammar.add(Start, {Literal});
+
+    lr1::Parser parser(grammar);
+    parser.construct(Start);
+
+    ScannerCollection scanners;
+    bool success = parser.parse(scanners);
+    std::cout << success << std::endl;
+}
 
 int main()
 {
-    test_paren();
+    test_lr1();
 }

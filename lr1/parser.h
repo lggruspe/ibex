@@ -45,7 +45,7 @@ struct RulesTable {
         return index({item.lhs, rhs});
     }
 
-    const Rule& value(int ind) const 
+    const Rule& value(int ind) 
     {
         return rules.value(ind);
     }
@@ -77,7 +77,7 @@ class Parser {
             if (!item.is_reduce()) {
                 continue;
             }
-            if (item.lhs == start.variable() && item.lookahead.empty()) {
+            if (item.lhs == start.variable() && item.lookahead == grammar.empty) {
                 table[ind][item.lookahead] = { Action::Accept, 0 };
             } else {
                 // regular reduction
@@ -94,7 +94,7 @@ class Parser {
         collections.clear();  // acts as history
         Collection<Token, Variable> state;
         state.items.insert(Item<Token, Variable>(start.variable(), 
-                    {grammar.empty}, *(grammar.rules[start].begin()), 
+                    {grammar.empty}, *(grammar.rules[start.variable()].begin()), 
                     grammar.empty));
 
         state.closure(grammar);

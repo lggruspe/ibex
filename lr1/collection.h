@@ -21,15 +21,9 @@ struct Item {
     Sentence after;
     Sym lookahead;
 
-    Item() {}
     Item(const Variable& lhs, const Sentence& before,
-            const Sentence& after, const Sym& lookahead)
-    {
-        this->lhs = lhs;
-        this->before = before;
-        this->after = after;
-        this->lookahead = lookahead;
-    }
+            const Sentence& after, const Sym& lookahead) : lhs(lhs), before(before), after(after),
+        lookahead(lookahead) {}
 
     bool operator<(const Item<Token, Variable>& other) const 
     {
@@ -83,13 +77,13 @@ struct Collection {
         while (!queue.empty()) {
             auto item = queue.front();
             queue.pop_front();
-            Sym variable = symbol_after_dot(item, grammar.empty);
-            if (!variable.is_variable()) {
+            Sym sym = symbol_after_dot(item, Sym(grammar.empty));
+            if (!sym.is_variable()) {
                 continue;
             }
 
-            // expand variable
-            for (const auto& sub: grammar.rules[variable]) {
+            // expand variable (sym)
+            for (const auto& sub: grammar.rules[sym.variable()]) {
                 Sentence temp = Sentence();// lookahead of new item = grammar.first(temp)
                 if (!item.after.empty()) {
                     std::copy(item.after.begin() + 1, item.after.end(), 
@@ -97,8 +91,8 @@ struct Collection {
                 }
                 temp.push_back(item.lookahead);
                 auto first_set = grammar.first(temp);
-                for (const auto& sym: first_set) {
-                    Item<Token, Variable> new_item(variable, Sentence(), sub, sym);
+                for (const auto& first: first_set) {
+                    Item<Token, Variable> new_item(sym.variable(), Sentence(), sub, first);
                     if (items.insert(new_item).second) {
                         queue.push_back(new_item);
                     } 
@@ -135,7 +129,7 @@ struct Collection {
         std::set<Sym> symbols = _transition_symbols();
         for (const auto& sym: symbols) {
             for (const auto& item: items) {
-                if (symbol_after_dot(item, grammar.empty) == sym) {
+                if (symbol_after_dot(item, Sym(grammar.empty)) == sym) {
                     transitions[sym].items.insert(item.shifted());
                 }
             }
