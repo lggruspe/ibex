@@ -1,5 +1,5 @@
+#include "dfa/hopcroft.h"
 #include "partition.h"
-#include "hopcroft.h"
 #include <iterator>
 #include <list>
 #include <map>

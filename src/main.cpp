@@ -1,5 +1,5 @@
-#include "generator.h"
-#include "utilities.h"
+#include "generate/generator.h"
+#include "regex2/utilities.h"
 #include <iostream>
 
 using namespace regex2;

@@ -1,5 +1,5 @@
-#include "_nfa.h"
-#include "nfa.h"
+#include "nfa/_nfa.h"
+#include "nfa/nfa.h"
 #include <boost/icl/split_interval_set.hpp>
 #include <map>
 #include <set>

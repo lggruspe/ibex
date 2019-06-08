@@ -1,5 +1,5 @@
 #pragma once
-#include "nfa.h"
+#include "nfa/nfa.h"
 #include <iostream>
 #include <map>
 #include <set>

@@ -1,4 +1,4 @@
-#include "dfa.h"
+#include "dfa/dfa.h"
 #include "enumeration2.h"
 #include <algorithm>
 #include <iostream>

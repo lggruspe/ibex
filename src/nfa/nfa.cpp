@@ -1,6 +1,6 @@
-#include "nfa.h"
-#include "_nfa.h"
-#include "regex2.h"
+#include "nfa/nfa.h"
+#include "nfa/_nfa.h"
+#include "regex2/regex2.h"
 #include <boost/icl/split_interval_set.hpp>
 #include <iostream>
 #include <stdexcept>

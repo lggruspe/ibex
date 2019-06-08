@@ -1,4 +1,4 @@
-#include "asdf.h"
+#include "sample.h"
 
 int main()
 {

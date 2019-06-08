@@ -1,7 +1,7 @@
 #pragma once
-#include "hopcroft.h"
-#include "nfa.h"
-#include "regex2.h"
+#include "dfa/hopcroft.h"
+#include "nfa/nfa.h"
+#include "regex2/regex2.h"
 #include "gen2.h"
 #include <algorithm>
 #include <iostream>
