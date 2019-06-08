@@ -42,4 +42,18 @@ Expr whitespace()
     return symbol(' ') | symbol('\t') | symbol('\n');
 }
 
+Expr character()
+{
+    Expr escape = symbol('\\') + (symbol('\'') | symbol('\\') | symbol('t') | symbol('n'));
+    Expr middle = symbol(32, 38) | symbol(40, 91) | symbol(93, 126) | escape;
+    return symbol('\'') + middle + symbol('\'');
+}
+
+
+Expr string()
+{
+    return symbol('"') + closure((symbol(32, 33) | symbol(35, 91) | symbol(93, 126))
+            | (symbol('\\') + symbol(32, 126))) + symbol('"');
+}
+
 }   // end namespace

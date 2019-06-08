@@ -71,4 +71,15 @@ int main()
     std::cout << "identifier" << std::endl;
     std::cout << re << std::endl;
     std::cout << *(re->alphabet) << std::endl;
+
+    re = character();
+    std::cout << "character" << std::endl;
+    std::cout << re << std::endl;
+    std::cout << *(re->alphabet) << std::endl;
+
+    re = string();
+    std::cout << "string" << std::endl;
+    std::cout << re << std::endl;
+    std::cout << *(re->alphabet) << std::endl;
+
 }
