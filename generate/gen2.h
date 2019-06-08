@@ -89,7 +89,10 @@ void _scanner_state(std::ostream& out, bool accept, int state,
         const std::map<char, int>& trans, const Alphabet& alphabet)
 {
     out << "    s" << state << ":" << std::endl;
-    out << R"VOGON(        in.get(c);
+    out << R"VOGON(        c = in.get();
+        if (c == eof) {
+            goto se;
+        }
         lexeme += c;)VOGON" << std::endl;
 
     if (accept) {
@@ -111,7 +114,8 @@ void scanner(std::ostream& out, const std::string& name, const automata::Dfa& df
     using Scanner::Scanner;
     std::string operator()(std::istream& in)
     {
-        char c;
+        int c;
+        int eof = std::char_traits<char>::eof();
         std::vector<char> checkpoint;
         std::string lexeme;)VOGON" << std::endl;
 

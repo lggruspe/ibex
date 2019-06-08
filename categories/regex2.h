@@ -36,7 +36,7 @@ public:
     }
 };
 
-using Expr = typename std::shared_ptr<_Expr>;
+using Expr = typename std::shared_ptr<_Expr>;   // segmentation fault when initialized without value
 
 template <class ExprContainer>
 Expr _alternate(ExprContainer);

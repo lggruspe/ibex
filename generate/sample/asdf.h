@@ -45,12 +45,16 @@ struct _ignoreScanner: public Scanner {
     using Scanner::Scanner;
     std::string operator()(std::istream& in)
     {
-        char c;
+        int c;
+        int eof = std::char_traits<char>::eof();
         std::vector<char> checkpoint;
         std::string lexeme;
         goto s0;
     s0:
-        in.get(c);
+        c = in.get();
+        if (c == eof) {
+            goto se;
+        }
         lexeme += c;
         checkpoint.push_back(c);
         if ((9 <= c && c <= 9) || (10 <= c && c <= 10) || (32 <= c && c <= 32)) {
@@ -58,7 +62,10 @@ struct _ignoreScanner: public Scanner {
         }
         goto se;
     s1:
-        in.get(c);
+        c = in.get();
+        if (c == eof) {
+            goto se;
+        }
         lexeme += c;
         checkpoint.clear();
         checkpoint.push_back(c);
@@ -78,12 +85,16 @@ struct characterScanner: public Scanner {
     using Scanner::Scanner;
     std::string operator()(std::istream& in)
     {
-        char c;
+        int c;
+        int eof = std::char_traits<char>::eof();
         std::vector<char> checkpoint;
         std::string lexeme;
         goto s0;
     s0:
-        in.get(c);
+        c = in.get();
+        if (c == eof) {
+            goto se;
+        }
         lexeme += c;
         checkpoint.push_back(c);
         if ((39 <= c && c <= 39)) {
@@ -91,13 +102,19 @@ struct characterScanner: public Scanner {
         }
         goto se;
     s1:
-        in.get(c);
+        c = in.get();
+        if (c == eof) {
+            goto se;
+        }
         lexeme += c;
         checkpoint.clear();
         checkpoint.push_back(c);
         goto se;
     s2:
-        in.get(c);
+        c = in.get();
+        if (c == eof) {
+            goto se;
+        }
         lexeme += c;
         checkpoint.push_back(c);
         if ((32 <= c && c <= 38) || (40 <= c && c <= 91) || (93 <= c && c <= 110) || (110 <= c && c <= 110) || (110 <= c && c <= 116) || (116 <= c && c <= 116) || (116 <= c && c <= 126)) {
@@ -108,7 +125,10 @@ struct characterScanner: public Scanner {
         }
         goto se;
     s3:
-        in.get(c);
+        c = in.get();
+        if (c == eof) {
+            goto se;
+        }
         lexeme += c;
         checkpoint.push_back(c);
         if ((39 <= c && c <= 39)) {
@@ -116,7 +136,10 @@ struct characterScanner: public Scanner {
         }
         goto se;
     s4:
-        in.get(c);
+        c = in.get();
+        if (c == eof) {
+            goto se;
+        }
         lexeme += c;
         checkpoint.push_back(c);
         if ((39 <= c && c <= 39) || (92 <= c && c <= 92) || (110 <= c && c <= 110) || (116 <= c && c <= 116)) {
@@ -138,12 +161,16 @@ struct identifierScanner: public Scanner {
     using Scanner::Scanner;
     std::string operator()(std::istream& in)
     {
-        char c;
+        int c;
+        int eof = std::char_traits<char>::eof();
         std::vector<char> checkpoint;
         std::string lexeme;
         goto s0;
     s0:
-        in.get(c);
+        c = in.get();
+        if (c == eof) {
+            goto se;
+        }
         lexeme += c;
         checkpoint.push_back(c);
         if ((65 <= c && c <= 90) || (95 <= c && c <= 95) || (97 <= c && c <= 122)) {
@@ -151,7 +178,10 @@ struct identifierScanner: public Scanner {
         }
         goto se;
     s1:
-        in.get(c);
+        c = in.get();
+        if (c == eof) {
+            goto se;
+        }
         lexeme += c;
         checkpoint.clear();
         checkpoint.push_back(c);
@@ -174,12 +204,16 @@ struct numberScanner: public Scanner {
     using Scanner::Scanner;
     std::string operator()(std::istream& in)
     {
-        char c;
+        int c;
+        int eof = std::char_traits<char>::eof();
         std::vector<char> checkpoint;
         std::string lexeme;
         goto s0;
     s0:
-        in.get(c);
+        c = in.get();
+        if (c == eof) {
+            goto se;
+        }
         lexeme += c;
         checkpoint.push_back(c);
         if ((49 <= c && c <= 57)) {
@@ -190,7 +224,10 @@ struct numberScanner: public Scanner {
         }
         goto se;
     s1:
-        in.get(c);
+        c = in.get();
+        if (c == eof) {
+            goto se;
+        }
         lexeme += c;
         checkpoint.clear();
         checkpoint.push_back(c);
@@ -205,7 +242,10 @@ struct numberScanner: public Scanner {
         }
         goto se;
     s2:
-        in.get(c);
+        c = in.get();
+        if (c == eof) {
+            goto se;
+        }
         lexeme += c;
         checkpoint.push_back(c);
         if ((43 <= c && c <= 43) || (45 <= c && c <= 45)) {
@@ -219,7 +259,10 @@ struct numberScanner: public Scanner {
         }
         goto se;
     s3:
-        in.get(c);
+        c = in.get();
+        if (c == eof) {
+            goto se;
+        }
         lexeme += c;
         checkpoint.clear();
         checkpoint.push_back(c);
@@ -231,7 +274,10 @@ struct numberScanner: public Scanner {
         }
         goto se;
     s4:
-        in.get(c);
+        c = in.get();
+        if (c == eof) {
+            goto se;
+        }
         lexeme += c;
         checkpoint.push_back(c);
         if ((48 <= c && c <= 48)) {
@@ -242,7 +288,10 @@ struct numberScanner: public Scanner {
         }
         goto se;
     s5:
-        in.get(c);
+        c = in.get();
+        if (c == eof) {
+            goto se;
+        }
         lexeme += c;
         checkpoint.clear();
         checkpoint.push_back(c);
@@ -254,13 +303,19 @@ struct numberScanner: public Scanner {
         }
         goto se;
     s6:
-        in.get(c);
+        c = in.get();
+        if (c == eof) {
+            goto se;
+        }
         lexeme += c;
         checkpoint.clear();
         checkpoint.push_back(c);
         goto se;
     s7:
-        in.get(c);
+        c = in.get();
+        if (c == eof) {
+            goto se;
+        }
         lexeme += c;
         checkpoint.push_back(c);
         if ((48 <= c && c <= 48) || (49 <= c && c <= 57)) {
@@ -268,7 +323,10 @@ struct numberScanner: public Scanner {
         }
         goto se;
     s8:
-        in.get(c);
+        c = in.get();
+        if (c == eof) {
+            goto se;
+        }
         lexeme += c;
         checkpoint.clear();
         checkpoint.push_back(c);
@@ -291,12 +349,16 @@ struct stringScanner: public Scanner {
     using Scanner::Scanner;
     std::string operator()(std::istream& in)
     {
-        char c;
+        int c;
+        int eof = std::char_traits<char>::eof();
         std::vector<char> checkpoint;
         std::string lexeme;
         goto s0;
     s0:
-        in.get(c);
+        c = in.get();
+        if (c == eof) {
+            goto se;
+        }
         lexeme += c;
         checkpoint.push_back(c);
         if ((34 <= c && c <= 34)) {
@@ -304,13 +366,19 @@ struct stringScanner: public Scanner {
         }
         goto se;
     s1:
-        in.get(c);
+        c = in.get();
+        if (c == eof) {
+            goto se;
+        }
         lexeme += c;
         checkpoint.clear();
         checkpoint.push_back(c);
         goto se;
     s2:
-        in.get(c);
+        c = in.get();
+        if (c == eof) {
+            goto se;
+        }
         lexeme += c;
         checkpoint.push_back(c);
         if ((34 <= c && c <= 34)) {
@@ -324,7 +392,10 @@ struct stringScanner: public Scanner {
         }
         goto se;
     s3:
-        in.get(c);
+        c = in.get();
+        if (c == eof) {
+            goto se;
+        }
         lexeme += c;
         checkpoint.push_back(c);
         if ((32 <= c && c <= 33) || (34 <= c && c <= 34) || (35 <= c && c <= 91) || (92 <= c && c <= 92) || (93 <= c && c <= 126)) {
