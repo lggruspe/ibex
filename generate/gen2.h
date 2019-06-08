@@ -156,7 +156,7 @@ void scanner_collection(std::ostream& out, const std::vector<std::string>& names
         for (auto scanner: scanners) {
             std::string lexeme = (*scanner)(*in);
             if (!lexeme.empty()) {
-                if (scanner->token != Token::Ignore) {
+                if (scanner->token != Token::_ignore) {
                     return std::pair<Token, std::string>(scanner->token, lexeme);
                 }
                 return (*this)();
@@ -165,9 +165,9 @@ void scanner_collection(std::ostream& out, const std::vector<std::string>& names
         int c = in->get();
         if (c == std::char_traits<char>::eof()) {
             in->clear();
-            return std::pair<Token, std::string>(Token::Empty, "");
+            return std::pair<Token, std::string>(Token::_empty, "");
         }
-        return std::pair<Token, std::string>(Token::Other, std::string(1, (char)c));
+        return std::pair<Token, std::string>(Token::_other, std::string(1, (char)c));
     }
 
     void scan()
@@ -189,23 +189,23 @@ void scanner_collection(std::ostream& out, const std::vector<std::string>& names
 
 bool _is_valid_token(const std::string& name)
 {
-    return name != "Other" && name != "Empty";
+    return name != "_other" && name != "_empty";
 }
 
 void tokens(std::ostream& out, const std::vector<std::string>& names)
 {
     out << R"VOGON(enum class Token {
-    Empty,
-    Other)VOGON";
+    _empty,
+    _other)VOGON";
     for (const auto& name: names) {
         if (!_is_valid_token(name)) {
             throw std::invalid_argument("invalid (reserved) token name");
         }
         out << ",\n    " << name;
     }
-    // make sure Ignore is included
-    if (std::find(names.begin(), names.end(), "Ignore") == names.end()) {
-        out << ",\n    Ignore";
+    // make sure _ignore is included
+    if (std::find(names.begin(), names.end(), "_ignore") == names.end()) {
+        out << ",\n    _ignore";
     }
     out << "\n};\n" << std::endl;
 }
@@ -217,13 +217,13 @@ void token_printer(std::ostream& out, const std::vector<std::string>& names)
     out << R"VOGON(std::ostream& operator<<(std::ostream& out, Token token)
 {
     switch(token) {
-    case Token::Other:
-        return out << "Other";
-    case Token::Empty:
-        return out << "Empty";
+    case Token::_other:
+        return out << "_other";
+    case Token::_empty:
+        return out << "_empty";
 )VOGON";
     for (const auto& name: names) {
-        if (name == "Ignore") {
+        if (name == "_ignore") {
             continue;
         }
         out << "    case Token::" << name << ":" << std::endl;

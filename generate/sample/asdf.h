@@ -6,30 +6,30 @@
 #include <vector>
 
 enum class Token {
-    Empty,
-    Other,
-    Character,
-    Identifier,
-    Ignore,
-    Number,
-    String
+    _empty,
+    _other,
+    _ignore,
+    character,
+    identifier,
+    number,
+    string
 };
 
 std::ostream& operator<<(std::ostream& out, Token token)
 {
     switch(token) {
-    case Token::Other:
-        return out << "Other";
-    case Token::Empty:
-        return out << "Empty";
-    case Token::Character:
-        return out << "Character";
-    case Token::Identifier:
-        return out << "Identifier";
-    case Token::Number:
-        return out << "Number";
-    case Token::String:
-        return out << "String";
+    case Token::_other:
+        return out << "_other";
+    case Token::_empty:
+        return out << "_empty";
+    case Token::character:
+        return out << "character";
+    case Token::identifier:
+        return out << "identifier";
+    case Token::number:
+        return out << "number";
+    case Token::string:
+        return out << "string";
     default:
         return out;
     }
@@ -41,7 +41,40 @@ struct Scanner {
     virtual std::string operator()(std::istream&) = 0;
 };
 
-struct CharacterScanner: public Scanner {
+struct _ignoreScanner: public Scanner {
+    using Scanner::Scanner;
+    std::string operator()(std::istream& in)
+    {
+        char c;
+        std::vector<char> checkpoint;
+        std::string lexeme;
+        goto s0;
+    s0:
+        in.get(c);
+        lexeme += c;
+        checkpoint.push_back(c);
+        if ((9 <= c && c <= 9) || (10 <= c && c <= 10) || (32 <= c && c <= 32)) {
+            goto s1;
+        }
+        goto se;
+    s1:
+        in.get(c);
+        lexeme += c;
+        checkpoint.clear();
+        checkpoint.push_back(c);
+        goto se;
+    se:
+        while (!checkpoint.empty()) {
+            c = checkpoint.back();
+            checkpoint.pop_back();
+            in.putback(c);
+            lexeme.pop_back();
+        }
+        return lexeme;
+    }
+};
+
+struct characterScanner: public Scanner {
     using Scanner::Scanner;
     std::string operator()(std::istream& in)
     {
@@ -101,7 +134,7 @@ struct CharacterScanner: public Scanner {
     }
 };
 
-struct IdentifierScanner: public Scanner {
+struct identifierScanner: public Scanner {
     using Scanner::Scanner;
     std::string operator()(std::istream& in)
     {
@@ -137,40 +170,7 @@ struct IdentifierScanner: public Scanner {
     }
 };
 
-struct IgnoreScanner: public Scanner {
-    using Scanner::Scanner;
-    std::string operator()(std::istream& in)
-    {
-        char c;
-        std::vector<char> checkpoint;
-        std::string lexeme;
-        goto s0;
-    s0:
-        in.get(c);
-        lexeme += c;
-        checkpoint.push_back(c);
-        if ((9 <= c && c <= 9) || (10 <= c && c <= 10) || (32 <= c && c <= 32)) {
-            goto s1;
-        }
-        goto se;
-    s1:
-        in.get(c);
-        lexeme += c;
-        checkpoint.clear();
-        checkpoint.push_back(c);
-        goto se;
-    se:
-        while (!checkpoint.empty()) {
-            c = checkpoint.back();
-            checkpoint.pop_back();
-            in.putback(c);
-            lexeme.pop_back();
-        }
-        return lexeme;
-    }
-};
-
-struct NumberScanner: public Scanner {
+struct numberScanner: public Scanner {
     using Scanner::Scanner;
     std::string operator()(std::istream& in)
     {
@@ -287,7 +287,7 @@ struct NumberScanner: public Scanner {
     }
 };
 
-struct StringScanner: public Scanner {
+struct stringScanner: public Scanner {
     using Scanner::Scanner;
     std::string operator()(std::istream& in)
     {
@@ -348,11 +348,11 @@ struct ScannerCollection {
 
     ScannerCollection(std::istream& in=std::cin) : in(&in) 
     {
-        scanners.push_back(std::make_shared<CharacterScanner>(Token::Character));
-        scanners.push_back(std::make_shared<IdentifierScanner>(Token::Identifier));
-        scanners.push_back(std::make_shared<IgnoreScanner>(Token::Ignore));
-        scanners.push_back(std::make_shared<NumberScanner>(Token::Number));
-        scanners.push_back(std::make_shared<StringScanner>(Token::String));
+        scanners.push_back(std::make_shared<_ignoreScanner>(Token::_ignore));
+        scanners.push_back(std::make_shared<characterScanner>(Token::character));
+        scanners.push_back(std::make_shared<identifierScanner>(Token::identifier));
+        scanners.push_back(std::make_shared<numberScanner>(Token::number));
+        scanners.push_back(std::make_shared<stringScanner>(Token::string));
     }
 
     std::pair<Token, std::string> operator()()
@@ -360,7 +360,7 @@ struct ScannerCollection {
         for (auto scanner: scanners) {
             std::string lexeme = (*scanner)(*in);
             if (!lexeme.empty()) {
-                if (scanner->token != Token::Ignore) {
+                if (scanner->token != Token::_ignore) {
                     return std::pair<Token, std::string>(scanner->token, lexeme);
                 }
                 return (*this)();
@@ -369,9 +369,9 @@ struct ScannerCollection {
         int c = in->get();
         if (c == std::char_traits<char>::eof()) {
             in->clear();
-            return std::pair<Token, std::string>(Token::Empty, "");
+            return std::pair<Token, std::string>(Token::_empty, "");
         }
-        return std::pair<Token, std::string>(Token::Other, std::string(1, (char)c));
+        return std::pair<Token, std::string>(Token::_other, std::string(1, (char)c));
     }
 
     void scan()

@@ -7,10 +7,10 @@ using namespace regex2;
 int main()
 {
     gen2::generate(std::cout, {
-            {"Number", number()},
-            {"Identifier", identifier()},
-            {"Character", character()},
-            {"String", string()},
-            {"Ignore", whitespace()}    // alternate regex to be ignored
+            {"number", number()},
+            {"identifier", identifier()},
+            {"character", character()},
+            {"string", string()},
+            {"_ignore", whitespace()}    // alternate regex to be ignored
     });
 }
