@@ -1,7 +1,7 @@
 CC = clang++-4.0
 CFLAGS = -g -Wall -std=c++1z -I ./include
 
-bin/main:	build/*.o
+bin/main:	build/main.o build/regex2.o build/hopcroft.o build/dfa.o build/nfa.o build/_nfa.o
 	${CC} ${CFLAGS} -o bin/main build/main.o build/regex2.o build/hopcroft.o build/dfa.o build/nfa.o build/_nfa.o
 
 build/main.o:	./src/main.cpp ./include/generate/generator.h ./include/regex2/utilities.h
