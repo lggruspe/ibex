@@ -1,6 +1,6 @@
 #pragma once
-#include "cats.h"
 #include "dfa.h"
+#include <boost/icl/split_interval_set.hpp>
 #include <iostream>
 #include <map>
 #include <set>
@@ -10,6 +10,8 @@
 namespace gen2
 {
 ;
+
+using Alphabet = typename boost::icl::split_interval_set<char>;
 
 void includes(std::ostream& out, bool header=false)
 {

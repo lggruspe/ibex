@@ -1,17 +1,17 @@
 #pragma once
-
-#include "cats.h"
 #include <memory>
 
 #include <algorithm>
 #include <stdexcept>
 #include <list>
-
+#include <boost/icl/split_interval_set.hpp>
 #include <cassert>
 #include <iostream>
 
 namespace regex2
 {
+
+using Alphabet = typename boost::icl::split_interval_set<char>;
 
 enum ExprType { Symbol, Union, Concatenation, Closure };
 

@@ -1,7 +1,6 @@
 //#include <unicode/unistr.h>
 //#include <unicode/chariter.h>
 //#include <unicode/schriter.h>
-#include "cats.h"
 #include "regex2.h"
 #include "utilities.h"
 #include <iostream>
@@ -26,25 +25,6 @@ void test_alternate()
     std::cout << "alphabet: " << *(expr->alphabet) << std::endl;
 
     std::cout << "---------------------" << std::endl;
-}
-
-bool test_categorize()
-{
-    Alphabet alphabet;
-    insert(alphabet, 'a', 'z');
-    insert(alphabet, 'A', 'Z');
-    insert(alphabet, '0', '9');
-    std::cout << alphabet << std::endl;
-
-    std::vector<char> test = {'f', 'H', 'o', '3', ' ', '!'};
-    std::vector<int> res = {'a', 'A', 'a', '0', -1, -1};
-    for (auto i = 0; i < test.size(); ++i) {
-        int cat = categorize(alphabet, test[i]);
-        if (cat != res[i]) {
-            return false;
-        }
-    }
-    return true;
 }
 
 void test_print()

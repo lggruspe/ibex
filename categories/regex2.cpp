@@ -1,5 +1,4 @@
 #include "regex2.h"
-#include "cats.h"
 #include <iostream>
 #include <stdexcept>
 
