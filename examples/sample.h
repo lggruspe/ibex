@@ -448,14 +448,10 @@ struct ScannerCollection {
     void scan()
     {
         for (;;) {
-            try {
-                auto [token, lexeme] = (*this)();
-                std::cout << "token: " << token << std::endl;
-                std::cout << "lexeme: " << lexeme << std::endl;
-                std::cout << std::endl;
-            } catch (const char* e) {
-                in->ignore(1, '\n');
-            }
+            auto [token, lexeme] = (*this)();
+            std::cout << "token: " << token << std::endl;
+            std::cout << "lexeme: " << lexeme << std::endl;
+            std::cout << std::endl;
         }
     }
 };

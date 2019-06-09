@@ -1,11 +1,20 @@
-CC = clang++-4.0
+CC = clang++
 CFLAGS = -g -Wall -std=c++1z -I ./include
 
-bin/main:	build/main.o build/regex2.o build/hopcroft.o build/dfa.o build/nfa.o build/_nfa.o
-	${CC} ${CFLAGS} -o bin/main build/main.o build/regex2.o build/hopcroft.o build/dfa.o build/nfa.o build/_nfa.o
+bin/main:	build/main.o build/regex2.o build/hopcroft.o build/dfa.o build/nfa.o build/_nfa.o build/utilities.o build/generator.o build/gen2.o
+	${CC} ${CFLAGS} -o bin/main build/main.o build/regex2.o build/hopcroft.o build/dfa.o build/nfa.o build/_nfa.o build/gen2.o build/utilities.o build/generator.o
 
-build/main.o:	./src/main.cpp ./include/generate/generator.h ./include/regex2/utilities.h
+build/main.o:	./src/main.cpp
 	${CC} ${CFLAGS} -c -o build/main.o ./src/main.cpp
+
+build/gen2.o:	./src/generate/gen2.cpp ./src/generate/gen2.h
+	${CC} ${CFLAGS} -c -o build/gen2.o ./src/generate/gen2.cpp
+
+build/generator.o:	./src/generate/generator.cpp ./include/generate/generator.h 
+	${CC} ${CFLAGS} -c -o build/generator.o ./src/generate/generator.cpp
+
+build/utilities.o:	./src/regex2/utilities.cpp ./include/regex2/utilities.h
+	${CC} ${CFLAGS} -c -o build/utilities.o ./src/regex2/utilities.cpp
 
 build/regex2.o:	./src/regex2/regex2.cpp ./include/regex2/regex2.h
 	${CC} ${CFLAGS} -c -o build/regex2.o ./src/regex2/regex2.cpp

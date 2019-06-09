@@ -1,17 +1,10 @@
-#pragma once
-#include "dfa/dfa.h"
-#include <boost/icl/split_interval_set.hpp>
+#include "gen2.h"
 #include <iostream>
 #include <map>
 #include <set>
-#include <string>
-#include <vector>
 
 namespace gen2
 {
-;
-
-using Alphabet = typename boost::icl::split_interval_set<char>;
 
 void includes(std::ostream& out, bool header=false)
 {
@@ -179,14 +172,10 @@ void scanner_collection(std::ostream& out, const std::vector<std::string>& names
     void scan()
     {
         for (;;) {
-            try {
-                auto [token, lexeme] = (*this)();
-                std::cout << "token: " << token << std::endl;
-                std::cout << "lexeme: " << lexeme << std::endl;
-                std::cout << std::endl;
-            } catch (const char* e) {
-                in->ignore(1, '\n');
-            }
+            auto [token, lexeme] = (*this)();
+            std::cout << "token: " << token << std::endl;
+            std::cout << "lexeme: " << lexeme << std::endl;
+            std::cout << std::endl;
         }
     }
 };

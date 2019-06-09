@@ -11,6 +11,6 @@ int main()
             {"identifier", identifier()},
             {"character", character()},
             {"string", string()},
-            {"_ignore", whitespace()}    // alternate regex to be ignored
+            {"_ignore", whitespace()}    // alternate regexes to be ignored
     });
 }
