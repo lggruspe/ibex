@@ -14,11 +14,11 @@ namespace lr1
 template <class Token, class Variable>
 struct RulesTable {
     // wrapper for Enumeration<Rule>
-    using Sym = cfg::Symbol<Token, Variable>;
+    using Sym = std::variant<Token, Variable>;
     using Sentence = typename std::vector<Sym>;
     using Rule = typename std::pair<Variable, Sentence>;
     Enumeration<Rule> rules;
-    Token empty;
+    Sym empty;
 
     RulesTable(const cfg::Grammar<Token, Variable>& grammar)
     {
@@ -56,7 +56,7 @@ enum class Action { Error, Shift, Reduce, Accept, Goto };
 
 template <class Token, class Variable>
 class Parser {
-    using Sym = cfg::Symbol<Token, Variable>;
+    using Sym = std::variant<Token, Variable>;
     std::map<int, std::map<Sym, std::pair<Action, int>>> table;
     Enumeration<Collection<Token, Variable>> collections;
     std::map<int, std::map<Sym, int>> delta;
@@ -68,7 +68,7 @@ class Parser {
         // compute shifts and gotos
         for (const auto& [sym, next_state]: delta[ind]) {
             table[ind][sym] = { 
-                sym.is_variable() ? Action::Goto : Action::Shift,
+                cfg::is_variable(sym) ? Action::Goto : Action::Shift,
                 next_state
             };
         }
@@ -78,24 +78,28 @@ class Parser {
             if (!item.is_reduce()) {
                 continue;
             }
-            if (item.lhs == start.variable() && item.lookahead == grammar.empty) {
+            if (item.lhs == std::get<Variable>(start) 
+                    && std::get<Token>(item.lookahead) == grammar.empty) {
                 table[ind][item.lookahead] = { Action::Accept, 0 };
             } else {
                 // regular reduction
-                table[ind][item.lookahead] = { Action::Reduce, rules.index(item) };
+                table[ind][item.lookahead] = { 
+                    Action::Reduce, 
+                    rules.index(item) 
+                };
             }
         }
     }
 
-    void construct_automaton(const Sym& start)
+    void construct_automaton(const Variable& start)
     {
         // assume the grammar is augmented
         // rebuilds automaton (delta) and collections
         delta.clear();
         collections.clear();  // acts as history
         Collection<Token, Variable> state;
-        state.items.insert(Item<Token, Variable>(start.variable(), 
-                    {grammar.empty}, *(grammar.rules[start.variable()].begin()), 
+        state.items.insert(Item<Token, Variable>(start,
+                    {grammar.empty}, *(grammar.rules[start].begin()), 
                     grammar.empty));
 
         state.closure(grammar);
@@ -123,16 +127,21 @@ public:
     Parser(const cfg::Grammar<Token, Variable>& grammar) : 
         grammar(grammar), rules(grammar) {}
 
-    void construct(const Sym& start) 
+    void construct(const Variable& start)
     {
-        if (!start.is_variable()) {
-            throw std::invalid_argument("start symbol must be a variable");
-        }
         construct_automaton(start);
         table.clear();
         for (const auto& state: collections) {
             fill_in_row(state.first, start);
         }
+    }
+
+    void construct(const Sym& start) 
+    {
+        if (!cfg::is_variable(start)) {
+            throw std::invalid_argument("start symbol must be a variable");
+        }
+        construct(std::get<Variable>(start));
     }
 
     template <class Scanner>

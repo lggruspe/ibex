@@ -5,6 +5,7 @@
 #include <map>
 #include <set>
 #include <utility>
+#include <variant>
 #include <vector>
 #include <tuple>
 
@@ -13,7 +14,7 @@ namespace lr1
 
 template <class Token, class Variable>
 struct Item {
-    using Sym = cfg::Symbol<Token, Variable>;
+    using Sym = std::variant<Token, Variable>;
     using Sentence = typename std::vector<Sym>;
 
     Variable lhs;
@@ -58,15 +59,15 @@ struct Item {
 };
 
 template <class Token, class Variable>
-cfg::Symbol<Token, Variable> symbol_after_dot(const Item<Token, Variable>& item,
-        const cfg::Symbol<Token, Variable>& if_empty)
+std::variant<Token, Variable> symbol_after_dot(const Item<Token, Variable>& item,
+        const std::variant<Token, Variable>& if_empty)
 {
     return item.after.empty() ? if_empty : item.after.front();
 }
 
 template <class Token, class Variable>
 struct Collection {
-    using Sym = cfg::Symbol<Token, Variable>;
+    using Sym = std::variant<Token, Variable>;
     std::set<Item<Token, Variable>> items;
     //std::map<Sym, CollectionSym>> transitions;    // TODO only store pointers to neighbors
     using Sentence = typename std::vector<Sym>;
@@ -78,12 +79,12 @@ struct Collection {
             auto item = queue.front();
             queue.pop_front();
             Sym sym = symbol_after_dot(item, Sym(grammar.empty));
-            if (!sym.is_variable()) {
+            if (!cfg::is_variable(sym)) {
                 continue;
             }
 
             // expand variable (sym)
-            for (const auto& sub: grammar.rules[sym.variable()]) {
+            for (const auto& sub: grammar.rules[std::get<Variable>(sym)]) {
                 Sentence temp = Sentence();// lookahead of new item = grammar.first(temp)
                 if (!item.after.empty()) {
                     std::copy(item.after.begin() + 1, item.after.end(), 
@@ -92,7 +93,7 @@ struct Collection {
                 temp.push_back(item.lookahead);
                 auto first_set = grammar.first(temp);
                 for (const auto& first: first_set) {
-                    Item<Token, Variable> new_item(sym.variable(), Sentence(), sub, first);
+                    Item<Token, Variable> new_item(std::get<Variable>(sym), Sentence(), sub, first);
                     if (items.insert(new_item).second) {
                         queue.push_back(new_item);
                     } 

@@ -4,56 +4,28 @@
 #include <set>
 #include <stdexcept>
 #include <utility>
+#include <variant>
 #include <vector>
 
 namespace cfg
 {
 
-template <class T, class V>
-class Symbol {
-    enum class Type { Token, Variable };
-    T _token;
-    V _variable;
-    Type type;
+template <class Token, class Variable>
+bool is_token(const std::variant<Token, Variable>& symbol)
+{
+    return !symbol.index();
+}
 
-public:
-    Symbol(const T& t) : type(Type::Token)
-    {
-        _token = t;
-    }
-
-    Symbol(const V& v) : type(Type::Variable)
-    {
-        _variable = v;
-    }
-
-    const V& variable() const { return _variable; }
-    const T& token() const { return _token; }
-
-    bool operator<(const Symbol& other) const
-    {
-        if (type != other.type) {
-            return type == Type::Token;
-        }
-        if (type == Type::Token) {
-            return token() < other.token();
-        }
-        return variable() < other.variable();
-    }
-
-    bool operator==(const Symbol& other) const 
-    {
-        return !(*this < other) && !(other < *this);
-    }
-
-    bool is_variable() const { return type == Type::Variable; }
-    bool is_token() const { return type == Type::Token; }
-};
+template <class Token, class Variable>
+bool is_variable(const std::variant<Token, Variable>& symbol)
+{
+    return symbol.index();
+}
 
 template <class Token, class Variable>
 struct Grammar {
     Token empty;
-    using Sym = Symbol<Token, Variable>;
+    using Sym = std::variant<Token, Variable>;
     using Sentence = typename std::vector<Sym>;
     std::set<Variable> variables;
     std::set<Token> tokens;
@@ -77,7 +49,7 @@ struct Grammar {
     {
         // check if rhs is a valid sentence
         for (const auto& sym: rhs) {
-            if (!sym.is_token() && !variables.count(sym.variable())) {
+            if (!is_token(sym) && !variables.count(std::get<Variable>(sym))) {
                 throw std::invalid_argument("sentence has invalid symbol");
             }
         }
