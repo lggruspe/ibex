@@ -54,6 +54,12 @@ struct RulesTable {
 
 enum class Action { Error, Shift, Reduce, Accept, Goto };
 
+template <class Token>
+void _default_shifter(const Token&, const std::string&) {}
+
+template <class Token, class Variable>
+void _default_reducer(const std::pair<Variable, std::vector<std::variant<Token, Variable>>>&) {}
+
 template <class Token, class Variable>
 class Parser {
     using Symbol = std::variant<Token, Variable>;
@@ -146,24 +152,27 @@ public:
 
     template <class Scanner>
     // a scanner is a functor/function that returns a token-lexeme pair
-    bool parse(Scanner scan)
+    bool parse(Scanner scan, void shifter(const Token&, const std::string&),
+            void reducer(const std::pair<Variable, std::vector<std::variant<Token, Variable>>>&))
     {
         // assumes 0 is the start state
         std::vector<int> states = {0};
         std::vector<Symbol> symbols;
-        Symbol lookahead = scan().first;
+        auto lookahead = scan();
         for (;;) {
             int state = states.back();
-            auto [action, next_state] = table[state][lookahead];
+            auto [action, next_state] = table[state][lookahead.first];
 
             if (action == Action::Accept) {
                 return true;
             } else if (action == Action::Shift) {
+                shifter(lookahead.first, lookahead.second);
                 states.push_back(next_state);
-                symbols.push_back(lookahead);
-                lookahead = scan().first;
+                symbols.push_back(lookahead.first);
+                lookahead = scan();
             } else if (action == Action::Reduce) {
                 auto rule = rules.value(next_state);
+                reducer(rule);
                 std::for_each(rule.second.begin(), rule.second.end(),
                         [&states, &symbols](const auto&) {
                             states.pop_back();
@@ -175,6 +184,12 @@ public:
                 return false;
             }
         }
+    }
+
+    template <class Scanner>
+    bool parse(Scanner scan)
+    {
+        return parse(scan, _default_shifter, _default_reducer);
     }
 
 private:

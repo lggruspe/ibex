@@ -15,18 +15,24 @@ struct _ParseTree {
     std::shared_ptr<_ParseTree> parent;
     std::vector<std::shared_ptr<_ParseTree>> children;
     std::map<std::string, std::string> attributes;
-    
-    _ParseTree(const Rule& rule, const std::vector<std::shared_ptr<_ParseTree>>& children)
-    {
-        make_node(rule, children);
-    }
 
-    _ParseTree(const std::pair<Token, std::string>& word)
-    {
-        make_node(word);
-    }
-
-private:
-    void make_node(const Rule&, const std::vector<std::shared_ptr<_ParseTree>>&);
-    void make_node(const std::pair<Token, std::string>&);
+    _ParseTree(std::shared_ptr<_ParseTree> parent) : parent(parent) {}
 };
+
+using ParseTree = std::shared_ptr<_ParseTree>;
+std::vector<ParseTree> stack;
+
+template <class Token>
+void shift_handler(const Token& token, const std::string& lexeme)
+{
+}
+
+template <class Token, class Variable>
+void reduce_handler(const _ParseTree<Token, Variable>::Rule& rule)
+{
+}
+
+ParseTree get_parse_tree()
+{
+    return stack.front();
+}
