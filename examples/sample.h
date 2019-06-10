@@ -38,6 +38,7 @@ std::ostream& operator<<(std::ostream& out, Token token)
 struct Scanner {
     Token token;
     Scanner(Token token) : token(token) {}
+    virtual ~Scanner() {}
     virtual std::string operator()(std::istream&) = 0;
 };
 
@@ -117,7 +118,7 @@ struct characterScanner: public Scanner {
         }
         lexeme += c;
         checkpoint.push_back(c);
-        if ((32 <= c && c <= 38) || (40 <= c && c <= 91) || (93 <= c && c <= 110) || (110 <= c && c <= 110) || (110 <= c && c <= 116) || (116 <= c && c <= 116) || (116 <= c && c <= 126)) {
+        if ((32 <= c && c <= 38) || (40 <= c && c <= 91) || (93 <= c && c <= 109) || (110 <= c && c <= 110) || (111 <= c && c <= 115) || (116 <= c && c <= 116) || (117 <= c && c <= 126)) {
             goto s3;
         }
         if ((92 <= c && c <= 92)) {

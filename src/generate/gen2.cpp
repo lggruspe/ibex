@@ -1,4 +1,5 @@
 #include "gen2.h"
+#include <boost/icl/split_interval_set.hpp>
 #include <iostream>
 #include <map>
 #include <set>
@@ -25,6 +26,7 @@ void base_scanner(std::ostream& out)
     out << R"VOGON(struct Scanner {
     Token token;
     Scanner(Token token) : token(token) {}
+    virtual ~Scanner() {}
     virtual std::string operator()(std::istream&) = 0;
 };
 )VOGON" << std::endl;
@@ -39,11 +41,17 @@ void _range(std::ostream& out, char symbol, const Alphabet& alphabet)
     }
     auto low = it->lower();
     auto high = it->upper();
-    // TODO check if endpoints are open
-    // also check if low = high
+    if (!boost::icl::contains(*it, low)) {
+        ++low;
+    }
+    if (!boost::icl::contains(*it, high)) {
+        --high;
+    }
     // TODO print character representation (need to deal with special cases:
     // whitespace, escape characters, etc.)
-    out << "(" << (int)low << " <= c && c <= " << (int)high << ")";
+    if (low <= high) {
+        out << "(" << (int)low << " <= c && c <= " << (int)high << ")";
+    }
 }
 
 void _category_condition(std::ostream& out,
