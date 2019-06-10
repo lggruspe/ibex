@@ -14,16 +14,16 @@ namespace lr1
 
 template <class Token, class Variable>
 struct Item {
-    using Sym = std::variant<Token, Variable>;
-    using Sentence = typename std::vector<Sym>;
+    using Symbol = std::variant<Token, Variable>;
+    using Sentence = typename std::vector<Symbol>;
 
     Variable lhs;
     Sentence before;
     Sentence after;
-    Sym lookahead;
+    Symbol lookahead;
 
     Item(const Variable& lhs, const Sentence& before,
-            const Sentence& after, const Sym& lookahead) : lhs(lhs), before(before), after(after),
+            const Sentence& after, const Symbol& lookahead) : lhs(lhs), before(before), after(after),
         lookahead(lookahead) {}
 
     bool operator<(const Item<Token, Variable>& other) const 
@@ -67,10 +67,10 @@ std::variant<Token, Variable> symbol_after_dot(const Item<Token, Variable>& item
 
 template <class Token, class Variable>
 struct Collection {
-    using Sym = std::variant<Token, Variable>;
+    using Symbol = std::variant<Token, Variable>;
     std::set<Item<Token, Variable>> items;
-    //std::map<Sym, CollectionSym>> transitions;    // TODO only store pointers to neighbors
-    using Sentence = typename std::vector<Sym>;
+    //std::map<Symbol, CollectionSymbol>> transitions;    // TODO only store pointers to neighbors
+    using Sentence = typename std::vector<Symbol>;
 
     void closure(cfg::Grammar<Token, Variable>& grammar)
     {
@@ -78,7 +78,7 @@ struct Collection {
         while (!queue.empty()) {
             auto item = queue.front();
             queue.pop_front();
-            Sym sym = symbol_after_dot(item, Sym(grammar.empty));
+            Symbol sym = symbol_after_dot(item, Symbol(grammar.empty));
             if (!cfg::is_variable(sym)) {
                 continue;
             }
@@ -112,9 +112,9 @@ struct Collection {
         return items == coll.items;
     }
 
-    std::set<Sym> _transition_symbols()
+    std::set<Symbol> _transition_symbols()
     {
-        std::set<Sym> symbols;
+        std::set<Symbol> symbols;
         for (const auto& item: items) {
             if (!item.after.empty()) {
                 symbols.insert(item.after.front());
@@ -123,14 +123,14 @@ struct Collection {
         return symbols;
     }
 
-    std::map<Sym, Collection<Token, Variable>> transition(
+    std::map<Symbol, Collection<Token, Variable>> transition(
             cfg::Grammar<Token, Variable>& grammar)
     {
-        std::map<Sym, Collection<Token, Variable>> transitions;
-        std::set<Sym> symbols = _transition_symbols();
+        std::map<Symbol, Collection<Token, Variable>> transitions;
+        std::set<Symbol> symbols = _transition_symbols();
         for (const auto& sym: symbols) {
             for (const auto& item: items) {
-                if (symbol_after_dot(item, Sym(grammar.empty)) == sym) {
+                if (symbol_after_dot(item, Symbol(grammar.empty)) == sym) {
                     transitions[sym].items.insert(item.shifted());
                 }
             }

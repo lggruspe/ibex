@@ -14,11 +14,11 @@ namespace lr1
 template <class Token, class Variable>
 struct RulesTable {
     // wrapper for Enumeration<Rule>
-    using Sym = std::variant<Token, Variable>;
-    using Sentence = typename std::vector<Sym>;
+    using Symbol = std::variant<Token, Variable>;
+    using Sentence = typename std::vector<Symbol>;
     using Rule = typename std::pair<Variable, Sentence>;
     Enumeration<Rule> rules;
-    Sym empty;
+    Symbol empty;
 
     RulesTable(const cfg::Grammar<Token, Variable>& grammar)
     {
@@ -56,14 +56,14 @@ enum class Action { Error, Shift, Reduce, Accept, Goto };
 
 template <class Token, class Variable>
 class Parser {
-    using Sym = std::variant<Token, Variable>;
-    std::map<int, std::map<Sym, std::pair<Action, int>>> table;
+    using Symbol = std::variant<Token, Variable>;
+    std::map<int, std::map<Symbol, std::pair<Action, int>>> table;
     Enumeration<Collection<Token, Variable>> collections;
-    std::map<int, std::map<Sym, int>> delta;
+    std::map<int, std::map<Symbol, int>> delta;
     cfg::Grammar<Token, Variable> grammar;
     RulesTable<Token, Variable> rules;
 
-    void fill_in_row(int ind, const Sym& start) 
+    void fill_in_row(int ind, const Symbol& start) 
     {
         // compute shifts and gotos
         for (const auto& [sym, next_state]: delta[ind]) {
@@ -109,7 +109,7 @@ class Parser {
             int id = states.back();
             states.pop_back();
             state = collections.value(id);
-            std::map<Sym, Collection<Token, Variable>> transitions = state.transition(grammar);
+            std::map<Symbol, Collection<Token, Variable>> transitions = state.transition(grammar);
             for (const auto& [sym, next_state]: transitions) {
                 int sid;
                 if (!collections.has_value(next_state)) {
@@ -136,7 +136,7 @@ public:
         }
     }
 
-    void construct(const Sym& start) 
+    void construct(const Symbol& start) 
     {
         if (!cfg::is_variable(start)) {
             throw std::invalid_argument("start symbol must be a variable");
@@ -150,8 +150,8 @@ public:
     {
         // assumes 0 is the start state
         std::vector<int> states = {0};
-        std::vector<Sym> symbols;
-        Sym lookahead = scan().first;
+        std::vector<Symbol> symbols;
+        Symbol lookahead = scan().first;
         for (;;) {
             int state = states.back();
             auto [action, next_state] = table[state][lookahead];
@@ -189,8 +189,8 @@ private:
         std::cout << std::endl;
     }
 
-    void _trace(const std::vector<int>& states, const std::vector<Sym>& symbols,
-            const Sym& lookahead) const
+    void _trace(const std::vector<int>& states, const std::vector<Symbol>& symbols,
+            const Symbol& lookahead) const
     {
         std::cout << "states: ";
         _print_vector(states);
