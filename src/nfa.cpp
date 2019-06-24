@@ -8,14 +8,32 @@
 
 namespace automata 
 {
-;
 
+int add_state(Nfa&, int);
+int add_state(Nfa&);
+void add_transition(Nfa&, int, int, char);
+Nfa thompson(regex2::Expr);
+
+Nfa::Nfa(char a)
+{
+    start = add_state(*this);;
+    accept = add_state(*this);;
+    add_transition(*this, start, accept, a);
+}
+
+Nfa::Nfa(regex2::Expr expr)
+{
+    *this = thompson(expr);
+}
+
+// add state with number q
 int add_state(Nfa& nfa, int q)
 {
     nfa.delta[q];
     return q;
 }
 
+// add state and returns number of the new state
 int add_state(Nfa& nfa)
 {
     int q = nfa.delta.empty() ? 0 : nfa.delta.rbegin()->first + 1;
@@ -32,10 +50,10 @@ void add_transition(Nfa& nfa, int q, int r, char a='\0')
     }
 }
 
+// add states of B into this (with renamed states)
+// returns offset to B states
 int merge(Nfa& A, const Nfa& B)
 {
-    // add states of B into this (with renamed states)
-    // returns offset to B states
     std::map<int, std::map<char, std::set<int>>> delta;
     int offset = add_state(A);
     for (auto it = B.delta.begin(); it != B.delta.end(); ++it) {
@@ -62,13 +80,7 @@ int merge(Nfa& A, const Nfa& B)
 
 Nfa symbol(char a)
 {
-    Nfa nfa;
-    int start = add_state(nfa);;
-    int accept = add_state(nfa);;
-    nfa.start = start;
-    nfa.accept = accept;
-    add_transition(nfa, start, accept, a);
-    return nfa;
+    return Nfa(a);
 }
 
 Nfa symbol(boost::icl::interval<char>::type interval)

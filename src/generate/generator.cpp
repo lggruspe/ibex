@@ -16,7 +16,7 @@ namespace gen2
 
 automata::Dfa _regex_to_dfa(regex2::Expr re)
 {
-    auto nfa = automata::thompson(re);
+    auto nfa(re);
     return automata::minimize(automata::subset_construction(nfa));
 }
 

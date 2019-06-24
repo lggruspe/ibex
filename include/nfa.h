@@ -6,14 +6,16 @@
 
 namespace automata 
 {
-
+    
 struct Nfa {
     std::map<int, std::map<char, std::set<int>>> delta;
-    int start, accept;
+    int start;
+    int accept;
     std::set<char> symbols;
+
+    Nfa(char);
+    Nfa(regex2::Expr);
 };
 
-Nfa thompson(regex2::Expr);
-
 std::ostream& operator<<(std::ostream&, const Nfa&);
-} // end namespace
+}
