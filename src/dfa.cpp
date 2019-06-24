@@ -1,4 +1,5 @@
 #include "dfa.h"
+#include "nfa.h"
 #include "enumeration2.h"
 #include "partition.h"
 #include <algorithm>
@@ -9,6 +10,14 @@
 
 namespace automata 
 {
+
+Dfa subset_construction(const Nfa&);
+Dfa minimize(const Dfa&);
+
+Dfa::Dfa(const Nfa& nfa)
+{
+    *this = minimize(subset_construction(nfa));
+}
 
 int add_state(Dfa& dfa, int q)
 {

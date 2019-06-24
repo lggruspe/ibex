@@ -11,10 +11,11 @@ struct Dfa {
     std::set<int> accept;
     std::map<int, std::map<char, int>> delta;
     std::set<char> symbols;
+
+    Dfa() {}
+    Dfa(const Nfa&);
 };
 
-Dfa subset_construction(const Nfa&);
 std::ostream& operator<<(std::ostream&, const Dfa&);
-Dfa minimize(const Dfa&);
 
 } // end namespace

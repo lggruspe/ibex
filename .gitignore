@@ -1,9 +1,6 @@
-compile
 *.swp
 *.out
 bin
 build
-main
 test
-asdf
 sample
