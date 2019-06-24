@@ -1,5 +1,5 @@
 #pragma once
-#include "regex2/regex2.h"
+#include "regex.h"
 #include <iostream>
 #include <map>
 #include <set>
@@ -14,7 +14,7 @@ struct Nfa {
     std::set<char> symbols;
 
     Nfa(char);
-    Nfa(regex2::Expr);
+    Nfa(regex::Expr);
 };
 
 std::ostream& operator<<(std::ostream&, const Nfa&);

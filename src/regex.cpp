@@ -1,9 +1,12 @@
-#include "regex2/regex2.h"
+#include "regex.h"
 #include <iostream>
+#include <list>
 #include <stdexcept>
 
-namespace regex2
+namespace regex
 {
+
+Expr symbol(boost::icl::interval<char>::type);
 
 void combine_alphabets(std::shared_ptr<Alphabet> alpha, std::shared_ptr<Alphabet>& beta)
 {
@@ -19,7 +22,10 @@ Expr _alternate(ExprContainer exprs)
     // repeat until exprs contains only one expression
     // note: assumes all the exprs are disjoint
     // (should only be called from split_leaves
-    assert(!exprs.empty());
+    if (exprs.empty()) {
+        throw std::domain_error("empty container");
+    }
+
     while (exprs.size() > 1) {
         auto a = exprs.front();
         exprs.pop_front();
@@ -29,7 +35,7 @@ Expr _alternate(ExprContainer exprs)
         // construct their union
         combine_alphabets(a->alphabet, b->alphabet);
         auto c = std::make_shared<_Expr>(a->alphabet);
-        c->type = Union;
+        c->type = Type::Union;
         c->lhs = a;
         c->rhs = b;
 
@@ -45,7 +51,7 @@ void split_leaves(Expr expr, const Alphabet& alphabet)
     if (expr == nullptr) {
         return;
     }
-    if (expr->type == Symbol) {
+    if (expr->type == Type::Symbol) {
         Alphabet singleton;     // contains only expr->value
         singleton += expr->value;
         auto values = singleton + (singleton & alphabet);
@@ -74,7 +80,7 @@ Expr operator|(Expr a, Expr b)
 {
     combine_alphabets(a->alphabet, b->alphabet);
     Expr c = std::make_shared<_Expr>(a->alphabet);
-    c->type = Union;
+    c->type = Type::Union;
     c->lhs = a;
     c->rhs = b;
     split_leaves(c, *(c->alphabet));
@@ -85,7 +91,7 @@ Expr operator+(Expr a, Expr b)
 {
     combine_alphabets(a->alphabet, b->alphabet);
     Expr c = std::make_shared<_Expr>(a->alphabet);
-    c->type = Concatenation;
+    c->type = Type::Concatenation;
     c->lhs = a;
     c->rhs = b;
     split_leaves(c, *(c->alphabet));
@@ -95,7 +101,7 @@ Expr operator+(Expr a, Expr b)
 Expr closure(Expr a)
 {
     Expr c = std::make_shared<_Expr>(a->alphabet);
-    c->type = Closure;
+    c->type = Type::Closure;
     c->lhs = a;
     c->rhs = nullptr;
     return c;
@@ -104,7 +110,7 @@ Expr closure(Expr a)
 Expr symbol(boost::icl::interval<char>::type value)
 {
     Expr expr = std::make_shared<_Expr>(value);
-    expr->type = Symbol;
+    expr->type = Type::Symbol;
     expr->value = value;
     expr->lhs = nullptr;
     expr->rhs = nullptr;
@@ -129,13 +135,13 @@ std::ostream& operator<<(std::ostream& out, Expr re)
         return (out << "null");
     }
     switch (re->type) {
-    case Symbol:    
+    case Type::Symbol:    
         return (out << re->value);
-    case Union:
+    case Type::Union:
         return out << "(union, " << re->lhs << ", " << re->rhs << ")";
-    case Concatenation:
+    case Type::Concatenation:
         return out << "(concatenation, " << re->lhs << ", " << re->rhs << ")";
-    case Closure:
+    case Type::Closure:
         return out << "(closure, " << re->lhs << ")";
     default:
         throw std::invalid_argument("input expression has bad type");

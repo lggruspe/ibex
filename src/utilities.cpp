@@ -1,9 +1,8 @@
-#include "regex2/utilities.h"
-#include "regex2/regex2.h"
+#include "utilities.h"
+#include "regex.h"
 
-namespace regex2
+namespace regex
 {
-;
 
 Expr empty()
 {

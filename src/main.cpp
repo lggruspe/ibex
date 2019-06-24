@@ -1,8 +1,8 @@
 #include "generate/generator.h"
-#include "regex2/utilities.h"
+#include "utilities.h"
 #include <iostream>
 
-using namespace regex2;
+using namespace regex;
 
 int main()
 {

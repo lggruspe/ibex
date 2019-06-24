@@ -1,5 +1,5 @@
 #include "nfa.h"
-#include "regex2/regex2.h"
+#include "regex.h"
 #include <boost/icl/split_interval_set.hpp>
 #include <iostream>
 #include <map>
@@ -12,7 +12,7 @@ namespace automata
 int add_state(Nfa&, int);
 int add_state(Nfa&);
 void add_transition(Nfa&, int, int, char);
-Nfa thompson(regex2::Expr);
+Nfa thompson(regex::Expr);
 
 Nfa::Nfa(char a)
 {
@@ -21,7 +21,7 @@ Nfa::Nfa(char a)
     add_transition(*this, start, accept, a);
 }
 
-Nfa::Nfa(regex2::Expr expr)
+Nfa::Nfa(regex::Expr expr)
 {
     *this = thompson(expr);
 }
@@ -139,20 +139,20 @@ Nfa closure(Nfa& A)
     return A;
 }
 
-Nfa thompson(regex2::Expr expr)
+Nfa thompson(regex::Expr expr)
 {
-    if (expr->type == regex2::Symbol) {
+    if (expr->type == regex::Type::Symbol) {
         return symbol(expr->value);
     }
-    if (expr->type == regex2::Closure) {
+    if (expr->type == regex::Type::Closure) {
         Nfa A = thompson(expr->lhs);
         return closure(A);
     }
-    if (expr->type == regex2::Concatenation) {
+    if (expr->type == regex::Type::Concatenation) {
         Nfa A = thompson(expr->lhs);
         return concatenate(A, thompson(expr->rhs));
     }
-    if (expr->type == regex2::Union) {
+    if (expr->type == regex::Type::Union) {
         Nfa A = thompson(expr->lhs);
         return alternate(A, thompson(expr->rhs));
     }

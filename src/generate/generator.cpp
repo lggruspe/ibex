@@ -1,5 +1,5 @@
 #include "generate/generator.h"
-#include "regex2/regex2.h"
+#include "regex.h"
 #include "dfa.h"
 #include "nfa.h"
 #include "gen2.h"
@@ -13,17 +13,17 @@
 namespace gen2
 {
 
-automata::Dfa _regex_to_dfa(regex2::Expr re)
+automata::Dfa _regex_to_dfa(regex::Expr re)
 {
     return automata::Dfa(automata::Nfa(re));
 }
 
 void generate(std::ostream& out, 
-        const std::map<std::string, regex2::Expr>& res)
+        const std::map<std::string, regex::Expr>& res)
 {
     std::vector<std::string> names;
     std::for_each(res.begin(), res.end(), 
-            [&names](std::pair<std::string, regex2::Expr> pair) { 
+            [&names](std::pair<std::string, regex::Expr> pair) { 
             names.push_back(pair.first); });
     includes(out, true);
     tokens(out, names);
