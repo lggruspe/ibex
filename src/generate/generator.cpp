@@ -2,7 +2,7 @@
 #include "regex2/regex2.h"
 #include "dfa/dfa.h"
 #include "dfa/hopcroft.h"
-#include "nfa/nfa.h"
+#include "nfa.h"
 #include "gen2.h"
 #include <algorithm>
 #include <iostream>
