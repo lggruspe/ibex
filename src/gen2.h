@@ -1,5 +1,5 @@
 #pragma once
-#include "dfa.h"
+#include <rnd/dfa.h>
 #include <boost/icl/split_interval_set.hpp>
 #include <iostream>
 #include <string>

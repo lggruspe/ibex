@@ -1,8 +1,8 @@
-#include "generate/generator.h"
-#include "regex.h"
-#include "dfa.h"
-#include "nfa.h"
+#include "generator.h"
 #include "gen2.h"
+#include <rnd/regex.h>
+#include <rnd/nfa.h>
+#include <rnd/dfa.h>
 #include <algorithm>
 #include <iostream>
 #include <map>

@@ -1,6 +1,6 @@
 *.swp
 *.out
 bin
-build
-test
 sample
+*.o
+tmp.h
