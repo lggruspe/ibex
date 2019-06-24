@@ -1,6 +1,6 @@
 *.swp
 *.out
 bin
-build
+build/*.o
 test
 sample
