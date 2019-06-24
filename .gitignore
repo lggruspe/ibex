@@ -1,4 +1,5 @@
 *.swp
 *.out
 *.o
+*.a
 sample/sample
