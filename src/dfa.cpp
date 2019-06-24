@@ -1,11 +1,37 @@
-#include "dfa/dfa.h"
+#include "dfa.h"
 #include "enumeration2.h"
+#include "partition.h"
 #include <algorithm>
 #include <iostream>
 #include <list>
+#include <map>
+#include <set>
 
 namespace automata 
 {
+
+int add_state(Dfa& dfa, int q)
+{
+    dfa.delta[q];
+    return q;
+}
+
+int add_state(Dfa& dfa)
+{
+    int q = dfa.delta.empty() ? 0 : dfa.delta.rbegin()->first + 1;
+    return add_state(dfa, q);
+}
+
+void add_transition(Dfa& dfa, int q, int r, char a)
+{
+    add_state(dfa, q);
+    add_state(dfa, r);
+    dfa.delta[q][a] = r;
+    if (a) {
+        dfa.symbols.insert(a);
+    }
+}
+
 void compute_predecessors(const Nfa& nfa, 
         std::map<int, std::set<int> >& predecessors)
 {
@@ -20,7 +46,7 @@ void compute_predecessors(const Nfa& nfa,
     }
 }
 
-std::map<int, std::set<int> > epsilon_closure(const Nfa& nfa)
+std::map<int, std::set<int>> epsilon_closure(const Nfa& nfa)
 {
     std::map<int, std::set<int> > closures;
     std::map<int, std::set<int> > predecessors;
@@ -90,7 +116,7 @@ Dfa subset_construction(const Nfa& nfa)
     Enumeration<std::set<int>> names;
     
     Dfa dfa;
-    dfa.start = dfa.add_state(names.insert(closures[nfa.start]));
+    dfa.start = add_state(dfa, names.insert(closures[nfa.start]));
 
     std::list<int> queue;
     queue.push_back(dfa.start);
@@ -106,7 +132,7 @@ Dfa subset_construction(const Nfa& nfa)
 
             if (!names.has_value(R)) {
                 int name = names.insert(R);
-                dfa.add_state(name);
+                add_state(dfa, name);
                 queue.push_back(name);
                 for (auto r: R) {
                     if (r == nfa.accept) {
@@ -114,10 +140,71 @@ Dfa subset_construction(const Nfa& nfa)
                     }
                 }
             }
-            dfa.add_transition(Q, names.index(R), a);
+            add_transition(dfa, Q, names.index(R), a);
         }
     }
     return dfa;
+}
+
+int dfa_transition(const Dfa& dfa, int q, char a)
+{
+    // -1 means delta(q, a) dne
+    auto it = dfa.delta.find(q);
+    if (it != dfa.delta.end()) {
+        auto jt = it->second.find(a);
+        if (jt != it->second.end()) {
+            return jt->second;
+        }
+    }
+    return -1;
+}
+
+Dfa minimize(const Dfa& dfa)
+{
+    // get dfa states (keys of dfa.delta)
+    std::vector<int> states;
+    std::transform(dfa.delta.begin(), dfa.delta.end(),
+            std::back_inserter(states),
+            [](const std::pair<int, std::map<char, int>>& pair) {
+                return pair.first;
+            });
+
+    // split partition between accept and nonaccept states
+    Partition<int> partition(states.begin(), states.end());
+    partition.split_by_set(dfa.accept);
+    // split according to behavior on a (by pairwise comparisons)
+    
+    for (auto a: dfa.symbols) {
+        partition.split_by_comparison([&dfa, &a, &partition](const int& p, const int& q) {
+                    int pr = dfa_transition(dfa, p, a);
+                    int qr = dfa_transition(dfa, q, a);
+                    if (pr*qr < 0) {
+                        return false;
+                    }
+                    if (pr < 0) {
+                        return true;
+                    }
+                    return partition.index(pr) == partition.index(qr);
+                });
+    }
+
+    // set start and accept states
+    Dfa M;
+    M.start = partition.index(dfa.start);
+    for (auto f: dfa.accept) {
+        M.accept.insert(partition.index(f));
+    }
+
+    // set transitions
+    for (const auto& trans: dfa.delta) {
+        int q = partition.index(trans.first);
+        for (const auto& tran: trans.second) {
+            const auto& a = tran.first;
+            int r = partition.index(tran.second);
+            add_transition(M, q, r, a);
+        }
+    }
+    return M;
 }
 
 std::ostream& operator<<(std::ostream& out, const Dfa& dfa)
