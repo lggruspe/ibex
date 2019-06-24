@@ -1,6 +1,4 @@
 *.swp
 *.out
-bin
-build/*.o
-test
-sample
+*.o
+sample/sample
