@@ -56,14 +56,13 @@ struct Item {
     {
         return after.empty();
     }
-};
 
-template <class Token, class Variable>
-std::variant<Token, Variable> symbol_after_dot(const Item<Token, Variable>& item,
-        const std::variant<Token, Variable>& if_empty)
-{
-    return item.after.empty() ? if_empty : item.after.front();
-}
+    // symbol_after_dot
+    Symbol next(const Symbol& if_empty) const
+    {
+        return after.empty() ? if_empty : after.front();
+    }
+};
 
 template <class Token, class Variable>
 struct Collection {
@@ -78,7 +77,7 @@ struct Collection {
         while (!queue.empty()) {
             auto item = queue.front();
             queue.pop_front();
-            Symbol sym = symbol_after_dot(item, Symbol(grammar.empty));
+            Symbol sym = item.next(Symbol(grammar.empty));
             if (!cfg::is_variable(sym)) {
                 continue;
             }
@@ -130,7 +129,7 @@ struct Collection {
         std::set<Symbol> symbols = _transition_symbols();
         for (const auto& sym: symbols) {
             for (const auto& item: items) {
-                if (symbol_after_dot(item, Symbol(grammar.empty)) == sym) {
+                if (item.next(Symbol(grammar.empty)) == sym) {
                     transitions[sym].items.insert(item.shifted());
                 }
             }
