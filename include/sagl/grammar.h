@@ -79,6 +79,12 @@ struct Grammar {
         return rules_table.value(index);
     }
 
+    bool is_variable(Symbol sym) const
+    {
+        auto [lb, ub] = rules_for(sym);
+        return lb != ub;
+    }
+
 private:
     std::map<Symbol, std::set<Symbol>> first_sets;
     std::set<Rule> rules;

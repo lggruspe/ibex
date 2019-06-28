@@ -13,13 +13,14 @@ namespace sagl
 
 template <class Symbol>
 struct Automaton {
+    // TODO hide states enumeration and provide methods 
+    // for converting between state_ids and states
     Enumeration<State<Symbol>> states;
     std::map<int, std::map<Symbol, int>> transitions;
     int start;  // TODO type must match index type in enumeration.h
 
     Automaton(const Grammar<Symbol>& grammar)
     {
-        // initialize members
         State<Symbol> state({start_item(grammar)}, grammar);
         start = states.insert(state);
         std::vector<int> queue = {start};
@@ -32,6 +33,7 @@ struct Automaton {
                 bool push = !states.has_value(neighbor);
                 int neighbor_id = states.insert(neighbor);
                 transitions[state_id][symbol] = neighbor_id;
+                transitions[neighbor_id];
                 if (push) {
                     queue.push_back(neighbor_id);
                 }

@@ -64,6 +64,9 @@ struct Item {
             < std::tie(other.rule_id, other.dot_index);
     }
 
+    template <class T>
+    friend std::ostream& operator<<(std::ostream&, const Item<T>&);
+
 private:
     typename Sentence::size_type dot_index;   // of first symbol after dot
 };
@@ -78,7 +81,10 @@ std::ostream& operator<<(std::ostream& out, const Item<Symbol>& item)
         }
         out << item.rule.rhs[i] << " ";
     }
-    out << "}";
+    if (item.dot_index == item.rule.rhs.size()) {
+        out << ".";
+    }
+    out << ", " << item.lookahead << "}";
     return out;
 }
 

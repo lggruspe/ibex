@@ -58,7 +58,7 @@ struct State {
             }
         }
 
-        for (auto [_, neighbor]: neighbors) {
+        for (auto& [_, neighbor]: neighbors) {
             neighbor.closure(grammar);
         }
         return neighbors;
