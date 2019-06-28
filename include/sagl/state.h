@@ -2,6 +2,7 @@
 #include "item.h"
 #include "grammar.h"
 #include <initializer_list>
+#include <iostream>
 #include <map>
 #include <set>
 #include <vector>
@@ -74,5 +75,16 @@ private:
         items.insert(item);
     }
 };
+
+template <class Symbol>
+std::ostream& operator<<(std::ostream& out, const State<Symbol>& state)
+{
+    out << "State:" << std::endl;
+    for (const auto& item: state.items) {
+        out << item << std::endl;
+    }
+    out << std::endl;
+    return out;
+}
 
 } // end namespace

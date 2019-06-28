@@ -1,5 +1,6 @@
 #pragma once
 #include "rule.h"
+#include <iostream>
 #include <iterator>
 #include <tuple>
 #include <utility>
@@ -27,6 +28,7 @@ struct Item {
         , lookahead(lookahead)
     {
         after = this->rule.rhs.begin();
+        rhs_end = this->rule.rhs.end();
     }
 
     Item(int rule_id, 
@@ -37,7 +39,9 @@ struct Item {
         , rule(rule)
         , lookahead(lookahead)
         , after(after)
-    {}
+    {
+        rhs_end = this->rule.rhs.end();
+    }
 
     Item shifted() const
     {
@@ -57,7 +61,7 @@ struct Item {
             typename Sentence::size_type end) const
     {
         if (!end) {
-            return std::make_pair(after + start, after + rule.rhs.size());
+            return std::make_pair(after + start, rhs_end);
         }
         return std::make_pair(after + start, after + end);
     }
@@ -66,6 +70,23 @@ struct Item {
     {
         return std::tie(rule_id, after) < std::tie(other.rule_id, other.after);
     }
+
+private:
+    typename Sentence::iterator rhs_end; // used to keep after_slice const
 };
+
+template <class Symbol>
+std::ostream& operator<<(std::ostream& out, const Item<Symbol>& item)
+{
+    out << "{" << item.rule.lhs << " -> ";
+    for (auto it = item.rule.rhs.begin(); it != item.rule.rhs.end(); ++it) {
+        if (it == item.after) {
+            out << ". ";
+        }
+        out << *it << " ";
+    }
+    out << "}";
+    return out;
+}
 
 } // end namespace
