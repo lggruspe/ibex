@@ -29,7 +29,7 @@ struct State {
             auto item = queue.back();
             queue.pop_back();
             if (!item.reduces()) {
-                auto lhs = *(item.after);
+                auto lhs = *(item.after());
                 auto [start, end] = grammar.rules_for(lhs);
                 for (auto it = start; it != end; ++it) {
                     auto [_start, _end] = item.after_slice(1, 0);
@@ -53,7 +53,7 @@ struct State {
         std::map<Symbol, State> neighbors;
         for (const auto& item: items) {
             if (!item.reduces()) {
-                const auto& lhs = *(item.after);
+                const auto& lhs = *(item.after());
                 neighbors[lhs].insert(item.shifted());
             }
         }

@@ -115,14 +115,12 @@ void test_automaton()
 
     sagl::Automaton automaton(grammar);
 
-    /*
     std::cout << "automaton has " << automaton.transitions.size() << " transitions" << std::endl;
     for (const auto& [q, T]: automaton.transitions) {
         for (const auto& [a, r]: T) {
             std::cout << "d(" << q << ", " << a << ") = " << r << std::endl;
         }
     }
-    */
 }
 
 int main()
