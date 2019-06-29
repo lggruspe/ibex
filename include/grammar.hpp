@@ -1,6 +1,6 @@
 #pragma once
-#include "enumeration.h"
-#include "rule.h"
+#include "enumeration.hpp"
+#include "rule.hpp"
 #include <algorithm>
 #include <cassert>
 #include <initializer_list>

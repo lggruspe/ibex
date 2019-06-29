@@ -1,5 +1,5 @@
-#include "grammar.h"
-#include "parser.h"
+#include "grammar.hpp"
+#include "parser.hpp"
 #include "scanner.h"
 #include <algorithm>
 #include <iostream>

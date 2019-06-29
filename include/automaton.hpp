@@ -1,9 +1,9 @@
 #pragma once
-#include "enumeration.h"
-#include "grammar.h"
-#include "item.h"
-#include "rule.h"
-#include "state.h"
+#include "enumeration.hpp"
+#include "grammar.hpp"
+#include "item.hpp"
+#include "rule.hpp"
+#include "state.hpp"
 #include <map>
 #include <vector>
 

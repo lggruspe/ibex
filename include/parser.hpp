@@ -1,7 +1,7 @@
 #pragma once
-#include "automaton.h"
-#include "grammar.h"
-#include "parsingtable.h"
+#include "automaton.hpp"
+#include "grammar.hpp"
+#include "parsingtable.hpp"
 #include <algorithm>
 #include <map>
 #include <stdexcept>

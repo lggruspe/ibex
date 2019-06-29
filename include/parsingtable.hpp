@@ -1,6 +1,6 @@
 #pragma once
-#include "automaton.h"
-#include "grammar.h"
+#include "automaton.hpp"
+#include "grammar.hpp"
 #include <iostream>
 #include <map>
 

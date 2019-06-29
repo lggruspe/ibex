@@ -1,6 +1,6 @@
 #pragma once
-#include "item.h"
-#include "grammar.h"
+#include "item.hpp"
+#include "grammar.hpp"
 #include <initializer_list>
 #include <iostream>
 #include <map>

@@ -1,7 +1,7 @@
 CC = clang++
 CFLAGS = -g -Wall --std=c++1z -I include
 
-bin/main:	src/main.cpp $(shell find include -name "*.h")
+bin/main:	src/main.cpp $(shell find include -name "*.hpp")
 	${CC} ${CFLAGS} -o bin/main src/main.cpp
 
 clean:
