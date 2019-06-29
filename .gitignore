@@ -1,4 +1,4 @@
 a.out
-*.md
-build/*
-main
+*.o
+*.a
+bin/main

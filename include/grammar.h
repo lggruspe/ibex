@@ -1,97 +1,124 @@
 #pragma once
+#include "enumeration.h"
+#include "rule.h"
 #include <algorithm>
+#include <cassert>
+#include <initializer_list>
 #include <map>
 #include <set>
-#include <stdexcept>
 #include <utility>
-#include <variant>
 #include <vector>
 
-namespace cfg
+namespace sagl
 {
+;
 
-template <class Token, class Variable>
-bool is_token(const std::variant<Token, Variable>& symbol)
-{
-    return !symbol.index();
-}
-
-template <class Token, class Variable>
-bool is_variable(const std::variant<Token, Variable>& symbol)
-{
-    return symbol.index();
-}
-
-template <class Token, class Variable>
+template <class Symbol>
 struct Grammar {
-    Token empty;
-    using Symbol = std::variant<Token, Variable>;
-    using Sentence = typename std::vector<Symbol>;
-    std::set<Variable> variables;
-    std::set<Token> tokens;
-    std::map<Variable, std::set<Sentence>> rules;
-    std::map<Symbol,std::set<Symbol>>first_sets;
+    using Sentence = std::vector<Symbol>;
 
-    Grammar(const Token& empty) : empty(empty) 
+    std::set<Symbol> symbols;
+    Symbol start;
+    Symbol empty;
+   
+    Grammar(Symbol start, Symbol empty, 
+            std::initializer_list<Rule<Symbol>> rules)
+    : start(start)
+    , empty(empty)
+    , rules(rules)
     {
-        add(empty);
+        symbols.insert(start);
+        symbols.insert(empty);
+        for (const auto& rule: this->rules) {
+            rules_table.insert(rule);
+            symbols.insert(rule.lhs);
+            symbols.insert(rule.rhs.begin(), rule.rhs.end());
+        }
+        compute_first_sets();
     }
 
-    void add(const Token& token)
-    {
-        auto [it, success] = tokens.insert(token);
-        if (success) {
-            first_sets[token] = {token};
-        }
-    }
-
-    void add(const Variable& lhs, const Sentence& rhs)
-    {
-        // check if rhs is a valid sentence
-        for (const auto& sym: rhs) {
-            if (!is_token(sym) && !variables.count(std::get<Variable>(sym))) {
-                throw std::invalid_argument("sentence has invalid symbol");
-            }
-        }
-        variables.insert(lhs);
-        first_sets[lhs];            // initialize
-        rules[lhs].insert(rhs);
-
-        // update first sets
-        bool changed = true;
-        while (changed) {
-            changed = false;
-            for (const auto& var: variables) {
-                std::set<Symbol> first_set;
-                for (const Sentence& sub: rules[var]) {
-                    auto temp = first(sub);
-                    first_set.insert(temp.begin(), temp.end());
-                }
-                if (first_set != first_sets[var]) {
-                    changed = true;
-                    first_sets[var] = first_set;
-                }
-            }
-        }
-    }
-
-    std::set<Symbol> first(const Sentence& sent) const
+    std::set<Symbol> first(Sentence sentence) const
     {
         std::set<Symbol> res;
-        for (const auto& sym: sent) {
+        for (const auto& sym: sentence) {
             const auto& first_set = first(sym);
             res.insert(first_set.begin(), first_set.end());
             if (!first_set.count(empty)) {
                 break;
-
             }
         }
         return res;
     }
 
-    const std::set<Symbol>& first(const Symbol& sym) const
+    std::pair<typename std::set<Rule<Symbol>>::iterator,
+        typename std::set<Rule<Symbol>>::iterator>
+    rules_for(Symbol sym) const
     {
+        auto lb = rules.lower_bound({sym, {}});
+        auto ub = std::find_if(lb, rules.end(),
+                [&sym](const auto& rule) {
+                    return rule.lhs != sym;
+                });
+        return std::make_pair(lb, ub);
+    }
+
+    // TODO check if enumeration.index returns an int or something else
+    int rule_index(const Rule<Symbol>& rule) const
+    {
+        return rules_table.index(rule);
+    }
+
+    // TODO or return const ref?
+    // TODO check if rules_table.value takes in an int
+    Rule<Symbol> rule_value(int index) const
+    {
+        return rules_table.value(index);
+    }
+
+    bool is_variable(Symbol sym) const
+    {
+        auto [lb, ub] = rules_for(sym);
+        return lb != ub;
+    }
+
+private:
+    std::map<Symbol, std::set<Symbol>> first_sets;
+    std::set<Rule<Symbol>> rules;
+    Enumeration<Rule<Symbol>> rules_table;
+
+    std::set<Symbol> first(Symbol sym) const
+    {
+        assert(symbols.count(sym));
         return first_sets.at(sym);
+    }
+
+    void compute_first_sets()
+    {
+        std::vector<Symbol> variables;
+        for (const auto& symbol: symbols) {
+            if (is_variable(symbol)) {
+                first_sets[symbol]; // init first_set
+                variables.push_back(symbol);
+            } else {
+                first_sets[symbol] = {symbol};
+            }
+        }
+
+        for (bool changed = true; changed; ) {
+            changed = false;
+            for (const auto& var: variables) {
+                auto [start, end] = rules_for(var);
+                for (auto it = start; it != end; ++it) {
+                    const auto& rule = *it;
+                    for (const auto& symbol: first(rule.rhs)) {
+                        auto [_, cond] = first_sets[var].insert(symbol);
+                        if (cond) {
+                            changed = true;
+                        }
+                    }
+                }
+            }
+        }
     }
 };
 
