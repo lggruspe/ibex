@@ -54,9 +54,7 @@ public:
         std::vector<int> states = {start_state};
         auto lookahead = scan();
         for (;;) {
-            auto state = states.back();
-            auto action = table[state][lookahead.first];
-
+            auto action = table[states.back()][lookahead.first];
             switch (action.type) {
             case 'a':
                 accept_cb();
@@ -68,7 +66,7 @@ public:
                         [&states](const auto&) {
                         states.pop_back();
                         });
-                action = table[state][rule.lhs];
+                action = table[states.back()][rule.lhs];
                 states.push_back(action.value);
                 }
                 break;
@@ -83,5 +81,4 @@ public:
         }
     }
 };
-
 } // end namespace
