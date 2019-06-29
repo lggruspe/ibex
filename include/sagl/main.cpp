@@ -3,6 +3,7 @@
 #include "state.h"
 #include "automaton.h"
 #include "parsingtable.h"
+#include "parser.h"
 #include <iostream>
 #include <variant>
 #include <vector>
@@ -179,7 +180,18 @@ void test_temp()
     }
 }
 
+void test_parser()
+{
+sagl::Grammar<Symbol>
+    grammar(Variable::start, Terminal::empty, {
+            {Variable::start, {Variable::list}},
+            {Variable::list, {Terminal::a, Variable::list}},
+            {Variable::list, {Terminal::a}}
+            });
+    sagl::Parser parse(grammar);
+}
+
 int main()
 {
-    test_parsing_table();
+    test_parser();
 }
