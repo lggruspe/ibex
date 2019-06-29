@@ -13,13 +13,13 @@ namespace sagl
 ;
 
 template <class T>
-using accept_callback = T(bool);
+using accept_callback_t = T(bool);
 
 template <class Rule>
-using reduce_callback = void(Rule);
+using reduce_callback_t = void(Rule);
 
 template <class TokenLexemePair>
-using shift_callback = void(TokenLexemePair);
+using shift_callback_t = void(TokenLexemePair);
 
 bool empty_accept_cb(bool accept)
 {
@@ -54,9 +54,9 @@ public:
              class U=Rule<Symbol>,
              class V=std::pair<Symbol, std::string>>
     T operator()(Scanner scan, 
-            accept_callback<T> accept_cb = empty_accept_cb,
-            reduce_callback<U> reduce_cb = empty_reduce_cb,
-            shift_callback<V> shift_cb = empty_shift_cb)
+            accept_callback_t<T> accept_cb = empty_accept_cb,
+            reduce_callback_t<U> reduce_cb = empty_reduce_cb,
+            shift_callback_t<V> shift_cb = empty_shift_cb)
     {
         std::vector<int> states = {start_state};
         auto lookahead = scan();

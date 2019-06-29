@@ -41,7 +41,6 @@ struct Item {
     // symbol after the dot
     typename Sentence::const_iterator after() const
     {
-        
         return rule.rhs.cbegin() + dot_index;
     }
 

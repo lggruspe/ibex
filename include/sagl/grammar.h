@@ -9,12 +9,9 @@
 #include <utility>
 #include <vector>
 
-#include <iostream>
-
 namespace sagl
 {
 ;
-
 
 template <class Symbol>
 struct Grammar {
@@ -91,12 +88,7 @@ private:
 
     std::set<Symbol> first(Symbol sym) const
     {
-        if (!symbols.count(sym)) {
-            std::cout << "AssertionError: " << sym 
-                << " is not a valid symbol" << std::endl;
-            //assert(symbols.count(sym));
-            throw 0;
-        }
+        assert(symbols.count(sym));
         return first_sets.at(sym);
     }
 
@@ -104,13 +96,11 @@ private:
     {
         std::vector<Symbol> variables;
         for (const auto& symbol: symbols) {
-            auto [start, end] = rules_for(symbol);
-            if (start == end) {
-                // i.e. sym is a terminal
-                first_sets[symbol] = {symbol};
-            } else {
+            if (is_variable(symbol)) {
                 first_sets[symbol]; // init first_set
                 variables.push_back(symbol);
+            } else {
+                first_sets[symbol] = {symbol};
             }
         }
 
