@@ -56,14 +56,15 @@ public:
                 symbols.push_back(rule.lhs);
                 action = table[state][rule.lhs];
                 states.push_back(action.value);
+                }
                 break;
-            }
             case 's':
                 states.push_back(action.value);
                 symbols.push_back(lookahead);
                 token_lexeme_pair = scan();
                 lookahead = token_lexeme_pair.first;
                 lexeme = token_lexeme_pair.second;
+
                 break;
             default:
                 return false;

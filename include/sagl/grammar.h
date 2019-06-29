@@ -19,14 +19,13 @@ namespace sagl
 template <class Symbol>
 struct Grammar {
     using Sentence = std::vector<Symbol>;
-    using Rule = Rule<Symbol>;
 
     std::set<Symbol> symbols;
     Symbol start;
     Symbol empty;
    
     Grammar(Symbol start, Symbol empty, 
-            std::initializer_list<Rule> rules)
+            std::initializer_list<Rule<Symbol>> rules)
     : start(start)
     , empty(empty)
     , rules(rules)
@@ -54,8 +53,8 @@ struct Grammar {
         return res;
     }
 
-    std::pair<typename std::set<Rule>::iterator,
-        typename std::set<Rule>::iterator>
+    std::pair<typename std::set<Rule<Symbol>>::iterator,
+        typename std::set<Rule<Symbol>>::iterator>
     rules_for(Symbol sym) const
     {
         auto lb = rules.lower_bound({sym, {}});
@@ -67,14 +66,14 @@ struct Grammar {
     }
 
     // TODO check if enumeration.index returns an int or something else
-    int rule_index(const Rule& rule) const
+    int rule_index(const Rule<Symbol>& rule) const
     {
         return rules_table.index(rule);
     }
 
     // TODO or return const ref?
     // TODO check if rules_table.value takes in an int
-    Rule rule_value(int index) const
+    Rule<Symbol> rule_value(int index) const
     {
         return rules_table.value(index);
     }
@@ -87,8 +86,8 @@ struct Grammar {
 
 private:
     std::map<Symbol, std::set<Symbol>> first_sets;
-    std::set<Rule> rules;
-    Enumeration<Rule> rules_table;
+    std::set<Rule<Symbol>> rules;
+    Enumeration<Rule<Symbol>> rules_table;
 
     std::set<Symbol> first(Symbol sym) const
     {
