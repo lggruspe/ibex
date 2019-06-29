@@ -50,8 +50,11 @@ private:
                         && item.lookahead == grammar.empty) {
                     table[state_id][grammar.empty] = Action('a');
                 } else {
-                    // TODO check for reduce/reduce conflicts
-                    table[state_id][item.lookahead] = Action('r', item.rule_id);
+                    auto& action = table[state_id][item.lookahead];
+                    if (action.type == 'r' && action.value != item.rule_id) {
+                        std::cerr << "Warning: reduce/reduce conflict\n";
+                    }
+                    action = Action('r', item.rule_id);
                 }
             }
         }
@@ -59,8 +62,11 @@ private:
         // look for shifts and gotos
         for (const auto& [symbol, next_state_id]: 
                 automaton.transitions.at(state_id)) {
-            // TODO check for S/R conflicts
-            table[state_id][symbol] = Action(
+            auto& action = table[state_id][symbol];
+            if (action.type == 'r') {
+                std::cerr << "Warning: shift/reduce conflict\n";
+            }
+            action = Action(
                     grammar.is_variable(symbol) ? 'g' : 's',
                     next_state_id);
         }
