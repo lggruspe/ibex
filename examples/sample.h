@@ -441,6 +441,8 @@ struct ScannerCollection {
         int c = in->get();
         if (c == std::char_traits<char>::eof()) {
             in->clear();
+            in->putback(c);
+            in->ignore();
             return std::pair<Token, std::string>(Token::_empty, "");
         }
         return std::pair<Token, std::string>(Token::_other, std::string(1, (char)c));
