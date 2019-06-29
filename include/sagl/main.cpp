@@ -5,6 +5,7 @@
 #include "parsingtable.h"
 #include "parser.h"
 #include "scanner.h"
+#include <algorithm>
 #include <iostream>
 #include <variant>
 #include <vector>
@@ -35,6 +36,32 @@ std::ostream& operator<<(std::ostream& out, Symbol sym)
     return out;
 }
 
+std::vector<Symbol> symbols;
+int counter = 0;
+
+int accept_cb(bool accept)
+{
+    return accept ? counter : -counter;
+}
+
+template <class Rule>
+void reduce_cb(Rule rule)
+{
+    std::for_each(rule.rhs.begin(), rule.rhs.end(),
+            [](const auto&) {
+            symbols.pop_back();
+            });
+    symbols.push_back(rule.lhs);
+    counter += (rule.rhs.size() - 1);
+}
+
+template <class TokenLexemePair>
+void shift_cb(TokenLexemePair lookahead)
+{
+    symbols.push_back(lookahead.first);
+    ++counter;
+}
+
 int main()
 {
     sagl::Grammar<Symbol>
@@ -46,6 +73,7 @@ int main()
     sagl::Parser parse(grammar);
 
     ScannerCollection scan;
-    bool success = parse(scan);
-    std::cout << success << std::endl;
+    auto success = parse(scan, accept_cb, reduce_cb, shift_cb);
+    std::cout << "success = " << success << std::endl;
+    std::cout << "counter = " << counter << std::endl;
 }

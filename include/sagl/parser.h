@@ -12,7 +12,8 @@ namespace sagl
 {
 ;
 
-using accept_callback = void();
+template <class T>
+using accept_callback = T(bool);
 
 template <class Rule>
 using reduce_callback = void(Rule);
@@ -20,7 +21,10 @@ using reduce_callback = void(Rule);
 template <class TokenLexemePair>
 using shift_callback = void(TokenLexemePair);
 
-void empty_accept_cb() {}
+bool empty_accept_cb(bool accept)
+{
+    return accept;
+}
 
 template <class Rule>
 void empty_reduce_cb(Rule rule) {}
@@ -45,11 +49,14 @@ public:
 
     // scan returns a token, string pair
     // assume tokens can be implicitly converted to symbols
-    template <class Scanner, class T=Rule<Symbol>, class U=std::pair<Symbol, std::string>>
-    bool operator()(Scanner scan, 
-            accept_callback accept_cb = empty_accept_cb,
-            reduce_callback<T> reduce_cb = empty_reduce_cb,
-            shift_callback<U> shift_cb = empty_shift_cb)
+    template <class Scanner, 
+             class T=bool,
+             class U=Rule<Symbol>,
+             class V=std::pair<Symbol, std::string>>
+    T operator()(Scanner scan, 
+            accept_callback<T> accept_cb = empty_accept_cb,
+            reduce_callback<U> reduce_cb = empty_reduce_cb,
+            shift_callback<V> shift_cb = empty_shift_cb)
     {
         std::vector<int> states = {start_state};
         auto lookahead = scan();
@@ -57,8 +64,7 @@ public:
             auto action = table[states.back()][lookahead.first];
             switch (action.type) {
             case 'a':
-                accept_cb();
-                return true;
+                return accept_cb(true);
             case 'r': {
                 const auto& rule = grammar->rule_value(action.value);
                 reduce_cb(rule);
@@ -76,7 +82,7 @@ public:
                 lookahead = scan();
                 break;
             default:
-                return false;
+                return accept_cb(false);
             }
         }
     }
