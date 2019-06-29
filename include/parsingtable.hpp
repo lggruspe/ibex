@@ -40,7 +40,7 @@ private:
             const Automaton<Symbol>& automaton, 
             const Grammar<Symbol>& grammar)
     {
-        const auto& state = automaton.states.value(state_id);
+        const auto& state = automaton.state_value(state_id);
 
         // check for accept and reduce actions
         for (const auto& item: state.items) {

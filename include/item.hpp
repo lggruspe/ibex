@@ -13,8 +13,7 @@ namespace sagl
 template <class Symbol>
 struct Item {
     using Sentence = std::vector<Symbol>;
-
-    int rule_id;    // TODO should match type of rule_id in grammar
+    int rule_id;
     Rule<Symbol> rule;
     Symbol lookahead;
 

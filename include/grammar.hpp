@@ -62,15 +62,12 @@ struct Grammar {
         return std::make_pair(lb, ub);
     }
 
-    // TODO check if enumeration.index returns an int or something else
     int rule_index(const Rule<Symbol>& rule) const
     {
         return rules_table.index(rule);
     }
 
-    // TODO or return const ref?
-    // TODO check if rules_table.value takes in an int
-    Rule<Symbol> rule_value(int index) const
+    const Rule<Symbol>& rule_value(int index) const
     {
         return rules_table.value(index);
     }
