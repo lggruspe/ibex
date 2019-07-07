@@ -24,6 +24,7 @@ std::ostream& operator<<(std::ostream& out, const Action& action)
 {
     return out << action.type << action.value;
 }
+
 template <class Symbol>
 struct ParsingTable {
     std::map<int, std::map<Symbol, Action>> table;

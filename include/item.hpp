@@ -50,6 +50,7 @@ struct Item {
     after_slice(typename Sentence::size_type start, 
             typename Sentence::size_type end) const
     {
+        // TODO make sure that the iterators are valid
         return std::make_pair(rule.rhs.cbegin() + dot_index + start,
                 end ? rule.rhs.cbegin() + dot_index + end
                     : rule.rhs.cend());
