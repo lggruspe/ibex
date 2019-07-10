@@ -1,25 +1,33 @@
 CC = clang++
-CFLAGS = -g -Wall -std=c++1z -I ./include
 
-bin/main:	build/main.o build/utilities.o build/generator.o build/gen2.o
-	${CC} ${CFLAGS} -o bin/main build/main.o build/gen2.o build/utilities.o build/generator.o -lrnd
+C++17 =
+ifeq ($(CC),clang++)
+	C++17=-std=c++1z
+else
+	C++17=-std=c++17
+endif
 
-build/main.o:	./src/main.cpp
-	${CC} ${CFLAGS} -c -o build/main.o ./src/main.cpp
+CFLAGS = -g -Wall $(C++17) -I include
+OBJECTS = build/main.o build/gen2.o build/generator.o build/utilities.o
 
-build/gen2.o:	./src/gen2.cpp ./src/gen2.h
-	${CC} ${CFLAGS} -c -o build/gen2.o ./src/gen2.cpp
+vpath %.o build
+vpath %.cpp src
+vpath %.h include src
+vpath -lrnd /usr/local/lib
 
-build/generator.o:	./src/generator.cpp ./include/generator.h 
-	${CC} ${CFLAGS} -c -o build/generator.o ./src/generator.cpp
+bin/main:	$(OBJECTS) -lrnd
+	$(CC) $(CFLAGS) -o $@ $^
 
-build/utilities.o:	./src/utilities.cpp ./include/utilities.h
-	${CC} ${CFLAGS} -c -o build/utilities.o ./src/utilities.cpp
+$(OBJECTS):	build/%.o: %.cpp
+	$(CC) $(CFLAGS) -c -o $@ $<
+
+build/gen2.o build/generator.o build/utilities.o:	build/%.o: %.h
+
+-lrnd:
 
 clean:
-	rm bin/*
-	rm build/*
+	-rm -f bin/main $(OBJECTS) build/tmp.h
 
 compare:	bin/main
-	./bin/main > build/tmp.h
+	bin/main > build/tmp.h
 	diff --color examples/sample.h build/tmp.h
