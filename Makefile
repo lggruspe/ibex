@@ -1,27 +1,38 @@
 CC = clang++
-CFLAGS = -g -Wall -std=c++1z -I ./include
 
-build/librnd.a:	build/regex.o build/nfa.o build/dfa.o
-	ar rcs build/librnd.a build/*.o
+C++17 =
+ifeq ($(CC),clang++)
+	C++17=-std=c++1z
+else
+	C++17=-std=c++17
+endif
 
-build/regex.o:	./src/regex.cpp ./include/regex.h
-	${CC} ${CFLAGS} -c -o build/regex.o ./src/regex.cpp
+CFLAGS = -g -Wall $(C++17) -I include
+OBJECTS = build/regex.o build/nfa.o build/dfa.o
 
-build/nfa.o:	./src/nfa.cpp ./include/nfa.h ./include/regex.h
-	${CC} ${CFLAGS} -c -o build/nfa.o ./src/nfa.cpp
+vpath %.cpp src
+vpath %.o build
+vpath %.h include src
 
-build/dfa.o:	./src/dfa.cpp ./include/dfa.h ./include/nfa.h ./src/enumeration2.h ./src/partition.h
-	${CC} ${CFLAGS} -c -o build/dfa.o ./src/dfa.cpp
+build/librnd.a:	$(OBJECTS)
+	ar rcs build/librnd.a $(OBJECTS)
 
+$(OBJECTS):	build/%.o : %.cpp %.h
+	$(CC) $(CFLAGS) -c -o $@ $<
+
+build/nfa.o:	nfa.h
+
+build/dfa.o:	nfa.h enumeration2.h partition.h
+
+.PHONY:	clean
 clean:
-	rm sample
-	rm build/*
+	-rm -f $(OBJECTS) sample/sample.o sample/sample build/*.a
 
-sample/sample:	sample/sample.o build/regex.o build/dfa.o build/nfa.o
-	${CC} ${CFLAGS} -o sample/sample sample/sample.o build/regex.o build/dfa.o build/nfa.o
+sample/sample:	sample/sample.o $(OBJECTS)
+	$(CC) $(CFLAGS) -o $@ $^
 
 sample/sample.o:	sample/sample.cpp
-	${CC} ${CFLAGS} -c -o sample/sample.o sample/sample.cpp
+	$(CC) $(CFLAGS) -c -o $@ $<
 
 sample:	sample/sample
 	./sample/sample
