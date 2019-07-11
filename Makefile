@@ -1,11 +1,22 @@
-CC = clang++
-CFLAGS = -g -Wall --std=c++1z -I include
+CXX = clang++
 
-bin/main:	src/main.cpp $(shell find include -name "*.hpp")
-	${CC} ${CFLAGS} -o bin/main src/main.cpp
+C++17 =
+ifeq ($(CXX),clang++)
+	C++17=--std=c++1z
+else
+	C++17=--std=c++17
+endif
 
+CFLAGS = -g -Wall $(C++17) -I include
+
+vpath main.cpp src
+
+bin/main:	main.cpp $(shell find include -name "*.hpp")
+	$(CXX) $(CFLAGS) -o $@ $<
+
+.PHONY:	clean
 clean:
-	rm bin/main
+	-rm -f bin/main
 
 example:	bin/main
 	./bin/main
