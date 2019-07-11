@@ -1,13 +1,13 @@
-CC = clang++
+CXX = clang++
 
 C++17 =
-ifeq ($(CC),clang++)
+ifeq ($(CXX),clang++)
 	C++17=-std=c++1z
 else
 	C++17=-std=c++17
 endif
 
-CFLAGS = -g -Wall $(C++17) -I include
+CXXFLAGS = -g -Wall $(C++17) -I include
 OBJECTS = build/main.o build/gen2.o build/generator.o build/utilities.o
 
 vpath %.o build
@@ -16,13 +16,14 @@ vpath %.h include src
 vpath -lrnd /usr/local/lib
 
 bin/main:	$(OBJECTS) -lrnd
-	$(CC) $(CFLAGS) -o $@ $^
+	$(CXX) $(CXXFLAGS) -o $@ $^
 
 $(OBJECTS):	build/%.o: %.cpp
-	$(CC) $(CFLAGS) -c -o $@ $<
+	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
 build/gen2.o build/generator.o build/utilities.o:	build/%.o: %.h
 
+.PHONY: -lrnd
 -lrnd:
 
 clean:
