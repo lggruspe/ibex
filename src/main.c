@@ -4,13 +4,13 @@
 #include <stdlib.h>
 #include <time.h>
 
-void print_interval(rb_node_t *node)
+void print_interval(struct rb_node *node)
 {
-    interval_t in = *((interval_t*)(node->key));
+    struct dis_interval in = *((struct dis_interval*)(node->data));
     printf("[%d, %d] ", in.start, in.end);
 }
 
-int count(rb_node_t *node)
+int count(struct rb_node *node)
 {
     if (!node) {
         return 0;
@@ -18,7 +18,7 @@ int count(rb_node_t *node)
     return 1 + count(node->left) + count(node->right);
 }
 
-int height(rb_node_t *node)
+int height(struct rb_node *node)
 {
     if (!node) {
         return 0;
@@ -30,38 +30,30 @@ int height(rb_node_t *node)
 
 int test_disjoint_interval_set_duplicate()
 {
-    disjoint_interval_set_t *intervals = disjoint_interval_set_create();
-    if (!intervals) {
-        return 0;
-    }
+    struct dis_set intervals = dis_create();
+    dis_insert(&intervals, 0, 1);
+    dis_insert(&intervals, 0, 1);
 
-    disjoint_interval_set_insert(intervals, interval_create(0, 1));
-    disjoint_interval_set_insert(intervals, interval_create(0, 1));
-
-    interval_t in = *((interval_t*)(intervals->tree->root->key));
-    int passed = count(intervals->tree->root) == 1
+    struct dis_interval in = *((struct dis_interval*)(intervals.root->data));
+    int passed = count(intervals.root) == 1
         && in.start == 0
         && in.end == 1;
-    disjoint_interval_set_destroy(intervals, 1);
+    dis_destroy(&intervals);
     return passed;
 }
 
 int test_disjoint_interval_set_height(int n)
 {
-    disjoint_interval_set_t *intervals = disjoint_interval_set_create();
-    if (!intervals) {
-        return 0;
-    }
+    struct dis_set intervals = dis_create();
 
     for (int i = 0; i < n; ++i) {
         int end = rand() % 100;
         int start = rand() % end;
-        interval_t in = interval_create(start, end);
-        disjoint_interval_set_insert(intervals, in);
+        dis_insert(&intervals, start, end);
     }
 
-    int passed = (double)(height(intervals->tree->root)) < 2*log2(n + 1.0);
-    disjoint_interval_set_destroy(intervals, 1);
+    int passed = (double)(height(intervals.root)) < 2*log2(n + 1.0);
+    dis_destroy(&intervals);
     return passed;
 }
 

@@ -1,22 +1,16 @@
 #pragma once
-#include "rb/node.h"
-#include "rb/tree.h"
+#include "rbtree.h"
+#define dis_set rb_tree
 
-typedef struct {
+struct dis_interval {
     int start, end;
-} interval_t;
+};
 
-typedef struct {
-    rb_tree_t *tree;
-} disjoint_interval_set_t;
-
-int interval_compare(const void *a, const void *b)
+int dis_interval_compare(const void *a, const void *b)
 {
-    // -1: a.end < b.start
-    // 0: a and b overlap
-    // 1: a.start > b.end
-    interval_t in = *((interval_t*)a);
-    interval_t jn = *((interval_t*)b);
+    // returns 0 if a and b overlap
+    struct dis_interval in = *((struct dis_interval*)a);
+    struct dis_interval jn = *((struct dis_interval*)b);
     if (in.end < jn.start) {
         return -1;
     } else if (in.start > jn.end) {
@@ -26,49 +20,23 @@ int interval_compare(const void *a, const void *b)
     }
 }
 
-disjoint_interval_set_t *disjoint_interval_set_create()
+struct dis_set dis_create()
 {
-    disjoint_interval_set_t *intervals = malloc(sizeof(disjoint_interval_set_t));
-    if (intervals) {
-        intervals->tree = rb_tree_create(sizeof(interval_t), interval_compare);
-        if (!intervals->tree) {
-            free(intervals);
-            intervals = NULL;
-        }
-    }
-    return intervals;
+    return (struct dis_set)rb_tree_create(
+            sizeof(struct dis_interval), dis_interval_compare);
 }
 
-void disjoint_interval_set_destroy(
-        disjoint_interval_set_t *intervals, 
-        int cascade)
+void dis_destroy(struct dis_set *set)
 {
-    rb_tree_destroy(intervals->tree, cascade);
-    free(intervals);
-}
-
-interval_t interval_create(int start, int end)
-{
-    interval_t in;
-    in.start = start;
-    in.end = end;
-    return in;
+    rb_tree_destroy(set, 1);
 }
 
 int int_compare(const void *a, const void *b)
 {
-    int x = *((int*)a);
-    int y = *((int*)b);
-    if (x < y) {
-        return -1;
-    } else if (x == y) {
-        return 0;
-    } else {
-        return 1;
-    }
+    return *((int*)a) - *((int*)b);
 }
 
-void set_boundary(int boundary[], interval_t in, interval_t jn)
+void set_boundary(int boundary[], struct dis_interval in, struct dis_interval jn)
 {
     boundary[0] = in.start;
     boundary[1] = in.end;
@@ -77,33 +45,35 @@ void set_boundary(int boundary[], interval_t in, interval_t jn)
     qsort(boundary, 4, sizeof(int), int_compare);
 }
 
-void disjoint_interval_set_insert(
-        disjoint_interval_set_t *intervals,
-        interval_t in)
+void dis_insert(struct dis_set *intervals, int start, int end)
 {
-    if (in.start > in.end) {
-        return;
-    }
-    if (!intervals->tree->root) {
-        intervals->tree->root = rb_node_create(&in, NULL, NULL, NULL, RB_BLACK, intervals->tree->nbytes);
-        return;
+    if (start > end) return;
+    struct dis_interval in = {
+        .start = start,
+        .end = end
+    };
+    if (!intervals->root) {
+        return rb_tree_insert(intervals, rb_node_create(&in, NULL, NULL, NULL,
+                    rb_black, intervals->nbytes));
     }
 
     // find an interval that overlaps
-    rb_node_t *node = rb_node_find_match_or_parent(intervals->tree->root, &in, interval_compare);
-    int comparison = interval_compare(&in, node->key);
-    if (comparison != 0) {
-        rb_node_t *new_node = rb_node_create(&in, NULL, NULL, node, RB_RED, 
-                intervals->tree->nbytes);
-        rb_tree_insert_child(intervals->tree, node, new_node);
+    // TODO use rb_find_match_or_parent
+    struct rb_node *node = rb_tree_search(intervals, &in);
+    if (!node) {
+        struct rb_node *new_node = rb_node_create(&in, NULL, NULL, node, 
+                rb_red, intervals->nbytes);
+        rb_tree_insert(intervals, new_node);
     } else {
         int boundary[4];
-        set_boundary(boundary, *((interval_t*)(node->key)), in);
-        interval_t intersection = interval_create(boundary[1], boundary[2]);
-        rb_tree_change_node_key(intervals->tree, node, &intersection);
-        disjoint_interval_set_insert(intervals, 
-                interval_create(boundary[0], boundary[1] - 1));
-        disjoint_interval_set_insert(intervals,
-                interval_create(boundary[2] + 1, boundary[3]));
+        set_boundary(boundary, *((struct dis_interval*)(node->data)), in);
+        struct dis_interval intersection = {
+            .start = boundary[1],
+            .end = boundary[2]
+        };
+        rb_tree_change_node_data(intervals, node, &intersection);
+        // TODO you shouldn't have to start at the root
+        dis_insert(intervals, boundary[0], boundary[1] - 1);
+        dis_insert(intervals, boundary[2] + 1, boundary[3]);
     }
 }
