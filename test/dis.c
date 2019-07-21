@@ -1,4 +1,4 @@
-#include "dit.h"
+#include "dis.h"
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>

@@ -1,8 +1,18 @@
 CC = gcc
 CFLAGS = -g -Wall -I include
 
-bin/main:	src/main.c include/dit.h
+vpath %.h include
+
+.PHONY:	all
+all:	bin/dis
+
+bin/dis:	test/dis.c dis.h
 	${CC} ${CFLAGS} -o $@ $< -lm
 
+.PHONY:	clean
 clean:
-	rm bin/main
+	-rm -f bin/dis vgcore.*
+
+.PHONY:	test
+test:	all
+	bin/dis
