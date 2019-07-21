@@ -6,7 +6,7 @@ vpath %.h include
 .PHONY:	all
 all:	bin/dis
 
-bin/dis:	test/dis.c dis.h
+bin/dis:	test/dis.c dis.h test/test_lib.h
 	${CC} ${CFLAGS} -o $@ $< -lm
 
 .PHONY:	clean
