@@ -6,9 +6,9 @@
 #include <stdlib.h>
 #include <time.h>
 
-void print_interval(struct rb_node *node)
+void print_interval(void *pin)
 {
-    struct dis_interval in = *((struct dis_interval*)(node->data));
+    struct dis_interval in = *((struct dis_interval*)pin);
     printf("[%d, %d] ", in.start, in.end);
 }
 
@@ -57,15 +57,17 @@ int test_dis_height()
     bool passed = true;
     struct dis_set intervals = dis_create();
 
-    // TODO stack overflow when input = 20?
-    int n = 10;
-    for (int i = 0; i < n; ++i) {
+    size_t n = 100;
+    for (size_t i = 0; i < n; ++i) {
         int end = rand() % 100;
         int start = rand() % end;
+        printf("iteration %zu: start=%d end=%d\n", i, start, end);
         dis_insert(&intervals, start, end);
     }
 
-    check_assertion((double)(height(&intervals)) < 2*log2(n + 1.0));
+    rb_node_inorder(intervals.root, print_interval);
+
+    check_assertion((double)(height(&intervals)) < 6*log2(n + 1.0));
     dis_destroy(&intervals);
     return passed;
 }

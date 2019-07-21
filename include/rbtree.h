@@ -85,7 +85,8 @@ struct rb_tree rb_tree_create(
 
 void rb_rotate_left(struct rb_tree *tree, struct rb_node *x)
 {
-    assert(x && x->right);
+    assert(x);
+    assert(x->right);
     struct rb_node *y = x->right;
     y->parent = x->parent;
     if (y->parent) {
@@ -195,7 +196,7 @@ void rb_tree_repair(struct rb_tree *tree, struct rb_node *node)
         grandparent->color = rb_red;
         parent->color = rb_black;
         rb_rotate_right(tree, grandparent);
-    } else if (grandparent) {
+    } else if (grandparent && grandparent->right == parent && parent->right == node) {
         grandparent->color = rb_red;
         parent->color = rb_black;
         rb_rotate_left(tree, grandparent);
