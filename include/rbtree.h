@@ -1,5 +1,6 @@
 #pragma once
 #include <assert.h>
+#include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -132,11 +133,9 @@ void rb_rotate_right(struct rb_tree *tree, struct rb_node *y)
     y->parent = x;
 }
 
-void rb_node_destroy(struct rb_node *node, int cascade)
+void rb_node_destroy(struct rb_node *node, bool cascade)
 {
-    if (!node) {
-        return;
-    }
+    if (!node) return;
     if (cascade) {
         rb_node_destroy(node->left, cascade);
         rb_node_destroy(node->right, cascade);
@@ -145,7 +144,7 @@ void rb_node_destroy(struct rb_node *node, int cascade)
     free(node);
 }
 
-void rb_tree_destroy(struct rb_tree *tree, int cascade)
+void rb_tree_destroy(struct rb_tree *tree, bool cascade)
 {
     rb_node_destroy(tree->root, cascade);
 }
@@ -222,7 +221,7 @@ void rb_tree_transplant(struct rb_tree *tree, struct rb_node *u, struct rb_node 
 // does not check if inserting child affects tree shape
 // or if parent has room for child
 // returns node that the child replaces, if any, 
-// so the caller can deallocate memory
+// so the caller can deallocate memory (using rb_node_destroy(node, false))
 struct rb_node *rb_tree_insert_child(
         struct rb_tree *tree, 
         struct rb_node *parent, 
@@ -267,12 +266,13 @@ struct rb_node *rb_find_match_or_parent(
     return child ? child : parent;
 }
 
-void rb_tree_insert(struct rb_tree *tree, struct rb_node *node)
+// returns pointer to replaced node if any, so it can be propertly deallocated
+// (using rb_node_destroy(node, false)
+struct rb_node *rb_tree_insert(struct rb_tree *tree, struct rb_node *node)
 {
-    if (node) {
-        struct rb_node *result = rb_find_match_or_parent(tree, node);
-        rb_tree_insert_child(tree, result, node);
-    }
+    if (!node) return NULL;
+    struct rb_node *result = rb_find_match_or_parent(tree, node);
+    return rb_tree_insert_child(tree, result, node);
 }
 
 // doesn't preserve black-red properties

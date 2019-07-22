@@ -53,8 +53,9 @@ void dis_insert(struct dis_set *intervals, int start, int end)
         .end = end
     };
     if (!intervals->root) {
-        return rb_tree_insert(intervals, rb_node_create(&in, NULL, NULL, NULL,
-                    rb_black, intervals->nbytes));
+        rb_tree_insert(intervals, rb_node_create(&in, NULL, NULL, NULL,
+            rb_black, intervals->nbytes));
+        return;
     }
 
     // find an interval that overlaps
