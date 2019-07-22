@@ -19,7 +19,7 @@ struct rb_node *rb_node_create(
         rb_color color,
         size_t nbytes)  // number of bytes in data
 {
-    struct rb_node *node = malloc(sizeof(struct rb_node));
+    struct rb_node *node = (struct rb_node*)malloc(sizeof(struct rb_node));
     if (node) {
         node->data = malloc(nbytes);
         if (!node->data) {
