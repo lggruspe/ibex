@@ -1,2 +1,4 @@
 vgcore.*
 bin/dis
+bin/profile
+gmon.out

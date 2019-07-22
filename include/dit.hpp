@@ -35,8 +35,10 @@ struct DisjointIntervalTree {
         auto [a, b, c, d] = boundary(start, end);
         first = b;
         second = c;
-        create_or_insert(left, a, b - 1);
-        create_or_insert(right, c + 1, d);
+        if (a <= b - 1)
+            create_or_insert(left, a, b - 1);
+        if (c + 1 <= d)
+            create_or_insert(right, c + 1, d);
     }
 
 private:
