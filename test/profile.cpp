@@ -1,6 +1,7 @@
 #include "dis.h"
 #include "dis.hpp"
 #include "dit.hpp"
+#include "dis2.h"
 #include <boost/icl/split_interval_set.hpp>
 #include <cstdlib>
 #include <ctime>
@@ -24,6 +25,15 @@ void run_dis()
         dis_insert(&intervals, start[i], end[i]);
     }
     dis_destroy(&intervals);
+}
+
+void run_dis2()
+{
+    struct dis2_set intervals = dis2_create();
+    for (size_t i = 0; i < n; ++i) {
+        dis2_insert(&intervals, start[i], end[i]);
+    }
+    dis2_destroy(&intervals);
 }
 
 void run_disxx()
@@ -54,6 +64,7 @@ int main()
 {
     init_intervals();
     run_dis();
+    run_dis2();
     run_disxx();
     run_dit();
     run_icl();

@@ -3,12 +3,14 @@ CFLAGS = -g -Wall -I include
 CXX = g++
 CXXFLAGS = -g -Wall -std=c++17 -I include
 
+TESTS = $(patsubst test/%.c,bin/%,$(wildcard test/*.c))
+
 vpath %.h include
 
 .PHONY:	all
-all:	bin/dis
+all:	bin/dis bin/dis2
 
-bin/dis:	test/dis.c dis.h test/test_lib.h
+$(TESTS):	bin/%: test/%.c %.h test/test_lib.h
 	${CC} ${CFLAGS} -o $@ $< -lm
 
 bin/profile:	test/profile.cpp test/test_lib.h
@@ -16,11 +18,12 @@ bin/profile:	test/profile.cpp test/test_lib.h
 
 .PHONY:	clean
 clean:
-	-rm -f bin/dis bin/profile vgcore.* gmon.out
+	-rm -f $(TESTS) bin/profile vgcore.* gmon.out
 
 .PHONY:	test
 test:	all
 	bin/dis
+	bin/dis2
 
 .PHONY:	profile
 profile:	bin/profile
