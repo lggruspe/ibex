@@ -41,8 +41,9 @@ bool test_rb_insert()
     rb::Tree<int>* tree = nullptr;
     for (int i = 0; i < 10; ++i) {
         rb::Tree<int>* node = new rb::Tree<int>(i, rb::Color::red);
-        auto [root, _] = rb::insert(tree, node);
+        auto [root, replaced] = rb::insert(tree, node);
         tree = root;
+        delete replaced;
     }
     state.assert(tree != nullptr);
     for (int i = 0; i < 10; ++i) {
