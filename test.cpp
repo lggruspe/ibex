@@ -30,7 +30,7 @@ struct TestState {
 bool test_rb_null()
 {
     TestState state;
-    std::shared_ptr<rb::Tree<int>> tree = nullptr;
+    rb::Tree<int>* tree = nullptr;
     state.assert(!rb::search(tree, 0));
     return state.passes();
 }
@@ -38,9 +38,9 @@ bool test_rb_null()
 bool test_rb_insert()
 {
     TestState state;
-    std::shared_ptr<rb::Tree<int>> tree = nullptr;
+    rb::Tree<int>* tree = nullptr;
     for (int i = 0; i < 10; ++i) {
-        auto node = std::make_shared<rb::Tree<int>>(i, rb::Color::red);
+        rb::Tree<int>* node = new rb::Tree<int>(i, rb::Color::red);
         auto [root, _] = rb::insert(tree, node);
         tree = root;
     }

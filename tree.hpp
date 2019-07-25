@@ -1,5 +1,4 @@
 #pragma once
-#include <memory>
 #include <stdexcept>
 #include <utility>
 
@@ -11,15 +10,15 @@ enum class Color { black, red };
 template <class T>
 struct Tree {
     T data;
-    std::shared_ptr<Tree<T>> left, right, parent;
+    Tree<T> *left, *right, *parent;
     Color color;
 
     Tree(
             const T& data, 
             Color color,
-            std::shared_ptr<Tree<T>> parent=nullptr,
-            std::shared_ptr<Tree<T>> left=nullptr,
-            std::shared_ptr<Tree<T>> right=nullptr)
+            Tree<T> *parent=nullptr,
+            Tree<T> *left=nullptr,
+            Tree<T> *right=nullptr)
         : data(data)
         , color(color)
         , parent(parent)
@@ -34,7 +33,7 @@ struct Tree {
 };
 
 template <class T>
-std::shared_ptr<Tree<T>> search(std::shared_ptr<Tree<T>> tree, const T& data)
+Tree<T>* search(Tree<T>* tree, const T& data)
 {
     auto node = tree;
     while (node && node->data != data) {
@@ -44,9 +43,7 @@ std::shared_ptr<Tree<T>> search(std::shared_ptr<Tree<T>> tree, const T& data)
 }
 
 template <class T>
-std::shared_ptr<Tree<T>> rotate_left(
-        std::shared_ptr<Tree<T>> root, 
-        std::shared_ptr<Tree<T>> x)
+Tree<T>* rotate_left(Tree<T>* root, Tree<T>* x)
 {
     if (!root || !x || !x->right) {
         throw std::invalid_argument("inputs must not be null");
@@ -72,9 +69,7 @@ std::shared_ptr<Tree<T>> rotate_left(
 }
 
 template <class T>
-std::shared_ptr<Tree<T>> rotate_right(
-        std::shared_ptr<Tree<T>> root,
-        std::shared_ptr<Tree<T>> y)
+Tree<T>* rotate_right(Tree<T>* root, Tree<T>* y)
 {
     if (!root || !y || !y->left) {
         throw std::invalid_argument("inputs must not be null");
@@ -101,11 +96,9 @@ std::shared_ptr<Tree<T>> rotate_right(
 }
 
 template <class T>
-std::shared_ptr<Tree<T>> closest_match(
-        std::shared_ptr<Tree<T>> tree,
-        const T& data)
+Tree<T>* closest_match(Tree<T>* tree, const T& data)
 {
-    std::shared_ptr<Tree<T>> parent = nullptr;
+    Tree<T>* parent = nullptr;
     auto child = tree;
     while (child && child->data != data) {
         parent = child;
@@ -115,9 +108,7 @@ std::shared_ptr<Tree<T>> closest_match(
 }
 
 template <class T>
-std::shared_ptr<Tree<T>> repair(
-        std::shared_ptr<Tree<T>> root,
-        std::shared_ptr<Tree<T>> node)
+Tree<T>* repair(Tree<T>* root, Tree<T>* node)
 {
     if (!root) {
         return nullptr;
@@ -160,10 +151,10 @@ std::shared_ptr<Tree<T>> repair(
 }
 
 template <class T>
-std::pair<std::shared_ptr<Tree<T>>, std::shared_ptr<Tree<T>>> insert(
-        std::shared_ptr<Tree<T>> root,
-        std::shared_ptr<Tree<T>> node,
-        std::shared_ptr<Tree<T>> location=nullptr)
+std::pair<Tree<T>*, Tree<T>*> insert(
+        Tree<T>* root,
+        Tree<T>* node,
+        Tree<T>* location=nullptr)
 {
     if (!node) {
         return { root, nullptr };
