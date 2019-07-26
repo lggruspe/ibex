@@ -93,6 +93,15 @@ struct DisSet {
     {
         tree = distree::insert(tree, tree, Interval(a, b));
     }
+
+    void combine(const DisSet& other)
+    {
+        auto node = other.tree;
+        while (node) {
+            insert(node->data.start, node->data.end);
+            node = rb::successor(node);
+        }
+    }
 };
 
 } // end namespace

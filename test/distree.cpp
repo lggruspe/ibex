@@ -20,7 +20,7 @@ std::ostream& operator<<(std::ostream& out, DisSet& set)
     return out << set.tree << std::endl;
 }
 
-int main()
+void print_set()
 {
     size_t n = 30;
     int start[n];
@@ -37,4 +37,16 @@ int main()
         std::cout << "(start, end)(i) = (" << start[i] << ", " << end[i] << ")" << std::endl;
     }
     std::cout << "i = " << n << ", set = " << set << std::endl;
+}
+
+int main()
+{
+    //print_set();
+    DisSet A, B;
+
+    A.insert(1, 3);
+    B.insert(2, 4);
+    A.combine(B);
+    std::cout << "A = " << A << std::endl;
+    std::cout << "B = " << B << std::endl;
 }
