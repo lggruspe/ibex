@@ -35,3 +35,10 @@ profile:	bin/profile
 
 bin/distree:	test/distree.cpp distree.hpp
 	$(CXX) $(CXXFLAGS) -o $@ $<
+
+bin/compare:	test/compare.cpp
+	$(CXX) $(CFLAGS) -o $@ $<
+
+.PHONY:	compare
+compare:	bin/compare
+	bin/compare
