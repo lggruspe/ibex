@@ -102,6 +102,21 @@ struct DisSet {
             node = rb::successor(node);
         }
     }
+
+    // leftmost interval that overlaps
+    DisTree* first_overlap(Interval interval) const
+    {
+        auto node = rb::search(tree, interval);
+        if (!node) {
+            return nullptr;
+        }
+        auto pred = rb::predecessor(node);
+        while  (pred && pred->data == interval) {
+            node = pred;
+            pred = rb::predecessor(pred);
+        }
+        return node;
+    }
 };
 
 } // end namespace
