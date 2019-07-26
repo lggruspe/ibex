@@ -6,125 +6,87 @@
 namespace regex
 {
 
-Expr symbol(boost::icl::interval<char>::type);
+Expr symbol(Alphabet::Category);
 
 void combine_alphabets(std::shared_ptr<Alphabet> alpha, std::shared_ptr<Alphabet>& beta)
 {
-    *alpha += *beta;
+    alpha->combine(*beta);
     beta = alpha;
 }
 
-template <class ExprContainer>
-Expr _alternate(ExprContainer exprs)
+// idea: pop 2 at the front, push 1 at the back, until there's only expr
+Expr n_ary_union(std::list<Expr>& exprs)
 {
-    // idea: assume exprs is a list
-    // take two at a time, and push their union at the back
-    // repeat until exprs contains only one expression
-    // note: assumes all the exprs are disjoint
-    // (should only be called from split_leaves
     if (exprs.empty()) {
-        throw std::domain_error("empty container");
+        return nullptr;
     }
-
     while (exprs.size() > 1) {
         auto a = exprs.front();
         exprs.pop_front();
         auto b = exprs.front();
         exprs.pop_front();
-
-        // construct their union
-        combine_alphabets(a->alphabet, b->alphabet);
-        auto c = std::make_shared<_Expr>(a->alphabet);
-        c->type = Type::Union;
-        c->lhs = a;
-        c->rhs = b;
-
-        // push union at the back
+        auto c = std::make_shared<_Expr>(Type::Union, a->alphabet, a, b);
         exprs.push_back(c);
     }
-    auto expr = exprs.front();
-    return expr;
+    return exprs.front();
 }
 
-void split_leaves(Expr expr, const Alphabet& alphabet)
+void make_leaves_disjoint(Expr expr)
 {
-    if (expr == nullptr) {
+    if (!expr) {
         return;
     }
-    if (expr->type == Type::Symbol) {
-        Alphabet singleton;     // contains only expr->value
-        singleton += expr->value;
-        auto values = singleton + (singleton & alphabet);
-
-        // get regex union of intervals in values
-        // but first, turn the intervals into expressions
-        std::list<Expr> exprs;
-        std::transform(values.begin(), values.end(), std::back_inserter(exprs),
-                [](const auto& interv) { return symbol(interv); });
-       
-        Expr temp = _alternate(exprs);
-        // set expr to temp
-        expr->type = temp->type;
-        expr->value = temp->value;  // in case temp is just a symbol
-        //expr->alphabet = temp->alphabet   // not needed?
-        expr->lhs = temp->lhs;
-        expr->rhs = temp->rhs;
+    if (expr->type != Type::Symbol) {
+        make_leaves_disjoint(expr->left);
+        make_leaves_disjoint(expr->right);
+        if (expr->left) {
+            expr->left->alphabet = expr->alphabet;
+        }
+        if (expr->right) {
+            expr->right->alphabet = expr->alphabet;
+        }
     } else {
-        *(expr->alphabet) = alphabet;
-        split_leaves(expr->lhs, alphabet);
-        split_leaves(expr->rhs, alphabet);
+        // get all intervals in the alphabet that intersect with symbol
+        auto node = expr->alphabet->first_overlap(expr->value);
+        std::list<Expr> overlaps;
+        while (node && node->data == expr->value) {
+            auto new_leaf = symbol(node->data.start, node->data.end);
+            new_leaf->alphabet = expr->alphabet;
+            overlaps.push_back(new_leaf);
+        }
+
+        // get the union of all these intervals
+        *expr = *(n_ary_union(overlaps));
     }
 }
 
 Expr operator|(Expr a, Expr b)
 {
     combine_alphabets(a->alphabet, b->alphabet);
-    Expr c = std::make_shared<_Expr>(a->alphabet);
-    c->type = Type::Union;
-    c->lhs = a;
-    c->rhs = b;
-    split_leaves(c, *(c->alphabet));
+    Expr c = std::make_shared<_Expr>(Type::Union, a->alphabet, a, b);
+    make_leaves_disjoint(c);
     return c;
 }
 
 Expr operator+(Expr a, Expr b)
 {
     combine_alphabets(a->alphabet, b->alphabet);
-    Expr c = std::make_shared<_Expr>(a->alphabet);
-    c->type = Type::Concatenation;
-    c->lhs = a;
-    c->rhs = b;
-    split_leaves(c, *(c->alphabet));
+    Expr c = std::make_shared<_Expr>(Type::Concatenation, a->alphabet, a, b);
+    make_leaves_disjoint(c);
     return c;
 }
 
 Expr closure(Expr a)
 {
-    Expr c = std::make_shared<_Expr>(a->alphabet);
-    c->type = Type::Closure;
-    c->lhs = a;
-    c->rhs = nullptr;
-    return c;
+    return std::make_shared<_Expr>(Type::Closure, a->alphabet, a);
 }
 
-Expr symbol(boost::icl::interval<char>::type value)
+Expr symbol(int start, int end)
 {
-    Expr expr = std::make_shared<_Expr>(value);
-    expr->type = Type::Symbol;
-    expr->value = value;
-    expr->lhs = nullptr;
-    expr->rhs = nullptr;
-    return expr;
-}
-Expr symbol(char start, char end)
-{
-    // creates a class of symbols containing all chars between start and end
-    // (including end)
-    assert(start <= end);
-    return symbol(boost::icl::interval<char>::closed(start, end));
+    return std::make_shared<_Expr>(start, end);
 }
 
-Expr symbol(char start)
+Expr symbol(int start)
 {
     return symbol(start, start);
 }
@@ -136,13 +98,13 @@ std::ostream& operator<<(std::ostream& out, Expr re)
     }
     switch (re->type) {
     case Type::Symbol:    
-        return (out << re->value);
+        return out << "[" << re->value.start << ", " << re->value.end << "]";
     case Type::Union:
-        return out << "(union, " << re->lhs << ", " << re->rhs << ")";
+        return out << "(union, " << re->left << ", " << re->right << ")";
     case Type::Concatenation:
-        return out << "(concatenation, " << re->lhs << ", " << re->rhs << ")";
+        return out << "(concatenation, " << re->left << ", " << re->right << ")";
     case Type::Closure:
-        return out << "(closure, " << re->lhs << ")";
+        return out << "(closure, " << re->left << ")";
     default:
         throw std::invalid_argument("input expression has bad type");
     }
