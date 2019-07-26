@@ -1,70 +1,53 @@
 #include "tree.hpp"
+#include "test_runner.hpp"
 #include <iostream>
 #include <memory>
 
-#define run_test(test) do {\
-    std::cout << #test << " " << (test() ? "passed" : "failed") << std::endl;\
-} while (0)
+define_test_runner(TestRunner,
+        rb::Tree<int>* tree,
+        tree(nullptr),)
 
-struct TestState {
-    size_t passed;
-    size_t total;
-
-    TestState() : passed(0), total(0) {}
-
-    void assert(bool condition)
-    {
-        ++total;
-        if (condition) {
-            ++passed;
-        }
-    }
-
-    bool passes() const
-    {
-        return passed > 0 && total == passed;
-    }
-};
-
-
-bool test_rb_null()
+void setup(TestRunner* test)
 {
-    TestState state;
-    rb::Tree<int>* tree = nullptr;
-    state.assert(!rb::search(tree, 0));
-    rb::destroy(tree);
-    return state.passes();
+    test->tree = nullptr;
 }
 
-bool test_rb_insert()
+void teardown(TestRunner* test)
 {
-    TestState state;
-    rb::Tree<int>* tree = nullptr;
+    rb::destroy(test->tree);
+}
+
+void test_rb_null(TestRunner* test)
+{
+    test->assert(!rb::search(test->tree, 0));
+}
+
+void test_rb_insert(TestRunner* test)
+{
     for (int i = 0; i < 10; ++i) {
-        rb::Tree<int>* node = new rb::Tree<int>(i, rb::Color::red);
-        auto [root, replaced] = rb::insert(tree, node);
-        tree = root;
+        auto node = new rb::Tree<int>(i, rb::Color::red);
+        auto [root, replaced] = rb::insert(test->tree, node);
+        test->tree = root;
         delete replaced;
     }
-    state.assert(tree != nullptr);
+
+    test->assert(test->tree != nullptr);
     for (int i = 0; i < 10; ++i) {
-        auto node = rb::search(tree, i);
-        state.assert(node->data == i);
+        auto node = rb::search(test->tree, i);
+        test->assert(node->data == i);
     }
-    rb::destroy(tree);
-    return state.passes();
 }
 
 // TODO test duplicates (map)
 
-bool test_rb_balanced()
+void test_rb_balanced(TestRunner* test)
 {
-    return false;
 }
 
 int main()
 {
-    run_test(test_rb_null);
-    run_test(test_rb_insert);
-    run_test(test_rb_balanced);
+    TestRunner runner(setup, teardown);
+    run_test(runner, test_rb_null);
+    run_test(runner, test_rb_insert);
+    run_test(runner, test_rb_balanced);
 }
