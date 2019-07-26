@@ -85,6 +85,26 @@ void test_rb_duplicates(TestRunner* test)
     test->assert(weight(test->tree) == 1);
 }
 
+void test_rb_iterate(TestRunner* test)
+{
+    for (int i = 20; i >= 0; --i) {
+        auto [root, replaced] = rb::insert(test->tree,
+                new rb::Tree<int>(i, rb::Color::red));
+        test->tree = root;
+        delete replaced;
+    }
+
+    auto node = rb::minimum(test->tree);
+    test->assert(node != nullptr);
+    int i = 0;
+    while (node) {
+        test->assert(i == node->data);
+        node = rb::successor(node);
+        ++i;
+    }
+    test->assert(i == 21);
+}
+
 int main()
 {
     TestRunner runner(setup, teardown);
@@ -92,4 +112,5 @@ int main()
     run_test(runner, test_rb_insert);
     run_test(runner, test_rb_balanced);
     run_test(runner, test_rb_duplicates);
+    run_test(runner, test_rb_iterate);
 }
