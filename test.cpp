@@ -37,8 +37,6 @@ void test_rb_insert(TestRunner* test)
     }
 }
 
-// TODO test duplicates (map)
-
 template <class T>
 size_t height(rb::Tree<T>* tree)
 {
@@ -72,7 +70,19 @@ void test_rb_balanced(TestRunner* test)
 
     auto h = height(test->tree);
     auto n = weight(test->tree);
+    test->assert(n == 100);
     test->assert(h <= 2*log2(n+1));
+}
+
+void test_rb_duplicates(TestRunner* test)
+{
+    for (int i = 0; i < 10; ++i) {
+        auto [root, replaced] = rb::insert(test->tree,
+                new rb::Tree<int>(0, rb::Color::red));
+        test->tree = root;
+        delete replaced;
+    }
+    test->assert(weight(test->tree) == 1);
 }
 
 int main()
@@ -81,4 +91,5 @@ int main()
     run_test(runner, test_rb_null);
     run_test(runner, test_rb_insert);
     run_test(runner, test_rb_balanced);
+    run_test(runner, test_rb_duplicates);
 }

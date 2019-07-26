@@ -25,11 +25,6 @@ struct Tree {
         , parent(parent)
         , color(color)
     {}
-
-    bool operator<(const Tree<T>& other)
-    {
-        return data < other.data;
-    }
 };
 
 template <class T>
@@ -166,7 +161,7 @@ std::pair<Tree<T>*, Tree<T>*> insert(
         location = root;
     }
     auto closest = closest_match(location, node->data);
-    if (node == closest) {
+    if (node->data == closest->data) {
         node->left = closest->left;
         node->right = closest->right;
         node->parent = closest->parent;
@@ -185,11 +180,11 @@ std::pair<Tree<T>*, Tree<T>*> insert(
             node->parent->right = node;
         }
     } else {
-        (node < closest ? closest->left : closest->right) = node;
+        (node->data < closest->data ? closest->left : closest->right) = node;
         node->parent = closest;
         node->color = Color::red;
     }
-    return { repair(root, node), node == closest ? closest : nullptr };
+    return { repair(root, node), node->data == closest->data ? closest : nullptr };
 }
 
 template <class T>
