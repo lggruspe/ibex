@@ -9,7 +9,7 @@ vpath %.h include
 vpath %.hpp include
 
 .PHONY:	all
-all:	bin/dis bin/dis2 bin/distree
+all:	bin/dis bin/distree
 
 $(TESTS):	bin/%: test/%.c %.h test/test_lib.h
 	${CC} ${CFLAGS} -o $@ $< -lm
@@ -24,7 +24,6 @@ clean:
 .PHONY:	test
 test:	all
 	bin/dis
-	bin/dis2
 	bin/distree
 
 .PHONY:	profile
