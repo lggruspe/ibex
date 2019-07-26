@@ -1,21 +1,21 @@
 #pragma once
+#include <algorithm>
 #include <memory>
 #include <stdexcept>
-#include <tuple>
 
 struct DisjointIntervalTree {
     int first, second;
     std::shared_ptr<DisjointIntervalTree> left, right;
 
-    DisjointIntervalTree(int a, int b)
-        : left(nullptr)
+    DisjointIntervalTree(int first, int second)
+        : first(first)
+        , second(second)
+        , left(nullptr)
         , right(nullptr)
     {
-        if (a > b) {
+        if (first > second) {
             throw std::invalid_argument("DisjointIntervalTree");
         }
-        first = a;
-        second = b;
     }
 
     void insert(int start, int end)
@@ -32,42 +32,21 @@ struct DisjointIntervalTree {
             return create_or_insert(left, start, end);
         }
         // case 3: general case
-        auto [a, b, c, d] = boundary(start, end);
-        first = b;
-        second = c;
-        if (a <= b - 1)
-            create_or_insert(left, a, b - 1);
-        if (c + 1 <= d)
-            create_or_insert(right, c + 1, d);
+        int endpoints[] = { first, second, start, end };
+        std::sort(endpoints, endpoints + 4);
+        first = endpoints[1];
+        second = endpoints[2];
+        create_or_insert(left, endpoints[0], endpoints[1] - 1);
+        create_or_insert(right, endpoints[2] + 1, endpoints[3]);
     }
 
 private:
-    std::tuple<int, int, int, int>
-    boundary(int c, int d)
-    {
-        int a = first;
-        int b = second;
-        if (a <= c) {
-            if (b <= c) {
-                return {a, b, c, d};
-            }
-            if (b <= d) {
-                return {a, c, b, d};
-            }
-            return {a, c, d, b};
-        }
-        if (a <= d) {
-            if (b <= d) {
-                return {c, a, b, d};
-            }
-            return {c, a, d, b};
-        }
-        return {c, d, a, b};
-    }
-
     void create_or_insert(std::shared_ptr<DisjointIntervalTree>& tree, 
             int start, int end)
     {
+        if (start > end) {
+            return;
+        }
         if (!tree) {
             tree = std::make_shared<DisjointIntervalTree>(start, end);
         } else {
