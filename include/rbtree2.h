@@ -192,10 +192,11 @@ struct rb2_insert_result {
     struct rb2_tree *replaced;
 };
 
-// returns node that the child replaces, if any, 
-// so the caller can deallocate memory (using rb2_destroy(node, false))
-struct rb2_insert_result rb2_insert(
+// insert at location
+// assume location is root, or a descendant of root
+struct rb2_insert_result rb2_insert_at(
         struct rb2_tree *root, 
+        struct rb2_tree *location,
         struct rb2_tree *node,
         int (*compare)(const void *, const void *))
 {
@@ -215,7 +216,7 @@ struct rb2_insert_result rb2_insert(
         return result;
     }
 
-    struct rb2_tree *closest = rb2_closest_match(root, node->data, compare);
+    struct rb2_tree *closest = rb2_closest_match(location, node->data, compare);
     int comparison = compare(node->data, closest->data);
     if (comparison == 0) {
         result.replaced = closest;
@@ -235,11 +236,24 @@ struct rb2_insert_result rb2_insert(
     return result;
 }
 
+
+// returns node that the child replaces, if any, 
+// so the caller can deallocate memory (using rb2_destroy(node, false))
+struct rb2_insert_result rb2_insert(
+        struct rb2_tree *root, 
+        struct rb2_tree *node,
+        int (*compare)(const void *, const void *))
+{
+    return rb2_insert_at(root, root, node, compare);
+}
+
 // NOTE doesnt check if new tree preserves BST property
 void rb2_node_change_data(struct rb2_tree *node, const void *data, size_t nbytes)
 {
     if (node) {
-        assert(node->data);
+        if (!node->data) {
+            node->data = malloc(nbytes);
+        }
         if (node->data) {
             memcpy(node->data, data, nbytes);
         }
