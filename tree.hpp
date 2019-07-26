@@ -192,4 +192,14 @@ std::pair<Tree<T>*, Tree<T>*> insert(
     return { repair(root, node), node == closest ? closest : nullptr };
 }
 
+template <class T>
+void destroy(Tree<T>* root)
+{
+    if (root) {
+        destroy(root->left);
+        destroy(root->right);
+        delete root;
+    }
+}
+
 } // end namespace

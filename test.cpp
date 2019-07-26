@@ -32,6 +32,7 @@ bool test_rb_null()
     TestState state;
     rb::Tree<int>* tree = nullptr;
     state.assert(!rb::search(tree, 0));
+    rb::destroy(tree);
     return state.passes();
 }
 
@@ -50,6 +51,7 @@ bool test_rb_insert()
         auto node = rb::search(tree, i);
         state.assert(node->data == i);
     }
+    rb::destroy(tree);
     return state.passes();
 }
 
