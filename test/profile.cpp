@@ -2,19 +2,21 @@
 #include "dis.hpp"
 #include "dit.hpp"
 #include "dis2.h"
+#include "distree.hpp"
 #include <boost/icl/split_interval_set.hpp>
 #include <cstdlib>
 #include <ctime>
+#include <iostream>
 
-size_t n = 2000;
-int start[2000];
-int end[2000];
+size_t n = 3000;
+int start[3000];
+int end[3000];
 
 void init_intervals()
 {
-    for (size_t i = 0; i < n; ++i) {
-        end[i] = rand() % (int)n;
-        start[i] = rand() % (end[i] + 1);
+    for (size_t i = 0; i < n/2; ++i) {
+        start[i] = n/2 - i;
+        end[i] = n/2 + i;
     }
 }
 
@@ -60,6 +62,14 @@ void run_icl()
     }
 }
 
+void run_distree()
+{
+    distree::DisSet set;
+    for (size_t i = 0; i < n; ++i) {
+        set.insert(start[i], end[i]);
+    }
+}
+
 int main()
 {
     init_intervals();
@@ -68,4 +78,5 @@ int main()
     run_disxx();
     run_dit();
     run_icl();
+    run_distree();
 }

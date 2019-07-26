@@ -1,5 +1,6 @@
 #pragma once
 #include "rbtree2.h"
+#include <stdbool.h>
 
 struct dis2_interval {
     int start, end;
