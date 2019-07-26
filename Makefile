@@ -19,7 +19,7 @@ bin/profile:	test/profile.cpp test/test_lib.h
 
 .PHONY:	clean
 clean:
-	-rm -f $(TESTS) bin/profile vgcore.* gmon.out
+	-rm -f $(TESTS) bin/profile vgcore.* gmon.out bin/dis bin/distree bin/compare
 
 .PHONY:	test
 test:	all

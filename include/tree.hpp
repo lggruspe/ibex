@@ -38,6 +38,66 @@ Tree<T>* search(Tree<T>* tree, const T& data)
 }
 
 template <class T>
+Tree<T>* maximum(Tree<T>* node)
+{
+    if (!node) {
+        return nullptr;
+    }
+    while (node->right) {
+        node = node->right;
+    }
+    return node;
+}
+
+template <class T>
+Tree<T>* minimum(Tree<T>* node)
+{
+    if (!node) {
+        return nullptr;
+    }
+    while (node->left) {
+        node = node->left;
+    }
+    return node;
+}
+
+template <class T>
+Tree<T>* successor(Tree<T>* node)
+{
+    if (!node) {
+        return nullptr;
+    }
+    if (node->right) {
+        return minimum(node->right);
+    }
+    auto parent = node->parent;
+    auto child = node;
+    while (parent && parent->left != child) {
+        child = parent;
+        parent = parent->parent;
+    }
+    return parent;
+}
+
+template <class T>
+Tree<T>* predecessor(Tree<T>* node)
+{
+    if (!node) {
+        return nullptr;
+    }
+    if (node->left) {
+        return maximum(node->left);
+    }
+    auto parent = node->parent;
+    auto child = node;
+    while (parent && parent->right != child) {
+        child = parent;
+        parent = parent->parent;
+    }
+    return parent;
+}
+
+template <class T>
 Tree<T>* rotate_left(Tree<T>* root, Tree<T>* x)
 {
     if (!root || !x || !x->right) {
@@ -87,7 +147,6 @@ Tree<T>* rotate_right(Tree<T>* root, Tree<T>* y)
         x->parent->left = x;
     }
     return root;
-
 }
 
 template <class T>
