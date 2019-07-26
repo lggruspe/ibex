@@ -20,10 +20,10 @@ struct Tree {
             Tree<T> *left=nullptr,
             Tree<T> *right=nullptr)
         : data(data)
-        , color(color)
-        , parent(parent)
         , left(left)
         , right(right)
+        , parent(parent)
+        , color(color)
     {}
 
     bool operator<(const Tree<T>& other)
