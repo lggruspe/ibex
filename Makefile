@@ -9,12 +9,15 @@ vpath %.h include
 vpath %.hpp include
 
 .PHONY:	all
-all:	bin/dis bin/distree
+all:	bin/distree
 
-$(TESTS):	bin/%: test/%.c %.h test/test_lib.h
-	${CC} ${CFLAGS} -o $@ $< -lm
+#$(TESTS):	bin/%: test/%.c %.h
+#	${CC} ${CFLAGS} -o $@ $< -lm
 
-bin/profile:	test/profile.cpp test/test_lib.h
+bin/distree:	test/distree.cpp distree.hpp
+	$(CXX) $(CXXFLAGS) -o $@ $<
+
+bin/profile:	test/profile.cpp
 	${CXX} -g -Wall -std=c++17 -I include -pg -o $@ $< -lm
 
 .PHONY:	clean
@@ -23,17 +26,12 @@ clean:
 
 .PHONY:	test
 test:	all
-	bin/dis
 	bin/distree
 
 .PHONY:	profile
 profile:	bin/profile
 	bin/profile
 	gprof -p -b bin/profile gmon.out > analysis.txt
-
-
-bin/distree:	test/distree.cpp distree.hpp
-	$(CXX) $(CXXFLAGS) -o $@ $<
 
 bin/compare:	test/compare.cpp
 	$(CXX) $(CFLAGS) -o $@ $<
