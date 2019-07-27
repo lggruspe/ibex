@@ -17,7 +17,7 @@ struct Interval {
         }
     }
 
-    operator bool() const
+    explicit operator bool() const
     {
         return start != 0 && end != 0;
     }
