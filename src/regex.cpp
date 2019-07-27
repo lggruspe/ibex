@@ -53,6 +53,7 @@ void make_leaves_disjoint(Expr expr)
             auto new_leaf = symbol(node->data.start, node->data.end);
             new_leaf->alphabet = expr->alphabet;
             overlaps.push_back(new_leaf);
+            node = rb::successor(node); // TODO abstraction leak
         }
 
         // get the union of all these intervals
