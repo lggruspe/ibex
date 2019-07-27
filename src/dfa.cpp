@@ -1,3 +1,4 @@
+#include "alphabet.hpp"
 #include "dfa.h"
 #include "nfa.h"
 #include "enumeration2.h"
@@ -31,7 +32,7 @@ int add_state(Dfa& dfa)
     return add_state(dfa, q);
 }
 
-void add_transition(Dfa& dfa, int q, int r, char a)
+void add_transition(Dfa& dfa, int q, int r, Alphabet::Category a)
 {
     add_state(dfa, q);
     add_state(dfa, r);
@@ -45,10 +46,11 @@ void compute_predecessors(const Nfa& nfa,
         std::map<int, std::set<int> >& predecessors)
 {
     // assume predecessors is empty
+    Alphabet::Category epsilon(0, 0);
     for (auto it = nfa.delta.begin(); it != nfa.delta.end(); ++it) {
         int p = it->first;
-        if (it->second.count('\0') > 0) {     // TODO don't search entire it->second
-            for (auto q: it->second.at('\0')) {
+        if (it->second.count(epsilon) > 0) {     // TODO don't search entire it->second
+            for (auto q: it->second.at(epsilon)) {
                 predecessors[q].insert(p);
             }
         }
@@ -68,6 +70,7 @@ std::map<int, std::set<int>> epsilon_closure(const Nfa& nfa)
         queue.push_back(q);
     }
 
+    Alphabet::Category epsilon(0, 0);
     while (!queue.empty()) {
         int q = queue.front();
         queue.pop_front();
@@ -75,8 +78,8 @@ std::map<int, std::set<int>> epsilon_closure(const Nfa& nfa)
         std::set<int> closure;
         closure.insert(q);
 
-        if (nfa.delta.at(q).count('\0') > 0) {        // TODO Only count one
-            for (auto r: nfa.delta.at(q).at('\0')) {
+        if (nfa.delta.at(q).count(epsilon) > 0) {        // TODO Only count one
+            for (auto r: nfa.delta.at(q).at(epsilon)) {
                 // closure = closure.union(closures[r])
                 std::copy(closures[r].begin(), closures[r].end(),
                         std::inserter(closure, closure.begin()));
@@ -93,8 +96,11 @@ std::map<int, std::set<int>> epsilon_closure(const Nfa& nfa)
     return closures;
 }
 
-std::set<int> next_state(const Nfa& nfa, const std::set<int>& Q, char a,
-        const std::map<int, std::set<int> >& closures)
+std::set<int> next_state(
+        const Nfa& nfa, 
+        const std::set<int>& Q, 
+        Alphabet::Category a,
+        const std::map<int, std::set<int>>& closures)
 {
     // TODO pass R by ref?
     std::set<int> R;
@@ -155,7 +161,7 @@ Dfa subset_construction(const Nfa& nfa)
     return dfa;
 }
 
-int dfa_transition(const Dfa& dfa, int q, char a)
+int dfa_transition(const Dfa& dfa, int q, Alphabet::Category a)
 {
     // -1 means delta(q, a) dne
     auto it = dfa.delta.find(q);
@@ -174,7 +180,7 @@ Dfa minimize(const Dfa& dfa)
     std::vector<int> states;
     std::transform(dfa.delta.begin(), dfa.delta.end(),
             std::back_inserter(states),
-            [](const std::pair<int, std::map<char, int>>& pair) {
+            [](const std::pair<int, std::map<Alphabet::Category, int>>& pair) {
                 return pair.first;
             });
 

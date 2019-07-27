@@ -17,6 +17,11 @@ struct Interval {
         }
     }
 
+    explicit operator bool() const
+    {
+        return start != 0 || end != 0;
+    }
+
     bool operator<(const Interval& other) const
     {
         return end < other.start;

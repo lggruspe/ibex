@@ -46,7 +46,7 @@ void add_transition(Nfa& nfa, int q, int r, Alphabet::Category a=Alphabet::Categ
     add_state(nfa, q);
     add_state(nfa, r);
     nfa.delta[q][a].insert(r);
-    if (a.start != 0 || a.end != 0) {
+    if (a) {
         nfa.symbols.insert(a);
     }
 }

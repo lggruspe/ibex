@@ -1,4 +1,5 @@
 #pragma once
+#include "alphabet.hpp"
 #include "nfa.h"
 #include <iostream>
 #include <map>
@@ -9,8 +10,8 @@ namespace automata
 struct Dfa {
     int start;
     std::set<int> accept;
-    std::map<int, std::map<char, int>> delta;
-    std::set<char> symbols;
+    std::map<int, std::map<Alphabet::Category, int>> delta;
+    std::set<Alphabet::Category> symbols;
 
     Dfa() {}
     Dfa(const Nfa&);
