@@ -234,9 +234,11 @@ std::ostream& operator<<(std::ostream& out, const Dfa& dfa)
     for (auto it = dfa.delta.begin(); it != dfa.delta.end(); ++it) {
         int q = it->first;
         for (auto jt = it->second.begin(); jt != it->second.end(); ++jt) {
-            auto a = jt->first;
+            Alphabet::Category a = jt->first;
             int r = jt->second;
-            out << "d(" << q << ", " << a << ") = " << r << std::endl;
+            out << "d(" << q << ", ";
+            out << "[" << (char)(a.start) << ", " << (char)(a.end) << "]";
+            out << ") = " << r << std::endl;
         }
     }
     out << std::endl;

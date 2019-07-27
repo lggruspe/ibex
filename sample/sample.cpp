@@ -68,9 +68,8 @@ void print_regex_to_dfa(const std::string& label, Expr expr)
 
 int main()
 {
-    std::cout << identifier() << std::endl;
-    //print_regex_to_dfa("identifier", identifier());
+    print_regex_to_dfa("identifier", identifier());
+    print_regex_to_dfa("string", string());
     //print_regex_to_dfa("number", number());
     //print_regex_to_dfa("character", character());
-    //print_regex_to_dfa("string", string());
 }

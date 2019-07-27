@@ -99,7 +99,7 @@ std::ostream& operator<<(std::ostream& out, Expr re)
     }
     switch (re->type) {
     case Type::Symbol:    
-        return out << "[" << re->value.start << ", " << re->value.end << "]";
+        return out << "[" << (char)(re->value.start) << ", " << (char)(re->value.end) << "]";
     case Type::Union:
         return out << "(union, " << re->left << ", " << re->right << ")";
     case Type::Concatenation:
