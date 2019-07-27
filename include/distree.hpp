@@ -1,3 +1,4 @@
+#pragma once
 #include "tree.hpp"
 #include <algorithm>
 #include <stdexcept>
@@ -91,7 +92,13 @@ struct DisSet {
     DisSet() : tree(nullptr) {}
     ~DisSet()
     {
+        clear();
+    }
+
+    void clear()
+    {
         rb::destroy(tree);
+        tree = nullptr;
     }
 
     void insert(int a, int b)
