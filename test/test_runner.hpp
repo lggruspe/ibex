@@ -64,7 +64,7 @@ public:\
         return total_asserts_ > 0 && failed_asserts_ == 0;\
     }\
 \
-    void assert_true(bool condition)\
+    void assert(bool condition)\
     {\
         total_asserts_++;\
         if (!condition) {\

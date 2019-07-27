@@ -22,7 +22,7 @@ bin/profile:	test/profile.cpp
 
 .PHONY:	clean
 clean:
-	-rm -f $(TESTS) bin/profile vgcore.* gmon.out bin/dis bin/distree bin/compare
+	-rm -f $(TESTS) vgcore.* gmon.out bin/distree
 
 .PHONY:	test
 test:	all
@@ -32,10 +32,3 @@ test:	all
 profile:	bin/profile
 	bin/profile
 	gprof -p -b bin/profile gmon.out > analysis.txt
-
-bin/compare:	test/compare.cpp
-	$(CXX) $(CFLAGS) -o $@ $<
-
-.PHONY:	compare
-compare:	bin/compare
-	bin/compare
