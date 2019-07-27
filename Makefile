@@ -14,8 +14,8 @@ all:	bin/distree
 #$(TESTS):	bin/%: test/%.c %.h
 #	${CC} ${CFLAGS} -o $@ $< -lm
 
-bin/distree:	test/distree.cpp distree.hpp
-	$(CXX) $(CXXFLAGS) -o $@ $<
+bin/distree:	test/distree.cpp src/distree.cpp distree.hpp
+	$(CXX) $(CXXFLAGS) -o $@ $< src/distree.cpp
 
 bin/profile:	test/profile.cpp
 	${CXX} -g -Wall -std=c++17 -I include -pg -o $@ $< -lm
