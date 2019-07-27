@@ -1,45 +1,31 @@
-#pragma once
+#include "distree.h"
 #include "tree.hpp"
 #include <algorithm>
-#include <stdexcept>
-#include <utility>
 
 namespace distree
 {
 ;
 
-struct Interval {
-    int start, end;
+Interval::operator bool() const
+{
+    return start != 0 || end != 0;
+}
 
-    Interval(int start, int end) : start(start), end(end) 
-    {
-        if (start > end) {
-            throw std::invalid_argument("interval shouldn't be empty");
-        }
-    }
+bool Interval::operator<(const Interval& other) const
+{
+    return end < other.start;
+}
 
-    explicit operator bool() const
-    {
-        return start != 0 || end != 0;
-    }
+bool Interval::operator!=(const Interval& other) const
+{
+    return *this < other || other < *this;
+}
 
-    bool operator<(const Interval& other) const
-    {
-        return end < other.start;
-    }
+bool Interval::operator==(const Interval& other) const
+{
+    return !(*this != other);
+}
 
-    bool operator!=(const Interval& other) const
-    {
-        return *this < other || other < *this;
-    }
-
-    bool operator==(const Interval& other) const
-    {
-        return !(*this != other);
-    }
-};
-
-using DisTree = rb::Tree<Interval>;
 
 bool contains(DisTree* tree, int point)
 {
@@ -86,49 +72,41 @@ DisTree* insert(DisTree* root, DisTree* node, Interval interval)
     return root;
 }
 
-struct DisSet {
-    DisTree* tree;
 
-    DisSet() : tree(nullptr) {}
-    ~DisSet()
-    {
-        clear();
-    }
 
-    void clear()
-    {
-        rb::destroy(tree);
-        tree = nullptr;
-    }
+void DisSet::clear()
+{
+    rb::destroy(tree);
+    tree = nullptr;
+}
 
-    void insert(int a, int b)
-    {
-        tree = distree::insert(tree, tree, Interval(a, b));
-    }
+void DisSet::insert(int a, int b)
+{
+    tree = distree::insert(tree, tree, Interval(a, b));
+}
 
-    void combine(const DisSet& other)
-    {
-        auto node = other.tree;
-        while (node) {
-            insert(node->data.start, node->data.end);
-            node = rb::successor(node);
-        }
+void DisSet::combine(const DisSet& other)
+{
+    auto node = other.tree;
+    while (node) {
+        insert(node->data.start, node->data.end);
+        node = rb::successor(node);
     }
+}
 
-    // leftmost interval that overlaps
-    DisTree* first_overlap(Interval interval) const
-    {
-        auto node = rb::search(tree, interval);
-        if (!node) {
-            return nullptr;
-        }
-        auto pred = rb::predecessor(node);
-        while  (pred && pred->data == interval) {
-            node = pred;
-            pred = rb::predecessor(pred);
-        }
-        return node;
+// leftmost interval that overlaps
+DisTree* DisSet::first_overlap(Interval interval) const
+{
+    auto node = rb::search(tree, interval);
+    if (!node) {
+        return nullptr;
     }
-};
+    auto pred = rb::predecessor(node);
+    while  (pred && pred->data == interval) {
+        node = pred;
+        pred = rb::predecessor(pred);
+    }
+    return node;
+}
 
 } // end namespace

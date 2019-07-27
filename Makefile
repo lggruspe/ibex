@@ -9,7 +9,7 @@ else
 endif
 
 CXXFLAGS = -g -Wall $(C++17) -I include
-OBJECTS = build/regex.o build/nfa.o build/dfa.o
+OBJECTS = build/regex.o build/nfa.o build/dfa.o build/distree.o
 prefix = /usr/local
 bindir = $(prefix)/bin
 includedir = $(prefix)/include
@@ -18,6 +18,7 @@ libdir = $(prefix)/lib
 vpath %.cpp src
 vpath %.o build
 vpath %.h include src
+vpath %.hpp include
 
 .PHONY:	all
 all:	lib/librnd.a
@@ -31,6 +32,8 @@ $(OBJECTS):	build/%.o : %.cpp %.h
 build/nfa.o:	nfa.h
 
 build/dfa.o:	nfa.h enumeration2.h partition.h
+
+build/distree.o:	tree.hpp
 
 .PHONY:	clean
 clean:
