@@ -1,4 +1,5 @@
 #pragma once
+#include "alphabet.hpp"
 #include "regex.h"
 #include <iostream>
 #include <map>
@@ -8,12 +9,12 @@ namespace automata
 {
     
 struct Nfa {
-    std::map<int, std::map<char, std::set<int>>> delta;
+    std::map<int, std::map<Alphabet::Category, std::set<int>>> delta;
     int start;
     int accept;
-    std::set<char> symbols;
+    std::set<Alphabet::Category> symbols;
 
-    Nfa(char);
+    Nfa(Alphabet::Category);
     Nfa(regex::Expr);
 };
 

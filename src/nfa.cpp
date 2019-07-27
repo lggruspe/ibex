@@ -1,3 +1,4 @@
+#include "alphabet.hpp"
 #include "nfa.h"
 #include "regex.h"
 #include <boost/icl/split_interval_set.hpp>
@@ -11,10 +12,10 @@ namespace automata
 
 int add_state(Nfa&, int);
 int add_state(Nfa&);
-void add_transition(Nfa&, int, int, char);
+void add_transition(Nfa&, int, int, Alphabet::Category);
 Nfa thompson(regex::Expr);
 
-Nfa::Nfa(char a)
+Nfa::Nfa(Alphabet::Category a)
 {
     start = add_state(*this);;
     accept = add_state(*this);;
@@ -40,12 +41,12 @@ int add_state(Nfa& nfa)
     return add_state(nfa, q);
 }
 
-void add_transition(Nfa& nfa, int q, int r, char a='\0')
+void add_transition(Nfa& nfa, int q, int r, Alphabet::Category a=Alphabet::Category(0, 0))
 {
     add_state(nfa, q);
     add_state(nfa, r);
     nfa.delta[q][a].insert(r);
-    if (a) {
+    if (a.start != 0 || a.end != 0) {
         nfa.symbols.insert(a);
     }
 }
@@ -54,12 +55,12 @@ void add_transition(Nfa& nfa, int q, int r, char a='\0')
 // returns offset to B states
 int merge(Nfa& A, const Nfa& B)
 {
-    std::map<int, std::map<char, std::set<int>>> delta;
+    std::map<int, std::map<Alphabet::Category, std::set<int>>> delta;
     int offset = add_state(A);
     for (auto it = B.delta.begin(); it != B.delta.end(); ++it) {
         int q = it->first;
         for (auto jt = it->second.begin(); jt != it->second.end(); ++jt) {
-                char a = jt->first;
+            auto a = jt->first;
             for (auto r: jt->second) {
                 delta[q+offset][a].insert(r+offset);
             }
@@ -69,7 +70,7 @@ int merge(Nfa& A, const Nfa& B)
     for (auto it = delta.begin(); it != delta.end(); ++it) {
         int q = it->first;
         for (auto jt = it->second.begin(); jt != it->second.end(); ++jt) {
-            char a = jt->first;
+            auto a = jt->first;
             for (auto r: jt->second) {
                 add_transition(A, q, r, a);
             }
@@ -78,23 +79,9 @@ int merge(Nfa& A, const Nfa& B)
     return offset;
 }
 
-Nfa symbol(char a)
+Nfa symbol(Alphabet::Category a)
 {
     return Nfa(a);
-}
-
-Nfa symbol(boost::icl::interval<char>::type interval)
-{
-    char a = interval.lower();
-    // check if interval is left open
-    if (!boost::icl::contains(interval, a)) {
-        ++a;
-    }
-    // check if a is still in the interval
-    if (!boost::icl::contains(interval, a)) {
-        a = '\0';
-    }
-    return symbol(a);
 }
 
 Nfa alternate(Nfa& A, const Nfa& B)
@@ -145,16 +132,16 @@ Nfa thompson(regex::Expr expr)
         return symbol(expr->value);
     }
     if (expr->type == regex::Type::Closure) {
-        Nfa A = thompson(expr->lhs);
+        Nfa A = thompson(expr->left);
         return closure(A);
     }
     if (expr->type == regex::Type::Concatenation) {
-        Nfa A = thompson(expr->lhs);
-        return concatenate(A, thompson(expr->rhs));
+        Nfa A = thompson(expr->left);
+        return concatenate(A, thompson(expr->right));
     }
     if (expr->type == regex::Type::Union) {
-        Nfa A = thompson(expr->lhs);
-        return alternate(A, thompson(expr->rhs));
+        Nfa A = thompson(expr->left);
+        return alternate(A, thompson(expr->right));
     }
     throw std::invalid_argument("bad expression type");
 }
@@ -165,7 +152,7 @@ std::ostream& operator<<(std::ostream& out, const Nfa& nfa)
     out << "accept: " << nfa.accept << std::endl;
     out << "symbols: ";
     for (auto a: nfa.symbols) {
-        out << (char)a << " ";
+        out << "[" << a.start << ", " << a.end << "] ";
     }
     out << std::endl;
     out << "transitions:" << std::endl;
@@ -175,7 +162,7 @@ std::ostream& operator<<(std::ostream& out, const Nfa& nfa)
         for (auto jt = it->second.begin(); jt != it->second.end(); ++jt) {
             auto a = jt->first;
             for (auto r: jt->second) {
-                out << "(" << q << ", " << (char)a << ", " << r << ")\n";
+                out << "(" << q << ", " << "[" << a.start << ", " << a.end << "] " << ", " << r << ")\n";
             }
         }
     }
