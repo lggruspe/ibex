@@ -3,7 +3,7 @@
 #include "utils.hpp"
 //#include <boost/icl/split_interval_set.hpp>
 #include <cmath>
-#include <cstdlib>
+//#include <cstdlib>
 //#include <ctime>
 #include <iostream>
 
@@ -36,14 +36,11 @@ void test_duplicates(DistreeTest* test)
 void test_height(DistreeTest* test)
 {
     for (int i = 0; i < 100; ++i) {
-        int end = rand() % 100;
-        int start = rand() % (end + 1);
-        test->set.insert(start, end);
+        test->set.insert(i, i);
     }
 
-    test->assert(test->set.tree != nullptr);
     auto n = weight(test->set);
-    test->assert(n >= 100); // TODO what if there are duplicates?
+    test->assert(n == 100);
     test->assert((double)(height(test->set)) <= 2*log2(n + 1.0));
 }
 
