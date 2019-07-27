@@ -11,6 +11,16 @@ using namespace distree;
 
 define_test_runner(DistreeTest, DisSet set);
 
+void setup(DistreeTest* test)
+{
+    test->set.clear();
+}
+
+void teardown(DistreeTest* test)
+{
+    test->set.clear();
+}
+
 void test_duplicates(DistreeTest* test)
 {
     test->set.insert(0, 1);
@@ -33,7 +43,7 @@ void test_height(DistreeTest* test)
 
     test->assert(test->set.tree != nullptr);
     auto n = weight(test->set);
-    test->assert(n >= 100);
+    test->assert(n >= 100); // TODO what if there are duplicates?
     test->assert((double)(height(test->set)) <= 2*log2(n + 1.0));
 }
 
@@ -48,7 +58,7 @@ void test_combine(DistreeTest* test)
 
 int main()
 {
-    DistreeTest runner;
+    DistreeTest runner(setup, teardown);
     run_test(runner, test_duplicates);
     run_test(runner, test_height);
     run_test(runner, test_combine);
