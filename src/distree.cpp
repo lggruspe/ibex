@@ -1,4 +1,4 @@
-#include "distree.hpp"
+#include "distree.h"
 #include "tree.hpp"
 #include <algorithm>
 #include <iostream>
