@@ -1,5 +1,6 @@
 #pragma once
 #include "tree.hpp"
+#include <iostream>
 #include <stdexcept>
 
 namespace distree
@@ -43,5 +44,11 @@ struct DisSet {
     // leftmost interval that overlaps
     DisTree* first_overlap(Interval interval) const;
 };
+
+std::ostream& operator<<(std::ostream& out, const Interval& interval);
+
+std::ostream& operator<<(std::ostream& out, DisTree* node);
+
+std::ostream& operator<<(std::ostream& out, const DisSet& set);
 
 } // end namespace
