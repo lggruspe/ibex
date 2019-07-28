@@ -31,7 +31,7 @@ Expr n_ary_union(std::list<Expr>& exprs)
     return exprs.front();
 }
 
-void make_leaves_disjoint(Expr expr)
+void make_leaves_disjoint(Expr& expr)
 {
     if (!expr) {
         return;
@@ -57,7 +57,7 @@ void make_leaves_disjoint(Expr expr)
         }
 
         // get the union of all these intervals
-        *expr = *(n_ary_union(overlaps));
+        expr = n_ary_union(overlaps);
     }
 }
 

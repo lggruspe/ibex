@@ -37,7 +37,7 @@ build/distree.o:	tree.hpp
 
 .PHONY:	clean
 clean:
-	-rm -f $(OBJECTS) sample/sample.o sample/sample
+	-rm -f $(OBJECTS) sample/sample.o sample/sample vgcore.*
 
 sample/sample:	sample/sample.o $(OBJECTS)
 	$(CXX) $(CXXFLAGS) -o $@ $^
