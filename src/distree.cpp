@@ -1,6 +1,7 @@
 #include "distree.hpp"
 #include "tree.hpp"
 #include <algorithm>
+#include <iostream>
 
 namespace distree
 {
@@ -107,6 +108,29 @@ DisTree* DisSet::first_overlap(Interval interval) const
         pred = rb::predecessor(pred);
     }
     return node;
+}
+
+std::ostream& operator<<(std::ostream& out, const Interval& interval)
+{
+    if (interval.start == interval.end) {
+        return out << interval.start;
+    }
+    return out << "[" << interval.start << ", " << interval.end << "]";
+}
+
+std::ostream& operator<<(std::ostream& out, DisTree* node)
+{
+    if (node) {
+        out << node->left;
+        out << node->data << " ";
+        out << node->right;
+    }
+    return out;
+}
+
+std::ostream& operator<<(std::ostream& out, const DisSet& set)
+{
+    return out << "{" << set.tree << "}";
 }
 
 } // end namespace

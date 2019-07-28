@@ -2,26 +2,6 @@
 #include "distree.hpp"
 #include <iostream>
 
-std::ostream& operator<<(std::ostream& out, distree::Interval in)
-{
-    return out << "[" << in.start << ", " << in.end << "]";
-}
-
-std::ostream& operator<<(std::ostream& out, distree::DisTree* tree)
-{
-    if (tree) {
-        out << tree->left;
-        out << tree->data << " ";
-        out << tree->right;
-    }
-    return out;
-}
-
-std::ostream& operator<<(std::ostream& out, distree::DisSet& set)
-{
-    return out << set.tree << std::endl;
-}
-
 void print_set()
 {
     size_t n = 30;
