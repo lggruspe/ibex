@@ -1,6 +1,7 @@
 #pragma once
 #include "alphabet.hpp"
 #include "nfa.h"
+#include "regex.h"
 #include <iostream>
 #include <map>
 #include <set>
@@ -15,6 +16,7 @@ struct Dfa {
 
     Dfa() {}
     Dfa(const Nfa&);
+    Dfa(regex::Expr);
 };
 
 std::ostream& operator<<(std::ostream&, const Dfa&);

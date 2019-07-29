@@ -1,6 +1,7 @@
 #include "alphabet.hpp"
 #include "dfa.h"
 #include "nfa.h"
+#include "regex.h"
 #include "enumeration2.h"
 #include "partition.h"
 #include <algorithm>
@@ -18,6 +19,11 @@ Dfa minimize(const Dfa&);
 Dfa::Dfa(const Nfa& nfa)
 {
     *this = minimize(subset_construction(nfa));
+}
+
+Dfa::Dfa(regex::Expr expr)
+{
+    *this = minimize(subset_construction(Nfa(expr)));
 }
 
 int add_state(Dfa& dfa, int q)

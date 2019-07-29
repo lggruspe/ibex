@@ -63,7 +63,7 @@ void print_regex_to_dfa(const std::string& label, Expr expr)
 {
     std::cout << label << std::endl;
     std::cout << expr << std::endl;
-    std::cout << Dfa(Nfa(expr)) << std::endl;
+    std::cout << Dfa(expr) << std::endl;
 }
 
 int main()
