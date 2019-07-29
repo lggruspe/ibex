@@ -1,0 +1,14 @@
+character
+(concatenation, (concatenation, 39, (union, (union, (union, [32, 38], [40, 91]), [93, 126]), (concatenation, 92, (union, (union, (union, 39, 92), 116), 110)))), 39)
+start: 0
+accept: 1
+delta:
+d(0, [', ']) = 2
+d(2, [ , &]) = 3
+d(2, [(, []) = 3
+d(2, [\, \]) = 4
+d(2, [], ~]) = 3
+d(3, [', ']) = 1
+d(4, [', ']) = 3
+d(4, [\, \]) = 3
+d(4, [], ~]) = 3
