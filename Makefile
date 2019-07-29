@@ -8,7 +8,7 @@ else
 	C++17=-std=c++17
 endif
 
-CXXFLAGS = -g -Wall $(C++17) -I include
+CXXFLAGS = -g -Wall $(C++17) -I include -I include/rnd
 OBJECTS = build/regex.o build/nfa.o build/dfa.o build/distree.o
 prefix = /usr/local
 bindir = $(prefix)/bin
@@ -17,8 +17,8 @@ libdir = $(prefix)/lib
 
 vpath %.cpp src
 vpath %.o build
-vpath %.h include src
-vpath %.hpp include
+vpath %.h include src include/rnd
+vpath %.hpp include include/rnd
 
 .PHONY:	all
 all:	lib/librnd.a
@@ -50,7 +50,7 @@ sample:	sample/sample
 
 .PHONY:	install
 install:	lib/librnd.a
-	if [ ! -d "$(prefix)" ]; then \
+	@if [ ! -d "$(prefix)" ]; then \
 		mkdir "$(prefix)"; \
 	fi; \
 	if [ ! -d $(includedir) ]; then \
@@ -60,5 +60,6 @@ install:	lib/librnd.a
 		mkdir "$(libdir)"; \
 	fi; \
 	cp $< $(libdir); \
-	cp -r include "$(includedir)/rnd";
-	# TODO don't replace files if already exists, and is not from rnd library
+	cp -r include/* "$(includedir)";
+
+# TODO don't replace files if already exists, and is not from rnd library
