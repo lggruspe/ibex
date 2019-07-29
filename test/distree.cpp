@@ -3,8 +3,8 @@
 #include "utils.hpp"
 //#include <boost/icl/split_interval_set.hpp>
 #include <cmath>
-//#include <cstdlib>
-//#include <ctime>
+#include <cstdlib>
+#include <ctime>
 #include <iostream>
 
 using namespace distree;
@@ -53,12 +53,25 @@ void test_combine(DistreeTest* test)
     test->assert(weight(test->set) == 3);
 }
 
+void test_print(DistreeTest* test)
+{
+    srand(time(nullptr));
+    test->assert(true);
+    for (int i = 0; i < 100; ++i) {
+        auto end = rand() % 100;
+        auto start = rand() % (end + 1);
+        test->set.insert(start, end);
+    }
+    std::cout << "test_print: " << test->set << std::endl;
+}
+
 int main()
 {
     DistreeTest runner(setup, teardown);
     run_test(runner, test_duplicates);
     run_test(runner, test_height);
     run_test(runner, test_combine);
+    run_test(runner, test_print);
 }
 
 // TODO icl stats (compare with distree)
