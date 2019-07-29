@@ -1,6 +1,7 @@
 *.swp
 *.out
 *.o
+*.so
 *.a
 sample/sample
 vgcore.*

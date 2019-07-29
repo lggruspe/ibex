@@ -9,10 +9,9 @@ namespace regex
 
 enum class Type { Symbol, Union, Concatenation, Closure };
 
-class _Expr {
+struct _Expr {
     using Expr = typename std::shared_ptr<_Expr>;
 
-public:
     Type type;
     std::shared_ptr<Alphabet> alphabet;
     Alphabet::Category value;

@@ -8,7 +8,7 @@ else
 	C++17=-std=c++17
 endif
 
-CXXFLAGS = -g -Wall $(C++17) -I include -I include/rnd
+CXXFLAGS = -g -Wall -fpic $(C++17) -I include -I include/rnd
 OBJECTS = build/regex.o build/nfa.o build/dfa.o build/distree.o
 prefix = /usr/local
 bindir = $(prefix)/bin
@@ -21,10 +21,13 @@ vpath %.h include src include/rnd
 vpath %.hpp include include/rnd
 
 .PHONY:	all
-all:	lib/librnd.a
+all:	lib/librnd.a lib/librnd.so
+
+lib/librnd.so:	$(OBJECTS)
+	$(CXX) -shared -o $@ $^
 
 lib/librnd.a:	$(OBJECTS)
-	$(AR) rcs lib/librnd.a $(OBJECTS)
+	$(AR) rcs $@ $^
 
 $(OBJECTS):	build/%.o : %.cpp %.h
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
@@ -49,7 +52,7 @@ sample:	sample/sample
 	./sample/sample
 
 .PHONY:	install
-install:	lib/librnd.a
+install:	lib/librnd.so
 	@if [ ! -d "$(prefix)" ]; then \
 		mkdir "$(prefix)"; \
 	fi; \
