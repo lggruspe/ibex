@@ -1,5 +1,5 @@
 AR = ar
-CXX = clang++
+CXX = g++
 
 C++17 =
 ifeq ($(CXX),clang++)

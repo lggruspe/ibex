@@ -4,3 +4,4 @@
 *.a
 sample/sample
 vgcore.*
+gdb.txt

@@ -23,7 +23,7 @@ public:
     // used to initialize regular operations
     _Expr(Type type, 
             std::shared_ptr<Alphabet> alphabet, 
-            Expr left=nullptr, 
+            Expr left, 
             Expr right=nullptr)
         : type(type)
         , alphabet(alphabet)

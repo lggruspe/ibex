@@ -4,7 +4,7 @@
 // wraps distree::DisSet
 struct Alphabet {
     distree::DisSet set;
-    using Category = typename distree::Interval;
+    using Category = distree::Interval;
 
     void insert(const Category& interval)
     {
