@@ -2,10 +2,18 @@
 #include "nfa.h"
 #include "regex.h"
 #include <boost/icl/split_interval_set.hpp>
+#include <cassert>
 #include <iostream>
 #include <map>
 #include <set>
 #include <stdexcept>
+
+#define gotoifn(label, condition) do {\
+    if (!(condition)) {\
+        std::cerr << #condition << std::endl;\
+        goto label;\
+    }\
+} while (0)
 
 namespace automata 
 {
@@ -131,10 +139,15 @@ Nfa thompson(regex::Expr expr)
     if (expr->type == regex::Type::Symbol) {
         return symbol(expr->value);
     }
+
+    gotoifn(error, expr->left);
     if (expr->type == regex::Type::Closure) {
         Nfa A = thompson(expr->left);
         return closure(A);
     }
+
+    gotoifn(error, expr->right);
+
     if (expr->type == regex::Type::Concatenation) {
         Nfa A = thompson(expr->left);
         return concatenate(A, thompson(expr->right));
@@ -143,6 +156,10 @@ Nfa thompson(regex::Expr expr)
         Nfa A = thompson(expr->left);
         return alternate(A, thompson(expr->right));
     }
+
+error:
+    std::cerr << "DEBUG: " << expr << std::endl;
+    std::cerr << std::endl;
     throw std::invalid_argument("bad expression type");
 }
 
