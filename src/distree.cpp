@@ -88,7 +88,7 @@ void DisSet::insert(int a, int b)
 
 void DisSet::combine(const DisSet& other)
 {
-    auto node = other.tree;
+    auto node = rb::minimum(other.tree);
     while (node) {
         insert(node->data.start, node->data.end);
         node = rb::successor(node);

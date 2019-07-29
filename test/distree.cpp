@@ -48,9 +48,10 @@ void test_combine(DistreeTest* test)
 {
     DisSet set;
     set.insert(2, 4);
+    set.insert(0, 0);
     test->set.insert(1, 3);
     test->set.combine(set);
-    test->assert(weight(test->set) == 3);
+    test->assert(weight(test->set) == 4);
 }
 
 void test_print(DistreeTest* test)
