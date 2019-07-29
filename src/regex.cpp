@@ -1,4 +1,5 @@
 #include "regex.h"
+#include <cassert>
 #include <iostream>
 #include <list>
 #include <stdexcept>
@@ -17,9 +18,7 @@ void combine_alphabets(std::shared_ptr<Alphabet> alpha, std::shared_ptr<Alphabet
 // idea: pop 2 at the front, push 1 at the back, until there's only expr
 Expr n_ary_union(std::list<Expr>& exprs)
 {
-    if (exprs.empty()) {
-        return nullptr;
-    }
+    assert(!exprs.empty());
     while (exprs.size() > 1) {
         auto a = exprs.front();
         exprs.pop_front();
@@ -31,23 +30,24 @@ Expr n_ary_union(std::list<Expr>& exprs)
     return exprs.front();
 }
 
-void make_leaves_disjoint(Expr& expr)
+void make_leaves_disjoint(Expr expr)
 {
     if (!expr) {
         return;
     }
     if (expr->type != Type::Symbol) {
-        make_leaves_disjoint(expr->left);
-        make_leaves_disjoint(expr->right);
         if (expr->left) {
             expr->left->alphabet = expr->alphabet;
+            make_leaves_disjoint(expr->left);
         }
         if (expr->right) {
             expr->right->alphabet = expr->alphabet;
+            make_leaves_disjoint(expr->right);
         }
     } else {
         // get all intervals in the alphabet that intersect with symbol
         auto node = expr->alphabet->first_overlap(expr->value);
+        assert(!rb::predecessor(node) || rb::predecessor(node)->data != expr->value);
         std::list<Expr> overlaps;
         while (node && node->data == expr->value) {
             auto new_leaf = symbol(node->data.start, node->data.end);
@@ -99,7 +99,7 @@ std::ostream& operator<<(std::ostream& out, Expr re)
     }
     switch (re->type) {
     case Type::Symbol:    
-        return out << "[" << (char)(re->value.start) << ", " << (char)(re->value.end) << "]";
+        return out << re->value;
     case Type::Union:
         return out << "(union, " << re->left << ", " << re->right << ")";
     case Type::Concatenation:
