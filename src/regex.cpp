@@ -24,7 +24,7 @@ Expr n_ary_union(std::list<Expr>& exprs)
         exprs.pop_front();
         auto b = exprs.front();
         exprs.pop_front();
-        auto c = std::make_shared<_Expr>(Type::Union, a->alphabet, a, b);
+        auto c = std::make_shared<ExpTree>(Type::Union, a->alphabet, a, b);
         exprs.push_back(c);
     }
     return exprs.front();
@@ -64,7 +64,7 @@ void make_leaves_disjoint(Expr expr)
 Expr operator|(Expr a, Expr b)
 {
     combine_alphabets(a->alphabet, b->alphabet);
-    Expr c = std::make_shared<_Expr>(Type::Union, a->alphabet, a, b);
+    Expr c = std::make_shared<ExpTree>(Type::Union, a->alphabet, a, b);
     make_leaves_disjoint(c);
     return c;
 }
@@ -72,19 +72,19 @@ Expr operator|(Expr a, Expr b)
 Expr operator+(Expr a, Expr b)
 {
     combine_alphabets(a->alphabet, b->alphabet);
-    Expr c = std::make_shared<_Expr>(Type::Concatenation, a->alphabet, a, b);
+    Expr c = std::make_shared<ExpTree>(Type::Concatenation, a->alphabet, a, b);
     make_leaves_disjoint(c);
     return c;
 }
 
 Expr closure(Expr a)
 {
-    return std::make_shared<_Expr>(Type::Closure, a->alphabet, a);
+    return std::make_shared<ExpTree>(Type::Closure, a->alphabet, a);
 }
 
 Expr symbol(int start, int end)
 {
-    return std::make_shared<_Expr>(start, end);
+    return std::make_shared<ExpTree>(start, end);
 }
 
 Expr symbol(int start)
@@ -109,6 +109,31 @@ std::ostream& operator<<(std::ostream& out, Expr re)
     default:
         throw std::invalid_argument("input expression has bad type");
     }
+}
+
+// for python
+Expr make_symbol(int a, int b)
+{
+    return std::make_shared<ExpTree>(a, b);
+}
+
+// for python
+Expr make_operation(Type type, Expr left, Expr right=nullptr)
+{
+    if (right) {
+        combine_alphabets(left->alphabet, right->alphabet);
+    }
+    auto res = std::make_shared<ExpTree>(type, left->alphabet, left, right);
+    if (right) {
+        make_leaves_disjoint(res);
+    }
+    return res;
+}
+
+// for python
+ExpTree get_exp_tree(Expr expr)
+{
+    return *expr;
 }
 
 } // end namespace

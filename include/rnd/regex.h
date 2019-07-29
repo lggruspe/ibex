@@ -9,18 +9,18 @@ namespace regex
 
 enum class Type { Symbol, Union, Concatenation, Closure };
 
-struct _Expr {
-    using Expr = typename std::shared_ptr<_Expr>;
+struct ExpTree {
+    using Expr = typename std::shared_ptr<ExpTree>;
 
     Type type;
     std::shared_ptr<Alphabet> alphabet;
     Alphabet::Category value;
 
-    std::shared_ptr<_Expr> left;
-    std::shared_ptr<_Expr> right;
+    std::shared_ptr<ExpTree> left;
+    std::shared_ptr<ExpTree> right;
 
     // used to initialize regular operations
-    _Expr(Type type, 
+    ExpTree(Type type, 
             std::shared_ptr<Alphabet> alphabet, 
             Expr left, 
             Expr right=nullptr)
@@ -32,7 +32,7 @@ struct _Expr {
     {}
 
     // used to initialize leaves
-    _Expr(int a, int b)
+    ExpTree(int a, int b)
         : type(Type::Symbol)
         , alphabet(std::make_shared<Alphabet>())
         , value(Alphabet::Category(a, b))
@@ -44,13 +44,17 @@ struct _Expr {
     }
 };
 
-using Expr = typename std::shared_ptr<_Expr>;
+using Expr = typename std::shared_ptr<ExpTree>;
 
 Expr operator+(Expr, Expr);
 Expr operator|(Expr, Expr);
 Expr closure(Expr);
 Expr symbol(int, int);
 Expr symbol(int);
+
+Expr make_symbol(int, int);
+Expr make_operation(Type, Expr, Expr);
+ExpTree get_exp_tree(Expr);
 
 std::ostream& operator<<(std::ostream&, Expr);
 } // end namespace
