@@ -1,7 +1,6 @@
 #include "alphabet.hpp"
 #include "nfa.h"
 #include "regex.h"
-#include <boost/icl/split_interval_set.hpp>
 #include <cassert>
 #include <iostream>
 #include <map>
