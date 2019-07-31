@@ -3,6 +3,16 @@ class Color:
     RED = "RED"
 
 class Node:
+    """An instance represents a node in a red-black tree.
+
+    A red-black tree is a binary search tree that satisfies the following
+    properties.
+    -   Each node is either red or black.
+    -   The root node is black.
+    -   A red node must have a black parent.
+    -   For any subtree, every simple path from the root of the subtree to a
+        leaf contains the same number of black nodes as any other path.
+    """
     def __init__(self, key, color=Color.RED):
         self.key = key
         self.color = color
@@ -32,13 +42,13 @@ def rotate_left(root, x):
     y.left = x
     y.parent = x.parent
     x.parent = y
-    if y.parent:
-        if y.parent.left == x:
-            y.parent.left = y
-        elif y.parent.right == x:
-            y.parent.right = y
-    else:
+
+    if not y.parent:
         root = y
+    elif y.parent.left == x:
+        y.parent.left = y
+    elif y.parent.right == x:
+        y.parent.right = y
     return root
 
 def rotate_right(root, y):
@@ -52,34 +62,39 @@ def rotate_right(root, y):
     x.right = y
     x.parent = y.parent
     y.parent = x
-    if x.parent:
-        if x.parent.right == y:
-            x.parent.right = x
-        elif x.parent.left == y:
-            x.parent.left = x
-    else:
+
+    if not x.parent:
         root = x
+    elif x.parent.right == y:
+        x.parent.right = x
+    elif x.parent.left == y:
+        x.parent.left = x
     return root
 
 def repair(root, node):
-    if not node:
-        return root
-    if not root:
-        node.color = Color.BLACK
-        return node
-    if not node.parent or node.parent.color == Color.BLACK:
+    """Fixes violations on red-black tree properties caused by insert.
+
+    Returns the new root.
+    """
+    if not root or not node:
         return root
 
     parent = node.parent
-    grandparent = parent.parent if parent else None
-    uncle = None
-    if grandparent:
-        if grandparent.left == parent:
-            uncle = grandparent.right
-        else:
-            uncle = grandparent.left
+    if parent and parent.color == Color.RED:
+        grandparent = parent.parent
+        uncle = None
+        if grandparent:
+            if grandparent.left == parent:
+                uncle = grandparent.right
+            else:
+                uncle = grandparent.left
 
-        if not uncle:
+        if uncle and uncle.color == Color.RED:
+            grandparent.color = Color.RED
+            parent.color = Color.BLACK
+            uncle.color = Color.BLACK
+            return repair(root, grandparent)
+        if grandparent:
             if grandparent.left == parent and parent.right == node:
                 root = rotate_left(root, parent)
             elif grandparent.right == parent and parent.left == node:
@@ -93,19 +108,15 @@ def repair(root, node):
                 parent.color = Color.BLACK
                 grandparent.color = Color.RED
                 root = rotate_left(root, grandparent)
-            root.color = Color.BLACK
-            return root
-        elif uncle.color == Color.RED:
-            grandparent.color = Color.RED
-            parent.color = Color.BLACK
-            uncle.color = Color.BLACK
-            return repair(root, grandparent)
 
     root.color = Color.BLACK
     return root
 
-# assume tree rooted at tree is well-formed
 def insert(root, node):
+    """Inserts node into red-black tree rooted at root.
+
+    Returns the new root.
+    """
     if not node:
         return root
 
@@ -143,6 +154,11 @@ def insert(root, node):
     return repair(root, node)
 
 def closest_match(root, key):
+    """Returns node in tree with closest matching key.
+
+    The return value is either a node with the same key, or a node that would
+    be the parent if a node for the key is inserted.
+    """
     parent = None
     child = root
     while child and child.key != key:
@@ -150,40 +166,31 @@ def closest_match(root, key):
         child = child.left if key < child.key else child.right
     return child if child else parent
 
-
 def search(root, key):
+    """Returns node with matching key, None if there isn't any."""
     node = root
     while node and node.key != key:
         node = node.left if key < node.key else node.right
     return node
 
-def minimum(node):
-    if not node:
+def minimum(root):
+    """Returns node with smallest key in the tree at given root."""
+    if not root:
         return None
-    while node.left:
-        node = node.left
-    return node
+    while root.left:
+        root = root.left
+    return root
 
-def maximum(node):
-    if not node:
+def maximum(root):
+    """Returns node with largest key in the tree at given root."""
+    if not root:
         return None
-    while node.right:
-        node = node.right
-    return node
-
-def predecessor(node):
-    if not node:
-        return None
-    if node.left:
-        return maximum(node.left)
-    child = node
-    parent = child.parent
-    while parent and parent.right != node:
-        child = parent
-        parent = parent.parent
-    return parent
+    while root.right:
+        root = root.right
+    return root
 
 def successor(node):
+    """Returns inorder successor of node."""
     if not node:
         return None
     if node.right:
@@ -196,6 +203,7 @@ def successor(node):
     return parent
 
 def predecessor(node):
+    """Returns inorder predecessor of node."""
     if not node:
         return None
     if node.left:
@@ -208,6 +216,7 @@ def predecessor(node):
     return parent
 
 def iterator(root):
+    """Generates keys (or key-value pairs) in the tree."""
     node = minimum(root)
     while node:
         if node.value is not None:
