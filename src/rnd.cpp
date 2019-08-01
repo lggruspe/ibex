@@ -3,7 +3,6 @@
 #include "dfa.h"
 #include <cstdlib>
 #include <exception>
-#include <vector>
 
 namespace rnd
 {
@@ -66,44 +65,6 @@ regex::Expr transform_expr(struct rnd_expr *expr)
     }
     throw rnd::MalformedExpressionException();
 }
-
-/*
-regex::Expr transform_expr(struct rnd_expr *expr_)
-{
-    if (!expr_) {
-        return nullptr;
-    }
-    std::vector<struct rnd_expr*> stack_c = { expr_ };
-    std::vector<regex::Expr> stack_cxx;
-    while (!stack_c.empty()) {
-        auto expr = stack_c.back();
-        stack_c.pop_back();
-        if (expr->right) {
-            stack_c.push_back(expr->right);
-        }
-        if (expr->left) {
-            stack_c.push_back(expr->left);
-        }
-
-        switch (expr->type) {
-        case RND_SYMBOL:
-            if (expr->left || expr->right) {
-                return nullptr;
-            }
-            stack_cxx.push_back(regex::symbol(expr->symbols.start, 
-                        expr->symbols.end));
-            break;
-        case RND_UNION:
-            if (!expr->left || !expr->right) {
-                return nullptr;
-            }
-            stack_cxx.push_back(r
-        case RND_CONCATENATION:
-        case RND_CLOSURE:
-        }
-    }
-}
-*/
 
 struct rnd_dfa transform_dfa(const automata::Dfa& dfa)
 {
