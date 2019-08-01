@@ -1,5 +1,5 @@
 from redblack.algorithms import Color, minimum, successor, Node
-from redblack.collections import Set, Map
+from redblack.containers import Set, Map
 import math
 import random
 import unittest
