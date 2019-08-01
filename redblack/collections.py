@@ -3,6 +3,7 @@ from redblack import algorithms as rb
 class Set:
     def __init__(self):
         self.root = None
+        self._size = 0
 
     def __str__(self):
         return "[{}]".format(", ".join(str(a) for a in self))
@@ -16,19 +17,26 @@ class Set:
     def __reversed__(self):
         return rb.reversed_iterator(self.root)
 
+    def __len__(self):
+        return self._size
+
     def add(self, key):
         node = rb.Node(key)
-        self.root = rb.insert(self.root, node)
+        self.root, grew = rb.insert(self.root, node)
+        if grew:
+            self._size += 1
 
     def __contains__(self, key):
         return bool(rb.search(self.root, key))
 
     def clear(self):
         self.root = None
+        self._size = 0
 
 class Map:
     def __init__(self):
         self.root = None
+        self._size = 0
 
     def __str__(self):
         return "[{}]".format(", ".join(
@@ -43,10 +51,15 @@ class Map:
     def __reversed__(self):
         return rb.reversed_iterator(self.root)
 
+    def __len__(self):
+        return self._size
+
     def __setitem__(self, key, value):
         node = rb.Node(key)
         node.value = value
-        self.root = rb.insert(self.root, node)
+        self.root, grew = rb.insert(self.root, node)
+        if grew:
+            self._size += 1
 
     def __getitem__(self, key):
         node = rb.search(self.root, key)
@@ -57,3 +70,4 @@ class Map:
 
     def clear(self):
         self.root = None
+        self._size = 0

@@ -117,17 +117,17 @@ def repair(root, node):
 def insert(root, node):
     """Inserts node into red-black tree rooted at root.
 
-    Returns the new root.
+    Returns the new root, and a boolean that tells whether the tree got larger.
     """
     if not node:
-        return root
+        return root, False
 
     node.left = None
     node.right = None
     node.parent = None
     if not root:
         node.color = Color.BLACK
-        return node
+        return node, True
 
     node.color = Color.RED
     closest = closest_match(root, node.key)
@@ -153,7 +153,7 @@ def insert(root, node):
             closest.left = node
         else:
             closest.right = node
-    return repair(root, node)
+    return repair(root, node), (closest.key != node.key)
 
 def closest_match(root, key):
     """Returns node in tree with closest matching key.

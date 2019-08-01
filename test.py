@@ -9,11 +9,6 @@ def height(node: Node) -> int:
         return 0
     return 1 + max(height(node.left), height(node.right))
 
-def weight(node: Node) -> int:
-    if not node:
-        return 0
-    return 1 + weight(node.left) + weight(node.right)
-
 def black_height(node: Node) -> int:
     """Black-height of node.
 
@@ -57,13 +52,19 @@ class RedBlackTestCase(unittest.TestCase):
             node = successor(node)
 
     def test_is_balanced(self):
-        n = weight(self.set.root)
+        n = len(self.set)
         h = height(self.set.root)
         self.assertEqual(n, 100)
         self.assertLessEqual(h, 2*math.log2(1 + n))
 
     def test_is_inserted(self):
         self.assertEqual(list(range(100)), list(self.set))
+
+    def test_has_no_duplicates(self):
+        self.set.clear()
+        for i in range(10):
+            self.set.add(0)
+        self.assertEqual(len(self.set), 1)
 
 if __name__ == "__main__":
     unittest.main()
