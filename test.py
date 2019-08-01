@@ -40,7 +40,7 @@ class RedBlackTestCase(unittest.TestCase):
     def setUp(self):
         self.set = Set()
         for i in range(100):
-            self.set.insert(i)
+            self.set.add(i)
 
     def tearDown(self):
         self.set.clear()

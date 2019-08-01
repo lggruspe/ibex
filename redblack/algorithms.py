@@ -1,6 +1,8 @@
-class Color:
-    BLACK = "BLACK"
-    RED = "RED"
+import enum
+
+class Color(enum.Enum):
+    BLACK = enum.auto()
+    RED = enum.auto()
 
 class Node:
     """An instance represents a node in a red-black tree.
@@ -224,3 +226,13 @@ def iterator(root):
         else:
             yield node.key
         node = successor(node)
+
+def reversed_iterator(root):
+    """Generates keys (or key-value pairs) in reversed order."""
+    node = maximum(root)
+    while node:
+        if node.value is not None:
+            yield (node.key, node.value)
+        else:
+            yield node.key
+        node = predecessor(node)
