@@ -40,7 +40,7 @@ build/distree.o:	tree.hpp
 
 .PHONY:	clean
 clean:
-	-rm -f $(OBJECTS) sample/sample.o sample/sample vgcore.*
+	-rm -f $(OBJECTS) sample/sample.o sample/sample vgcore.* build/*.o
 
 sample/sample:	sample/sample.o $(OBJECTS)
 	$(CXX) $(CXXFLAGS) -o $@ $^
@@ -66,3 +66,11 @@ install:	lib/librnd.so
 	cp -r include/* "$(includedir)";
 
 # TODO don't replace files if already exists, and is not from rnd library
+
+
+build/rnd.o:	src/rnd.cpp rnd.h
+	$(CXX) $(CXXFLAGS) -c -o $@ $<
+
+lib/libcrnd.so:	build/rnd.o $(OBJECTS)
+	$(CXX) -shared -o $@ $^
+
