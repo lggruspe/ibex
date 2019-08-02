@@ -63,7 +63,9 @@ class Map:
 
     def __getitem__(self, key):
         node = rb.search(self.root, key)
-        return node.value if node else None
+        if node:
+            return node.value
+        raise KeyError(key)
 
     def __contains__(self, key):
         return bool(rb.search(self.root, key))
@@ -71,3 +73,9 @@ class Map:
     def clear(self):
         self.root = None
         self._size = 0
+
+    def get(self, key, val):
+        try:
+            return self[key]
+        except KeyError:
+            return val
