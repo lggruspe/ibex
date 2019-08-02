@@ -8,3 +8,4 @@ vgcore.*
 gdb.txt
 __pycache__
 python/rnd_wrap.cxx
+env

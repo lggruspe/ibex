@@ -99,8 +99,8 @@ struct rnd_dfa transform_dfa(const automata::Dfa& dfa)
                 .current_state = q,
                 .next_state = r,
                 .symbols = (struct rnd_symbol_interval) {
-                    .start = a.end,
-                    .end = a.start,
+                    .start = a.start,
+                    .end = a.end
                 }
             };
             ++i;
