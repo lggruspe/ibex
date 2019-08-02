@@ -15,7 +15,7 @@ def identifier_expr():
 def identifier_dfa():
     expr = identifier_expr()
     dfa = convert(expr)
-    #TODO expr.__exit__()
+    expr.destroy()
     return dfa
 
 class RndConversionTest(unittest.TestCase):

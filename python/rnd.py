@@ -68,6 +68,10 @@ _rnd_expr_destroy = _rnd.rnd_expr_destroy
 _rnd_expr_destroy.argtypes = [ctypes.POINTER(_CExpr)]
 _rnd_expr_destroy.restype = None
 
+_rnd_expr_free = _rnd.rnd_expr_free
+_rnd_expr_free.argtypes = [ctypes.POINTER(_CExpr)]
+_rnd_expr_free.restype = None
+
 # Python bindings
 
 class ExprType(enum.Enum):
@@ -95,8 +99,10 @@ class ExprSymbols:
     def closure(self):
         return closure(self)
 
-    def __exit__(self):
-        _rnd_expr_destroy(self._cpointer)
+    def destroy(self):
+        if self._cpointer:
+            _rnd_expr_free(self._cpointer)
+        self._cpointer = None
 
     def __repr__(self):
         if self.start == self.end:
@@ -132,11 +138,16 @@ class Expr:
         elif self.type_ == ExprType.CLOSURE:
             return f"closure({self.left!r})"
 
-    def __enter__(self):
-        pass
-
-    def __exit__(self):
-        _rnd_expr_destroy(self._cpointer)
+    def destroy(self):
+        if self._cpointer:
+            _rnd_expr_free(self._cpointer)
+        self._cpointer = None
+        if self.left:
+            self.left.destroy()
+        if self.right:
+            self.right.destroy()
+        self.left = None
+        self.right = None
 
     def union(self, other):
         return union(self, other)

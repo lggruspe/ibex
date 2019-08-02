@@ -193,3 +193,10 @@ void rnd_expr_destroy(struct rnd_expr* expr)
         free(expr);
     }
 }
+
+void rnd_expr_free(struct rnd_expr* expr)
+{
+    if (expr) {
+        free(expr);
+    }
+}
