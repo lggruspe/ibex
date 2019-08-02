@@ -3,7 +3,6 @@ import unittest
 import csv
 
 empty_data = []
-whitespace_data = []
 number_data = []
 identifier_data = []
 
@@ -67,10 +66,12 @@ class RndConversionTest(unittest.TestCase):
 
     def test_whitespace(self):
         self.dfa = to_dfa(whitespace_expr())
-        self.assertTrue(whitespace_data)
-        for word, label in whitespace_data:
-            accepted = self.dfa.compute(map(ord, word))
-            self.assertFalse(accepted ^ label)
+
+        self.assertTrue(self.dfa.compute(map(ord, "\t")))
+        self.assertTrue(self.dfa.compute(map(ord, "\n")))
+        self.assertTrue(self.dfa.compute(map(ord, " ")))
+        self.assertFalse(self.dfa.compute(map(ord, "")))
+        self.assertFalse(self.dfa.compute(map(ord, "  ")))
 
     def test_number(self):
         self.dfa = to_dfa(number_expr())
@@ -86,6 +87,5 @@ def init_data(filename, seq):
 if __name__ == "__main__":
     init_data("testdata/identifier.csv", identifier_data)
     init_data("testdata/number.csv", number_data)
-    init_data("testdata/whitespace.csv", whitespace_data)
     init_data("testdata/empty.csv", empty_data)
     unittest.main()
