@@ -11,10 +11,10 @@ struct rnd_symbol_interval {
 };
 
 enum rnd_expr_type { 
-    RND_SYMBOL,
-    RND_UNION,
-    RND_CONCATENATION,
-    RND_CLOSURE
+    RND_SYMBOL = 0,
+    RND_UNION = 1,
+    RND_CONCATENATION = 2,
+    RND_CLOSURE = 3
 };
 
 struct rnd_expr {
