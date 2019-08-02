@@ -1,5 +1,8 @@
 from rnd import ExprSymbols, convert, Dfa, DfaSymbols
 import unittest
+import csv
+
+identifier_data = []
 
 def identifier_expr():
     underscore = ExprSymbols(ord("_"))
@@ -20,7 +23,15 @@ class RndConversionTest(unittest.TestCase):
         self.dfa = identifier_dfa()
 
     def test_convert(self):
-        self.assertTrue(False)
+        self.assertTrue(identifier_data)
+        for word, label in identifier_data:
+            accepted = self.dfa.compute(map(ord, word))
+            self.assertFalse(accepted ^ label)
 
 if __name__ == "__main__":
+    with open("testdata/identifier.csv", "r") as f:
+        for row in csv.reader(f):
+            word = row[0]
+            label = int(row[1])
+            identifier_data.append((word, label))
     unittest.main()

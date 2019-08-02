@@ -208,7 +208,7 @@ class Dfa:
         for a in inputs:
             if state not in self.transitions:
                 return False
-            state = self.transitions[state].get(a, -1)
+            state = self.transitions[state].get(DfaSymbols(a), -1)
         return state in self.accepts
 
 def _cdfa_to_pydfa(_dfa: _CDfa) -> Dfa:
