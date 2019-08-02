@@ -52,9 +52,5 @@ Expr closure(Expr);
 Expr symbol(int, int);
 Expr symbol(int);
 
-Expr make_symbol(int, int);
-Expr make_operation(Type, Expr, Expr);
-ExpTree get_exp_tree(Expr);
-
 std::ostream& operator<<(std::ostream&, Expr);
 } // end namespace

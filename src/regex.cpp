@@ -111,29 +111,4 @@ std::ostream& operator<<(std::ostream& out, Expr re)
     }
 }
 
-// for python
-Expr make_symbol(int a, int b)
-{
-    return std::make_shared<ExpTree>(a, b);
-}
-
-// for python
-Expr make_operation(Type type, Expr left, Expr right=nullptr)
-{
-    if (right) {
-        combine_alphabets(left->alphabet, right->alphabet);
-    }
-    auto res = std::make_shared<ExpTree>(type, left->alphabet, left, right);
-    if (right) {
-        make_leaves_disjoint(res);
-    }
-    return res;
-}
-
-// for python
-ExpTree get_exp_tree(Expr expr)
-{
-    return *expr;
-}
-
 } // end namespace
