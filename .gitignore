@@ -7,5 +7,4 @@ sample/sample
 vgcore.*
 gdb.txt
 __pycache__
-python/rnd.py
 python/rnd_wrap.cxx
