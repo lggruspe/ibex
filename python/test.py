@@ -1,10 +1,10 @@
-from rnd import Symbols, convert, Dfa
+from rnd import ExprSymbols, convert, Dfa, DfaSymbols
 import unittest
 
 def identifier_expr():
-    underscore = Symbols(ord("_"))
-    letters = Symbols(ord("a"), ord("z")).union(Symbols(ord("A"), ord("Z")))
-    digits = Symbols(ord("0"), ord("9"))
+    underscore = ExprSymbols(ord("_"))
+    letters = ExprSymbols(ord("a"), ord("z")).union(ExprSymbols(ord("A"), ord("Z")))
+    digits = ExprSymbols(ord("0"), ord("9"))
     front = underscore.union(letters)
     middle = front.union(digits).closure()
     return front.concatenation(middle)

@@ -1,5 +1,9 @@
 import ctypes
 import enum
+import os
+import sys
+sys.path.append(os.path.join(os.path.dirname(__file__), "redblackpy"))
+from redblack import containers
 
 _rnd = ctypes.CDLL("libcrnd.so")
 
@@ -72,7 +76,7 @@ class ExprType(enum.Enum):
     CONCATENATION = 2
     CLOSURE = 3
 
-class Symbols:
+class ExprSymbols:
     def __init__(self, start: int=0, end: int=None):
         if end is None:
             end = start
@@ -97,8 +101,7 @@ class Symbols:
     def __repr__(self):
         if self.start == self.end:
             return str(self.start)
-        else:
-            return f"[{self.start}, {self.end}]"
+        return f"[{self.start}, {self.end}]"
 
 def _get_expr_pointer(expr):
     return None if not expr else expr._cpointer
@@ -150,8 +153,39 @@ def union(a, b) -> Expr:
 def concatenation(a, b) -> Expr:
     return Expr(ExprType.CONCATENATION, a, b)
 
-def closure(expr: Expr or Symbols) -> Expr:
+def closure(expr: Expr or ExprSymbols) -> Expr:
     return Expr(ExprType.CLOSURE, expr)
+
+class DfaSymbols:
+    def __init__(self, start: int=0, end: int=None):
+        if end is None:
+            end = start
+        if start > end:
+            raise ValueError("start must be <= end")
+        self.start = start
+        self.end = end
+
+    def __repr__(self):
+        if self.start == self.end:
+            return str(self.start)
+        return f"[{self.start}, {self.end}]"
+
+    def __lt__(self, other):
+        assert self.start <= self.end
+        assert other.start <= other.end
+        return self.end < other.start
+
+    def __gt__(self, other):
+        assert self.start <= self.end
+        assert other.start <= other.end
+        return self.start > other.end
+
+    def __eq__(self, other):
+        """Checks if the closed intervals [self.start, self.end] and
+        [other.start, other.end] overlap."""
+        assert self.start <= self.end
+        assert other.start <= other.end
+        return not (self < other) and not (self > other)
 
 # TODO use interval set to represent outbound transitions from each state
 class Dfa:
@@ -190,13 +224,18 @@ def _cdfa_to_pydfa(_dfa: _CDfa) -> Dfa:
         _trans = _dfa.transitions[i]
         q = int(_trans.current_state)
         r = int(_trans.next_state)
-        a = (int(_trans.symbols.start), int(_trans.symbols.end))
+
+        a_start = int(_trans.symbols.start)
+        a_end = int(_trans.symbols.end)
+        a = DfaSymbols(a_start, a_end)
+
         if q not in dfa.transitions:
-            dfa.transitions[q] = {}
+            dfa.transitions[q] = containers.Map()
+        # assumes a doesn't overlap with any other DfaSymbols
         dfa.transitions[q][a] = r
     return dfa
 
-def convert(expr: Expr or Symbols) -> Dfa:
+def convert(expr: Expr or ExprSymbols) -> Dfa:
     _dfa = _rnd_convert(expr._cpointer)
     dfa = _cdfa_to_pydfa(_dfa)
     _rnd_dfa_destroy(ctypes.byref(_dfa))
