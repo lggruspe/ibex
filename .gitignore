@@ -3,9 +3,10 @@
 *.o
 *.so
 *.a
-sample/sample
 vgcore.*
 gdb.txt
 __pycache__
 python/rnd_wrap.cxx
 env
+examples/example_cpp
+examples/example_c

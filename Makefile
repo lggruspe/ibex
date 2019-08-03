@@ -21,7 +21,7 @@ vpath %.h include src include/rnd src/rnd src/rndxx
 vpath %.hpp include include/rnd src/rnd src/rndxx
 
 .PHONY:	all
-all:	lib/librnd.a lib/librnd.so
+all:	lib/librnd.a lib/librnd.so lib/libcrnd.so
 
 lib/librnd.so:	$(OBJECTS)
 	$(CXX) -shared -o $@ $^
@@ -40,16 +40,7 @@ build/distree.o:	tree.hpp
 
 .PHONY:	clean
 clean:
-	-rm -f $(OBJECTS) sample/sample.o sample/sample vgcore.* build/*.o
-
-sample/sample:	sample/sample.o $(OBJECTS)
-	$(CXX) $(CXXFLAGS) -o $@ $^
-
-sample/sample.o:	sample/sample.cpp
-	$(CXX) $(CXXFLAGS) -c -o $@ $<
-
-sample:	sample/sample
-	./sample/sample
+	-rm -f $(OBJECTS) vgcore.* build/*.o
 
 .PHONY:	install
 install:	lib/librnd.so
