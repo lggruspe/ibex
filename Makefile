@@ -8,17 +8,17 @@ else
 	C++17=-std=c++17
 endif
 
-CXXFLAGS = -g -Wall -fpic $(C++17) -I include -I include/rnd
+CXXFLAGS = -g -Wall -fpic $(C++17) -I./include -I./include/rnd -I./src/rnd -I./src/rndxx
 OBJECTS = build/regex.o build/nfa.o build/dfa.o build/distree.o
 prefix = /usr/local
 bindir = $(prefix)/bin
 includedir = $(prefix)/include
 libdir = $(prefix)/lib
 
-vpath %.cpp src
+vpath %.cpp src src/rnd src/rndxx 
 vpath %.o build
-vpath %.h include src include/rnd
-vpath %.hpp include include/rnd
+vpath %.h include src include/rnd src/rnd src/rndxx
+vpath %.hpp include include/rnd src/rnd src/rndxx
 
 .PHONY:	all
 all:	lib/librnd.a lib/librnd.so
@@ -68,7 +68,7 @@ install:	lib/librnd.so
 # TODO don't replace files if already exists, and is not from rnd library
 
 
-build/rnd.o:	src/rnd.cpp rnd.h
+build/rnd.o:	rnd.cpp rnd.h
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
 lib/libcrnd.so:	build/rnd.o $(OBJECTS)
