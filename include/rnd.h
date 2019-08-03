@@ -79,3 +79,8 @@ void rnd_expr_destroy(struct rnd_expr*);
 extern "C"
 #endif
 void rnd_expr_free(struct rnd_expr*);
+
+#ifdef __cplusplus
+extern "C"
+#endif
+int rnd_get_expr_counter();

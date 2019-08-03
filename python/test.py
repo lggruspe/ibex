@@ -1,4 +1,4 @@
-from rnd import ExprSymbols, convert, Dfa, DfaSymbols
+from rnd import ExprSymbols, convert, Dfa, DfaSymbols, _rnd_get_expr_counter
 import unittest
 import csv
 
@@ -79,6 +79,14 @@ class RndConversionTest(unittest.TestCase):
         for word, label in number_data:
             accepted = self.dfa.compute(map(ord, word))
             self.assertFalse(accepted ^ label)
+
+    def test_leaks(self):
+        to_dfa(empty_expr())
+        to_dfa(number_expr())
+        to_dfa(identifier_expr())
+        to_dfa(integer_expr())
+        to_dfa(whitespace_expr())
+        self.assertEqual(0, _rnd_get_expr_counter())
 
 def init_data(filename, seq):
     with open(filename, "r") as f:

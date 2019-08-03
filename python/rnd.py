@@ -72,6 +72,9 @@ _rnd_expr_free = _rnd.rnd_expr_free
 _rnd_expr_free.argtypes = [ctypes.POINTER(_CExpr)]
 _rnd_expr_free.restype = None
 
+_rnd_get_expr_counter = _rnd.rnd_get_expr_counter
+_rnd_get_expr_counter.restype = ctypes.c_int
+
 # Python bindings
 
 class ExprType(enum.Enum):

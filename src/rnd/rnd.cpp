@@ -4,6 +4,8 @@
 #include <cstdlib>
 #include <exception>
 
+int expr_counter = 0;
+
 namespace rnd
 {
     struct MalformedExpressionException: public std::exception {};
@@ -151,7 +153,8 @@ struct rnd_expr* rnd_expr_new(
         int end)
 {
     struct rnd_expr* expr = (struct rnd_expr*)malloc(sizeof(struct rnd_expr));
-     if (expr) {
+    if (expr) {
+        ++expr_counter;
         expr->type = type;
         expr->left = left;
         expr->right = right;
@@ -191,6 +194,7 @@ void rnd_expr_destroy(struct rnd_expr* expr)
         rnd_expr_destroy(expr->left);
         rnd_expr_destroy(expr->right);
         free(expr);
+        --expr_counter;
     }
 }
 
@@ -198,5 +202,11 @@ void rnd_expr_free(struct rnd_expr* expr)
 {
     if (expr) {
         free(expr);
+        --expr_counter;
     }
+}
+
+int rnd_get_expr_counter()
+{
+    return expr_counter;
 }
