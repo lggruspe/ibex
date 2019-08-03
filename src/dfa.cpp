@@ -142,6 +142,15 @@ Dfa subset_construction(const Nfa& nfa)
     std::list<int> queue;
     queue.push_back(dfa.start);
 
+    // check if dfa.start is an accept state
+    {
+        auto closure = closures[nfa.start];
+        if (closure.find(nfa.accept) != closure.end()) {
+            dfa.accept.insert(dfa.start);
+        }
+    }
+
+    /// subset construction
     while (!queue.empty()) {
         int Q = queue.front();
         queue.pop_front();
