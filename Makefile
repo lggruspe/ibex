@@ -43,7 +43,7 @@ clean:
 	-rm -f $(OBJECTS) vgcore.* build/*.o
 
 .PHONY:	install
-install:	lib/librnd.so
+install:	lib/libcrnd.so
 	@if [ ! -d "$(prefix)" ]; then \
 		mkdir "$(prefix)"; \
 	fi; \
@@ -55,9 +55,6 @@ install:	lib/librnd.so
 	fi; \
 	cp $< $(libdir); \
 	cp -r include/* "$(includedir)";
-
-# TODO don't replace files if already exists, and is not from rnd library
-
 
 build/rnd.o:	rnd.cpp rnd.h
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
