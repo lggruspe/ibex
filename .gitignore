@@ -4,3 +4,5 @@ bin
 sample
 *.o
 tmp.h
+env
+__pycache__
