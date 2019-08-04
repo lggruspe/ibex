@@ -62,3 +62,16 @@ build/rnd.o:	rnd.cpp rnd.h
 lib/libcrnd.so:	build/rnd.o $(OBJECTS)
 	$(CXX) -shared -o $@ $^
 
+.PHONY:	docker-build
+docker-build:
+	docker rmi -f rnd-dev;\
+	docker build -t rnd-dev .
+
+.PHONY:	docker-rund
+docker-rund:
+	docker run -d -it -v $$(pwd):/home rnd-dev /bin/sh
+
+.PHONY:	docker-run
+docker-run:
+	docker run -it -v $$(pwd):/home rnd-dev /bin/sh
+
