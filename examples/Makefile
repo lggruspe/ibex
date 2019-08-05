@@ -1,7 +1,7 @@
 CC = gcc
 CFLAGS = -g -Wall -I../include
 CXX = g++
-CXXFLAGS = -g -Wall -I../src/rnd
+CXXFLAGS = -g -Wall -I../src/rnd -I../src/distree/include -I../src/red-black-tree
 
 vpath %.so ../lib
 
