@@ -10,6 +10,11 @@ def symbols(a: str, b: str=None) -> rnd.ExprSymbols:
     a, b = ord(a), ord(b)
     return rnd.ExprSymbols(a, b)
 
+def isymbols(a: int, b: int=None) -> rnd.ExprSymbols:
+    if b is None:
+        b = a
+    return rnd.ExprSymbols(a, b)
+
 def optional(expr: rnd.ExprSymbols or rnd.Expr):
     return expr.union(symbols('\0'))
 

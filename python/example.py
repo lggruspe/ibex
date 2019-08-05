@@ -1,5 +1,4 @@
 import scangen as sg
-rnd = sg.rnd
 import functools
 
 @sg.token("empty")
@@ -35,15 +34,15 @@ def character():
     escape = sg.symbols("\\").concatenation(functools.reduce(lambda a, b: a.union(b),
         [sg.symbols("'"), sg.symbols("\\"), sg.symbols("t"), sg.symbols("n")]))
     middle = functools.reduce(lambda a, b: a.union(b),
-            [ rnd.ExprSymbols(32, 38), rnd.ExprSymbols(40, 91), rnd.ExprSymbols(93, 126),
+            [ sg.isymbols(32, 38), sg.isymbols(40, 91), sg.isymbols(93, 126),
                 escape ])
     return sg.symbols("'").concatenation(middle).concatenation(sg.symbols("'"))
 
 @sg.token("string")
 def string():
     char = functools.reduce(lambda a, b: a.union(b),
-            [ rnd.ExprSymbols(32, 33), rnd.ExprSymbols(35, 91), rnd.ExprSymbols(93, 126) ])
-    char = char.union(sg.symbols("\\").concatenation(rnd.ExprSymbols(32, 126)))
+            [ sg.isymbols(32, 33), sg.isymbols(35, 91), sg.isymbols(93, 126) ])
+    char = char.union(sg.symbols("\\").concatenation(sg.isymbols(32, 126)))
     string = char.closure()
     return sg.symbols('"').concatenation(string).concatenation(sg.symbols('"'))
 
