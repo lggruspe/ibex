@@ -8,7 +8,7 @@ else
 	C++17=-std=c++17
 endif
 
-CXXFLAGS = -g -Wall -fpic $(C++17) -I./include -I./include/rnd -I./src/rnd -I./src/rndxx
+CXXFLAGS = -g -Wall -fpic $(C++17) -I./include -I./include/rnd -I./src/rnd -I./src/rndxx -I./src/red-black-tree
 OBJECTS = build/regex.o build/nfa.o build/dfa.o build/distree.o
 prefix = /usr/local
 bindir = $(prefix)/bin
@@ -18,7 +18,7 @@ libdir = $(prefix)/lib
 vpath %.cpp src src/rnd src/rndxx 
 vpath %.o build
 vpath %.h include src include/rnd src/rnd src/rndxx
-vpath %.hpp include include/rnd src/rnd src/rndxx
+vpath %.hpp include include/rnd src/rnd src/rndxx src/red-black-tree
 
 .PHONY:	all
 all:	lib/librnd.a lib/librnd.so lib/libcrnd.so
