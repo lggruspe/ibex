@@ -35,8 +35,10 @@ struct Scanner {
     virtual ~Scanner() {}
     virtual std::string operator()(std::istream&) = 0;
 };
+
 ## for scanner in scanners
 {% include "scanner.cpp" %}
+
 ## endfor
 
 struct ScannerCollection {
