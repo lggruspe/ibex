@@ -228,10 +228,13 @@ class Dfa:
 def _cdfa_to_pydfa(_dfa: _CDfa) -> Dfa:
     dfa = Dfa()
     dfa.start = int(_dfa.start_state)
+    dfa.transitions[dfa.start] = containers.Map()
 
     n = int(_dfa.number_accept_states)
     for i in range(n):
-        dfa.accepts.add(int(_dfa.accept_states[i]))
+        accept = int(_dfa.accept_states[i])
+        dfa.accepts.add(accept)
+        dfa.transitions[accept] = containers.Map()
 
     n = (_dfa.number_transitions)
     for i in range(n):
@@ -245,6 +248,8 @@ def _cdfa_to_pydfa(_dfa: _CDfa) -> Dfa:
 
         if q not in dfa.transitions:
             dfa.transitions[q] = containers.Map()
+        if r not in dfa.transitions:
+            dfa.transitions[r] = containers.Map()
         # assumes a doesn't overlap with any other DfaSymbols
         dfa.transitions[q][a] = r
     return dfa
