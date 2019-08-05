@@ -1,12 +1,12 @@
 struct {{ scanner.token|title }}Scanner: public Scanner {
     using Scanner::Scanner;
-    std::string operator()(std::istream& in);
+    std::string operator()(std::istream& in)
     {
         int c;
         int eof = std::char_traits<char>::eof();
         std::vector<char> checkpoint;
         std::string lexeme;
-        goto {{ scanner.start }};
+        goto s{{ scanner.start }};
 ## for state in scanner.transitions
     s{{ state }}:
         c = in.get();
@@ -28,5 +28,13 @@ struct {{ scanner.token|title }}Scanner: public Scanner {
 ## endfor
         goto se;
 ## endfor
+    se:
+        while (!checkpoint.empty()) {
+            c = checkpoint.back();
+            checkpoint.pop_back();
+            in.putback(c);
+            lexeme.pop_back();
+        }
+        return lexeme;
     }
 };

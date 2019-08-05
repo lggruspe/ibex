@@ -1,4 +1,3 @@
-#pragma once
 #include <iostream>
 #include <memory>
 #include <string>
@@ -20,7 +19,7 @@ std::ostream& operator<<(std::ostream& out, Token token)
     case Token::_other:
         return out << "_other";
     case Token::_empty:
-        return out << "_empty;"
+        return out << "_empty";
 ## for scanner in scanners
     case Token::{{ scanner.token }}:
         return out << "{{ token }}";
@@ -83,3 +82,9 @@ struct ScannerCollection {
         }
     }
 };
+
+int main()
+{
+    ScannerCollection scanners;
+    scanners.scan();
+}
