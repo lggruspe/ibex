@@ -19,8 +19,11 @@ struct {{ scanner.token|title }}Scanner: public Scanner {
 ## endif
         checkpoint.push_back(c);
 ## for transition in scanner.transitions[state]
-        if ({{ transition.start }} <= c && c <= {{ transition.end }}) {
-            goto s{{ scanner.transitions[transition] }};
+## set start = transition[0].start
+## set end = transition[0].end
+## set next_state = transition[1]
+        if ({{ start }} <= c && c <= {{ end }}) {
+            goto s{{ next_state }};
         }
 ## endfor
         goto se;

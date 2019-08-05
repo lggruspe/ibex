@@ -1,36 +1,39 @@
 import jinja2
 import argparse
+import rnd
 
-class Symbol:
-    def __init__(self, start=0, end=0):
-        self.start = start
-        self.end = end
+scanners = []
 
-class Scanner:
-    def __init__(self):
-        self.token = "token"
-        self.start = 0
-        self.transitions = {
-                0: {
-                    Symbol(0, 3): 1,
-                    Symbol(4, 5): 2,
-                    Symbol(6, 11): 3,
-                },
-                1: {
-                    Symbol(): 1
-                },
-                3: {
-                    Symbol(): 2
-                }
-        }
-        self.accepts = { 0 }
+def symbols(a: str, b: str=None) -> rnd.ExprSymbols:
+    if b is None:
+        b = a
+    a, b = ord(a), ord(b)
+    return rnd.ExprSymbols(a, b)
 
-def get_args(description):
+def optional(expr: rnd.ExprSymbols or rnd.Expr):
+    return expr.union(symbols('\0'))
+
+def token(name):
+    def decorator(f):
+        def wrapper():
+            expr = f()
+            dfa = rnd.convert(expr)
+            expr.destroy()
+            dfa.token = name
+            return dfa
+        scanners.append(wrapper())
+        return wrapper
+    return decorator
+
+def get_args():
+    description = "Generate scanner using jinja2 templates."
     parser = argparse.ArgumentParser(description=description)
-    parser.add_argument("template",
+    parser.add_argument("-i",
+            default="",
+            dest="basetemp",
             help="filename of base template")
     parser.add_argument("-d",
-            default=".",
+            default="",
             dest="tempdir",
             help="path to templates directory")
     parser.add_argument("-o",
@@ -39,33 +42,34 @@ def get_args(description):
             help="output file (default: stdout)")
     return parser.parse_args()
 
-def generate_code(args, scanners):
-    loader = jinja2.FileSystemLoader(args.tempdir)
+def generate_code(basetemp, tempdir):
+    loader = jinja2.FileSystemLoader(tempdir)
     env = jinja2.Environment(loader=loader, line_statement_prefix="##")
-    template = env.get_template(args.template)
+    template = env.get_template(basetemp)
     return template.render(scanners=scanners)
 
-if __name__ == "__main__":
-    args = get_args(description="Generate scanner from jinja2 templates.")
-    scanner1 = Scanner()
-    scanner2 = Scanner()
-    scanner1.token = "scanner1"
-    scanner2.token = "scanner2"
-    scanner2.accepts = {1, 2, 3}
-    scanners = [
-        scanner1,
-        scanner2
-    ]
+def generate(basetemp="", tempdir="", outfile=""):
+    args = get_args()
+    if args.basetemp:
+        basetemp = args.basetemp
+    if args.tempdir:
+        tempdir = args.tempdir
+    if args.outfile:
+        outfile = args.outfile
 
     output = None
     try:
-        output = generate_code(args, scanners)
+        temp = generate_code(basetemp, tempdir)
+        output = temp
     except jinja2.exceptions.TemplateNotFound:
-        print("scangen: Template not found:", args.template)
+        print("scangen: Template not found:", basetemp)
 
     if output:
-        if not args.outfile:
+        if not outfile:
             print(output)
         else:
-            with open(args.outfile, "w") as f:
+            with open(outfile, "w") as f:
                 f.write(output)
+
+if __name__ == "__main__":
+    generate()
