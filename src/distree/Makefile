@@ -1,7 +1,7 @@
 CC = gcc
-CFLAGS = -g -Wall -I include
+CFLAGS = -g -Wall -I./include
 CXX = g++
-CXXFLAGS = -g -Wall -std=c++17 -I include
+CXXFLAGS = -g -Wall -std=c++17 -I./include -I../red-black-tree
 
 TESTS = $(patsubst test/%.c,bin/%,$(wildcard test/*.c))
 
