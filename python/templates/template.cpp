@@ -22,7 +22,7 @@ std::ostream& operator<<(std::ostream& out, Token token)
         return out << "_empty";
 ## for scanner in scanners
     case Token::{{ scanner.token }}:
-        return out << "{{ token }}";
+        return out << "{{ scanner.token }}";
 ## endfor
     default:
         return out;
@@ -45,7 +45,7 @@ struct ScannerCollection {
 
     ScannerCollection(std::istream& in=std::cin) : in(&in)
     {
-        scanners.push_back(std::make_shared<_IgnoreScanner>(Token::_IgnoreScanner));
+        //scanners.push_back(std::make_shared<_IgnoreScanner>(Token::_IgnoreScanner));
 ## for scanner in scanners
         scanners.push_back(std::make_shared<{{ scanner.token|title }}Scanner >(Token::{{ scanner.token }}));
 ## endfor
