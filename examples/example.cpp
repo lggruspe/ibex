@@ -4,7 +4,8 @@
 #include <string>
 
 using namespace rnd::regex;
-using namespace rnd::automata;
+using namespace rnd::nfa;
+using namespace rnd::dfa;
 
 Expr empty()
 {

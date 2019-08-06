@@ -67,7 +67,7 @@ rnd::regex::Expr transform_expr(struct rnd_expr *expr)
     throw rnd::MalformedExpressionException();
 }
 
-struct rnd_dfa transform_dfa(const rnd::automata::Dfa& dfa)
+struct rnd_dfa transform_dfa(const rnd::dfa::Dfa& dfa)
 {
     struct rnd_dfa result = {
         .number_states = dfa.delta.size(),
@@ -115,7 +115,7 @@ struct rnd_dfa transform_dfa(const rnd::automata::Dfa& dfa)
 struct rnd_dfa rnd_convert(struct rnd_expr* expr)
 {
     try {
-        return transform_dfa(rnd::automata::Dfa(transform_expr(expr)));
+        return transform_dfa(rnd::dfa::Dfa(transform_expr(expr)));
     } catch(rnd::MalformedExpressionException()) {
         return (struct rnd_dfa) {
             .error = INPUT_ERROR

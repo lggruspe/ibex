@@ -7,7 +7,7 @@
 
 namespace rnd
 {
-namespace automata 
+namespace dfa 
 {
 struct Dfa {
     int start;
@@ -16,7 +16,7 @@ struct Dfa {
     std::set<Alphabet::Category> symbols;
 
     Dfa() {}
-    Dfa(const Nfa&);
+    Dfa(const nfa::Nfa&);
     Dfa(regex::Expr);
 };
 

@@ -11,20 +11,20 @@
 
 namespace rnd
 {
-namespace automata 
+namespace dfa 
 {
 
-Dfa subset_construction(const Nfa&);
+Dfa subset_construction(const nfa::Nfa&);
 Dfa minimize(const Dfa&);
 
-Dfa::Dfa(const Nfa& nfa)
+Dfa::Dfa(const nfa::Nfa& nfa)
 {
     *this = minimize(subset_construction(nfa));
 }
 
 Dfa::Dfa(regex::Expr expr)
 {
-    *this = minimize(subset_construction(Nfa(expr)));
+    *this = minimize(subset_construction(nfa::Nfa(expr)));
 }
 
 int add_state(Dfa& dfa, int q)
@@ -49,7 +49,7 @@ void add_transition(Dfa& dfa, int q, int r, Alphabet::Category a)
     }
 }
 
-void compute_predecessors(const Nfa& nfa, 
+void compute_predecessors(const nfa::Nfa& nfa, 
         std::map<int, std::set<int> >& predecessors)
 {
     // assume predecessors is empty
@@ -64,7 +64,7 @@ void compute_predecessors(const Nfa& nfa,
     }
 }
 
-std::map<int, std::set<int>> epsilon_closure(const Nfa& nfa)
+std::map<int, std::set<int>> epsilon_closure(const nfa::Nfa& nfa)
 {
     std::map<int, std::set<int> > closures;
     std::map<int, std::set<int> > predecessors;
@@ -104,7 +104,7 @@ std::map<int, std::set<int>> epsilon_closure(const Nfa& nfa)
 }
 
 std::set<int> next_state(
-        const Nfa& nfa, 
+        const nfa::Nfa& nfa, 
         const std::set<int>& Q, 
         Alphabet::Category a,
         const std::map<int, std::set<int>>& closures)
@@ -132,7 +132,7 @@ std::set<int> next_state(
     return S;
 }
 
-Dfa subset_construction(const Nfa& nfa)
+Dfa subset_construction(const nfa::Nfa& nfa)
 {
     std::map<int, std::set<int> > closures = epsilon_closure(nfa);
     Enumeration<std::set<int>> names;

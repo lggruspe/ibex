@@ -15,7 +15,7 @@
 
 namespace rnd
 {
-namespace automata 
+namespace nfa 
 {
 
 int add_state(Nfa&, int);

@@ -7,7 +7,7 @@
 
 namespace rnd
 {
-namespace automata 
+namespace nfa 
 {
     
 struct Nfa {
