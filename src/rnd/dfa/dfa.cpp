@@ -1,9 +1,8 @@
-#include "alphabet.hpp"
 #include "dfa.h"
-#include "nfa.h"
-#include "regex.h"
 #include "enumeration2.h"
 #include "partition.h"
+#include "rnd/alphabet.hpp"
+#include "rnd/nfa/nfa.h"
 #include <algorithm>
 #include <iostream>
 #include <list>

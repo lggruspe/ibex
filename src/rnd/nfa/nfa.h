@@ -1,6 +1,6 @@
 #pragma once
-#include "alphabet.hpp"
-#include "regex.h"
+#include "rnd/alphabet.hpp"
+#include "rnd/regex/regex.h"
 #include <iostream>
 #include <map>
 #include <set>

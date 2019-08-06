@@ -1,6 +1,5 @@
 #include "rnd.h"
-#include "regex.h"
-#include "dfa.h"
+#include "rnd/dfa/dfa.h"
 #include <cstdlib>
 #include <exception>
 

@@ -1,6 +1,5 @@
-#include "alphabet.hpp"
 #include "nfa.h"
-#include "regex.h"
+#include "rnd/alphabet.hpp"
 #include <cassert>
 #include <iostream>
 #include <map>

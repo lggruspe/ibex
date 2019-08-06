@@ -1,5 +1,5 @@
 #pragma once
-#include "distree.h"
+#include "distree/distree.h"
 
 // wraps distree::DisSet
 struct Alphabet {

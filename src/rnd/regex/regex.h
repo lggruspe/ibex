@@ -1,5 +1,5 @@
 #pragma once
-#include "alphabet.hpp"
+#include "rnd/alphabet.hpp"
 #include <iostream>
 #include <memory>
 
