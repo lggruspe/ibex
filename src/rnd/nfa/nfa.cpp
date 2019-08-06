@@ -13,6 +13,8 @@
     }\
 } while (0)
 
+namespace rnd
+{
 namespace automata 
 {
 
@@ -186,3 +188,4 @@ std::ostream& operator<<(std::ostream& out, const Nfa& nfa)
 }
 
 } // end namespace
+}

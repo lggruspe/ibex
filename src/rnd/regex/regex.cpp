@@ -4,6 +4,8 @@
 #include <list>
 #include <stdexcept>
 
+namespace rnd
+{
 namespace regex
 {
 
@@ -112,3 +114,4 @@ std::ostream& operator<<(std::ostream& out, Expr re)
 }
 
 } // end namespace
+}

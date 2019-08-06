@@ -3,6 +3,8 @@
 #include <iostream>
 #include <memory>
 
+namespace rnd
+{
 namespace regex
 {
 ;
@@ -54,3 +56,4 @@ Expr symbol(int);
 
 std::ostream& operator<<(std::ostream&, Expr);
 } // end namespace
+}

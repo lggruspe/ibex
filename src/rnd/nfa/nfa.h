@@ -5,6 +5,8 @@
 #include <map>
 #include <set>
 
+namespace rnd
+{
 namespace automata 
 {
     
@@ -19,4 +21,5 @@ struct Nfa {
 };
 
 std::ostream& operator<<(std::ostream&, const Nfa&);
+}
 }

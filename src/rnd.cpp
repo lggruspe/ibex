@@ -30,7 +30,7 @@ struct rnd_dfa rnd_dfa_error(struct rnd_dfa* dfa, const char* error_msg)
     };
 }
 
-regex::Expr transform_expr(struct rnd_expr *expr)
+rnd::regex::Expr transform_expr(struct rnd_expr *expr)
 {
     if (!expr) {
         return nullptr;
@@ -40,7 +40,7 @@ regex::Expr transform_expr(struct rnd_expr *expr)
         if (expr->left || expr->right) {
             throw rnd::MalformedExpressionException();
         }
-        return regex::symbol(expr->symbols.start, expr->symbols.end);
+        return rnd::regex::symbol(expr->symbols.start, expr->symbols.end);
     }
 
     if (!expr->left) {
@@ -48,7 +48,7 @@ regex::Expr transform_expr(struct rnd_expr *expr)
     }
     if (expr->type == RND_CLOSURE) {
         auto left = transform_expr(expr->left);
-        return regex::closure(left);
+        return rnd::regex::closure(left);
     }
 
     if (!expr->right) {
@@ -67,7 +67,7 @@ regex::Expr transform_expr(struct rnd_expr *expr)
     throw rnd::MalformedExpressionException();
 }
 
-struct rnd_dfa transform_dfa(const automata::Dfa& dfa)
+struct rnd_dfa transform_dfa(const rnd::automata::Dfa& dfa)
 {
     struct rnd_dfa result = {
         .number_states = dfa.delta.size(),
@@ -115,7 +115,7 @@ struct rnd_dfa transform_dfa(const automata::Dfa& dfa)
 struct rnd_dfa rnd_convert(struct rnd_expr* expr)
 {
     try {
-        return transform_dfa(automata::Dfa(transform_expr(expr)));
+        return transform_dfa(rnd::automata::Dfa(transform_expr(expr)));
     } catch(rnd::MalformedExpressionException()) {
         return (struct rnd_dfa) {
             .error = INPUT_ERROR

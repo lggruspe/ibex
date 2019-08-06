@@ -9,6 +9,8 @@
 #include <map>
 #include <set>
 
+namespace rnd
+{
 namespace automata 
 {
 
@@ -260,3 +262,4 @@ std::ostream& operator<<(std::ostream& out, const Dfa& dfa)
 }
 
 } // end namespace
+}

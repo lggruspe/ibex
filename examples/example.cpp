@@ -3,8 +3,8 @@
 #include "rnd/dfa/dfa.h"
 #include <string>
 
-using namespace regex;
-using namespace automata;
+using namespace rnd::regex;
+using namespace rnd::automata;
 
 Expr empty()
 {

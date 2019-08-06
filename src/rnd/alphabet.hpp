@@ -2,6 +2,9 @@
 #include "distree/distree.h"
 
 // wraps distree::DisSet
+namespace rnd
+{
+
 struct Alphabet {
     distree::DisSet set;
     using Category = distree::Interval;
@@ -34,4 +37,4 @@ struct Alphabet {
     }
 };
 
-
+}
