@@ -1,8 +1,0 @@
-vgcore.*
-bin/dis
-bin/profile
-gmon.out
-bin/dis2
-bin/distree
-analysis.txt
-bin/compare
