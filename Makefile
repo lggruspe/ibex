@@ -47,17 +47,11 @@ clean:
 
 .PHONY:	install
 install:	lib/libcrnd.so
-	@if [ ! -d "$(prefix)" ]; then \
-		mkdir "$(prefix)"; \
-	fi; \
-	if [ ! -d $(includedir) ]; then \
-		mkdir "$(includedir)"; \
-	fi; \
-	if [ ! -d $(libdir) ]; then \
-		mkdir "$(libdir)"; \
-	fi; \
-	cp $< $(libdir); \
-	cp -r include/* "$(includedir)";
+	mkdir -p "$(prefix)"
+	mkdir -p "$(includedir)"
+	mkdir -p "$(libdir)"
+	cp $< "$(libdir)"
+	cp -r include/* "$(includedir)"
 
 build/rnd.o:	rnd.cpp rnd.h
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
@@ -67,7 +61,7 @@ lib/libcrnd.so:	build/rnd.o $(OBJECTS)
 
 .PHONY:	docker-build
 docker-build:
-	docker rmi -f rnd-dev;\
+	docker rmi -f rnd-dev
 	docker build -t rnd-dev .
 
 .PHONY:	docker-rund
@@ -80,17 +74,19 @@ docker-run:
 
 ## Tests
 
-bin/test_distree:	distree/test_distree.cpp distree/distree.cpp distree/distree.h test_runner.hpp
+$(TESTS):	%:
 	$(CXX) $(CXXFLAGS) -o $@ $(filter-out %.hpp,$(filter-out %.h,$^))
-	./$@
+
+bin/test_distree:	distree/test.cpp distree/distree.cpp distree/distree.h test_runner.hpp
 
 bin/test_redblack:	redblack/test.cpp redblack/tree.hpp
-	$(CXX) $(CXXFLAGS) -o $@ $(filter-out %.hpp,$(filter-out %.h,$^))
-	./$@
 
 .PHONY:	test
-test:	$(TESTS)
-
+test:	all $(TESTS)
+	@for test in $(TESTS); \
+	do \
+		./$$test; \
+	done
 
 ## profiling flags (examples)
 # $(CXX) -g -Wall -std=c++17 -I./include -pg -o $@ $< -lm
