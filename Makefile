@@ -8,14 +8,15 @@ else
 	C++17=-std=c++17
 endif
 
-CXXFLAGS = -g -Wall -fpic $(C++17) -I./include -I./include/rnd -I./src/rnd -I./src/red-black-tree -I./src/distree/include
+CXXFLAGS = -g -Wall -fpic $(C++17) -I./include -I./include/rnd -I./src/rnd -I./src/red-black-tree -I./src/distree/include -I./src/distree
 OBJECTS = build/regex.o build/nfa.o build/dfa.o build/distree.o
 prefix = /usr/local
 bindir = $(prefix)/bin
 includedir = $(prefix)/include
 libdir = $(prefix)/lib
+TESTS = bin/test_distree
 
-vpath %.cpp src src/rnd src/distree/src 
+vpath %.cpp src src/rnd src/distree/src src/distree
 vpath %.o build
 vpath %.h include src include/rnd src/rnd src/distree/include
 vpath %.hpp include include/rnd src/rnd src/red-black-tree
@@ -40,7 +41,7 @@ build/distree.o:	tree.hpp
 
 .PHONY:	clean
 clean:
-	-rm -f $(OBJECTS) vgcore.* build/*.o
+	-rm -f $(OBJECTS) vgcore.* build/*.o $(TESTS)
 
 .PHONY:	install
 install:	lib/libcrnd.so
@@ -75,3 +76,19 @@ docker-rund:
 docker-run:
 	docker run -it -v $$(pwd):/home rnd-dev /bin/sh
 
+## Tests
+
+bin/test_distree:	test_distree.cpp distree.cpp test_runner.hpp distree.h
+	$(CXX) $(CXXFLAGS) -o $@ $(wordlist 1,2,$^)
+	./$@
+
+.PHONY:	test
+test:	$(TESTS)
+
+
+## profiling flags (examples)
+# $(CXX) -g -Wall -std=c++17 -I./include -pg -o $@ $< -lm
+#
+# generating profile analysis:
+# ./bin/profile
+# gprof -p -b bin/profile gmon.out > analysis.txt

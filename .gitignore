@@ -10,3 +10,4 @@ python/rnd_wrap.cxx
 env
 examples/example_cpp
 examples/example_c
+bin/test_*
