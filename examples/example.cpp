@@ -1,6 +1,6 @@
-#include "regex.h"
-#include "nfa.h"
-#include "dfa.h"
+#include "rnd/regex/regex.h"
+#include "rnd/nfa/nfa.h"
+#include "rnd/dfa/dfa.h"
 #include <string>
 
 using namespace regex;
