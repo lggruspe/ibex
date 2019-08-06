@@ -14,7 +14,7 @@ prefix = /usr/local
 bindir = $(prefix)/bin
 includedir = $(prefix)/include
 libdir = $(prefix)/lib
-TESTS = bin/test_distree bin/test_red_black_tree
+TESTS = bin/test_distree bin/test_redblack
 
 vpath %.cpp src src/rnd src/distree/src src/distree
 vpath %.o build
@@ -78,12 +78,13 @@ docker-run:
 
 ## Tests
 
-bin/test_distree:	test_distree.cpp distree.cpp test_runner.hpp distree.h
-	$(CXX) $(CXXFLAGS) -o $@ $(wordlist 1,2,$^)
+bin/test_distree:	test_distree.cpp distree.cpp distree.h test_runner.hpp
+	$(CXX) $(CXXFLAGS) -o $@ $(filter-out %.hpp,$(filter-out %.h,$^))
 	./$@
 
-bin/test_red_black_tree:	redblack/test.cpp redblack/tree.hpp
-	$(CXX) $(CXXFLAGS) -o $@ $<
+bin/test_redblack:	redblack/test.cpp redblack/tree.hpp
+	$(CXX) $(CXXFLAGS) -o $@ $(filter-out %.hpp,$(filter-out %.h,$^))
+	./$@
 
 .PHONY:	test
 test:	$(TESTS)
