@@ -30,14 +30,16 @@ lib/librnd.so:	$(OBJECTS)
 lib/librnd.a:	$(OBJECTS)
 	$(AR) rcs $@ $^
 
-$(OBJECTS):	build/%.o : %.cpp %.h
+$(OBJECTS):	%:
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
-build/nfa.o:	nfa.h
+build/regex.o:	regex.cpp regex.h alphabet.hpp
 
-build/dfa.o:	nfa.h enumeration2.h partition.h
+build/nfa.o:	nfa.cpp nfa.h
 
-build/distree.o:	redblack/tree.hpp
+build/dfa.o:	dfa.cpp dfa.h nfa.h rnd/enumeration2.h rnd/partition.h
+
+build/distree.o:	distree/distree.cpp distree/distree.h redblack/tree.hpp
 
 .PHONY:	clean
 clean:
