@@ -28,3 +28,7 @@ Makefile
 config.*
 libtool
 stamp-h1
+.dirstamp
+.libs
+*.la
+*.lo
