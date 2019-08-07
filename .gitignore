@@ -14,12 +14,9 @@ bin/test_*
 autoscan.log
 aclocal.m4
 autom4te.cache
-config.h.in*
 configure
 m4
 compile
-config.guess
-config.sub
 depcomp
 install-sh
 ltmain.sh
@@ -27,3 +24,7 @@ missing
 Makefile.in
 test-driver
 Makefile
+.deps
+config.*
+libtool
+stamp-h1
