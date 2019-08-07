@@ -6,11 +6,10 @@
 vgcore.*
 gdb.txt
 __pycache__
-python/rnd_wrap.cxx
 env
 examples/example_cpp
 examples/example_c
-bin/test_*
+bin
 autoscan.log
 aclocal.m4
 autom4te.cache
@@ -32,3 +31,4 @@ stamp-h1
 .libs
 *.la
 *.lo
+test-suite.log
