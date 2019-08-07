@@ -1,7 +1,7 @@
 rnd
 ===
 
-rnd is a `C` for creating deterministic finite automata with Python bindings.
+rnd is a `C` library for creating deterministic finite automata with Python bindings.
 
 
 Prerequisites
