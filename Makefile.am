@@ -9,8 +9,8 @@ ACLOCAL_AMFLAGS = -I m4
 
 check_PROGRAMS = bin/test_distree bin/test_redblack
 
-bin_test_distree_SOURCES = src/distree/test.cpp src/distree/distree.cpp src/distree/distree.h src/test_runner.hpp
-bin_test_redblack_SOURCES = src/redblack/test.cpp src/redblack/tree.hpp
+bin_test_distree_SOURCES = src/distree/test.cpp src/distree/distree.cpp src/distree/distree.h src/distree/utils.hpp src/test_runner.hpp
+bin_test_redblack_SOURCES = src/redblack/test.cpp src/redblack/tree.hpp src/test_runner.hpp
 
 bin_test_distree_CPPFLAGS = -I$(top_srcdir)/src -I$(top_srcdir)/include
 bin_test_redblack_CPPFLAGS = -I$(top_srcdir)/src -I$(top_srcdir)/include
