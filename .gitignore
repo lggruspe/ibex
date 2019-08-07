@@ -26,3 +26,4 @@ ltmain.sh
 missing
 Makefile.in
 test-driver
+Makefile

@@ -16,3 +16,16 @@ bin_test_distree_CPPFLAGS = -I$(top_srcdir)/src -I$(top_srcdir)/include
 bin_test_redblack_CPPFLAGS = -I$(top_srcdir)/src -I$(top_srcdir)/include
 
 TESTS = $(check_PROGRAMS)
+
+.PHONY:	docker-build
+docker-build:
+	docker rmi -f rnd-dev
+	docker build -t rnd-dev $(top_srcdir)
+
+.PHONY:	docker-rund
+docker-rund:
+	docker run -d -it -v $(abs_top_srcdir):/home rnd-dev /bin/sh
+
+.PHONY:	docker-run
+docker-run:
+	docker run -it -v $(abs_top_srcdir):/home rnd-dev /bin/sh
