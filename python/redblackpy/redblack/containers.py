@@ -1,6 +1,13 @@
+"""Containers based on red-black trees."""
+
 from redblack import algorithms as rb
 
 class Set:
+    """Set of elements.
+
+    Subsequent keys must be comparable with previously inserted keys.
+    """
+
     def __init__(self):
         self.root = None
         self._size = 0
@@ -21,6 +28,7 @@ class Set:
         return self._size
 
     def add(self, key):
+        """Insert an element (key) into the set."""
         node = rb.Node(key)
         self.root, grew = rb.insert(self.root, node)
         if grew:
@@ -30,10 +38,16 @@ class Set:
         return bool(rb.search(self.root, key))
 
     def clear(self):
+        """Delete all elements in the set."""
         self.root = None
         self._size = 0
 
 class Map:
+    """Set of key-value pairs.
+
+    Subsequent keys must be comparable with previously inserted keys.
+    """
+
     def __init__(self):
         self.root = None
         self._size = 0
@@ -71,10 +85,12 @@ class Map:
         return bool(rb.search(self.root, key))
 
     def clear(self):
+        """Delete all elements in the map."""
         self.root = None
         self._size = 0
 
     def get(self, key, val):
+        """Get value for key if it exists, val if it does not."""
         try:
             return self[key]
         except KeyError:

@@ -1,20 +1,24 @@
+"""Algorithms for maintaing red-black trees.
+
+A red-black tree is a binary search tree that satisfies the following
+properties.
+-   Each node is either red or black.
+-   The root node is black.
+-   A red node must have a black parent.
+-   For any subtree, every simple path from the root of the subtree to a
+    leaf contains the same number of black nodes as any other path.
+"""
+
 import enum
 
 class Color(enum.Enum):
+    """Node.Color is either RED or BLACK."""
     BLACK = enum.auto()
     RED = enum.auto()
 
 class Node:
-    """An instance represents a node in a red-black tree.
+    """An instance represents a node in a red-black tree."""
 
-    A red-black tree is a binary search tree that satisfies the following
-    properties.
-    -   Each node is either red or black.
-    -   The root node is black.
-    -   A red node must have a black parent.
-    -   For any subtree, every simple path from the root of the subtree to a
-        leaf contains the same number of black nodes as any other path.
-    """
     def __init__(self, key, color=Color.RED):
         self.key = key
         self.color = color
@@ -25,15 +29,16 @@ class Node:
 
     def __repr__(self):
         return "<Node {} {} {} {} {} object at {}>".format(
-                    self.key,
-                    self.color,
-                    self.parent,
-                    self.left,
-                    self.right,
-                    id(self)
-                )
+            self.key,
+            self.color,
+            self.parent,
+            self.left,
+            self.right,
+            id(self)
+        )
 
 def rotate_left(root, x):
+    """Apply left rotation on x, and return the new root."""
     assert root and x and x.right
     y = x.right
 
@@ -54,6 +59,7 @@ def rotate_left(root, x):
     return root
 
 def rotate_right(root, y):
+    """Apply right rotation on y, and return the new root."""
     assert root and y and y.left
     x = y.left
 
@@ -74,10 +80,7 @@ def rotate_right(root, y):
     return root
 
 def repair(root, node):
-    """Fixes violations on red-black tree properties caused by insert.
-
-    Returns the new root.
-    """
+    """Restore red-black properties after inserting, and return new root."""
     if not root or not node:
         return root
 
@@ -115,9 +118,9 @@ def repair(root, node):
     return root
 
 def insert(root, node):
-    """Inserts node into red-black tree rooted at root.
+    """Insert node into red-black tree rooted at root.
 
-    Returns the new root, and a boolean that tells whether the tree got larger.
+    Returns the new root, and a boolean that tells if the tree got larger.
     """
     if not node:
         return root, False
@@ -156,7 +159,7 @@ def insert(root, node):
     return repair(root, node), (closest.key != node.key)
 
 def closest_match(root, key):
-    """Returns node in tree with closest matching key.
+    """Return node in tree with closest matching key.
 
     The return value is either a node with the same key, or a node that would
     be the parent if a node for the key is inserted.
@@ -169,14 +172,14 @@ def closest_match(root, key):
     return child if child else parent
 
 def search(root, key):
-    """Returns node with matching key, None if there isn't any."""
+    """Return node with matching key, or None."""
     node = root
     while node and node.key != key:
         node = node.left if key < node.key else node.right
     return node
 
 def minimum(root):
-    """Returns node with smallest key in the tree at given root."""
+    """Return node with smallest key in the tree at given root."""
     if not root:
         return None
     while root.left:
@@ -184,7 +187,7 @@ def minimum(root):
     return root
 
 def maximum(root):
-    """Returns node with largest key in the tree at given root."""
+    """Return node with largest key in the tree at given root."""
     if not root:
         return None
     while root.right:
@@ -192,7 +195,7 @@ def maximum(root):
     return root
 
 def successor(node):
-    """Returns inorder successor of node."""
+    """Return inorder successor of node."""
     if not node:
         return None
     if node.right:
@@ -205,7 +208,7 @@ def successor(node):
     return parent
 
 def predecessor(node):
-    """Returns inorder predecessor of node."""
+    """Return inorder predecessor of node."""
     if not node:
         return None
     if node.left:
@@ -218,7 +221,7 @@ def predecessor(node):
     return parent
 
 def iterator(root):
-    """Generates keys (or key-value pairs) in the tree."""
+    """Generate keys (or key-value pairs) in the tree."""
     node = minimum(root)
     while node:
         if node.value is not None:
@@ -228,7 +231,7 @@ def iterator(root):
         node = successor(node)
 
 def reversed_iterator(root):
-    """Generates keys (or key-value pairs) in reversed order."""
+    """Generate keys (or key-value pairs) in reversed order."""
     node = maximum(root)
     while node:
         if node.value is not None:

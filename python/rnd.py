@@ -75,8 +75,6 @@ _rnd_expr_free.restype = None
 _rnd_get_expr_counter = _rnd.rnd_get_expr_counter
 _rnd_get_expr_counter.restype = ctypes.c_int
 
-# Python bindings
-
 class ExprType(enum.Enum):
     SYMBOL = 0
     UNION = 1
@@ -201,7 +199,6 @@ class DfaSymbols:
         assert other.start <= other.end
         return not (self < other) and not (self > other)
 
-# TODO use interval set to represent outbound transitions from each state
 class Dfa:
     def __init__(self):
         self.start = -1
