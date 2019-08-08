@@ -3,77 +3,8 @@ import enum
 import os
 import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir, "redblackpy")))
+import internals
 from redblack import containers
-
-_rnd = ctypes.CDLL("libcrnd.so")
-
-class _CInterval(ctypes.Structure):
-    _fields_ = [
-        ("start", ctypes.c_int),
-        ("end", ctypes.c_int)
-    ]
-
-class _CExpr(ctypes.Structure):
-    pass
-_CExpr._fields_ = [
-    ("type", ctypes.c_char),
-    ("left", ctypes.POINTER(_CExpr)),
-    ("right", ctypes.POINTER(_CExpr)),
-    ("symbols", _CInterval)
-]
-
-class _CTransition(ctypes.Structure):
-    _fields_ = [
-        ("current_state", ctypes.c_int),
-        ("next_state", ctypes.c_int),
-        ("symbols", _CInterval)
-    ]
-
-class _CDfa(ctypes.Structure):
-    _fields_ = [
-        ("number_states", ctypes.c_size_t),
-        ("number_transitions", ctypes.c_size_t),
-        ("number_accept_states", ctypes.c_size_t),
-        ("start_state", ctypes.c_int),
-        ("transitions", ctypes.POINTER(_CTransition)),
-        ("accept_states", ctypes.POINTER(ctypes.c_int)),
-        ("error", ctypes.c_char_p)
-    ]
-
-_rnd_convert = _rnd.rnd_convert
-_rnd_convert.argtypes = [ctypes.POINTER(_CExpr)]
-_rnd_convert.restype = _CDfa
-
-_rnd_dfa_destroy = _rnd.rnd_dfa_destroy
-_rnd_dfa_destroy.argtypes = [ctypes.POINTER(_CDfa)]
-_rnd_dfa_destroy.restype = None
-
-_rnd_expr_symbol = _rnd.rnd_expr_symbol
-_rnd_expr_symbol.argtypes = [ctypes.c_int, ctypes.c_int]
-_rnd_expr_symbol.restype = ctypes.POINTER(_CExpr)
-
-_rnd_expr_union = _rnd.rnd_expr_union
-_rnd_expr_union.argtypes = [ctypes.POINTER(_CExpr), ctypes.POINTER(_CExpr)]
-_rnd_expr_union.restype = ctypes.POINTER(_CExpr)
-
-_rnd_expr_concatenation = _rnd.rnd_expr_concatenation
-_rnd_expr_concatenation.argtypes = [ctypes.POINTER(_CExpr), ctypes.POINTER(_CExpr)]
-_rnd_expr_concatenation.restype = ctypes.POINTER(_CExpr)
-
-_rnd_expr_closure = _rnd.rnd_expr_closure
-_rnd_expr_closure.argtypes = [ctypes.POINTER(_CExpr)]
-_rnd_expr_closure.restype = ctypes.POINTER(_CExpr)
-
-_rnd_expr_destroy = _rnd.rnd_expr_destroy
-_rnd_expr_destroy.argtypes = [ctypes.POINTER(_CExpr)]
-_rnd_expr_destroy.restype = None
-
-_rnd_expr_free = _rnd.rnd_expr_free
-_rnd_expr_free.argtypes = [ctypes.POINTER(_CExpr)]
-_rnd_expr_free.restype = None
-
-_rnd_get_expr_counter = _rnd.rnd_get_expr_counter
-_rnd_get_expr_counter.restype = ctypes.c_int
 
 class ExprType(enum.Enum):
     SYMBOL = 0
@@ -89,7 +20,7 @@ class ExprSymbols:
             raise ValueError("start must be <= end")
         self.start = start
         self.end = end
-        self._cpointer = _rnd_expr_symbol(start, end)
+        self._cpointer = internals.crnd_expr_symbol(start, end)
 
     def union(self, other):
         return union(self, other)
@@ -102,7 +33,7 @@ class ExprSymbols:
 
     def destroy(self):
         if self._cpointer:
-            _rnd_expr_free(self._cpointer)
+            internals.crnd_expr_free(self._cpointer)
         self._cpointer = None
 
     def __repr__(self):
@@ -123,13 +54,13 @@ class Expr:
 
         left = _get_expr_pointer(self.left)
         if type_ is ExprType.UNION:
-            self._cpointer = _rnd_expr_union(left,
+            self._cpointer = internals.crnd_expr_union(left,
                     _get_expr_pointer(self.right))
         elif type_ is ExprType.CONCATENATION:
-            self._cpointer = _rnd_expr_concatenation(left,
+            self._cpointer = internals.crnd_expr_concatenation(left,
                     _get_expr_pointer(self.right))
         elif type_ is ExprType.CLOSURE:
-            self._cpointer = _rnd_expr_closure(left)
+            self._cpointer = internals.crnd_expr_closure(left)
 
     def __repr__(self):
         if self.type_ == ExprType.UNION:
@@ -141,7 +72,7 @@ class Expr:
 
     def destroy(self):
         if self._cpointer:
-            _rnd_expr_free(self._cpointer)
+            internals.crnd_expr_free(self._cpointer)
         self._cpointer = None
         if self.left:
             self.left.destroy()
@@ -222,7 +153,7 @@ class Dfa:
             state = self.transitions[state].get(DfaSymbols(a), -1)
         return state in self.accepts
 
-def _cdfa_to_pydfa(_dfa: _CDfa) -> Dfa:
+def _cdfa_to_pydfa(_dfa: internals.CDfa) -> Dfa:
     dfa = Dfa()
     dfa.start = int(_dfa.start_state)
     dfa.transitions[dfa.start] = containers.Map()
@@ -252,7 +183,7 @@ def _cdfa_to_pydfa(_dfa: _CDfa) -> Dfa:
     return dfa
 
 def convert(expr: Expr or ExprSymbols) -> Dfa:
-    _dfa = _rnd_convert(expr._cpointer)
+    _dfa = internals.crnd_convert(expr._cpointer)
     dfa = _cdfa_to_pydfa(_dfa)
-    _rnd_dfa_destroy(ctypes.byref(_dfa))
+    internals.crnd_dfa_destroy(ctypes.byref(_dfa))
     return dfa
