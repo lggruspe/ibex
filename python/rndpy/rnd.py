@@ -4,6 +4,7 @@ import os
 import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir, "redblackpy")))
 import internals
+from internals import crnd
 from redblack import containers
 
 class ExprType(enum.Enum):
@@ -20,7 +21,7 @@ class ExprSymbols:
             raise ValueError("start must be <= end")
         self.start = start
         self.end = end
-        self._cpointer = internals.crnd_expr_symbol(start, end)
+        self._cpointer = crnd.rnd_expr_symbol(start, end)
 
     def union(self, other):
         return union(self, other)
@@ -33,7 +34,7 @@ class ExprSymbols:
 
     def destroy(self):
         if self._cpointer:
-            internals.crnd_expr_free(self._cpointer)
+            crnd.rnd_expr_free(self._cpointer)
         self._cpointer = None
 
     def __repr__(self):
@@ -54,13 +55,13 @@ class Expr:
 
         left = _get_expr_pointer(self.left)
         if type_ is ExprType.UNION:
-            self._cpointer = internals.crnd_expr_union(left,
+            self._cpointer = crnd.rnd_expr_union(left,
                     _get_expr_pointer(self.right))
         elif type_ is ExprType.CONCATENATION:
-            self._cpointer = internals.crnd_expr_concatenation(left,
+            self._cpointer = crnd.rnd_expr_concatenation(left,
                     _get_expr_pointer(self.right))
         elif type_ is ExprType.CLOSURE:
-            self._cpointer = internals.crnd_expr_closure(left)
+            self._cpointer = crnd.rnd_expr_closure(left)
 
     def __repr__(self):
         if self.type_ == ExprType.UNION:
@@ -72,7 +73,7 @@ class Expr:
 
     def destroy(self):
         if self._cpointer:
-            internals.crnd_expr_free(self._cpointer)
+            crnd.rnd_expr_free(self._cpointer)
         self._cpointer = None
         if self.left:
             self.left.destroy()
@@ -183,7 +184,7 @@ def _cdfa_to_pydfa(_dfa: internals.CDfa) -> Dfa:
     return dfa
 
 def convert(expr: Expr or ExprSymbols) -> Dfa:
-    _dfa = internals.crnd_convert(expr._cpointer)
+    _dfa = crnd.rnd_convert(expr._cpointer)
     dfa = _cdfa_to_pydfa(_dfa)
-    internals.crnd_dfa_destroy(ctypes.byref(_dfa))
+    crnd.rnd_dfa_destroy(ctypes.byref(_dfa))
     return dfa

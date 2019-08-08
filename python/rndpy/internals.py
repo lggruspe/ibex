@@ -35,39 +35,30 @@ class CDfa(ctypes.Structure):
         ("error", ctypes.c_char_p)
     ]
 
-crnd_convert = crnd.rnd_convert
-crnd_convert.argtypes = [ctypes.POINTER(CExpr)]
-crnd_convert.restype = CDfa
+crnd.rnd_convert.argtypes = [ctypes.POINTER(CExpr)]
+crnd.rnd_convert.restype = CDfa
 
-crnd_dfa_destroy = crnd.rnd_dfa_destroy
-crnd_dfa_destroy.argtypes = [ctypes.POINTER(CDfa)]
-crnd_dfa_destroy.restype = None
+crnd.rnd_dfa_destroy.argtypes = [ctypes.POINTER(CDfa)]
+crnd.rnd_dfa_destroy.restype = None
 
-crnd_expr_symbol = crnd.rnd_expr_symbol
-crnd_expr_symbol.argtypes = [ctypes.c_int, ctypes.c_int]
-crnd_expr_symbol.restype = ctypes.POINTER(CExpr)
+crnd.rnd_expr_symbol.argtypes = [ctypes.c_int, ctypes.c_int]
+crnd.rnd_expr_symbol.restype = ctypes.POINTER(CExpr)
 
-crnd_expr_union = crnd.rnd_expr_union
-crnd_expr_union.argtypes = [ctypes.POINTER(CExpr), ctypes.POINTER(CExpr)]
-crnd_expr_union.restype = ctypes.POINTER(CExpr)
+crnd.rnd_expr_union.argtypes = [ctypes.POINTER(CExpr), ctypes.POINTER(CExpr)]
+crnd.rnd_expr_union.restype = ctypes.POINTER(CExpr)
 
-crnd_expr_concatenation = crnd.rnd_expr_concatenation
-crnd_expr_concatenation.argtypes = [ctypes.POINTER(CExpr), ctypes.POINTER(CExpr)]
-crnd_expr_concatenation.restype = ctypes.POINTER(CExpr)
+crnd.rnd_expr_concatenation.argtypes = [ctypes.POINTER(CExpr), ctypes.POINTER(CExpr)]
+crnd.rnd_expr_concatenation.restype = ctypes.POINTER(CExpr)
 
-crnd_expr_closure = crnd.rnd_expr_closure
-crnd_expr_closure.argtypes = [ctypes.POINTER(CExpr)]
-crnd_expr_closure.restype = ctypes.POINTER(CExpr)
+crnd.rnd_expr_closure.argtypes = [ctypes.POINTER(CExpr)]
+crnd.rnd_expr_closure.restype = ctypes.POINTER(CExpr)
 
-crnd_expr_destroy = crnd.rnd_expr_destroy
-crnd_expr_destroy.argtypes = [ctypes.POINTER(CExpr)]
-crnd_expr_destroy.restype = None
+crnd.rnd_expr_destroy.argtypes = [ctypes.POINTER(CExpr)]
+crnd.rnd_expr_destroy.restype = None
 
-crnd_expr_free = crnd.rnd_expr_free
-crnd_expr_free.argtypes = [ctypes.POINTER(CExpr)]
-crnd_expr_free.restype = None
+crnd.rnd_expr_free.argtypes = [ctypes.POINTER(CExpr)]
+crnd.rnd_expr_free.restype = None
 
-crnd_get_expr_counter = crnd.rnd_get_expr_counter
-crnd_get_expr_counter.restype = ctypes.c_int
+crnd.rnd_get_expr_counter.restype = ctypes.c_int
 
 

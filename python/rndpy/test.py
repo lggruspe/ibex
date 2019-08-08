@@ -1,5 +1,5 @@
 from rnd import ExprSymbols, convert, Dfa, DfaSymbols
-from internals import crnd_get_expr_counter
+from internals import crnd
 import csv
 import functools
 import unittest
@@ -128,7 +128,7 @@ class RndConversionTest(unittest.TestCase):
         to_dfa(whitespace_expr())
         to_dfa(character_expr())
         to_dfa(string_expr())
-        self.assertEqual(0, crnd_get_expr_counter())
+        self.assertEqual(0, crnd.rnd_get_expr_counter())
 
 def init_data(filename, seq):
     with open(filename, "r") as f:
