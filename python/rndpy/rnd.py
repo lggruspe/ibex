@@ -21,7 +21,7 @@ class ExprSymbols:
             raise ValueError("start must be <= end")
         self.start = start
         self.end = end
-        self._cpointer = crnd.rnd_expr_symbol(start, end)
+        self.cpointer = crnd.rnd_expr_symbol(start, end)
 
     def union(self, other):
         return union(self, other)
@@ -33,9 +33,9 @@ class ExprSymbols:
         return closure(self)
 
     def destroy(self):
-        if self._cpointer:
-            crnd.rnd_expr_free(self._cpointer)
-        self._cpointer = None
+        if self.cpointer:
+            crnd.rnd_expr_free(self.cpointer)
+        self.cpointer = None
 
     def __repr__(self):
         if self.start == self.end:
@@ -43,7 +43,7 @@ class ExprSymbols:
         return f"[{self.start}, {self.end}]"
 
 def _get_expr_pointer(expr):
-    return None if not expr else expr._cpointer
+    return None if not expr else expr.cpointer
 
 # doesn't raise exceptions to avoid memory leak
 class Expr:
@@ -51,17 +51,17 @@ class Expr:
         self.type_ = type_
         self.left = left
         self.right = right
-        self._cpointer = None
+        self.cpointer = None
 
         left = _get_expr_pointer(self.left)
         if type_ is ExprType.UNION:
-            self._cpointer = crnd.rnd_expr_union(left,
+            self.cpointer = crnd.rnd_expr_union(left,
                     _get_expr_pointer(self.right))
         elif type_ is ExprType.CONCATENATION:
-            self._cpointer = crnd.rnd_expr_concatenation(left,
+            self.cpointer = crnd.rnd_expr_concatenation(left,
                     _get_expr_pointer(self.right))
         elif type_ is ExprType.CLOSURE:
-            self._cpointer = crnd.rnd_expr_closure(left)
+            self.cpointer = crnd.rnd_expr_closure(left)
 
     def __repr__(self):
         if self.type_ == ExprType.UNION:
@@ -72,9 +72,9 @@ class Expr:
             return f"closure({self.left!r})"
 
     def destroy(self):
-        if self._cpointer:
-            crnd.rnd_expr_free(self._cpointer)
-        self._cpointer = None
+        if self.cpointer:
+            crnd.rnd_expr_free(self.cpointer)
+        self.cpointer = None
         if self.left:
             self.left.destroy()
         if self.right:
@@ -184,7 +184,7 @@ def _cdfa_to_pydfa(_dfa: internals.CDfa) -> Dfa:
     return dfa
 
 def convert(expr: Expr or ExprSymbols) -> Dfa:
-    _dfa = crnd.rnd_convert(expr._cpointer)
+    _dfa = crnd.rnd_convert(expr.cpointer)
     dfa = _cdfa_to_pydfa(_dfa)
     crnd.rnd_dfa_destroy(ctypes.byref(_dfa))
     return dfa
