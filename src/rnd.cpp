@@ -24,10 +24,15 @@ struct rnd_dfa rnd_dfa_error(struct rnd_dfa* dfa, const char* error_msg)
             free(dfa->accept_states);
         }
     }
-    return (struct rnd_dfa) {
-        .start_state = -1,
-        .error = error_msg
-    };
+    struct rnd_dfa new_dfa;
+    new_dfa.number_states = 0;
+    new_dfa.number_transitions = 0;
+    new_dfa.number_accept_states = 0;
+    new_dfa.start_state = -1;
+    new_dfa.transitions = NULL;
+    new_dfa.accept_states = NULL;
+    new_dfa.error = error_msg;
+    return new_dfa;
 }
 
 rnd::regex::Expr transform_expr(struct rnd_expr *expr)
@@ -69,13 +74,13 @@ rnd::regex::Expr transform_expr(struct rnd_expr *expr)
 
 struct rnd_dfa transform_dfa(const rnd::dfa::Dfa& dfa)
 {
-    struct rnd_dfa result = {
-        .number_states = dfa.delta.size(),
-        .number_accept_states = dfa.accept.size(),
-        .start_state = dfa.start,
-        .transitions = NULL,
-        .error = NULL
-    };
+    struct rnd_dfa result;
+    result.number_states = dfa.delta.size();
+    result.number_transitions = 0;
+    result.number_accept_states = dfa.accept.size();
+    result.start_state = dfa.start;
+    result.transitions = NULL;
+    result.error = NULL;
 
     result.accept_states = (int*)malloc(sizeof(int) * result.number_accept_states);
     if (!result.accept_states) {
@@ -117,13 +122,13 @@ struct rnd_dfa rnd_convert(struct rnd_expr* expr)
     try {
         return transform_dfa(rnd::dfa::Dfa(transform_expr(expr)));
     } catch(rnd::MalformedExpressionException()) {
-        return (struct rnd_dfa) {
-            .error = INPUT_ERROR
-        };
+        struct rnd_dfa dfa;
+        rnd_dfa_error(&dfa, INPUT_ERROR);
+        return dfa;
     } catch(...) {
-        return (struct rnd_dfa) {
-            .error = UNEXPECTED_ERROR
-        };
+        struct rnd_dfa dfa;
+        rnd_dfa_error(&dfa, UNEXPECTED_ERROR);
+        return dfa;
     }
 }
 
