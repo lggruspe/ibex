@@ -9,36 +9,36 @@ _rnd = ctypes.CDLL("libcrnd.so")
 
 class _CInterval(ctypes.Structure):
     _fields_ = [
-            ("start", ctypes.c_int),
-            ("end", ctypes.c_int)
-            ]
+        ("start", ctypes.c_int),
+        ("end", ctypes.c_int)
+    ]
 
 class _CExpr(ctypes.Structure):
     pass
 _CExpr._fields_ = [
-        ("type", ctypes.c_char),
-        ("left", ctypes.POINTER(_CExpr)),
-        ("right", ctypes.POINTER(_CExpr)),
-        ("symbols", _CInterval)
-        ]
+    ("type", ctypes.c_char),
+    ("left", ctypes.POINTER(_CExpr)),
+    ("right", ctypes.POINTER(_CExpr)),
+    ("symbols", _CInterval)
+]
 
 class _CTransition(ctypes.Structure):
     _fields_ = [
-            ("current_state", ctypes.c_int),
-            ("next_state", ctypes.c_int),
-            ("symbols", _CInterval)
-            ]
+        ("current_state", ctypes.c_int),
+        ("next_state", ctypes.c_int),
+        ("symbols", _CInterval)
+    ]
 
 class _CDfa(ctypes.Structure):
     _fields_ = [
-            ("number_states", ctypes.c_size_t),
-            ("number_transitions", ctypes.c_size_t),
-            ("number_accept_states", ctypes.c_size_t),
-            ("start_state", ctypes.c_int),
-            ("transitions", ctypes.POINTER(_CTransition)),
-            ("accept_states", ctypes.POINTER(ctypes.c_int)),
-            ("error", ctypes.c_char_p)
-            ]
+        ("number_states", ctypes.c_size_t),
+        ("number_transitions", ctypes.c_size_t),
+        ("number_accept_states", ctypes.c_size_t),
+        ("start_state", ctypes.c_int),
+        ("transitions", ctypes.POINTER(_CTransition)),
+        ("accept_states", ctypes.POINTER(ctypes.c_int)),
+        ("error", ctypes.c_char_p)
+    ]
 
 _rnd_convert = _rnd.rnd_convert
 _rnd_convert.argtypes = [ctypes.POINTER(_CExpr)]
