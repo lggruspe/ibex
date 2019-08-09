@@ -1,110 +1,60 @@
+"""Wrapper for libcrnd with additional features."""
+
 import ctypes
 import enum
 import os
 import sys
 from redblack import containers
-
-_rnd = ctypes.CDLL("libcrnd.so")
-
-class _CInterval(ctypes.Structure):
-    _fields_ = [
-            ("start", ctypes.c_int),
-            ("end", ctypes.c_int)
-            ]
-
-class _CExpr(ctypes.Structure):
-    pass
-_CExpr._fields_ = [
-        ("type", ctypes.c_char),
-        ("left", ctypes.POINTER(_CExpr)),
-        ("right", ctypes.POINTER(_CExpr)),
-        ("symbols", _CInterval)
-        ]
-
-class _CTransition(ctypes.Structure):
-    _fields_ = [
-            ("current_state", ctypes.c_int),
-            ("next_state", ctypes.c_int),
-            ("symbols", _CInterval)
-            ]
-
-class _CDfa(ctypes.Structure):
-    _fields_ = [
-            ("number_states", ctypes.c_size_t),
-            ("number_transitions", ctypes.c_size_t),
-            ("number_accept_states", ctypes.c_size_t),
-            ("start_state", ctypes.c_int),
-            ("transitions", ctypes.POINTER(_CTransition)),
-            ("accept_states", ctypes.POINTER(ctypes.c_int)),
-            ("error", ctypes.c_char_p)
-            ]
-
-_rnd_convert = _rnd.rnd_convert
-_rnd_convert.argtypes = [ctypes.POINTER(_CExpr)]
-_rnd_convert.restype = _CDfa
-
-_rnd_dfa_destroy = _rnd.rnd_dfa_destroy
-_rnd_dfa_destroy.argtypes = [ctypes.POINTER(_CDfa)]
-_rnd_dfa_destroy.restype = None
-
-_rnd_expr_symbol = _rnd.rnd_expr_symbol
-_rnd_expr_symbol.argtypes = [ctypes.c_int, ctypes.c_int]
-_rnd_expr_symbol.restype = ctypes.POINTER(_CExpr)
-
-_rnd_expr_union = _rnd.rnd_expr_union
-_rnd_expr_union.argtypes = [ctypes.POINTER(_CExpr), ctypes.POINTER(_CExpr)]
-_rnd_expr_union.restype = ctypes.POINTER(_CExpr)
-
-_rnd_expr_concatenation = _rnd.rnd_expr_concatenation
-_rnd_expr_concatenation.argtypes = [ctypes.POINTER(_CExpr), ctypes.POINTER(_CExpr)]
-_rnd_expr_concatenation.restype = ctypes.POINTER(_CExpr)
-
-_rnd_expr_closure = _rnd.rnd_expr_closure
-_rnd_expr_closure.argtypes = [ctypes.POINTER(_CExpr)]
-_rnd_expr_closure.restype = ctypes.POINTER(_CExpr)
-
-_rnd_expr_destroy = _rnd.rnd_expr_destroy
-_rnd_expr_destroy.argtypes = [ctypes.POINTER(_CExpr)]
-_rnd_expr_destroy.restype = None
-
-_rnd_expr_free = _rnd.rnd_expr_free
-_rnd_expr_free.argtypes = [ctypes.POINTER(_CExpr)]
-_rnd_expr_free.restype = None
-
-_rnd_get_expr_counter = _rnd.rnd_get_expr_counter
-_rnd_get_expr_counter.restype = ctypes.c_int
-
-# Python bindings
+from rnd.internals import crnd
 
 class ExprType(enum.Enum):
+    """Same as enum rnd_expr_type { RND_SYMBOL, RND_UNION, ... }."""
     SYMBOL = 0
     UNION = 1
     CONCATENATION = 2
     CLOSURE = 3
 
 class ExprSymbols:
-    def __init__(self, start: int=0, end: int=None):
+    """Class that represents a closed range of symbols.
+
+    Needs to be destroyed after use, either directly or indirectly.
+
+    """
+
+    def __init__(self, start: int = 0, end: int = None):
         if end is None:
             end = start
         if start > end:
             raise ValueError("start must be <= end")
         self.start = start
         self.end = end
-        self._cpointer = _rnd_expr_symbol(start, end)
+        self.cpointer = crnd.rnd_expr_symbol(start, end)
 
     def union(self, other):
+        """Return a UNION Expr.
+
+        other may be an ExprSymbols or an Expr.
+
+        """
         return union(self, other)
 
     def concatenation(self, other):
+        """Return a CONCATENATION Expr.
+
+        other may be an ExprSymbols or an Expr.
+
+        """
         return concatenation(self, other)
 
     def closure(self):
+        """Return a CLOSURE Expr."""
         return closure(self)
 
     def destroy(self):
-        if self._cpointer:
-            _rnd_expr_free(self._cpointer)
-        self._cpointer = None
+        """Free memory allocated during __init__."""
+        if self.cpointer:
+            crnd.rnd_expr_free(self.cpointer)
+        self.cpointer = None
 
     def __repr__(self):
         if self.start == self.end:
@@ -112,25 +62,33 @@ class ExprSymbols:
         return f"[{self.start}, {self.end}]"
 
 def _get_expr_pointer(expr):
-    return None if not expr else expr._cpointer
+    return None if not expr else expr.cpointer
 
 # doesn't raise exceptions to avoid memory leak
 class Expr:
+    """Owner class of CExpr with methods for creating new Expr.
+
+    Needs to be destroyed after use, either directly or indirectly.
+
+    """
+
     def __init__(self, type_, left=None, right=None):
         self.type_ = type_
         self.left = left
         self.right = right
-        self._cpointer = None
+        self.cpointer = None
 
         left = _get_expr_pointer(self.left)
         if type_ is ExprType.UNION:
-            self._cpointer = _rnd_expr_union(left,
-                    _get_expr_pointer(self.right))
+            self.cpointer = crnd.rnd_expr_union(
+                left,
+                _get_expr_pointer(self.right))
         elif type_ is ExprType.CONCATENATION:
-            self._cpointer = _rnd_expr_concatenation(left,
-                    _get_expr_pointer(self.right))
+            self.cpointer = crnd.rnd_expr_concatenation(
+                left,
+                _get_expr_pointer(self.right))
         elif type_ is ExprType.CLOSURE:
-            self._cpointer = _rnd_expr_closure(left)
+            self.cpointer = crnd.rnd_expr_closure(left)
 
     def __repr__(self):
         if self.type_ == ExprType.UNION:
@@ -139,11 +97,17 @@ class Expr:
             return f"concatenation({self.left!r}, {self.right!r})"
         elif self.type_ == ExprType.CLOSURE:
             return f"closure({self.left!r})"
+        assert False
 
     def destroy(self):
-        if self._cpointer:
-            _rnd_expr_free(self._cpointer)
-        self._cpointer = None
+        """Free cpointer of this node and all descendant nodes.
+
+        Does not need to be called if invoked from another Expr.
+        """
+
+        if self.cpointer:
+            crnd.rnd_expr_free(self.cpointer)
+        self.cpointer = None
         if self.left:
             self.left.destroy()
         if self.right:
@@ -152,12 +116,15 @@ class Expr:
         self.right = None
 
     def union(self, other):
+        """Return a UNION Expr."""
         return union(self, other)
 
     def concatenation(self, other):
+        """Return a CONCATENATION Expr."""
         return concatenation(self, other)
 
     def closure(self):
+        """Return a CLOSURE Expr."""
         return closure(self)
 
 def union(a, b) -> Expr:
@@ -170,7 +137,9 @@ def closure(expr: Expr or ExprSymbols) -> Expr:
     return Expr(ExprType.CLOSURE, expr)
 
 class DfaSymbols:
-    def __init__(self, start: int=0, end: int=None):
+    """Similar to CInterval, but with built in comparator."""
+
+    def __init__(self, start: int = 0, end: int = None):
         if end is None:
             end = start
         if start > end:
@@ -184,24 +153,26 @@ class DfaSymbols:
         return f"[{self.start}, {self.end}]"
 
     def __lt__(self, other):
+        """Check if self is on the left of other."""
         assert self.start <= self.end
         assert other.start <= other.end
         return self.end < other.start
 
     def __gt__(self, other):
+        """Check if self is on the right of other."""
         assert self.start <= self.end
         assert other.start <= other.end
         return self.start > other.end
 
     def __eq__(self, other):
-        """Checks if the closed intervals [self.start, self.end] and
-        [other.start, other.end] overlap."""
+        """Check if self and other overlap."""
         assert self.start <= self.end
         assert other.start <= other.end
         return not (self < other) and not (self > other)
 
-# TODO use interval set to represent outbound transitions from each state
 class Dfa:
+    """Higher-level wrapper for rnd_dfa with computational capabilities."""
+
     def __init__(self):
         self.start = -1
         self.accepts = set()
@@ -212,10 +183,10 @@ class Dfa:
                 f"transitions={self.transitions!r}>"
 
     def compute(self, inputs):
-        """Compute if Dfa accepts string of inputs.
-        continue.
+        """Compute if Dfa accepts the sequence of ints.
 
         Assume that -1 is an error state with no outbound transitions.
+
         """
         state = self.start
         for a in inputs:
@@ -224,7 +195,7 @@ class Dfa:
             state = self.transitions[state].get(DfaSymbols(a), -1)
         return state in self.accepts
 
-def _cdfa_to_pydfa(_dfa: _CDfa) -> Dfa:
+def _cdfa_to_pydfa(_dfa: internals.CDfa) -> Dfa:
     dfa = Dfa()
     dfa.start = int(_dfa.start_state)
     dfa.transitions[dfa.start] = containers.Map()
@@ -254,7 +225,8 @@ def _cdfa_to_pydfa(_dfa: _CDfa) -> Dfa:
     return dfa
 
 def convert(expr: Expr or ExprSymbols) -> Dfa:
-    _dfa = _rnd_convert(expr._cpointer)
+    """Convert expr into dfa, without destroying expr."""
+    _dfa = crnd.rnd_convert(expr.cpointer)
     dfa = _cdfa_to_pydfa(_dfa)
-    _rnd_dfa_destroy(ctypes.byref(_dfa))
+    crnd.rnd_dfa_destroy(ctypes.byref(_dfa))
     return dfa
