@@ -1,5 +1,5 @@
 from rnd import ExprSymbols, convert, Dfa, DfaSymbols
-from internals import crnd
+from rnd.internals import crnd
 import csv
 import functools
 import unittest

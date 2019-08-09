@@ -3,8 +3,7 @@ import enum
 import os
 import sys
 from redblack import containers
-import internals
-from internals import crnd
+from rnd.internals import crnd
 
 class ExprType(enum.Enum):
     SYMBOL = 0
