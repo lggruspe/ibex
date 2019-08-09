@@ -2,10 +2,9 @@ import ctypes
 import enum
 import os
 import sys
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir, "redblackpy")))
+from redblack import containers
 import internals
 from internals import crnd
-from redblack import containers
 
 class ExprType(enum.Enum):
     SYMBOL = 0
