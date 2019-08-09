@@ -1,15 +1,20 @@
+"""Direct wrapper for libcrnd."""
+
 import ctypes
 
 crnd = ctypes.CDLL("libcrnd.so")
 
 class CInterval(ctypes.Structure):
+    """Wrapper for struct rnd_symbol_internal."""
+
     _fields_ = [
         ("start", ctypes.c_int),
         ("end", ctypes.c_int)
     ]
 
 class CExpr(ctypes.Structure):
-    pass
+    """Wrapper for struct rnd_expr."""
+
 CExpr._fields_ = [
     ("type", ctypes.c_char),
     ("left", ctypes.POINTER(CExpr)),
@@ -18,6 +23,8 @@ CExpr._fields_ = [
 ]
 
 class CTransition(ctypes.Structure):
+    """Wrapper for struct transition."""
+
     _fields_ = [
         ("current_state", ctypes.c_int),
         ("next_state", ctypes.c_int),
@@ -25,6 +32,8 @@ class CTransition(ctypes.Structure):
     ]
 
 class CDfa(ctypes.Structure):
+    """Wrapper for struct rnd_dfa."""
+
     _fields_ = [
         ("number_states", ctypes.c_size_t),
         ("number_transitions", ctypes.c_size_t),
@@ -60,5 +69,3 @@ crnd.rnd_expr_free.argtypes = [ctypes.POINTER(CExpr)]
 crnd.rnd_expr_free.restype = None
 
 crnd.rnd_get_expr_counter.restype = ctypes.c_int
-
-

@@ -1,3 +1,5 @@
+"""Wrapper for libcrnd with additional features."""
+
 import ctypes
 import enum
 import os
@@ -6,13 +8,20 @@ from redblack import containers
 from rnd.internals import crnd
 
 class ExprType(enum.Enum):
+    """Same as enum rnd_expr_type { RND_SYMBOL, RND_UNION, ... }."""
     SYMBOL = 0
     UNION = 1
     CONCATENATION = 2
     CLOSURE = 3
 
 class ExprSymbols:
-    def __init__(self, start: int=0, end: int=None):
+    """Class that represents a closed range of symbols.
+
+    Needs to be destroyed after use, either directly or indirectly.
+
+    """
+
+    def __init__(self, start: int = 0, end: int = None):
         if end is None:
             end = start
         if start > end:
@@ -22,15 +31,27 @@ class ExprSymbols:
         self.cpointer = crnd.rnd_expr_symbol(start, end)
 
     def union(self, other):
+        """Return a UNION Expr.
+
+        other may be an ExprSymbols or an Expr.
+
+        """
         return union(self, other)
 
     def concatenation(self, other):
+        """Return a CONCATENATION Expr.
+
+        other may be an ExprSymbols or an Expr.
+
+        """
         return concatenation(self, other)
 
     def closure(self):
+        """Return a CLOSURE Expr."""
         return closure(self)
 
     def destroy(self):
+        """Free memory allocated during __init__."""
         if self.cpointer:
             crnd.rnd_expr_free(self.cpointer)
         self.cpointer = None
@@ -45,6 +66,12 @@ def _get_expr_pointer(expr):
 
 # doesn't raise exceptions to avoid memory leak
 class Expr:
+    """Owner class of CExpr with methods for creating new Expr.
+
+    Needs to be destroyed after use, either directly or indirectly.
+
+    """
+
     def __init__(self, type_, left=None, right=None):
         self.type_ = type_
         self.left = left
@@ -53,11 +80,13 @@ class Expr:
 
         left = _get_expr_pointer(self.left)
         if type_ is ExprType.UNION:
-            self.cpointer = crnd.rnd_expr_union(left,
-                    _get_expr_pointer(self.right))
+            self.cpointer = crnd.rnd_expr_union(
+                left,
+                _get_expr_pointer(self.right))
         elif type_ is ExprType.CONCATENATION:
-            self.cpointer = crnd.rnd_expr_concatenation(left,
-                    _get_expr_pointer(self.right))
+            self.cpointer = crnd.rnd_expr_concatenation(
+                left,
+                _get_expr_pointer(self.right))
         elif type_ is ExprType.CLOSURE:
             self.cpointer = crnd.rnd_expr_closure(left)
 
@@ -68,8 +97,14 @@ class Expr:
             return f"concatenation({self.left!r}, {self.right!r})"
         elif self.type_ == ExprType.CLOSURE:
             return f"closure({self.left!r})"
+        assert False
 
     def destroy(self):
+        """Free cpointer of this node and all descendant nodes.
+
+        Does not need to be called if invoked from another Expr.
+        """
+
         if self.cpointer:
             crnd.rnd_expr_free(self.cpointer)
         self.cpointer = None
@@ -81,12 +116,15 @@ class Expr:
         self.right = None
 
     def union(self, other):
+        """Return a UNION Expr."""
         return union(self, other)
 
     def concatenation(self, other):
+        """Return a CONCATENATION Expr."""
         return concatenation(self, other)
 
     def closure(self):
+        """Return a CLOSURE Expr."""
         return closure(self)
 
 def union(a, b) -> Expr:
@@ -99,7 +137,9 @@ def closure(expr: Expr or ExprSymbols) -> Expr:
     return Expr(ExprType.CLOSURE, expr)
 
 class DfaSymbols:
-    def __init__(self, start: int=0, end: int=None):
+    """Similar to CInterval, but with built in comparator."""
+
+    def __init__(self, start: int = 0, end: int = None):
         if end is None:
             end = start
         if start > end:
@@ -113,23 +153,26 @@ class DfaSymbols:
         return f"[{self.start}, {self.end}]"
 
     def __lt__(self, other):
+        """Check if self is on the left of other."""
         assert self.start <= self.end
         assert other.start <= other.end
         return self.end < other.start
 
     def __gt__(self, other):
+        """Check if self is on the right of other."""
         assert self.start <= self.end
         assert other.start <= other.end
         return self.start > other.end
 
     def __eq__(self, other):
-        """Checks if the closed intervals [self.start, self.end] and
-        [other.start, other.end] overlap."""
+        """Check if self and other overlap."""
         assert self.start <= self.end
         assert other.start <= other.end
         return not (self < other) and not (self > other)
 
 class Dfa:
+    """Higher-level wrapper for rnd_dfa with computational capabilities."""
+
     def __init__(self):
         self.start = -1
         self.accepts = set()
@@ -140,10 +183,10 @@ class Dfa:
                 f"transitions={self.transitions!r}>"
 
     def compute(self, inputs):
-        """Compute if Dfa accepts string of inputs.
-        continue.
+        """Compute if Dfa accepts the sequence of ints.
 
         Assume that -1 is an error state with no outbound transitions.
+
         """
         state = self.start
         for a in inputs:
@@ -182,6 +225,7 @@ def _cdfa_to_pydfa(_dfa: internals.CDfa) -> Dfa:
     return dfa
 
 def convert(expr: Expr or ExprSymbols) -> Dfa:
+    """Convert expr into dfa, without destroying expr."""
     _dfa = crnd.rnd_convert(expr.cpointer)
     dfa = _cdfa_to_pydfa(_dfa)
     crnd.rnd_dfa_destroy(ctypes.byref(_dfa))
