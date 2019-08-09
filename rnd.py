@@ -2,7 +2,6 @@ import ctypes
 import enum
 import os
 import sys
-sys.path.append(os.path.join(os.path.dirname(__file__), "redblackpy"))
 from redblack import containers
 
 _rnd = ctypes.CDLL("libcrnd.so")
