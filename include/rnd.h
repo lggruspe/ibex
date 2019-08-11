@@ -24,7 +24,7 @@ struct rnd_expr {
     struct rnd_symbol_interval symbols;
 };
 
-struct transition {
+struct rnd_transition {
     int current_state;
     int next_state;
     struct rnd_symbol_interval symbols;
@@ -35,7 +35,7 @@ struct rnd_dfa {
     size_t number_transitions;
     size_t number_accept_states;
     int start_state;
-    struct transition *transitions;
+    struct rnd_transition *transitions;
     int *accept_states;
     const char *error;
 };

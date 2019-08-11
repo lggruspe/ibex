@@ -95,20 +95,16 @@ struct rnd_dfa transform_dfa(const rnd::dfa::Dfa& dfa)
     i = 0;
     for (const auto& [q, trans]: dfa.delta) {
         void *temp = realloc(result.transitions, 
-                sizeof(struct transition) * (i + trans.size()));
+                sizeof(struct rnd_transition) * (i + trans.size()));
         if (!temp) {
             return rnd_dfa_error(&result, MEMORY_ERROR);
         }
-        result.transitions = (struct transition*)temp;
+        result.transitions = (struct rnd_transition*)temp;
         for (const auto& [a, r]: trans) {
-            result.transitions[i] = (struct transition) {
-                .current_state = q,
-                .next_state = r,
-                .symbols = (struct rnd_symbol_interval) {
-                    .start = a.start,
-                    .end = a.end
-                }
-            };
+            result.transitions[i].current_state = q;
+            result.transitions[i].next_state = r;
+            result.transitions[i].symbols.start = a.start;
+            result.transitions[i].symbols.end = a.end;
             ++i;
         }
     }

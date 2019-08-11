@@ -23,7 +23,7 @@ CExpr._fields_ = [
 ]
 
 class CTransition(ctypes.Structure):
-    """Wrapper for struct transition."""
+    """Wrapper for struct rnd_transition."""
 
     _fields_ = [
         ("current_state", ctypes.c_int),
