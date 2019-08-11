@@ -1,5 +1,10 @@
 """scangen example."""
 import functools
+import os
+import sys
+
+sys.path.append(os.path.abspath(os.path.pardir))
+
 import scangen as sg
 
 @sg.token("empty")
@@ -49,4 +54,4 @@ def string():
     return sg.symbols('"').concatenation(char.closure()).concatenation(sg.symbols('"'))
 
 if __name__ == "__main__":
-    sg.generate("template.cpp", directory="templates")
+    sg.generate()
