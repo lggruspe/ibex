@@ -48,5 +48,4 @@ def string():
 
 if __name__ == "__main__":
     sg.generate(basetemp="template.cpp",
-            tempdir="templates",
-            outfile="output.cpp")
+            tempdir="templates")

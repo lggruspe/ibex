@@ -41,10 +41,6 @@ def get_args():
             default="",
             dest="tempdir",
             help="path to templates directory")
-    parser.add_argument("-o",
-            default="",
-            dest="outfile",
-            help="output file (default: stdout)")
     return parser.parse_args()
 
 def generate_code(basetemp, tempdir):
@@ -53,28 +49,18 @@ def generate_code(basetemp, tempdir):
     template = env.get_template(basetemp)
     return template.render(scanners=scanners)
 
-def generate(basetemp="", tempdir="", outfile=""):
+def generate(basetemp="", tempdir=""):
     args = get_args()
     if args.basetemp:
         basetemp = args.basetemp
     if args.tempdir:
         tempdir = args.tempdir
-    if args.outfile:
-        outfile = args.outfile
 
-    output = None
     try:
-        temp = generate_code(basetemp, tempdir)
-        output = temp
+        output = generate_code(basetemp, tempdir)
+        print(output)
     except jinja2.exceptions.TemplateNotFound:
         print("scangen: Template not found:", basetemp)
-
-    if output:
-        if not outfile:
-            print(output)
-        else:
-            with open(outfile, "w") as f:
-                f.write(output)
 
 if __name__ == "__main__":
     generate()
