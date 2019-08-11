@@ -47,5 +47,4 @@ def string():
     return sg.symbols('"').concatenation(string).concatenation(sg.symbols('"'))
 
 if __name__ == "__main__":
-    sg.generate(basetemp="template.cpp",
-            tempdir="templates")
+    sg.generate("template.cpp", directory="templates")

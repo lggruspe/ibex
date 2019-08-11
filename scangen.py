@@ -1,6 +1,7 @@
-import jinja2
 import argparse
+import jinja2
 import rnd
+import sys
 
 scanners = []
 
@@ -30,37 +31,40 @@ def token(name):
         return wrapper
     return decorator
 
-def get_args():
+def get_args(args):
     description = "Generate scanner using jinja2 templates."
     parser = argparse.ArgumentParser(description=description)
-    parser.add_argument("-i",
-            default="",
-            dest="basetemp",
-            help="filename of base template")
+    parser.add_argument("entrypoint",
+            help="filename of template entrypoint")
     parser.add_argument("-d",
             default="",
-            dest="tempdir",
+            dest="directory",
             help="path to templates directory")
-    return parser.parse_args()
+    return parser.parse_args(args)
 
-def generate_code(basetemp, tempdir):
-    loader = jinja2.FileSystemLoader(tempdir)
+def generate_code(entrypoint, directory):
+    loader = jinja2.FileSystemLoader(directory)
     env = jinja2.Environment(loader=loader, line_statement_prefix="##")
-    template = env.get_template(basetemp)
+    template = env.get_template(entrypoint)
     return template.render(scanners=scanners)
 
-def generate(basetemp="", tempdir=""):
-    args = get_args()
-    if args.basetemp:
-        basetemp = args.basetemp
-    if args.tempdir:
-        tempdir = args.tempdir
+def generate(entrypoint="", directory=""):
+    args = sys.argv[1:]
+    if entrypoint:
+        args.append(entrypoint)
+    if directory:
+        args.extend(["-d", directory])
+    args = get_args(args)
+    if args.entrypoint:
+        entrypoint = args.entrypoint
+    if args.directory:
+        directory = args.directory
 
     try:
-        output = generate_code(basetemp, tempdir)
+        output = generate_code(entrypoint, directory)
         print(output)
     except jinja2.exceptions.TemplateNotFound:
-        print("scangen: Template not found:", basetemp)
+        print("scangen: Template not found:", entrypoint)
 
 if __name__ == "__main__":
     generate()
