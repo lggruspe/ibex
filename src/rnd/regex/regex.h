@@ -7,7 +7,6 @@ namespace rnd
 {
 namespace regex
 {
-;
 
 enum class Type { Symbol, Union, Concatenation, Closure };
 

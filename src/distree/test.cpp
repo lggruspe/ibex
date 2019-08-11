@@ -1,7 +1,6 @@
 #include "distree.h"
 #include "test_runner.hpp"
 #include "utils.hpp"
-//#include <boost/icl/split_interval_set.hpp>
 #include <cmath>
 #include <cstdlib>
 #include <ctime>
@@ -9,7 +8,7 @@
 
 using namespace distree;
 
-define_test_runner(DistreeTest, DisSet set);
+define_test_runner(DistreeTest, DisSet set)
 
 void setup(DistreeTest* test)
 {

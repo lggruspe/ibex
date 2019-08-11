@@ -5,7 +5,6 @@
 
 namespace distree
 {
-;
 
 Interval::operator bool() const
 {

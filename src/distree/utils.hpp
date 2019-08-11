@@ -4,7 +4,7 @@
 
 void print_set()
 {
-    size_t n = 30;
+    const size_t n = 30;
     int start[n];
     int end[n];
 

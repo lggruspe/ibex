@@ -5,7 +5,6 @@
 
 namespace distree
 {
-;
 
 struct Interval {
     int start, end;
