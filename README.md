@@ -7,8 +7,6 @@ for C and Python.
 Prerequisites
 -------------
 
-The project uses autotools, but there's a backup Makefile if you don't have
-autotools.
 Building the library requires a C++17 compiler.
 
 Usage

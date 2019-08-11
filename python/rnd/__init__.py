@@ -230,3 +230,5 @@ def convert(expr: Expr or ExprSymbols) -> Dfa:
     dfa = _cdfa_to_pydfa(_dfa)
     crnd.rnd_dfa_destroy(ctypes.byref(_dfa))
     return dfa
+
+name = "rnd"
