@@ -1,14 +1,16 @@
-#include "swlist.h"
+#include "m-swlist.h"
+
+sw_register(int);
 
 int main()
 {
-    struct sw_list *tempo = NULL;
-    for (data_type i = 0; i < 10; ++i) {
+    struct sw_list_int *tempo = NULL;
+    for (int i = 0; i < 10; ++i) {
         tempo = sw_push(tempo, sw_create(i));
     }
-    struct sw_list *perma = tempo;
+    struct sw_list_int *perma = tempo;
 
-    struct sw_list *node = perma;
+    struct sw_list_int *node = perma;
     while (node) {
         sw_init(node);
         node = node->right;
