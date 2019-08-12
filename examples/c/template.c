@@ -20,6 +20,16 @@ struct scanner {
     int (*transition)(int, int);
 };
 
+struct scanner scanner_create(enum token token, int (*transition)(int, int))
+{
+    return (struct scanner) {
+        .token = token,
+        .state = -1,
+        .start = 0,
+        .transition = transition
+    };
+}
+
 ## for scanner in scanners
 {% include "scanner.c" %}
 
@@ -35,12 +45,7 @@ int main()
     struct vector_int *lexeme = NULL;
     struct sw_list_scanner *scanners = NULL;
 ## for scanner in scanners|reverse
-    scanners = sw_push(scanners, sw_create((scanner) {
-        .token = token_{{ scanner.token|upper }},
-        .state = -1,
-        .start = 0,
-        .transition = transition_{{ scanner.token }}
-    }));
+    scanners = sw_push(scanners, sw_create(scanner_create(token_{{ scanner.token|upper }}, transition_{{ scanner.token }})));
 ## endfor
 
     sw_destroy(scanners);
