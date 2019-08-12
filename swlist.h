@@ -41,26 +41,6 @@ void sw_destroy(struct sw_list_##data_type *list) \
     } \
 } \
  \
-struct sw_list_##data_type *sw_right(struct sw_list_##data_type *node) \
-{ \
-    return node ? node->right : NULL; \
-} \
- \
-struct sw_list_##data_type *sw_left(struct sw_list_##data_type *node) \
-{ \
-    return node ? node->left : NULL; \
-} \
- \
-struct sw_list_##data_type *sw_next(struct sw_list_##data_type *node) \
-{ \
-    return node ? node->next : NULL; \
-} \
- \
-struct sw_list_##data_type *sw_prev(struct sw_list_##data_type *node) \
-{ \
-    return node ? node->prev : NULL; \
-} \
- \
 /* return's new head
 if head isn't changed, returns NULL */\
 struct sw_list_##data_type *sw_sleep(struct sw_list_##data_type *node) \
@@ -121,3 +101,11 @@ void sw_print(struct sw_list_##data_type *list) \
     } \
     printf(")\n"); \
 }
+
+#define sw_right(node) ((node) ? (node)->right : NULL)
+
+#define sw_left(node) ((node) ? (node)->left : NULL)
+
+#define sw_next(node) ((node) ? (node)->next : NULL)
+
+#define sw_prev(node) ((node) ? (node)->prev : NULL)
