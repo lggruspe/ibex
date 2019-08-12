@@ -1,5 +1,4 @@
 #pragma once
-#include <stdio.h>
 #include <stdlib.h>
 
 #define sw_register(data_type) \
@@ -82,24 +81,6 @@ void sw_init(struct sw_list_##data_type *node) \
         node->prev = sw_left(node); \
         node->next = sw_right(node); \
     } \
-} \
- \
-/* for debugging */ \
-void sw_print(struct sw_list_##data_type *list) \
-{ \
-    while (list && list->prev) { \
-        list = list->prev; \
-    } \
-    printf("("); \
-    if (list) { \
-        printf("%d", list->data); \
-        list = list->next; \
-    } \
-    while (list) { \
-        printf(", %d", list->data); \
-        list = list->next; \
-    } \
-    printf(")\n"); \
 }
 
 #define sw_right(node) ((node) ? (node)->right : NULL)

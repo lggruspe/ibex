@@ -1,6 +1,24 @@
 #include "swlist.h"
+#include <stdio.h>
 
 sw_register(int)
+
+void sw_print(struct sw_list_int *list) 
+{ 
+    while (list && list->prev) { 
+        list = list->prev; 
+    } 
+    printf("("); 
+    if (list) { 
+        printf("%d", list->data); 
+        list = list->next; 
+    } 
+    while (list) { 
+        printf(", %d", list->data); 
+        list = list->next; 
+    } 
+    printf(")\n"); 
+}
 
 int main()
 {
