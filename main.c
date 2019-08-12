@@ -1,6 +1,6 @@
-#include "m-swlist.h"
+#include "swlist.h"
 
-sw_register(int);
+sw_register(int)
 
 int main()
 {

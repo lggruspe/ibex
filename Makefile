@@ -1,4 +1,4 @@
-a.out:	main.c m-swlist.h
+a.out:	main.c swlist.h
 	$(CC) $(CFLAGS) $(filter %.c,$^)
 
 .DUMMY:	clean
