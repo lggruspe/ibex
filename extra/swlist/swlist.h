@@ -75,11 +75,14 @@ void sw_wake(struct sw_list_##data_type *node) \
 } \
  \
 /* should be called on first pass, before waking or sleeping */\
-void sw_init(struct sw_list_##data_type *node) \
+void sw_init( \
+        struct sw_list_##data_type *node, \
+        void (*callback)(data_type*)) \
 { \
     if (node) { \
         node->prev = sw_left(node); \
         node->next = sw_right(node); \
+        callback(&(node->data));\
     } \
 }
 

@@ -20,6 +20,8 @@ void sw_print(struct sw_list_int *list)
     printf(")\n"); 
 }
 
+void pass(int *ignore) { ignore++; }
+
 int main()
 {
     struct sw_list_int *tempo = NULL;
@@ -30,7 +32,7 @@ int main()
 
     struct sw_list_int *node = perma;
     while (node) {
-        sw_init(node);
+        sw_init(node, pass);
         node = node->right;
     }
 
