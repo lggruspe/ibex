@@ -1,5 +1,5 @@
-a.out:	swlist.c
-	$(CC) $(CFLAGS) $<
+a.out:	main.c swlist.c swlist.h
+	$(CC) $(CFLAGS) $(filter %.c,$^)
 
 .DUMMY:	clean
 clean:
