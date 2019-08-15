@@ -6,7 +6,10 @@ CXX = g++
 CXXFLAGS = -g -std=gnu++17 -Wall -Wextra
 
 .PHONY:	all
-all:	build/example_c build/example_cpp build/example_py
+all:	build build/example_c build/example_cpp build/example_py
+
+build:
+	mkdir -p build
 
 build/example_c:	c/template.c c/scanner.c
 	python example.py template.c -d c > build/example.c
@@ -23,4 +26,4 @@ build/example_py:	python/template.py python/scanner.py
 
 .PHONY:	clean
 clean:
-	-rm -f build/example*
+	-rm -rf build
