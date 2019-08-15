@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import sys
 
 def get_input():
@@ -5,7 +6,7 @@ def get_input():
         char = sys.stdin.read(1)
         if not char:
             raise StopIteration
-        yield char
+        yield ord(char)
 
 class Scanner:
     def __init__(self):
@@ -18,21 +19,41 @@ class Scanner:
     def reset(self):
         self.state = self.start
 
+    def fail(self):
+        self.state = -1
+
     def next(self, char):
-        #self.state =
-        raise NotImplemented
+        assert not self.is_error()
+        try:
+            transition = getattr(self, f"s{self.state}")
+            transition(char)
+        except AttributeError:
+            self.fail()
+
+## for scanner in scanners
+## include "scanner.py"
+## endfor
 
 def main():
-    scanners = [Scanner()]
+    scanners = [
+## for scanner in scanners
+        {{ scanner.token|title }}Scanner(),
+## endfor
+    ]
     token = None
     lexeme = ""
     for char in get_input():
-        for scanner in scanners:
+        if not scanners:
+            break
+        for i, scanner in enumerate(scanners):
             if not scanner.is_error():
-                pass
+                scanner.next(char)
+            else:
+                del scanners[i]
 
-    ## rollback
+    # TODO rollback
     return token, lexeme
 
 if __name__ == "__main__":
-    main()
+    _, lexeme = main()
+    print(lexeme)
