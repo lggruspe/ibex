@@ -20,8 +20,8 @@ build/example_cpp:	cpp/template.cpp cpp/scanner.cpp
 	python example.py template.cpp -d cpp > build/example.cpp
 	$(CXX) $(CXXFLAGS) -o $@ build/example.cpp
 
-build/example_py:	python/template.py python/scanner.py
-	python example.py template.py -d python > build/example_py
+build/example_py:	py/template.py py/scanner.py
+	python example.py template.py -d py > build/example_py
 	chmod +x build/example_py
 
 .PHONY:	clean
