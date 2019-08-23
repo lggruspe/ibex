@@ -1,5 +1,5 @@
 #pragma once
-#include "rnd/alphabet.hpp"
+#include "rnd/alphabet/alphabet.hpp"
 #include <iostream>
 #include <memory>
 
@@ -15,7 +15,7 @@ struct ExpTree {
 
     Type type;
     std::shared_ptr<Alphabet> alphabet;
-    Alphabet::Category value;
+    SymbolRange value;
 
     std::shared_ptr<ExpTree> left;
     std::shared_ptr<ExpTree> right;
@@ -27,7 +27,7 @@ struct ExpTree {
             Expr right=nullptr)
         : type(type)
         , alphabet(alphabet)
-        , value(Alphabet::Category(0, 0))
+        , value(symbol_range(0, 0))
         , left(left)
         , right(right)
     {}
@@ -36,7 +36,7 @@ struct ExpTree {
     ExpTree(int a, int b)
         : type(Type::Symbol)
         , alphabet(std::make_shared<Alphabet>())
-        , value(Alphabet::Category(a, b))
+        , value(symbol_range(a, b))
         , left(nullptr)
         , right(nullptr)
 

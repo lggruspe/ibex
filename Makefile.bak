@@ -9,7 +9,7 @@ else
 endif
 
 CXXFLAGS = -g -Wall -fpic $(C++17) -I./include -I./src
-OBJECTS = build/regex.o build/nfa.o build/dfa.o build/distree.o
+OBJECTS = build/alphabet.o build/regex.o build/nfa.o build/dfa.o build/distree.o
 prefix = /usr/local
 bindir = $(prefix)/bin
 includedir = $(prefix)/include
@@ -33,7 +33,9 @@ lib/librnd.a:	$(OBJECTS)
 $(OBJECTS):	%:
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
-build/regex.o:	rnd/regex/regex.cpp rnd/regex/regex.h rnd/alphabet.hpp
+build/alphabet.o:	rnd/alphabet/alphabet.cpp rnd/alphabet/alphabet.hpp
+
+build/regex.o:	rnd/regex/regex.cpp rnd/regex/regex.h
 
 build/nfa.o:	rnd/nfa/nfa.cpp rnd/nfa/nfa.h
 

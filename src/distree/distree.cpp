@@ -95,8 +95,9 @@ void DisSet::combine(const DisSet& other)
 }
 
 // leftmost interval that overlaps
-DisTree* DisSet::first_overlap(Interval interval) const
+DisTree* DisSet::first_overlap(int start, int end) const
 {
+    Interval interval(start, end);
     auto node = rb::search(tree, interval);
     if (!node) {
         return nullptr;

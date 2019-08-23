@@ -1,5 +1,5 @@
 #include "nfa.h"
-#include "rnd/alphabet.hpp"
+#include "rnd/alphabet/alphabet.hpp"
 #include <cassert>
 #include <iostream>
 #include <map>
@@ -20,10 +20,10 @@ namespace nfa
 
 int add_state(Nfa&, int);
 int add_state(Nfa&);
-void add_transition(Nfa&, int, int, Alphabet::Category);
+void add_transition(Nfa&, int, int, SymbolRange);
 Nfa thompson(regex::Expr);
 
-Nfa::Nfa(Alphabet::Category a)
+Nfa::Nfa(SymbolRange a)
 {
     start = add_state(*this);;
     accept = add_state(*this);;
@@ -49,12 +49,12 @@ int add_state(Nfa& nfa)
     return add_state(nfa, q);
 }
 
-void add_transition(Nfa& nfa, int q, int r, Alphabet::Category a=Alphabet::Category(0, 0))
+void add_transition(Nfa& nfa, int q, int r, SymbolRange a=symbol_range(0, 0))
 {
     add_state(nfa, q);
     add_state(nfa, r);
     nfa.delta[q][a].insert(r);
-    if (a) {
+    if (!is_empty(a)) {
         nfa.symbols.insert(a);
     }
 }
@@ -63,7 +63,7 @@ void add_transition(Nfa& nfa, int q, int r, Alphabet::Category a=Alphabet::Categ
 // returns offset to B states
 int merge(Nfa& A, const Nfa& B)
 {
-    std::map<int, std::map<Alphabet::Category, std::set<int>>> delta;
+    std::map<int, std::map<SymbolRange, std::set<int>>> delta;
     int offset = add_state(A);
     for (auto it = B.delta.begin(); it != B.delta.end(); ++it) {
         int q = it->first;
@@ -87,7 +87,7 @@ int merge(Nfa& A, const Nfa& B)
     return offset;
 }
 
-Nfa symbol(Alphabet::Category a)
+Nfa symbol(SymbolRange a)
 {
     return Nfa(a);
 }
