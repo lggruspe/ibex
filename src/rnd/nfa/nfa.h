@@ -1,5 +1,5 @@
 #pragma once
-#include "rnd/alphabet.hpp"
+#include "rnd/alphabet/alphabet.hpp"
 #include "rnd/regex/regex.h"
 #include <iostream>
 #include <map>
@@ -11,12 +11,12 @@ namespace nfa
 {
     
 struct Nfa {
-    std::map<int, std::map<Alphabet::Category, std::set<int>>> delta;
+    std::map<int, std::map<SymbolRange, std::set<int>>> delta;
     int start;
     int accept;
-    std::set<Alphabet::Category> symbols;
+    std::set<SymbolRange> symbols;
 
-    Nfa(Alphabet::Category);
+    Nfa(SymbolRange);
     Nfa(regex::Expr);
 };
 

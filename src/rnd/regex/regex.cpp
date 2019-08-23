@@ -9,7 +9,7 @@ namespace rnd
 namespace regex
 {
 
-Expr symbol(Alphabet::Category);
+Expr symbol(SymbolRange);
 
 void combine_alphabets(std::shared_ptr<Alphabet> alpha, std::shared_ptr<Alphabet>& beta)
 {
@@ -48,10 +48,10 @@ void make_leaves_disjoint(Expr expr)
         }
     } else {
         // get all intervals in the alphabet that intersect with symbol
-        auto node = expr->alphabet->first_overlap(expr->value);
-        assert(!rb::predecessor(node) || rb::predecessor(node)->data != expr->value);
+        auto node = expr->alphabet->first_overlap(expr->value.start, expr->value.end);
+        assert(!rb::predecessor(node) || !overlaps(rb::predecessor(node)->data, expr->value));
         std::list<Expr> overlaps;
-        while (node && node->data == expr->value) {
+        while (node && ::rnd::overlaps(node->data, expr->value)) {
             auto new_leaf = symbol(node->data.start, node->data.end);
             new_leaf->alphabet = expr->alphabet;
             overlaps.push_back(new_leaf);

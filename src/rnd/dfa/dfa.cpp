@@ -1,7 +1,7 @@
 #include "dfa.h"
 #include "enumeration2.h"
 #include "partition.h"
-#include "rnd/alphabet.hpp"
+#include "rnd/alphabet/alphabet.hpp"
 #include "rnd/nfa/nfa.h"
 #include <algorithm>
 #include <iostream>
@@ -39,12 +39,12 @@ int add_state(Dfa& dfa)
     return add_state(dfa, q);
 }
 
-void add_transition(Dfa& dfa, int q, int r, Alphabet::Category a)
+void add_transition(Dfa& dfa, int q, int r, SymbolRange a)
 {
     add_state(dfa, q);
     add_state(dfa, r);
     dfa.delta[q][a] = r;
-    if (a) {
+    if (!is_empty(a)) {
         dfa.symbols.insert(a);
     }
 }
@@ -53,7 +53,7 @@ void compute_predecessors(const nfa::Nfa& nfa,
         std::map<int, std::set<int> >& predecessors)
 {
     // assume predecessors is empty
-    Alphabet::Category epsilon(0, 0);
+    auto epsilon = symbol_range(0, 0);
     for (auto it = nfa.delta.begin(); it != nfa.delta.end(); ++it) {
         int p = it->first;
         if (it->second.count(epsilon) > 0) {     // TODO don't search entire it->second
@@ -77,7 +77,7 @@ std::map<int, std::set<int>> epsilon_closure(const nfa::Nfa& nfa)
         queue.push_back(q);
     }
 
-    Alphabet::Category epsilon(0, 0);
+    auto epsilon = symbol_range(0, 0);
     while (!queue.empty()) {
         int q = queue.front();
         queue.pop_front();
@@ -106,7 +106,7 @@ std::map<int, std::set<int>> epsilon_closure(const nfa::Nfa& nfa)
 std::set<int> next_state(
         const nfa::Nfa& nfa, 
         const std::set<int>& Q, 
-        Alphabet::Category a,
+        SymbolRange a,
         const std::map<int, std::set<int>>& closures)
 {
     // TODO pass R by ref?
@@ -177,7 +177,7 @@ Dfa subset_construction(const nfa::Nfa& nfa)
     return dfa;
 }
 
-int dfa_transition(const Dfa& dfa, int q, Alphabet::Category a)
+int dfa_transition(const Dfa& dfa, int q, SymbolRange a)
 {
     // -1 means delta(q, a) dne
     auto it = dfa.delta.find(q);
@@ -196,7 +196,7 @@ Dfa minimize(const Dfa& dfa)
     std::vector<int> states;
     std::transform(dfa.delta.begin(), dfa.delta.end(),
             std::back_inserter(states),
-            [](const std::pair<int, std::map<Alphabet::Category, int>>& pair) {
+            [](const std::pair<int, std::map<SymbolRange, int>>& pair) {
                 return pair.first;
             });
 
@@ -250,7 +250,7 @@ std::ostream& operator<<(std::ostream& out, const Dfa& dfa)
     for (auto it = dfa.delta.begin(); it != dfa.delta.end(); ++it) {
         int q = it->first;
         for (auto jt = it->second.begin(); jt != it->second.end(); ++jt) {
-            Alphabet::Category a = jt->first;
+            SymbolRange a = jt->first;
             int r = jt->second;
             out << "d(" << q << ", ";
             out << "[" << (char)(a.start) << ", " << (char)(a.end) << "]";

@@ -1,5 +1,5 @@
 #pragma once
-#include "rnd/alphabet.hpp"
+#include "rnd/alphabet/alphabet.hpp"
 #include "rnd/nfa/nfa.h"
 #include <iostream>
 #include <map>
@@ -12,8 +12,8 @@ namespace dfa
 struct Dfa {
     int start;
     std::set<int> accept;
-    std::map<int, std::map<Alphabet::Category, int>> delta;
-    std::set<Alphabet::Category> symbols;
+    std::map<int, std::map<SymbolRange, int>> delta;
+    std::set<SymbolRange> symbols;
 
     Dfa() {}
     Dfa(const nfa::Nfa&);
