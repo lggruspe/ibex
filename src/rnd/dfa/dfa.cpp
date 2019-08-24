@@ -50,14 +50,13 @@ void add_transition(Dfa& dfa, int q, int r, SymbolRange a)
 }
 
 void compute_predecessors(const nfa::Nfa& nfa, 
-        std::map<int, std::set<int> >& predecessors)
+        std::map<int, std::set<int>>& predecessors)
 {
     // assume predecessors is empty
     auto epsilon = symbol_range(0, 0);
-    for (auto it = nfa.delta.begin(); it != nfa.delta.end(); ++it) {
-        int p = it->first;
-        if (it->second.count(epsilon) > 0) {     // TODO don't search entire it->second
-            for (auto q: it->second.at(epsilon)) {
+    for (const auto& [p, trans]: nfa.delta) {
+        if (trans.find(epsilon) != trans.end()) {
+            for (auto q: trans.at(epsilon)) {
                 predecessors[q].insert(p);
             }
         }
@@ -85,9 +84,9 @@ std::map<int, std::set<int>> epsilon_closure(const nfa::Nfa& nfa)
         std::set<int> closure;
         closure.insert(q);
 
-        if (nfa.delta.at(q).count(epsilon) > 0) {        // TODO Only count one
-            for (auto r: nfa.delta.at(q).at(epsilon)) {
-                // closure = closure.union(closures[r])
+        const auto& trans_q = nfa.delta.at(q);
+        if (trans_q.find(epsilon) != trans_q.end()) {
+            for (auto r: trans_q.at(epsilon)) {
                 std::copy(closures[r].begin(), closures[r].end(),
                         std::inserter(closure, closure.begin()));
             }

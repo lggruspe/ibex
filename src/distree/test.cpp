@@ -73,11 +73,3 @@ int main()
     run_test(runner, test_combine);
     run_test(runner, test_print);
 }
-
-// TODO icl stats (compare with distree)
-/*
-boost::icl::split_interval_set<int> intervals;
-for (size_t i = 0; i < n; ++i) {
-    intervals += boost::icl::interval<int>::type(start[i], end[i]);
-}
-*/
