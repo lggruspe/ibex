@@ -8,7 +8,7 @@ from redblack import containers
 from rnd.internals import crnd
 
 class ExprType(enum.Enum):
-    """Same as enum rnd_expr_type { RND_SYMBOL, RND_UNION, ... }."""
+    """Same as enum rnd_type { RND_SYMBOL, RND_UNION, ... }."""
     SYMBOL = 0
     UNION = 1
     CONCATENATION = 2
@@ -18,7 +18,6 @@ class ExprSymbols:
     """Class that represents a closed range of symbols.
 
     Needs to be destroyed after use, either directly or indirectly.
-
     """
 
     def __init__(self, start: int = 0, end: int = None):
@@ -28,13 +27,12 @@ class ExprSymbols:
             raise ValueError("start must be <= end")
         self.start = start
         self.end = end
-        self.cpointer = crnd.rnd_expr_symbol(start, end)
+        self.cpointer = crnd.rnd_symbol(start, end)
 
     def union(self, other):
         """Return a UNION Expr.
 
         other may be an ExprSymbols or an Expr.
-
         """
         return union(self, other)
 
@@ -42,7 +40,6 @@ class ExprSymbols:
         """Return a CONCATENATION Expr.
 
         other may be an ExprSymbols or an Expr.
-
         """
         return concatenation(self, other)
 
@@ -69,7 +66,6 @@ class Expr:
     """Owner class of CExpr with methods for creating new Expr.
 
     Needs to be destroyed after use, either directly or indirectly.
-
     """
 
     def __init__(self, type_, left=None, right=None):
@@ -80,15 +76,15 @@ class Expr:
 
         left = _get_expr_pointer(self.left)
         if type_ is ExprType.UNION:
-            self.cpointer = crnd.rnd_expr_union(
+            self.cpointer = crnd.rnd_union(
                 left,
                 _get_expr_pointer(self.right))
         elif type_ is ExprType.CONCATENATION:
-            self.cpointer = crnd.rnd_expr_concatenation(
+            self.cpointer = crnd.rnd_concatenation(
                 left,
                 _get_expr_pointer(self.right))
         elif type_ is ExprType.CLOSURE:
-            self.cpointer = crnd.rnd_expr_closure(left)
+            self.cpointer = crnd.rnd_closure(left)
 
     def __repr__(self):
         if self.type_ == ExprType.UNION:
@@ -137,7 +133,7 @@ def closure(expr: Expr or ExprSymbols) -> Expr:
     return Expr(ExprType.CLOSURE, expr)
 
 class DfaSymbols:
-    """Similar to CInterval, but with built in comparator."""
+    """Similar to CRange, but with built in comparator."""
 
     def __init__(self, start: int = 0, end: int = None):
         if end is None:
@@ -174,7 +170,7 @@ class Dfa:
     """Higher-level wrapper for rnd_dfa with computational capabilities."""
 
     def __init__(self):
-        self.start = -1
+        self.start = 0
         self.accepts = set()
         self.transitions = {}
 
@@ -186,7 +182,6 @@ class Dfa:
         """Compute if Dfa accepts the sequence of ints.
 
         Assume that -1 is an error state with no outbound transitions.
-
         """
         state = self.start
         for a in inputs:
@@ -197,31 +192,22 @@ class Dfa:
 
 def _cdfa_to_pydfa(_dfa: internals.CDfa) -> Dfa:
     dfa = Dfa()
-    dfa.start = int(_dfa.start_state)
     dfa.transitions[dfa.start] = containers.Map()
 
-    n = int(_dfa.number_accept_states)
-    for i in range(n):
-        accept = int(_dfa.accept_states[i])
-        dfa.accepts.add(accept)
-        dfa.transitions[accept] = containers.Map()
-
-    n = (_dfa.number_transitions)
-    for i in range(n):
-        _trans = _dfa.transitions[i]
-        q = int(_trans.current_state)
-        r = int(_trans.next_state)
-
-        a_start = int(_trans.symbols.start)
-        a_end = int(_trans.symbols.end)
-        a = DfaSymbols(a_start, a_end)
-
+    for q in range(_dfa.order):
+        state = _dfa.states[q]
         if q not in dfa.transitions:
             dfa.transitions[q] = containers.Map()
-        if r not in dfa.transitions:
-            dfa.transitions[r] = containers.Map()
-        # assumes a doesn't overlap with any other DfaSymbols
-        dfa.transitions[q][a] = r
+        if state.accept:
+            dfa.accepts.add(q)
+        for j in range(state.outdegree):
+            trans = state.transitions[j]
+            a = DfaSymbols(int(trans.label.start), int(trans.label.end))
+            r = int(trans.to)
+            if r not in dfa.transitions:
+                dfa.transitions[r] = containers.Map()
+            # assumes a doesn't overlap with any other DfaSymbols
+            dfa.transitions[q][a] = r
     return dfa
 
 def convert(expr: Expr or ExprSymbols) -> Dfa:
