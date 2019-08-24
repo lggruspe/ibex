@@ -110,14 +110,13 @@ class RndConversionTest(unittest.TestCase):
             accepted = self.dfa.compute(map(ord, word))
             self.assertFalse(accepted ^ label)
 
-    @unittest.skip("")
     def test_character(self):
         self.dfa = to_dfa(character_expr())
         self.assertTrue(character_data)
         for word, label in character_data:
-            word = word.encode().decode(encoding="unicode-escape")
+            word = word.encode().decode()
             accepted = self.dfa.compute(map(ord, word))
-            self.assertFalse(accepted ^ False)
+            self.assertFalse(accepted ^ label)
 
     def test_leaks(self):
         to_dfa(empty_expr())
