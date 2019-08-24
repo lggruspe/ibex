@@ -2,6 +2,8 @@
 #include "rnd/dfa/dfa.h"
 #include <cstdlib>
 #include <exception>
+#include <unordered_set>
+#include <vector>
 
 int expr_counter = 0;
 
@@ -190,11 +192,21 @@ struct rnd_expr* rnd_expr_closure(struct rnd_expr* left)
 
 void rnd_expr_destroy(struct rnd_expr* expr)
 {
-    if (expr) {
-        rnd_expr_destroy(expr->left);
-        rnd_expr_destroy(expr->right);
-        free(expr);
-        --expr_counter;
+    if (!expr) {
+        return;
+    }
+    std::vector<struct rnd_expr*> stack = { expr };
+    std::unordered_set<struct rnd_expr*> freed = { nullptr };
+    while (!stack.empty()) {
+        auto re = stack.back();
+        stack.pop_back();
+        if (!re || freed.find(re) != freed.end()) {
+            continue;
+        }
+        stack.push_back(re->left);
+        stack.push_back(re->right);
+        rnd_expr_free(re);
+        freed.insert(re);
     }
 }
 
