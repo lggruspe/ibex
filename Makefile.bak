@@ -22,7 +22,10 @@ vpath %.h include src
 vpath %.hpp include src
 
 .PHONY:	all
-all:	lib/librnd.a lib/librnd.so lib/libcrnd.so
+all:	lib/librnd.a lib/librnd.so lib/libcrnd.so lib/libcrnd.a
+
+lib/libcrnd.a:	build/rnd.o $(OBJECTS)
+	$(AR) rcs $@ $^
 
 lib/librnd.so:	$(OBJECTS)
 	$(CXX) -shared -o $@ $^
