@@ -1,4 +1,5 @@
 #include "alphabet.hpp"
+#include "distree/distree.h"
 
 namespace rnd
 {
@@ -13,7 +14,7 @@ SymbolRange symbol_range(int start, int end)
 
 bool is_empty(const SymbolRange& range)
 {
-    return range.start != 0 || range.end != 0;
+    return range.start == 0 && range.end == 0;
 }
 
 std::ostream& operator<<(std::ostream& out, const SymbolRange& range)
