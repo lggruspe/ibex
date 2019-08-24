@@ -1,5 +1,6 @@
 #include "rnd.h"
 #include "rnd/dfa/dfa.h"
+#include <cassert>
 #include <cstdlib>
 #include <exception>
 #include <unordered_set>
@@ -16,27 +17,6 @@ const char* MEMORY_ERROR = "Ran out of memory";
 const char* UNEXPECTED_ERROR = "Internal error";
 const char* INPUT_ERROR = "Input was malformed";
 
-struct rnd_dfa rnd_dfa_error(struct rnd_dfa* dfa, const char* error_msg)
-{
-    if (dfa) {
-        if (dfa->transitions) {
-            free(dfa->transitions);
-        }
-        if (dfa->accept_states) {
-            free(dfa->accept_states);
-        }
-    }
-    struct rnd_dfa new_dfa;
-    new_dfa.number_states = 0;
-    new_dfa.number_transitions = 0;
-    new_dfa.number_accept_states = 0;
-    new_dfa.start_state = -1;
-    new_dfa.transitions = NULL;
-    new_dfa.accept_states = NULL;
-    new_dfa.error = error_msg;
-    return new_dfa;
-}
-
 rnd::regex::Expr transform_expr(struct rnd_expr *expr)
 {
     if (!expr) {
@@ -47,7 +27,7 @@ rnd::regex::Expr transform_expr(struct rnd_expr *expr)
         if (expr->left || expr->right) {
             throw rnd::MalformedExpressionException();
         }
-        return rnd::regex::symbol(expr->symbols.start, expr->symbols.end);
+        return rnd::regex::symbol(expr->value.start, expr->value.end);
     }
 
     if (!expr->left) {
@@ -74,44 +54,52 @@ rnd::regex::Expr transform_expr(struct rnd_expr *expr)
     throw rnd::MalformedExpressionException();
 }
 
+struct rnd_dfa rnd_dfa_error(struct rnd_dfa* dfa, const char* error_msg)
+{
+    rnd_dfa_destroy(dfa);
+    dfa->error = error_msg;
+    return *dfa;
+}
+
 struct rnd_dfa transform_dfa(const rnd::dfa::Dfa& dfa)
 {
     struct rnd_dfa result;
-    result.number_states = dfa.delta.size();
-    result.number_transitions = 0;
-    result.number_accept_states = dfa.accept.size();
-    result.start_state = dfa.start;
-    result.transitions = NULL;
+    result.states = NULL;
     result.error = NULL;
-
-    result.accept_states = (int*)malloc(sizeof(int) * result.number_accept_states);
-    if (!result.accept_states) {
-        return rnd_dfa_error(&result, MEMORY_ERROR);
-    }
-
-    size_t i = 0;
-    for (int q: dfa.accept) {
-        result.accept_states[i++] = q;
-    }
-
-    i = 0;
-    for (const auto& [q, trans]: dfa.delta) {
-        void *temp = realloc(result.transitions, 
-                sizeof(struct rnd_transition) * (i + trans.size()));
-        if (!temp) {
+    result.order = dfa.delta.size();
+    if (result.order) {
+        result.states = (struct rnd_state*)malloc(sizeof(struct rnd_state) * result.order);
+        if (!result.states) {
             return rnd_dfa_error(&result, MEMORY_ERROR);
         }
-        result.transitions = (struct rnd_transition*)temp;
-        for (const auto& [a, r]: trans) {
-            result.transitions[i].current_state = q;
-            result.transitions[i].next_state = r;
-            result.transitions[i].symbols.start = a.start;
-            result.transitions[i].symbols.end = a.end;
-            ++i;
+    }
+
+    for (const auto& [q, trans]: dfa.delta) {
+        assert(0 <= q && q < result.order);
+        result.states[q].accept = false;
+        result.states[q].outdegree = trans.size();
+        result.states[q].transitions = NULL;
+        if (result.states[q].outdegree) {
+            void* temp = malloc(sizeof(struct rnd_transition) * result.states[q].outdegree);
+            result.states[q].transitions = (struct rnd_transition*)temp;
+            if (!result.states[q].transitions) {
+                return rnd_dfa_error(&result, MEMORY_ERROR);
+            }
+
+            int i = 0;
+            for (const auto& [a, r]: trans) {
+                result.states[q].transitions[i].label.start = a.start;
+                result.states[q].transitions[i].label.end = a.end;
+                result.states[q].transitions[i].to = r;
+                ++i;
+            }
         }
     }
 
-    result.number_transitions = i;
+    for (const auto& q: dfa.accept) {
+        assert(0 <= q && q < result.order);
+        result.states[q].accept = true;
+    }
     return result;
 }
 
@@ -132,23 +120,23 @@ struct rnd_dfa rnd_convert(struct rnd_expr* expr)
 
 void rnd_dfa_destroy(struct rnd_dfa* dfa)
 {
-    dfa->number_states = 0;
-    dfa->number_transitions = 0;
-    dfa->number_accept_states = 0;
-    dfa->start_state = -1;
-    dfa->error = NULL;
-    if (dfa->transitions) {
-        free(dfa->transitions);
-        dfa->transitions = NULL;
-    }
-    if (dfa->accept_states) {
-        free(dfa->accept_states);
-        dfa->accept_states = NULL;
+    if (dfa) {
+        if (dfa->states) {
+            for (int i = 0; i < dfa->order; ++i) {
+                if (dfa->states[i].transitions) {
+                    free(dfa->states[i].transitions);
+                }
+            }
+            free(dfa->states);
+            dfa->states = NULL;
+        }
+        dfa->order = 0;
+        dfa->error = NULL;
     }
 }
 
 struct rnd_expr* rnd_expr_new(
-        enum rnd_expr_type type, 
+        enum rnd_type type, 
         struct rnd_expr* left,
         struct rnd_expr* right,
         int start,
@@ -160,32 +148,32 @@ struct rnd_expr* rnd_expr_new(
         expr->type = type;
         expr->left = left;
         expr->right = right;
-        expr->symbols.start = start;
-        expr->symbols.end = end;
+        expr->value.start = start;
+        expr->value.end = end;
     }
     return expr;
 }
 
-struct rnd_expr* rnd_expr_symbol(int start, int end)
+struct rnd_expr* rnd_symbol(int start, int end)
 {
     return rnd_expr_new(RND_SYMBOL, NULL, NULL, start, end);
 }
 
-struct rnd_expr* rnd_expr_union(
+struct rnd_expr* rnd_union(
         struct rnd_expr* left, 
         struct rnd_expr* right)
 {
     return rnd_expr_new(RND_UNION, left, right, 0, 0);
 }
 
-struct rnd_expr* rnd_expr_concatenation(
+struct rnd_expr* rnd_concatenation(
         struct rnd_expr* left,
         struct rnd_expr* right)
 {
     return rnd_expr_new(RND_CONCATENATION, left, right, 0, 0);
 }
 
-struct rnd_expr* rnd_expr_closure(struct rnd_expr* left)
+struct rnd_expr* rnd_closure(struct rnd_expr* left)
 {
     return rnd_expr_new(RND_CLOSURE, left, NULL, 0, 0);
 }

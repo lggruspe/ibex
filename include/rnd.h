@@ -2,15 +2,16 @@
 #ifdef __cplusplus
 #include <cstddef>
 #else
+#include <stdbool.h>
 #include <stddef.h>
 #endif
 
-struct rnd_symbol_interval {
+struct rnd_range {
     int start;
     int end;
 };
 
-enum rnd_expr_type { 
+enum rnd_type { 
     RND_SYMBOL = 0,
     RND_UNION = 1,
     RND_CONCATENATION = 2,
@@ -18,25 +19,30 @@ enum rnd_expr_type {
 };
 
 struct rnd_expr {
-    enum rnd_expr_type type;
+    enum rnd_type type;
+    struct rnd_range value;
     struct rnd_expr *left;
     struct rnd_expr *right;
-    struct rnd_symbol_interval symbols;
 };
 
 struct rnd_transition {
-    int current_state;
-    int next_state;
-    struct rnd_symbol_interval symbols;
+    struct rnd_range label;
+    int to;
 };
 
-struct rnd_dfa {
-    size_t number_states;
-    size_t number_transitions;
-    size_t number_accept_states;
-    int start_state;
+struct rnd_state {
+    bool accept;
+    int outdegree;
     struct rnd_transition *transitions;
-    int *accept_states;
+};
+
+// order: number of states
+// states:
+//      an array of states. indices serve as state ids
+//      invariant: states[0] is the start state
+struct rnd_dfa {
+    int order;
+    struct rnd_state *states;
     const char *error;
 };
 
@@ -53,22 +59,22 @@ void rnd_dfa_destroy(struct rnd_dfa*);
 #ifdef __cplusplus
 extern "C" 
 #endif
-struct rnd_expr *rnd_expr_symbol(int, int);
+struct rnd_expr *rnd_symbol(int, int);
 
 #ifdef __cplusplus
 extern "C" 
 #endif
-struct rnd_expr *rnd_expr_union(struct rnd_expr*, struct rnd_expr*);
+struct rnd_expr *rnd_union(struct rnd_expr*, struct rnd_expr*);
 
 #ifdef __cplusplus
 extern "C" 
 #endif
-struct rnd_expr *rnd_expr_concatenation(struct rnd_expr*, struct rnd_expr*);
+struct rnd_expr *rnd_concatenation(struct rnd_expr*, struct rnd_expr*);
 
 #ifdef __cplusplus
 extern "C" 
 #endif
-struct rnd_expr *rnd_expr_closure(struct rnd_expr*);
+struct rnd_expr *rnd_closure(struct rnd_expr*);
 
 #ifdef __cplusplus
 extern "C" 
