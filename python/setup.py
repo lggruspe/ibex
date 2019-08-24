@@ -5,7 +5,7 @@ with open("../README.md", "r") as f:
 
 setuptools.setup(
     name="rnd",
-    version="0.2a1",
+    version="0.3.0a0",
     author="Levi Gruspe",
     author_email="mail.levig@gmail.com",
     description="Python bindings for libcrnd",
