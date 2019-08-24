@@ -1,5 +1,6 @@
 CC = gcc
-CFLAGS = -g -Wall -I../include
+CPPFLAGS = -I../include -L../lib
+CFLAGS = -g -Wall -Wextra
 CXX = g++
 CXXFLAGS = -g -Wall -I../include -I../src
 
@@ -11,7 +12,7 @@ example_cpp:	example.cpp librnd.so
 	$(CXX) $(CXXFLAGS) -o $@ $^
 
 example_c:	example.c libcrnd.so
-	$(CC) $(CFLAGS) -o $@ $^
+	$(CC) $(CPPFLAGS) $(CFLAGS) -o $@ $^
 
 clean:
 	-rm -f example_cpp example_c
