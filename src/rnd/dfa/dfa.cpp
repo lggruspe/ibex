@@ -222,13 +222,17 @@ Dfa minimize(const Dfa& dfa)
     // set start and accept states
     Dfa M;
     M.start = partition.index(dfa.start);
+    add_state(M, M.start);
     for (auto f: dfa.accept) {
-        M.accept.insert(partition.index(f));
+        auto id = partition.index(f);
+        M.accept.insert(id);
+        add_state(M, id);
     }
 
     // set transitions
     for (const auto& trans: dfa.delta) {
         int q = partition.index(trans.first);
+        add_state(M, q);
         for (const auto& tran: trans.second) {
             const auto& a = tran.first;
             int r = partition.index(tran.second);
