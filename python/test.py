@@ -73,7 +73,7 @@ class RndConversionTest(unittest.TestCase):
         self.dfa = to_dfa(identifier_expr())
         self.assertTrue(identifier_data)
         for word, label in identifier_data:
-            word = word.encode().decode(encoding="unicode-escape")
+            word = word.encode().decode()
             accepted = self.dfa.compute(map(ord, word))
             self.assertFalse(accepted ^ label)
 
@@ -81,7 +81,7 @@ class RndConversionTest(unittest.TestCase):
         self.dfa = to_dfa(empty_expr())
         self.assertTrue(empty_data)
         for word, label in empty_data:
-            word = word.encode().decode(encoding="unicode-escape")
+            word = word.encode().decode()
             accepted = self.dfa.compute(map(ord, word))
             self.assertFalse(accepted ^ label)
 
@@ -98,16 +98,15 @@ class RndConversionTest(unittest.TestCase):
         self.dfa = to_dfa(number_expr())
         self.assertTrue(number_data)
         for word, label in number_data:
-            word = word.encode().decode(encoding="unicode-escape")
+            word = word.encode().decode()
             accepted = self.dfa.compute(map(ord, word))
             self.assertFalse(accepted ^ label)
 
-    @unittest.skip("")
     def test_string(self):
         self.dfa = to_dfa(string_expr())
         self.assertTrue(string_data)
         for word, label in string_data:
-            word = word.encode().decode(encoding="unicode-escape")
+            word = word.encode().decode()
             accepted = self.dfa.compute(map(ord, word))
             self.assertFalse(accepted ^ label)
 
