@@ -19,7 +19,7 @@ def io_iterate():
             break
         yield char
 
-def scan_alone(scanner, lexeme=""):
+def single(scanner, lexeme=""):
     for char in io_iterate():
         if not scanner.next(char):
             io_unget(char)
@@ -30,7 +30,7 @@ def scan_alone(scanner, lexeme=""):
         return "", ""
     return scanner.token, lexeme
 
-def longest_match(*args):
+def longest(*args):
     if not args:
         return "", ""
     scanners = LinkedList(args)
@@ -47,4 +47,4 @@ def longest_match(*args):
             else:
                 continue
             break
-    return scan_alone(scanners[0], lexeme)
+    return single(scanners[0], lexeme)

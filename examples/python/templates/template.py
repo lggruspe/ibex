@@ -8,6 +8,7 @@ class Scanner:
         self.state = 0
         self.checkpoint = 0
         self.token = ""
+        self.accept = False
 
     def next(self, char):
         """State transition on input char, returns True if successful."""
