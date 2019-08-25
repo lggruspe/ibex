@@ -8,7 +8,6 @@ class Scanner:
         self.state = 0
         self.checkpoint = 0
         self.token = ""
-        self.accept = False
 
     def next(self, char):
         """State transition on input char, returns True if successful."""
@@ -27,6 +26,9 @@ class Scanner:
 
     def __repr__(self):
         return f"<Scanner {self.token} state:{self.state} checkpoint:{self.checkpoint}>"
+
+    def accepts(self):
+        raise NotImplementedError
 
 ## for scanner in scanners
 ## include "scanner.py"
