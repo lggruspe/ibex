@@ -30,6 +30,7 @@ def single(scanner, lexeme=""):
         return "", ""
     return scanner.token, lexeme
 
+'''
 def longest(*args):
     if not args:
         return "", ""
@@ -48,3 +49,25 @@ def longest(*args):
                 continue
             break
     return single(scanners[0], lexeme)
+'''
+
+def longest(*args):
+    if not args:
+        return "", ""
+    scanners = args[:]
+    record_scanner = None
+    record_lexeme = ""
+    for scanner in scanners:
+        lexeme = ""
+        for char in io_iterate():
+            if not scanner.next(char):
+                io_unget(char)
+                for a in reversed(lexeme):
+                    io_unget(a)
+                if len(lexeme) > len(record_lexeme):
+                    record_scanner = scanner
+                    record_lexeme = lexeme
+                break
+            lexeme += char
+    token = record_scanner.token if record_scanner else None
+    return token, record_lexeme
