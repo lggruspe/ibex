@@ -1,5 +1,5 @@
-from py.main import longest_match
-from build.example import *
+from main import longest_match
+from output.scanners import *
 
 token, lexeme = longest_match(
     EmptyScanner(),
