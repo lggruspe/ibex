@@ -12,8 +12,8 @@ setuptools.setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/lggruspe/scangen",
-    packages=["scangen"],
-    install_requires=["rnd==0.2a1", "jinja2"],
+    py_modules=["scangen"],
+    install_requires=["rnd>=0.2a1", "jinja2"],
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
