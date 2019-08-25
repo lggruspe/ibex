@@ -9,4 +9,4 @@ token, lexeme = longest_match(
     NumberScanner())
     #CharacterScanner())
     #StringScanner())
-print(token, lexeme)
+print(token, f"\"{lexeme}\"")
