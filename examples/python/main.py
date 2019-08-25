@@ -1,5 +1,5 @@
-from collections import deque
 import sys
+from linkedlist import LinkedList
 
 INPUT_STACK = []
 
@@ -22,7 +22,7 @@ def io_iterate():
 def longest_match(*args):
     if not args:
         return "", ""
-    scanners = deque(args)
+    scanners = LinkedList(args)
     lexeme = ""
     while len(scanners) > 1:
         char = io_get()

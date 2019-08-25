@@ -53,12 +53,13 @@ class LinkedList:
         self.size += 1
         self.tail.insert_after(ListNode(data))
 
-    def delete_node(self, node):
+    def deletenode(self, node):
         """Deletes node without checking if it belongs in the list."""
         node.delete()
         self.size -= 1
+        return node.data
 
-    def search_node(self, data):
+    def searchnode(self, data):
         self.null.data = data
         node = self.head
         while node.data != data:
@@ -66,7 +67,7 @@ class LinkedList:
         return node if node != self.null else None
 
     def __contains__(self, data):
-        node = self.search_node(data)
+        node = self.searchnode(data)
         return node is not None
 
     def __iter__(self):
@@ -85,5 +86,24 @@ class LinkedList:
                 node = node.left
         return iterator()
 
+    def popleft(self):
+        if self.null == self.head:
+            raise IndexError("pop from an empty LinkedList")
+        return self.deletenode(self.head)
+
+    def pop(self):
+        if self.null == self.tail:
+            raise IndexError("pop from an empty LinkedList")
+        return self.deletenode(self.tail)
+
     def __repr__(self):
         return "[" + ", ".join([str(item) for item in self]) + "]"
+
+
+    def __getitem__(self, index):
+        if self.head != self.null:
+            if index == 0:
+                return self.head.data
+            if index == -1:
+                return self.tail.data
+        raise IndexError("LinkedList index other than 0 or -1")
