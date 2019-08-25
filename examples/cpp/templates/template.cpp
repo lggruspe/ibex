@@ -1,3 +1,4 @@
+#pragma once
 #include <iostream>
 #include <memory>
 #include <string>
@@ -84,9 +85,3 @@ struct ScannerCollection {
         }
     }
 };
-
-int main()
-{
-    ScannerCollection scanners;
-    scanners.scan();
-}
