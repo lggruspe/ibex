@@ -1,5 +1,4 @@
-#include "vector.h"
-#include "swlist/swlist.h"
+#pragma once
 #include <stdio.h>
 
 #define fail_if_empty(input) do {\
@@ -34,19 +33,3 @@ struct scanner scanner_create(enum token token, int (*transition)(int, int))
 {% include "scanner.c" %}
 
 ## endfor
-
-vector_register(int)
-
-typedef struct scanner scanner;
-sw_register(scanner)
-
-int main()
-{
-    struct vector_int *lexeme = NULL;
-    struct sw_list_scanner *scanners = NULL;
-## for scanner in scanners|reverse
-    scanners = sw_push(scanners, sw_create(scanner_create(token_{{ scanner.token|upper }}, transition_{{ scanner.token }})));
-## endfor
-
-    sw_destroy(scanners);
-}
