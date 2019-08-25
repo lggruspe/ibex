@@ -78,6 +78,14 @@ class LinkedList:
                 node = node.right
         return iterator()
 
+    def iteratenodes(self):
+        def iterator():
+            node = self.head
+            while node != self.null:
+                yield node
+                node = node.right
+        return iterator()
+
     def __reversed__(self):
         def iterator():
             node = self.tail

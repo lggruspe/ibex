@@ -19,27 +19,32 @@ def io_iterate():
             break
         yield char
 
+def scan_alone(scanner, lexeme=""):
+    for char in io_iterate():
+        if not scanner.next(char):
+            io_unget(char)
+            scanner.backtrack()
+            break
+        lexeme += char
+    if not lexeme:
+        return "", ""
+    return scanner.token, lexeme
+
 def longest_match(*args):
     if not args:
         return "", ""
     scanners = LinkedList(args)
     lexeme = ""
-    while len(scanners) > 1:
-        char = io_get()
-        if not char:
+    if len(scanners) > 1:
+        for char in io_iterate():
+            lexeme += char
+            for node in scanners.iteratenodes():
+                scanner = node.data
+                if not scanner.next(char):
+                    scanners.deletenode(node)
+                if len(scanners) <= 1:
+                    break
+            else:
+                continue
             break
-        lexeme += char
-        scanner = scanners.popleft()
-        if scanner.next(char):
-            scanners.append(scanner)
-
-    # TODO pick leftmost scanner in args, instead of scanners[0]
-    scanner = scanners[0]
-    for char in io_iterate():
-        lexeme += char
-        if not scanner.next(char):
-            io_unget(lexeme[-1])
-            lexeme = lexeme[:-1]
-            scanner.backtrack()
-            break
-    return scanner.token, lexeme
+    return scan_alone(scanners[0], lexeme)
