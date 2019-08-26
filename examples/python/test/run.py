@@ -26,12 +26,39 @@ def test_single_match(scanner):
     print(token, f"\"{lexeme}\"")
 
 def test_tokenizer():
-    match.tokenize(*(scanner.values()))
+    tokenize = match.tokenizer(*(scanners.values()))
+    for token, lexeme in tokenize:
+        print(token, lexeme)
+
+def get_args():
+    description = "Run python scangen example."
+    parser = argparse.ArgumentParser(description=description)
+    subparsers = parser.add_subparsers(
+        dest="subcommand",
+        help="sub-command help")
+    parser_single = subparsers.add_parser(
+        "single",
+        help="match input to a single scanner")
+    parser_single.add_argument(
+        "-s",
+        dest="scanner",
+        help="name of scanner ({})".format('|'.join(scanners.keys())))
+    parser_longest = subparsers.add_parser(
+        "longest",
+        help="find longest match")
+    parser_tokenizer = subparsers.add_parser(
+        "tokenizer",
+        help="tokenize input")
+    return parser.parse_args()
 
 def main():
-    if len(sys.argv) == 1:
-        return test_longest_match()
-    test_single_match(scanners[sys.argv[1]])
+    args = get_args()
+    if args.subcommand == "single":
+        test_single_match(scanners[args.scanner])
+    elif args.subcommand == "longest":
+        test_longest_match()
+    elif args.subcommand == "tokenizer":
+        test_tokenizer()
 
 if __name__ == "__main__":
     try:
