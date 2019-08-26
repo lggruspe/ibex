@@ -1,7 +1,20 @@
 #include "../output/scanners.hpp"
+#include "match.hpp"
+#include <iostream>
+#include <string>
 
 int main()
 {
-    ScannerCollection scanners;
-    scanners.scan();
+    EmptyScanner empty;
+    IdentifierScanner identifier;
+    WhitespaceScanner whitespace;
+    IntegerScanner integer;
+    NumberScanner number;
+    CharacterScanner character;
+    StringScanner string;
+    
+    std::string lexeme = match::single(std::cin, number); 
+    std::string token = (lexeme.empty() ? "SyntaxError" : "Number");
+    std::cout << "token: " << token << std::endl;
+    std::cout << "lexeme: " << lexeme << std::endl;
 }

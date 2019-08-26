@@ -1,5 +1,5 @@
 CXX = g++
-CXXFLAGS = -g -std=gnu++17 -Wall -Wextra
+CXXFLAGS = -g -std=gnu++17 -Wall -Wextra -Wpedantic
 CPPFLAGS = -I../extra
 
 .PHONY:	all
@@ -10,9 +10,8 @@ output/scanners.hpp:	templates/template.cpp templates/scanner.cpp
 
 .PHONY:	clean
 clean:
-	-rm -rf output/scanners.hpp a.out
+	-rm -rf a.out
 
 .PHONY:	compile
 compile:	all
 	$(CXX) $(CXXFLAGS) test/run.cpp
-
