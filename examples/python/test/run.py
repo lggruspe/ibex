@@ -1,8 +1,9 @@
 import os.path
 import sys
+import match
+
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-import match
 from output.scanners import *
 
 scanners = {
