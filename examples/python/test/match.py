@@ -19,16 +19,56 @@ def io_iterate():
             break
         yield char
 
-def single(scanner, lexeme=""):
+def single(scanner):
+    lexeme = ""
     for char in io_iterate():
-        if not scanner.next(char):
-            io_unget(char)
-            scanner.backtrack()
-            break
         lexeme += char
+        if not scanner.next(char):
+            for a in reversed(lexeme):
+                io_unget(a)
+            steps = scanner.backtrack()
+            if steps > 0:
+                lexeme = lexeme[:-steps]
+            break
     if not lexeme:
         return "", ""
     return scanner.token, lexeme
+
+def longest(*args):
+    if not args:
+        return "", ""
+    scanners = args[:]
+    record_scanner = None
+    record_lexeme = ""
+    for scanner in scanners:
+        lexeme = ""
+        for char in io_iterate():
+            lexeme += char
+            if not scanner.next(char):
+                for a in reversed(lexeme):
+                    io_unget(a)
+                steps = scanner.backtrack()
+                if steps > 0:
+                    lexeme = lexeme[:-steps]
+                if scanner.accepts():
+                    if len(lexeme) > len(record_lexeme):
+                        record_scanner = scanner
+                        record_lexeme = lexeme
+                break
+
+    token = ""
+    if record_lexeme:
+        token = record_scanner.token
+        for _ in record_lexeme:
+            io_get()
+    return token, record_lexeme
+
+def tokenizer(*scanners):
+    while True:
+        token, lexeme = longest(*scanners)
+        if not token:
+            break
+        yield token, lexeme
 
 '''
 def longest(*args):
@@ -50,39 +90,3 @@ def longest(*args):
             break
     return single(scanners[0], lexeme)
 '''
-
-def longest(*args):
-    if not args:
-        return "", ""
-    scanners = args[:]
-    record_scanner = None
-    record_lexeme = ""
-    for scanner in scanners:
-        lexeme = ""
-        for char in io_iterate():
-            lexeme += char
-            if not scanner.next(char):
-                for a in reversed(lexeme):
-                    io_unget(a)
-                steps = scanner.backtrack()
-                if scanner.accepts():
-                    if steps > 0:
-                        lexeme = lexeme[:-steps]
-                    if len(lexeme) > len(record_lexeme):
-                        record_scanner = scanner
-                        record_lexeme = lexeme
-                break
-
-    token = None
-    if record_lexeme:
-        token = record_scanner.token
-        for _ in record_lexeme:
-            io_get()
-    return token, record_lexeme
-
-def tokenizer(*scanners):
-    while True:
-        token, lexeme = longest(*scanners)
-        if not token:
-            break
-        yield token, lexeme
