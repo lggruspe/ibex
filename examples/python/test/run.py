@@ -1,3 +1,4 @@
+import argparse
 import os.path
 import sys
 import match
@@ -24,6 +25,9 @@ def test_single_match(scanner):
     token, lexeme = match.single(scanner)
     print(token, f"\"{lexeme}\"")
 
+def test_tokenizer():
+    match.tokenize(*(scanner.values()))
+
 def main():
     if len(sys.argv) == 1:
         return test_longest_match()
@@ -36,5 +40,3 @@ if __name__ == "__main__":
         print("Invalid argument")
     except IndexError:
         print("Missing arguments")
-
-

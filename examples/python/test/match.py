@@ -74,3 +74,10 @@ def longest(*args):
                 break
     token = record_scanner.token if record_scanner else None
     return token, record_lexeme
+
+def tokenize(*scanners):
+    while True:
+        token, lexeme = longest(*scanners)
+        if not token:
+            break
+        yield token, lexeme
