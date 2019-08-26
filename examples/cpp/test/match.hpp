@@ -1,13 +1,13 @@
 #pragma once
 #include <iostream>
 #include <string>
+#include <utility>
 
 namespace match {
 
 template <class Scanner>
-std::string single(std::istream& in, Scanner& scanner)
+std::string single(std::istream& in, Scanner& scanner, std::string lexeme="")
 {
-    std::string lexeme;
     for (int c = in.get(); c != EOF; c = in.get()) {
         lexeme += (char)c;
         if (!scanner.next(c)) {

@@ -1,6 +1,14 @@
 struct {{ scanner.token|title }}Scanner: public Scanner {
     //using Scanner::Scanner;
-    {{ scanner.token|title }}Scanner() : Scanner(Token::{{ scanner.token }}) {}
+    {{ scanner.token|title }}Scanner() : Scanner(Token::{{ scanner.token }})
+    {
+## if 0 in scanner.accepts
+        accept = 0;
+## else
+        accept = -1;
+## endif
+    }
+
     bool next(int c)
     {
         int eof = std::char_traits<char>::eof();
@@ -11,6 +19,7 @@ struct {{ scanner.token|title }}Scanner: public Scanner {
 ## for state in scanner.transitions
         case {{state}}:
 ## if state in scanner.accepts
+            accept = state();
             checkpoint.clear();
 ## endif
 ## for transition in scanner.transitions[state]

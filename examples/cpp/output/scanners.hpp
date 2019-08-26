@@ -47,6 +47,7 @@ std::ostream& operator<<(std::ostream& out, Token token)
 struct Scanner {
     Token token;
     std::vector<int> checkpoint;
+    int accept;
 
     Scanner(Token token) : token(token), checkpoint({0}) {}
     virtual ~Scanner() {}
@@ -70,7 +71,11 @@ struct Scanner {
 
 struct EmptyScanner: public Scanner {
     //using Scanner::Scanner;
-    EmptyScanner() : Scanner(Token::empty) {}
+    EmptyScanner() : Scanner(Token::empty)
+    {
+        accept = 0;
+    }
+
     bool next(int c)
     {
         int eof = std::char_traits<char>::eof();
@@ -79,6 +84,7 @@ struct EmptyScanner: public Scanner {
         }
         switch (state()) {
         case 0:
+            accept = state();
             checkpoint.clear();
             checkpoint.push_back(-1);
             return false;
@@ -90,7 +96,11 @@ struct EmptyScanner: public Scanner {
 
 struct IdentifierScanner: public Scanner {
     //using Scanner::Scanner;
-    IdentifierScanner() : Scanner(Token::identifier) {}
+    IdentifierScanner() : Scanner(Token::identifier)
+    {
+        accept = -1;
+    }
+
     bool next(int c)
     {
         int eof = std::char_traits<char>::eof();
@@ -114,6 +124,7 @@ struct IdentifierScanner: public Scanner {
             checkpoint.push_back(-1);
             return false;
         case 1:
+            accept = state();
             checkpoint.clear();
             if (48 <= c && c <= 57) {
                 checkpoint.push_back(1);
@@ -141,7 +152,11 @@ struct IdentifierScanner: public Scanner {
 
 struct WhitespaceScanner: public Scanner {
     //using Scanner::Scanner;
-    WhitespaceScanner() : Scanner(Token::whitespace) {}
+    WhitespaceScanner() : Scanner(Token::whitespace)
+    {
+        accept = -1;
+    }
+
     bool next(int c)
     {
         int eof = std::char_traits<char>::eof();
@@ -165,6 +180,7 @@ struct WhitespaceScanner: public Scanner {
             checkpoint.push_back(-1);
             return false;
         case 1:
+            accept = state();
             checkpoint.clear();
             checkpoint.push_back(-1);
             return false;
@@ -176,7 +192,11 @@ struct WhitespaceScanner: public Scanner {
 
 struct IntegerScanner: public Scanner {
     //using Scanner::Scanner;
-    IntegerScanner() : Scanner(Token::integer) {}
+    IntegerScanner() : Scanner(Token::integer)
+    {
+        accept = -1;
+    }
+
     bool next(int c)
     {
         int eof = std::char_traits<char>::eof();
@@ -196,10 +216,12 @@ struct IntegerScanner: public Scanner {
             checkpoint.push_back(-1);
             return false;
         case 1:
+            accept = state();
             checkpoint.clear();
             checkpoint.push_back(-1);
             return false;
         case 2:
+            accept = state();
             checkpoint.clear();
             if (48 <= c && c <= 48) {
                 checkpoint.push_back(2);
@@ -219,7 +241,11 @@ struct IntegerScanner: public Scanner {
 
 struct NumberScanner: public Scanner {
     //using Scanner::Scanner;
-    NumberScanner() : Scanner(Token::number) {}
+    NumberScanner() : Scanner(Token::number)
+    {
+        accept = -1;
+    }
+
     bool next(int c)
     {
         int eof = std::char_traits<char>::eof();
@@ -239,6 +265,7 @@ struct NumberScanner: public Scanner {
             checkpoint.push_back(-1);
             return false;
         case 5:
+            accept = state();
             checkpoint.clear();
             if (46 <= c && c <= 46) {
                 checkpoint.push_back(7);
@@ -255,6 +282,7 @@ struct NumberScanner: public Scanner {
             checkpoint.push_back(-1);
             return false;
         case 1:
+            accept = state();
             checkpoint.clear();
             if (46 <= c && c <= 46) {
                 checkpoint.push_back(7);
@@ -320,10 +348,12 @@ struct NumberScanner: public Scanner {
             checkpoint.push_back(-1);
             return false;
         case 6:
+            accept = state();
             checkpoint.clear();
             checkpoint.push_back(-1);
             return false;
         case 8:
+            accept = state();
             checkpoint.clear();
             if (48 <= c && c <= 48) {
                 checkpoint.push_back(8);
@@ -336,6 +366,7 @@ struct NumberScanner: public Scanner {
             checkpoint.push_back(-1);
             return false;
         case 3:
+            accept = state();
             checkpoint.clear();
             if (48 <= c && c <= 48) {
                 checkpoint.push_back(3);
@@ -363,7 +394,11 @@ struct NumberScanner: public Scanner {
 
 struct CharacterScanner: public Scanner {
     //using Scanner::Scanner;
-    CharacterScanner() : Scanner(Token::character) {}
+    CharacterScanner() : Scanner(Token::character)
+    {
+        accept = -1;
+    }
+
     bool next(int c)
     {
         int eof = std::char_traits<char>::eof();
@@ -398,6 +433,7 @@ struct CharacterScanner: public Scanner {
             checkpoint.push_back(-1);
             return false;
         case 1:
+            accept = state();
             checkpoint.clear();
             checkpoint.push_back(-1);
             return false;
@@ -431,7 +467,11 @@ struct CharacterScanner: public Scanner {
 
 struct StringScanner: public Scanner {
     //using Scanner::Scanner;
-    StringScanner() : Scanner(Token::string) {}
+    StringScanner() : Scanner(Token::string)
+    {
+        accept = -1;
+    }
+
     bool next(int c)
     {
         int eof = std::char_traits<char>::eof();
@@ -470,6 +510,7 @@ struct StringScanner: public Scanner {
             checkpoint.push_back(-1);
             return false;
         case 1:
+            accept = state();
             checkpoint.clear();
             checkpoint.push_back(-1);
             return false;

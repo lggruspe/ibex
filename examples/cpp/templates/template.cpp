@@ -33,6 +33,7 @@ std::ostream& operator<<(std::ostream& out, Token token)
 struct Scanner {
     Token token;
     std::vector<int> checkpoint;
+    int accept;
 
     Scanner(Token token) : token(token), checkpoint({0}) {}
     virtual ~Scanner() {}
