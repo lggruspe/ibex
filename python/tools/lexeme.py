@@ -9,22 +9,34 @@ def randomizer(fn):
     LEXEME_GENERATORS.add(fn)
     return fn
 
+class ExampleGenerator:
+    def __init__(self, positive, negative):
+        assert positive
+        assert negative
+        self.positive = set(positive)
+        self.negative = set(negative)
+        assert self.positive.issubset(LEXEME_GENERATORS)
+        assert self.negative.issubset(LEXEME_GENERATORS)
+
+    def positive_example(self):
+        return random.sample(self.positive, 1)[0]()
+
+    def negative_example(self):
+        return random.sample(self.negative, 1)[0]()
+
+    def example(self, p=0.5):
+        if random.random() < p:
+            return (self.positive_example(), 1)
+        return (self.negative_example(), 0)
+
 def create_examples(f, n: int, p: float) -> {(str, bool)}:
     """Create ~n*p true examples for f and ~n*(1-p) false examples.
 
     The output isn't guaranteed to have n examples, because duplicate examples
     can be generated, which are not added to the output.
     """
-    assert f in LEXEME_GENERATORS
-    assert 0 <= p <= 1
-    generators = LEXEME_GENERATORS - {f}
-    examples = set()
-    for i in range(n):
-        g = random.sample(generators, 1)[0]
-        h = f if random.random() < p else g
-        example = (h(), int(h == f))
-        examples.add(example)
-    return examples
+    example_generator = ExampleGenerator([f], LEXEME_GENERATORS - {f})
+    return {example_generator.example(p) for _ in range(n)}
 
 def output_examples(examples, filename=""):
     if filename:

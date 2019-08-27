@@ -1,28 +1,29 @@
 import random
 import lexeme
 
+DIGITS = "0123456789"
+
 @lexeme.randomizer
 def empty():
     return ''
 
 @lexeme.randomizer
 def number():
-    digits = "0123456789"
     def integer():
         n = random.randint(1, 9)
         if n == 1:
-            return random.choice(digits)
+            return random.choice(DIGITS)
 
-        rv = random.choice(digits[1:])
+        rv = random.choice(DIGITS[1:])
         for i in range(1, n):
-            rv += random.choice(digits)
+            rv += random.choice(DIGITS)
         return rv
 
     rv = integer()
     if random.randint(0, 1):
         rv += "."
         for _ in range(random.randint(1, 9)):
-            rv += random.choice(digits)
+            rv += random.choice(DIGITS)
     if random.randint(0, 1):
         rv += random.choice("eE")
         if random.randint(0, 1):

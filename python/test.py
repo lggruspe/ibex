@@ -1,8 +1,8 @@
-from rnd import ExprSymbols, convert, Dfa, DfaSymbols
-from rnd.internals import crnd
 import csv
 import functools
 import unittest
+from rnd import ExprSymbols, convert, Dfa, DfaSymbols
+from rnd.internals import crnd
 
 empty_data = []
 number_data = []
