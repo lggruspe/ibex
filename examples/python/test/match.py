@@ -3,25 +3,32 @@ from linkedlist import LinkedList
 
 INPUT_STACK = []
 
-def io_get():
+def io_get(file=None):
     if INPUT_STACK:
         return INPUT_STACK.pop()
-    char = sys.stdin.read(1)
-    return char
+    if not file:
+        char = sys.stdin.read(1)
+        return char
+    line = file.readline()
+    if not line:
+        return ""
+    for char in reversed(line):
+        INPUT_STACK.append(char)
+    return INPUT_STACK.pop()
 
 def io_unget(char):
     INPUT_STACK.append(char)
 
-def io_iterate():
+def io_iterate(file=None):
     while True:
-        char = io_get()
+        char = io_get(file)
         if not char:
             break
         yield char
 
-def single(scanner):
+def fsingle(file, scanner):
     lexeme = ""
-    for char in io_iterate():
+    for char in io_iterate(file):
         lexeme += char
         if not scanner.next(char):
             for a in reversed(lexeme):
@@ -32,7 +39,10 @@ def single(scanner):
             break
     return lexeme
 
-def longest(*args):
+def single(scanner):
+    return fsingle(None, scanner)
+
+def flongest(file, *args):
     if not args:
         return "", ""
     scanners = args[:]
@@ -40,7 +50,7 @@ def longest(*args):
     record_lexeme = ""
     for scanner in scanners:
         lexeme = ""
-        for char in io_iterate():
+        for char in io_iterate(file):
             lexeme += char
             if not scanner.next(char):
                 for a in reversed(lexeme):
@@ -58,15 +68,21 @@ def longest(*args):
     if record_lexeme:
         token = record_scanner.token
         for _ in record_lexeme:
-            io_get()
+            io_get(file)
     return token, record_lexeme
 
-def tokenizer(*scanners):
+def longest(*args):
+    return flongest(None, *args)
+
+def ftokenizer(file, *scanners):
     while True:
         token, lexeme = longest(*scanners)
         if not token:
             break
         yield token, lexeme
+
+def tokenizer(*scanners):
+    return ftokenizer(None, *scanners)
 
 '''
 def longest(*args):
