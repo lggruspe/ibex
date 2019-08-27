@@ -1,78 +1,63 @@
-import argparse
-import csv
 import random
+import examples
 
-LEXEME_GENERATORS = set()
+DIGITS = "0123456789"
 
-def randomizer(fn):
-    """Register fn as a random lexeme generator."""
-    LEXEME_GENERATORS.add(fn)
-    return fn
+@examples.instances
+def empty():
+    return ''
 
-class ExampleGenerator:
-    def __init__(self, positive, negative):
-        assert positive
-        assert negative
-        self.positive = set(positive)
-        self.negative = set(negative)
-        assert self.positive.issubset(LEXEME_GENERATORS)
-        assert self.negative.issubset(LEXEME_GENERATORS)
+@examples.instances
+def number():
+    def integer():
+        n = random.randint(1, 9)
+        if n == 1:
+            return random.choice(DIGITS)
 
-    def positive_example(self):
-        return random.sample(self.positive, 1)[0]()
+        rv = random.choice(DIGITS[1:])
+        for i in range(1, n):
+            rv += random.choice(DIGITS)
+        return rv
 
-    def negative_example(self):
-        return random.sample(self.negative, 1)[0]()
+    rv = integer()
+    if random.randint(0, 1):
+        rv += "."
+        for _ in range(random.randint(1, 9)):
+            rv += random.choice(DIGITS)
+    if random.randint(0, 1):
+        rv += random.choice("eE")
+        if random.randint(0, 1):
+            rv += random.choice("+-")
+        rv += integer()
+    return rv
 
-    def example(self, p=0.5):
-        if random.random() < p:
-            return (self.positive_example(), 1)
-        return (self.negative_example(), 0)
+@examples.instances
+def character():
+    escape = "\\{}".format(random.choice("nt\\"))
+    char = chr(random.choice([32, 38] + [40, 91] + [93, 126]))
+    return "'{}'".format(random.choice([escape, char]))
 
-def create_examples(f, n: int, p: float) -> {(str, bool)}:
-    """Create ~n*p true examples for f and ~n*(1-p) false examples.
+@examples.instances
+def string():
+    char = chr(random.choice([32, 33] + [35, 91] + [93, 126]))
+    escape = "\\{}".format(chr(random.choice([32, 126])))
+    string = ""
+    for i in range(random.randint(0, 32)):
+        string += random.choice([char, escape])
+    return f'"{string}"'
 
-    The output isn't guaranteed to have n examples, because duplicate examples
-    can be generated, which are not added to the output.
-    """
-    example_generator = ExampleGenerator([f], LEXEME_GENERATORS - {f})
-    return {example_generator.example(p) for _ in range(n)}
+@examples.instances
+def whitespace():
+    return random.choice([' ', "\t", "\n"])
 
-def output_examples(examples, filename=""):
-    if filename:
-        with open(filename, "w") as f:
-            writer = csv.writer(f)
-            writer.writerows(examples)
-    else:
-        for example in examples:
-            print(example[0], example[1])
-
-def main():
-    def get_args(description):
-        parser = argparse.ArgumentParser(description=description)
-        parser.add_argument("-n",
-                type=int,
-                default=30,
-                help="number of examples for each lexeme type (default: 30)")
-        parser.add_argument("-p",
-                type=float,
-                default=0.8,
-                help="ratio of positive examples (default: 0.8)")
-        parser.add_argument("-o",
-                default=".",
-                dest="outdir",
-                help="output directory (default: current directory)")
-        return parser.parse_args()
-
-    args = get_args("Generate random lexemes")
-    n = args.n
-    p = args.p
-    outdir = args.outdir
-
-    for f in LEXEME_GENERATORS:
-        examples = create_examples(f, n, p)
-        filename = outdir + "/" + f.__name__ + ".csv"
-        output_examples(examples, filename)
+@examples.instances
+def identifier():
+    A = "_abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    B = "0123456789"
+    rv = random.choice(A)
+    for _ in range(random.randint(0, 15)):
+        rv += random.choice(A + B)
+    return rv
 
 if __name__ == "__main__":
-    main()
+    examples.main()
