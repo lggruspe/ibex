@@ -5,7 +5,6 @@
 
 int main()
 {
-    EmptyScanner empty;
     IdentifierScanner identifier;
     WhitespaceScanner whitespace;
     NumberScanner number;

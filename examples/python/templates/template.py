@@ -43,3 +43,9 @@ class Scanner:
 ## for scanner in scanners
 ## include "scanner.py"
 ## endfor
+
+SCANNERS = {
+## for scanner in scanners
+    "{{ scanner.token }}": {{ scanner.token|title }}Scanner,
+## endfor
+}

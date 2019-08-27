@@ -7,7 +7,6 @@
 } while (0)
 
 enum token {
-    token_EMPTY,
     token_IDENTIFIER,
     token_WHITESPACE,
     token_NUMBER,
@@ -46,17 +45,6 @@ struct scanner scanner_create(enum token token, int (*transition)(int, int))
         .start = 0,
         .transition = transition
     };
-}
-
-int transition_empty(int state, int input)
-{
-    fail_if_empty(input);
-    switch (state) {
-    case 0:
-        return -1;
-    default:
-        return -1;
-    }
 }
 
 int transition_identifier(int state, int input)

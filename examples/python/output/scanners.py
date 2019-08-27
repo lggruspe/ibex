@@ -40,17 +40,6 @@ class Scanner:
     def accepts(self):
         raise NotImplementedError
 
-class EmptyScanner(Scanner):
-    def __init__(self):
-        super().__init__()
-        self.token = "empty"
-
-    def accepts(self):
-        return self.state in [0]
-
-    def s0(self, char):
-        raise TransitionError
-
 class IdentifierScanner(Scanner):
     def __init__(self):
         super().__init__()
@@ -591,4 +580,26 @@ class GreaterthanScanner(Scanner):
     def s1(self, char):
         raise TransitionError
 
-
+SCANNERS = {
+    "identifier": IdentifierScanner,
+    "whitespace": WhitespaceScanner,
+    "number": NumberScanner,
+    "character": CharacterScanner,
+    "string": StringScanner,
+    "dot": DotScanner,
+    "lparen": LparenScanner,
+    "rparen": RparenScanner,
+    "comma": CommaScanner,
+    "star": StarScanner,
+    "equal": EqualScanner,
+    "lbrace": LbraceScanner,
+    "rbrace": RbraceScanner,
+    "colon": ColonScanner,
+    "lbracket": LbracketScanner,
+    "rbracket": RbracketScanner,
+    "plus": PlusScanner,
+    "minus": MinusScanner,
+    "slash": SlashScanner,
+    "lessthan": LessthanScanner,
+    "greaterthan": GreaterthanScanner,
+}

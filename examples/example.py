@@ -4,10 +4,6 @@ import os
 import sys
 import scangen as sg
 
-@sg.token("empty")
-def empty():
-    return sg.isymbols(0)
-
 @sg.token("identifier")
 def identifier():
     letters = sg.symbols('_').union(sg.symbols('a', 'z')).union(sg.symbols('A', 'Z'))

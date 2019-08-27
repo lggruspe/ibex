@@ -9,7 +9,6 @@ enum class Token {
     _empty,
     _other,
     _ignore,
-    empty,
     identifier,
     whitespace,
     number,
@@ -40,8 +39,6 @@ std::ostream& operator<<(std::ostream& out, Token token)
         return out << "_other";
     case Token::_empty:
         return out << "_empty";
-    case Token::empty:
-        return out << "empty";
     case Token::identifier:
         return out << "identifier";
     case Token::whitespace:
@@ -111,31 +108,6 @@ struct Scanner {
             checkpoint.push_back(0);
         }
         return steps;
-    }
-};
-
-struct EmptyScanner: public Scanner {
-    //using Scanner::Scanner;
-    EmptyScanner() : Scanner(Token::empty)
-    {
-        accept = 0;
-    }
-
-    bool next(int c)
-    {
-        int eof = std::char_traits<char>::eof();
-        if (c == eof && state() != -1) {
-            checkpoint.push_back(-1);
-        }
-        switch (state()) {
-        case 0:
-            accept = state();
-            checkpoint.clear();
-            checkpoint.push_back(-1);
-            return false;
-        default:
-            return false;
-        }
     }
 };
 
