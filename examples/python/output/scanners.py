@@ -52,7 +52,7 @@ class IdentifierScanner(Scanner):
         if 65 <= char <= 90:
             self.state = 1
             return self.state
-        if 95 <= char <= 95:
+        if char == 95:
             self.state = 1
             return self.state
         if 97 <= char <= 122:
@@ -67,7 +67,7 @@ class IdentifierScanner(Scanner):
         if 65 <= char <= 90:
             self.state = 1
             return self.state
-        if 95 <= char <= 95:
+        if char == 95:
             self.state = 1
             return self.state
         if 97 <= char <= 122:
@@ -84,13 +84,13 @@ class WhitespaceScanner(Scanner):
         return self.state in [1]
 
     def s0(self, char):
-        if 9 <= char <= 9:
+        if char == 9:
             self.state = 1
             return self.state
-        if 10 <= char <= 10:
+        if char == 10:
             self.state = 1
             return self.state
-        if 32 <= char <= 32:
+        if char == 32:
             self.state = 1
             return self.state
         raise TransitionError
@@ -107,7 +107,7 @@ class NumberScanner(Scanner):
         return self.state in [1, 3, 5, 6, 8]
 
     def s0(self, char):
-        if 48 <= char <= 48:
+        if char == 48:
             self.state = 5
             return self.state
         if 49 <= char <= 57:
@@ -116,37 +116,37 @@ class NumberScanner(Scanner):
         raise TransitionError
 
     def s5(self, char):
-        if 46 <= char <= 46:
+        if char == 46:
             self.state = 7
             return self.state
-        if 69 <= char <= 69:
+        if char == 69:
             self.state = 2
             return self.state
-        if 101 <= char <= 101:
+        if char == 101:
             self.state = 2
             return self.state
         raise TransitionError
 
     def s1(self, char):
-        if 46 <= char <= 46:
+        if char == 46:
             self.state = 7
             return self.state
-        if 48 <= char <= 48:
+        if char == 48:
             self.state = 1
             return self.state
         if 49 <= char <= 57:
             self.state = 1
             return self.state
-        if 69 <= char <= 69:
+        if char == 69:
             self.state = 2
             return self.state
-        if 101 <= char <= 101:
+        if char == 101:
             self.state = 2
             return self.state
         raise TransitionError
 
     def s7(self, char):
-        if 48 <= char <= 48:
+        if char == 48:
             self.state = 3
             return self.state
         if 49 <= char <= 57:
@@ -155,13 +155,13 @@ class NumberScanner(Scanner):
         raise TransitionError
 
     def s2(self, char):
-        if 43 <= char <= 43:
+        if char == 43:
             self.state = 4
             return self.state
-        if 45 <= char <= 45:
+        if char == 45:
             self.state = 4
             return self.state
-        if 48 <= char <= 48:
+        if char == 48:
             self.state = 6
             return self.state
         if 49 <= char <= 57:
@@ -170,7 +170,7 @@ class NumberScanner(Scanner):
         raise TransitionError
 
     def s4(self, char):
-        if 48 <= char <= 48:
+        if char == 48:
             self.state = 6
             return self.state
         if 49 <= char <= 57:
@@ -182,7 +182,7 @@ class NumberScanner(Scanner):
         raise TransitionError
 
     def s8(self, char):
-        if 48 <= char <= 48:
+        if char == 48:
             self.state = 8
             return self.state
         if 49 <= char <= 57:
@@ -191,16 +191,16 @@ class NumberScanner(Scanner):
         raise TransitionError
 
     def s3(self, char):
-        if 48 <= char <= 48:
+        if char == 48:
             self.state = 3
             return self.state
         if 49 <= char <= 57:
             self.state = 3
             return self.state
-        if 69 <= char <= 69:
+        if char == 69:
             self.state = 2
             return self.state
-        if 101 <= char <= 101:
+        if char == 101:
             self.state = 2
             return self.state
         raise TransitionError
@@ -214,7 +214,7 @@ class CharacterScanner(Scanner):
         return self.state in [1]
 
     def s0(self, char):
-        if 39 <= char <= 39:
+        if char == 39:
             self.state = 2
             return self.state
         raise TransitionError
@@ -226,7 +226,7 @@ class CharacterScanner(Scanner):
         if 40 <= char <= 91:
             self.state = 3
             return self.state
-        if 92 <= char <= 92:
+        if char == 92:
             self.state = 4
             return self.state
         if 93 <= char <= 126:
@@ -238,16 +238,16 @@ class CharacterScanner(Scanner):
         raise TransitionError
 
     def s3(self, char):
-        if 39 <= char <= 39:
+        if char == 39:
             self.state = 1
             return self.state
         raise TransitionError
 
     def s4(self, char):
-        if 39 <= char <= 39:
+        if char == 39:
             self.state = 3
             return self.state
-        if 92 <= char <= 92:
+        if char == 92:
             self.state = 3
             return self.state
         if 93 <= char <= 126:
@@ -264,7 +264,7 @@ class StringScanner(Scanner):
         return self.state in [1]
 
     def s0(self, char):
-        if 34 <= char <= 34:
+        if char == 34:
             self.state = 2
             return self.state
         raise TransitionError
@@ -273,13 +273,13 @@ class StringScanner(Scanner):
         if 32 <= char <= 33:
             self.state = 2
             return self.state
-        if 34 <= char <= 34:
+        if char == 34:
             self.state = 1
             return self.state
         if 35 <= char <= 91:
             self.state = 2
             return self.state
-        if 92 <= char <= 92:
+        if char == 92:
             self.state = 3
             return self.state
         if 93 <= char <= 126:
@@ -294,13 +294,13 @@ class StringScanner(Scanner):
         if 32 <= char <= 33:
             self.state = 2
             return self.state
-        if 34 <= char <= 34:
+        if char == 34:
             self.state = 2
             return self.state
         if 35 <= char <= 91:
             self.state = 2
             return self.state
-        if 92 <= char <= 92:
+        if char == 92:
             self.state = 2
             return self.state
         if 93 <= char <= 126:
@@ -317,7 +317,7 @@ class DotScanner(Scanner):
         return self.state in [1]
 
     def s0(self, char):
-        if 46 <= char <= 46:
+        if char == 46:
             self.state = 1
             return self.state
         raise TransitionError
@@ -334,7 +334,7 @@ class LparenScanner(Scanner):
         return self.state in [1]
 
     def s0(self, char):
-        if 40 <= char <= 40:
+        if char == 40:
             self.state = 1
             return self.state
         raise TransitionError
@@ -351,7 +351,7 @@ class RparenScanner(Scanner):
         return self.state in [1]
 
     def s0(self, char):
-        if 41 <= char <= 41:
+        if char == 41:
             self.state = 1
             return self.state
         raise TransitionError
@@ -368,7 +368,7 @@ class CommaScanner(Scanner):
         return self.state in [1]
 
     def s0(self, char):
-        if 44 <= char <= 44:
+        if char == 44:
             self.state = 1
             return self.state
         raise TransitionError
@@ -385,7 +385,7 @@ class StarScanner(Scanner):
         return self.state in [1]
 
     def s0(self, char):
-        if 42 <= char <= 42:
+        if char == 42:
             self.state = 1
             return self.state
         raise TransitionError
@@ -402,7 +402,7 @@ class EqualScanner(Scanner):
         return self.state in [1]
 
     def s0(self, char):
-        if 61 <= char <= 61:
+        if char == 61:
             self.state = 1
             return self.state
         raise TransitionError
@@ -419,7 +419,7 @@ class LbraceScanner(Scanner):
         return self.state in [1]
 
     def s0(self, char):
-        if 123 <= char <= 123:
+        if char == 123:
             self.state = 1
             return self.state
         raise TransitionError
@@ -436,7 +436,7 @@ class RbraceScanner(Scanner):
         return self.state in [1]
 
     def s0(self, char):
-        if 125 <= char <= 125:
+        if char == 125:
             self.state = 1
             return self.state
         raise TransitionError
@@ -453,7 +453,7 @@ class ColonScanner(Scanner):
         return self.state in [1]
 
     def s0(self, char):
-        if 58 <= char <= 58:
+        if char == 58:
             self.state = 1
             return self.state
         raise TransitionError
@@ -470,7 +470,7 @@ class LbracketScanner(Scanner):
         return self.state in [1]
 
     def s0(self, char):
-        if 91 <= char <= 91:
+        if char == 91:
             self.state = 1
             return self.state
         raise TransitionError
@@ -487,7 +487,7 @@ class RbracketScanner(Scanner):
         return self.state in [1]
 
     def s0(self, char):
-        if 93 <= char <= 93:
+        if char == 93:
             self.state = 1
             return self.state
         raise TransitionError
@@ -504,7 +504,7 @@ class PlusScanner(Scanner):
         return self.state in [1]
 
     def s0(self, char):
-        if 43 <= char <= 43:
+        if char == 43:
             self.state = 1
             return self.state
         raise TransitionError
@@ -521,7 +521,7 @@ class MinusScanner(Scanner):
         return self.state in [1]
 
     def s0(self, char):
-        if 45 <= char <= 45:
+        if char == 45:
             self.state = 1
             return self.state
         raise TransitionError
@@ -538,7 +538,7 @@ class SlashScanner(Scanner):
         return self.state in [1]
 
     def s0(self, char):
-        if 47 <= char <= 47:
+        if char == 47:
             self.state = 1
             return self.state
         raise TransitionError
@@ -555,7 +555,7 @@ class LessthanScanner(Scanner):
         return self.state in [1]
 
     def s0(self, char):
-        if 60 <= char <= 60:
+        if char == 60:
             self.state = 1
             return self.state
         raise TransitionError
@@ -572,7 +572,7 @@ class GreaterthanScanner(Scanner):
         return self.state in [1]
 
     def s0(self, char):
-        if 62 <= char <= 62:
+        if char == 62:
             self.state = 1
             return self.state
         raise TransitionError

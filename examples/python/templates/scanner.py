@@ -13,7 +13,11 @@ class {{ scanner.token|title }}Scanner(Scanner):
 ## set start = transition[0].start
 ## set end = transition[0].end
 ## set next_state = transition[1]
+## if start == end
+        if char == {{ start }}:
+## else
         if {{ start }} <= char <= {{ end }}:
+## endif
             self.state = {{ next_state }}
             return self.state
 ## endfor
