@@ -48,7 +48,7 @@ def string():
 
 @lexeme.randomizer
 def whitespace():
-    return random.choice([' ', "\\t", "\\n"])
+    return random.choice([' ', "\t", "\n"])
 
 @lexeme.randomizer
 def identifier():

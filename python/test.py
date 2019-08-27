@@ -89,47 +89,18 @@ class RndConversionTest(unittest.TestCase):
     def tearDown(self):
         self.dfa = Dfa()
 
-    def test_identifier(self):
-        parametrize_expr_test(self, "identifier")
-
-    def test_empty(self):
-        parametrize_expr_test(self, "empty")
-
-    def test_whitespace(self):
-        self.dfa = to_dfa(whitespace_expr())
-        self.assertTrue(self.dfa.compute(map(ord, "\t")))
-        self.assertTrue(self.dfa.compute(map(ord, "\n")))
-        self.assertTrue(self.dfa.compute(map(ord, " ")))
-        self.assertFalse(self.dfa.compute(map(ord, "")))
-        self.assertFalse(self.dfa.compute(map(ord, "  ")))
-
-    def test_number(self):
-        parametrize_expr_test(self, "number")
-
-    def test_string(self):
-        parametrize_expr_test(self, "string")
-
-    def test_character(self):
-        parametrize_expr_test(self, "character")
-
     def test_leaks(self):
-        to_dfa(empty_expr())
-        to_dfa(number_expr())
-        to_dfa(identifier_expr())
-        to_dfa(integer_expr())
-        to_dfa(whitespace_expr())
-        to_dfa(character_expr())
-        to_dfa(string_expr())
+        for expr_fn in EXPR_FN.values():
+            to_dfa(expr_fn())
         self.assertEqual(0, crnd.rnd_get_expr_counter())
 
-def init_data(filename, seq):
-    with open(filename, "r") as f:
-        seq.extend([(str(row[0]), int(row[1])) for row in csv.reader(f)])
+    def test_random_data(self):
+        for expr_type in EXPR_FN:
+            with self.subTest(expr_type=expr_type):
+                parametrize_expr_test(self, expr_type)
 
 if __name__ == "__main__":
-    init_data("testdata/identifier.csv", TEST_DATA["identifier"])
-    init_data("testdata/number.csv", TEST_DATA["number"])
-    init_data("testdata/empty.csv", TEST_DATA["empty"])
-    init_data("testdata/string.csv", TEST_DATA["string"])
-    init_data("testdata/character.csv", TEST_DATA["character"])
+    for expr_type in EXPR_FN:
+        with open(f"testdata/{expr_type}.csv", "r") as file:
+            TEST_DATA[expr_type].extend([(str(row[0]), int(row[1])) for row in csv.reader(file)])
     unittest.main()
