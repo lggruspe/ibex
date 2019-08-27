@@ -38,14 +38,12 @@ def create_examples(f, n: int, p: float) -> {(str, bool)}:
     example_generator = ExampleGenerator([f], INSTANCE_GENERATORS - {f})
     return {example_generator.example(p) for _ in range(n)}
 
-def output_examples(examples, filename=""):
-    if filename:
-        with open(filename, "w") as f:
-            writer = csv.writer(f)
-            writer.writerows(examples)
-    else:
-        for example in examples:
-            print(example[0], example[1])
+def write(file, examples):
+    writer = csv.writer(file)
+    writer.writerows(examples)
+
+def read(file):
+    return [(str(row[0]), int(row[1])) for row in csv.reader(file)]
 
 def main():
     def get_args(description):
@@ -71,8 +69,8 @@ def main():
 
     for f in INSTANCE_GENERATORS:
         examples = create_examples(f, n, p)
-        filename = outdir + "/" + f.__name__ + ".csv"
-        output_examples(examples, filename)
+        with open(f"{outdir}/{f.__name__}.csv", "w") as file:
+            write(file, examples)
 
 if __name__ == "__main__":
     main()
