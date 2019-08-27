@@ -109,35 +109,6 @@ class WhitespaceScanner(Scanner):
     def s1(self, char):
         raise TransitionError
 
-class IntegerScanner(Scanner):
-    def __init__(self):
-        super().__init__()
-        self.token = "integer"
-
-    def accepts(self):
-        return self.state in [1, 2]
-
-    def s0(self, char):
-        if 48 <= char <= 48:
-            self.state = 1
-            return self.state
-        if 49 <= char <= 57:
-            self.state = 2
-            return self.state
-        raise TransitionError
-
-    def s1(self, char):
-        raise TransitionError
-
-    def s2(self, char):
-        if 48 <= char <= 48:
-            self.state = 2
-            return self.state
-        if 49 <= char <= 57:
-            self.state = 2
-            return self.state
-        raise TransitionError
-
 class NumberScanner(Scanner):
     def __init__(self):
         super().__init__()

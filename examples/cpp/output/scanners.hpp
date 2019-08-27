@@ -12,7 +12,6 @@ enum class Token {
     empty,
     identifier,
     whitespace,
-    integer,
     number,
     character,
     string,
@@ -31,8 +30,6 @@ std::ostream& operator<<(std::ostream& out, Token token)
         return out << "identifier";
     case Token::whitespace:
         return out << "whitespace";
-    case Token::integer:
-        return out << "integer";
     case Token::number:
         return out << "number";
     case Token::character:
@@ -182,55 +179,6 @@ struct WhitespaceScanner: public Scanner {
         case 1:
             accept = state();
             checkpoint.clear();
-            checkpoint.push_back(-1);
-            return false;
-        default:
-            return false;
-        }
-    }
-};
-
-struct IntegerScanner: public Scanner {
-    //using Scanner::Scanner;
-    IntegerScanner() : Scanner(Token::integer)
-    {
-        accept = -1;
-    }
-
-    bool next(int c)
-    {
-        int eof = std::char_traits<char>::eof();
-        if (c == eof && state() != -1) {
-            checkpoint.push_back(-1);
-        }
-        switch (state()) {
-        case 0:
-            if (48 <= c && c <= 48) {
-                checkpoint.push_back(1);
-                return true;
-            }
-            if (49 <= c && c <= 57) {
-                checkpoint.push_back(2);
-                return true;
-            }
-            checkpoint.push_back(-1);
-            return false;
-        case 1:
-            accept = state();
-            checkpoint.clear();
-            checkpoint.push_back(-1);
-            return false;
-        case 2:
-            accept = state();
-            checkpoint.clear();
-            if (48 <= c && c <= 48) {
-                checkpoint.push_back(2);
-                return true;
-            }
-            if (49 <= c && c <= 57) {
-                checkpoint.push_back(2);
-                return true;
-            }
             checkpoint.push_back(-1);
             return false;
         default:

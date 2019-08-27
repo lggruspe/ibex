@@ -10,7 +10,6 @@ enum token {
     token_EMPTY,
     token_IDENTIFIER,
     token_WHITESPACE,
-    token_INTEGER,
     token_NUMBER,
     token_CHARACTER,
     token_STRING,
@@ -84,29 +83,6 @@ int transition_whitespace(int state, int input)
             return 1;
         return -1;
     case 1:
-        return -1;
-    default:
-        return -1;
-    }
-}
-
-int transition_integer(int state, int input)
-{
-    fail_if_empty(input);
-    switch (state) {
-    case 0:
-        if (input == 48)
-            return 1;
-        if (49 <= input && input <= 57)
-            return 2;
-        return -1;
-    case 1:
-        return -1;
-    case 2:
-        if (input == 48)
-            return 2;
-        if (49 <= input && input <= 57)
-            return 2;
         return -1;
     default:
         return -1;

@@ -17,10 +17,6 @@ def identifier():
 def whitespace():
     return sg.symbols(' ').union(sg.symbols('\t')).union(sg.symbols('\n'))
 
-@sg.token("integer")
-def integer():
-    return sg.symbols('0').union(sg.symbols('1', '9').concatenation(sg.symbols('0', '9').closure()))
-
 @sg.token("number")
 def number():
     def integer():
