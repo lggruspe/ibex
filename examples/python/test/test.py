@@ -7,15 +7,7 @@ import lexeme as lex
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-from output.scanners import *
-
-SCANNERS = {
-    "identifier": IdentifierScanner,
-    "whitespace": WhitespaceScanner,
-    "number": NumberScanner,
-    "character": CharacterScanner,
-    "string": StringScanner,
-}
+import output.scanners as scanners
 
 TEST_DATA = {}
 
@@ -57,7 +49,7 @@ def parametrize_single_match_test(test_case, scanner_type):
 
 class LongestMatchTest(unittest.TestCase):
     def test_random_data(self):
-        for scanner_type in SCANNERS:
+        for scanner_type in scanners.SCANNERS:
             with self.subTest(scanner_type=scanner_type):
                 parametrize_longest_match_test(self, scanner_type)
 
@@ -67,7 +59,7 @@ class SingleMatchTest(unittest.TestCase):
         parametrize_single_match_test(self, "whitespace")
 
     def test_except_whitespace(self):
-        for scanner_type in SCANNERS:
+        for scanner_type in scanners.SCANNERS:
             if scanner_type != "whitespace":
                 with self.subTest(scanner_type=scanner_type):
                     parametrize_single_match_test(self, scanner_type)
@@ -91,7 +83,7 @@ class TokenizerTest(unittest.TestCase):
         self.assertEqual(actual, expected)
 
 if __name__ == "__main__":
-    for scanner_type in SCANNERS:
+    for scanner_type in scanners.SCANNERS:
         with open(f"data/{scanner_type}.csv", "r") as file:
             TEST_DATA[scanner_type] = examples.read(file)
     unittest.main()

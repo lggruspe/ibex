@@ -5,19 +5,10 @@ import match
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-from output.scanners import *
-
-scanners = {
-    "empty": EmptyScanner,
-    "identifier": IdentifierScanner,
-    "whitespace": WhitespaceScanner,
-    "number": NumberScanner,
-    "character": CharacterScanner,
-    "string": StringScanner,
-}
+import output.scanners as scanners
 
 def test_longest_match():
-    token, lexeme = match.longest(*(scanners.values()))
+    token, lexeme = match.longest(*(scanners.SCANNERS.values()))
     print(token)
     print(lexeme)
 
@@ -26,7 +17,7 @@ def test_single_match(scanner):
     print(lexeme)
 
 def test_tokenizer():
-    tokenize = match.tokenizer(*(scanners.values()))
+    tokenize = match.tokenizer(*(scanners.SCANNERS.values()))
     for token, lexeme in tokenize:
         print(token, lexeme)
 
@@ -43,7 +34,7 @@ def main():
         parser_single.add_argument(
             "-s",
             dest="scanner",
-            help="name of scanner ({})".format('|'.join(scanners.keys())))
+            help="name of scanner ({})".format('|'.join(scanners.SCANNERS.keys())))
         parser_longest = subparsers.add_parser(
             "longest",
             help="find longest match")
@@ -54,7 +45,7 @@ def main():
 
     args = get_args()
     if args.subcommand == "single":
-        test_single_match(scanners[args.scanner])
+        test_single_match(scanners.SCANNERS[args.scanner])
     elif args.subcommand == "longest":
         test_longest_match()
     elif args.subcommand == "tokenizer":
