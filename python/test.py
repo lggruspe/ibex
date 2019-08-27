@@ -66,7 +66,7 @@ class RndConversionTest(unittest.TestCase):
     def setUp(self):
         self.dfa = Dfa()
 
-    def teardown(self):
+    def tearDown(self):
         self.dfa = Dfa()
 
     def test_identifier(self):
