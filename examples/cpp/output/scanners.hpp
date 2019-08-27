@@ -15,6 +15,22 @@ enum class Token {
     number,
     character,
     string,
+    dot,
+    lparen,
+    rparen,
+    comma,
+    star,
+    equal,
+    lbrace,
+    rbrace,
+    colon,
+    lbracket,
+    rbracket,
+    plus,
+    minus,
+    slash,
+    lessthan,
+    greaterthan,
 };
 
 std::ostream& operator<<(std::ostream& out, Token token)
@@ -36,6 +52,38 @@ std::ostream& operator<<(std::ostream& out, Token token)
         return out << "character";
     case Token::string:
         return out << "string";
+    case Token::dot:
+        return out << "dot";
+    case Token::lparen:
+        return out << "lparen";
+    case Token::rparen:
+        return out << "rparen";
+    case Token::comma:
+        return out << "comma";
+    case Token::star:
+        return out << "star";
+    case Token::equal:
+        return out << "equal";
+    case Token::lbrace:
+        return out << "lbrace";
+    case Token::rbrace:
+        return out << "rbrace";
+    case Token::colon:
+        return out << "colon";
+    case Token::lbracket:
+        return out << "lbracket";
+    case Token::rbracket:
+        return out << "rbracket";
+    case Token::plus:
+        return out << "plus";
+    case Token::minus:
+        return out << "minus";
+    case Token::slash:
+        return out << "slash";
+    case Token::lessthan:
+        return out << "lessthan";
+    case Token::greaterthan:
+        return out << "greaterthan";
     default:
         return out;
     }
@@ -483,6 +531,518 @@ struct StringScanner: public Scanner {
                 checkpoint.push_back(2);
                 return true;
             }
+            checkpoint.push_back(-1);
+            return false;
+        default:
+            return false;
+        }
+    }
+};
+
+struct DotScanner: public Scanner {
+    //using Scanner::Scanner;
+    DotScanner() : Scanner(Token::dot)
+    {
+        accept = -1;
+    }
+
+    bool next(int c)
+    {
+        int eof = std::char_traits<char>::eof();
+        if (c == eof && state() != -1) {
+            checkpoint.push_back(-1);
+        }
+        switch (state()) {
+        case 0:
+            if (46 <= c && c <= 46) {
+                checkpoint.push_back(1);
+                return true;
+            }
+            checkpoint.push_back(-1);
+            return false;
+        case 1:
+            accept = state();
+            checkpoint.clear();
+            checkpoint.push_back(-1);
+            return false;
+        default:
+            return false;
+        }
+    }
+};
+
+struct LparenScanner: public Scanner {
+    //using Scanner::Scanner;
+    LparenScanner() : Scanner(Token::lparen)
+    {
+        accept = -1;
+    }
+
+    bool next(int c)
+    {
+        int eof = std::char_traits<char>::eof();
+        if (c == eof && state() != -1) {
+            checkpoint.push_back(-1);
+        }
+        switch (state()) {
+        case 0:
+            if (40 <= c && c <= 40) {
+                checkpoint.push_back(1);
+                return true;
+            }
+            checkpoint.push_back(-1);
+            return false;
+        case 1:
+            accept = state();
+            checkpoint.clear();
+            checkpoint.push_back(-1);
+            return false;
+        default:
+            return false;
+        }
+    }
+};
+
+struct RparenScanner: public Scanner {
+    //using Scanner::Scanner;
+    RparenScanner() : Scanner(Token::rparen)
+    {
+        accept = -1;
+    }
+
+    bool next(int c)
+    {
+        int eof = std::char_traits<char>::eof();
+        if (c == eof && state() != -1) {
+            checkpoint.push_back(-1);
+        }
+        switch (state()) {
+        case 0:
+            if (41 <= c && c <= 41) {
+                checkpoint.push_back(1);
+                return true;
+            }
+            checkpoint.push_back(-1);
+            return false;
+        case 1:
+            accept = state();
+            checkpoint.clear();
+            checkpoint.push_back(-1);
+            return false;
+        default:
+            return false;
+        }
+    }
+};
+
+struct CommaScanner: public Scanner {
+    //using Scanner::Scanner;
+    CommaScanner() : Scanner(Token::comma)
+    {
+        accept = -1;
+    }
+
+    bool next(int c)
+    {
+        int eof = std::char_traits<char>::eof();
+        if (c == eof && state() != -1) {
+            checkpoint.push_back(-1);
+        }
+        switch (state()) {
+        case 0:
+            if (44 <= c && c <= 44) {
+                checkpoint.push_back(1);
+                return true;
+            }
+            checkpoint.push_back(-1);
+            return false;
+        case 1:
+            accept = state();
+            checkpoint.clear();
+            checkpoint.push_back(-1);
+            return false;
+        default:
+            return false;
+        }
+    }
+};
+
+struct StarScanner: public Scanner {
+    //using Scanner::Scanner;
+    StarScanner() : Scanner(Token::star)
+    {
+        accept = -1;
+    }
+
+    bool next(int c)
+    {
+        int eof = std::char_traits<char>::eof();
+        if (c == eof && state() != -1) {
+            checkpoint.push_back(-1);
+        }
+        switch (state()) {
+        case 0:
+            if (42 <= c && c <= 42) {
+                checkpoint.push_back(1);
+                return true;
+            }
+            checkpoint.push_back(-1);
+            return false;
+        case 1:
+            accept = state();
+            checkpoint.clear();
+            checkpoint.push_back(-1);
+            return false;
+        default:
+            return false;
+        }
+    }
+};
+
+struct EqualScanner: public Scanner {
+    //using Scanner::Scanner;
+    EqualScanner() : Scanner(Token::equal)
+    {
+        accept = -1;
+    }
+
+    bool next(int c)
+    {
+        int eof = std::char_traits<char>::eof();
+        if (c == eof && state() != -1) {
+            checkpoint.push_back(-1);
+        }
+        switch (state()) {
+        case 0:
+            if (61 <= c && c <= 61) {
+                checkpoint.push_back(1);
+                return true;
+            }
+            checkpoint.push_back(-1);
+            return false;
+        case 1:
+            accept = state();
+            checkpoint.clear();
+            checkpoint.push_back(-1);
+            return false;
+        default:
+            return false;
+        }
+    }
+};
+
+struct LbraceScanner: public Scanner {
+    //using Scanner::Scanner;
+    LbraceScanner() : Scanner(Token::lbrace)
+    {
+        accept = -1;
+    }
+
+    bool next(int c)
+    {
+        int eof = std::char_traits<char>::eof();
+        if (c == eof && state() != -1) {
+            checkpoint.push_back(-1);
+        }
+        switch (state()) {
+        case 0:
+            if (123 <= c && c <= 123) {
+                checkpoint.push_back(1);
+                return true;
+            }
+            checkpoint.push_back(-1);
+            return false;
+        case 1:
+            accept = state();
+            checkpoint.clear();
+            checkpoint.push_back(-1);
+            return false;
+        default:
+            return false;
+        }
+    }
+};
+
+struct RbraceScanner: public Scanner {
+    //using Scanner::Scanner;
+    RbraceScanner() : Scanner(Token::rbrace)
+    {
+        accept = -1;
+    }
+
+    bool next(int c)
+    {
+        int eof = std::char_traits<char>::eof();
+        if (c == eof && state() != -1) {
+            checkpoint.push_back(-1);
+        }
+        switch (state()) {
+        case 0:
+            if (125 <= c && c <= 125) {
+                checkpoint.push_back(1);
+                return true;
+            }
+            checkpoint.push_back(-1);
+            return false;
+        case 1:
+            accept = state();
+            checkpoint.clear();
+            checkpoint.push_back(-1);
+            return false;
+        default:
+            return false;
+        }
+    }
+};
+
+struct ColonScanner: public Scanner {
+    //using Scanner::Scanner;
+    ColonScanner() : Scanner(Token::colon)
+    {
+        accept = -1;
+    }
+
+    bool next(int c)
+    {
+        int eof = std::char_traits<char>::eof();
+        if (c == eof && state() != -1) {
+            checkpoint.push_back(-1);
+        }
+        switch (state()) {
+        case 0:
+            if (58 <= c && c <= 58) {
+                checkpoint.push_back(1);
+                return true;
+            }
+            checkpoint.push_back(-1);
+            return false;
+        case 1:
+            accept = state();
+            checkpoint.clear();
+            checkpoint.push_back(-1);
+            return false;
+        default:
+            return false;
+        }
+    }
+};
+
+struct LbracketScanner: public Scanner {
+    //using Scanner::Scanner;
+    LbracketScanner() : Scanner(Token::lbracket)
+    {
+        accept = -1;
+    }
+
+    bool next(int c)
+    {
+        int eof = std::char_traits<char>::eof();
+        if (c == eof && state() != -1) {
+            checkpoint.push_back(-1);
+        }
+        switch (state()) {
+        case 0:
+            if (91 <= c && c <= 91) {
+                checkpoint.push_back(1);
+                return true;
+            }
+            checkpoint.push_back(-1);
+            return false;
+        case 1:
+            accept = state();
+            checkpoint.clear();
+            checkpoint.push_back(-1);
+            return false;
+        default:
+            return false;
+        }
+    }
+};
+
+struct RbracketScanner: public Scanner {
+    //using Scanner::Scanner;
+    RbracketScanner() : Scanner(Token::rbracket)
+    {
+        accept = -1;
+    }
+
+    bool next(int c)
+    {
+        int eof = std::char_traits<char>::eof();
+        if (c == eof && state() != -1) {
+            checkpoint.push_back(-1);
+        }
+        switch (state()) {
+        case 0:
+            if (93 <= c && c <= 93) {
+                checkpoint.push_back(1);
+                return true;
+            }
+            checkpoint.push_back(-1);
+            return false;
+        case 1:
+            accept = state();
+            checkpoint.clear();
+            checkpoint.push_back(-1);
+            return false;
+        default:
+            return false;
+        }
+    }
+};
+
+struct PlusScanner: public Scanner {
+    //using Scanner::Scanner;
+    PlusScanner() : Scanner(Token::plus)
+    {
+        accept = -1;
+    }
+
+    bool next(int c)
+    {
+        int eof = std::char_traits<char>::eof();
+        if (c == eof && state() != -1) {
+            checkpoint.push_back(-1);
+        }
+        switch (state()) {
+        case 0:
+            if (43 <= c && c <= 43) {
+                checkpoint.push_back(1);
+                return true;
+            }
+            checkpoint.push_back(-1);
+            return false;
+        case 1:
+            accept = state();
+            checkpoint.clear();
+            checkpoint.push_back(-1);
+            return false;
+        default:
+            return false;
+        }
+    }
+};
+
+struct MinusScanner: public Scanner {
+    //using Scanner::Scanner;
+    MinusScanner() : Scanner(Token::minus)
+    {
+        accept = -1;
+    }
+
+    bool next(int c)
+    {
+        int eof = std::char_traits<char>::eof();
+        if (c == eof && state() != -1) {
+            checkpoint.push_back(-1);
+        }
+        switch (state()) {
+        case 0:
+            if (45 <= c && c <= 45) {
+                checkpoint.push_back(1);
+                return true;
+            }
+            checkpoint.push_back(-1);
+            return false;
+        case 1:
+            accept = state();
+            checkpoint.clear();
+            checkpoint.push_back(-1);
+            return false;
+        default:
+            return false;
+        }
+    }
+};
+
+struct SlashScanner: public Scanner {
+    //using Scanner::Scanner;
+    SlashScanner() : Scanner(Token::slash)
+    {
+        accept = -1;
+    }
+
+    bool next(int c)
+    {
+        int eof = std::char_traits<char>::eof();
+        if (c == eof && state() != -1) {
+            checkpoint.push_back(-1);
+        }
+        switch (state()) {
+        case 0:
+            if (47 <= c && c <= 47) {
+                checkpoint.push_back(1);
+                return true;
+            }
+            checkpoint.push_back(-1);
+            return false;
+        case 1:
+            accept = state();
+            checkpoint.clear();
+            checkpoint.push_back(-1);
+            return false;
+        default:
+            return false;
+        }
+    }
+};
+
+struct LessthanScanner: public Scanner {
+    //using Scanner::Scanner;
+    LessthanScanner() : Scanner(Token::lessthan)
+    {
+        accept = -1;
+    }
+
+    bool next(int c)
+    {
+        int eof = std::char_traits<char>::eof();
+        if (c == eof && state() != -1) {
+            checkpoint.push_back(-1);
+        }
+        switch (state()) {
+        case 0:
+            if (60 <= c && c <= 60) {
+                checkpoint.push_back(1);
+                return true;
+            }
+            checkpoint.push_back(-1);
+            return false;
+        case 1:
+            accept = state();
+            checkpoint.clear();
+            checkpoint.push_back(-1);
+            return false;
+        default:
+            return false;
+        }
+    }
+};
+
+struct GreaterthanScanner: public Scanner {
+    //using Scanner::Scanner;
+    GreaterthanScanner() : Scanner(Token::greaterthan)
+    {
+        accept = -1;
+    }
+
+    bool next(int c)
+    {
+        int eof = std::char_traits<char>::eof();
+        if (c == eof && state() != -1) {
+            checkpoint.push_back(-1);
+        }
+        switch (state()) {
+        case 0:
+            if (62 <= c && c <= 62) {
+                checkpoint.push_back(1);
+                return true;
+            }
+            checkpoint.push_back(-1);
+            return false;
+        case 1:
+            accept = state();
+            checkpoint.clear();
             checkpoint.push_back(-1);
             return false;
         default:

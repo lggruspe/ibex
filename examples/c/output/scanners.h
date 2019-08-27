@@ -13,6 +13,22 @@ enum token {
     token_NUMBER,
     token_CHARACTER,
     token_STRING,
+    token_DOT,
+    token_LPAREN,
+    token_RPAREN,
+    token_COMMA,
+    token_STAR,
+    token_EQUAL,
+    token_LBRACE,
+    token_RBRACE,
+    token_COLON,
+    token_LBRACKET,
+    token_RBRACKET,
+    token_PLUS,
+    token_MINUS,
+    token_SLASH,
+    token_LESSTHAN,
+    token_GREATERTHAN,
 };
 
 struct scanner {
@@ -234,6 +250,246 @@ int transition_string(int state, int input)
             return 2;
         if (93 <= input && input <= 126)
             return 2;
+        return -1;
+    default:
+        return -1;
+    }
+}
+
+int transition_dot(int state, int input)
+{
+    fail_if_empty(input);
+    switch (state) {
+    case 0:
+        if (input == 46)
+            return 1;
+        return -1;
+    case 1:
+        return -1;
+    default:
+        return -1;
+    }
+}
+
+int transition_lparen(int state, int input)
+{
+    fail_if_empty(input);
+    switch (state) {
+    case 0:
+        if (input == 40)
+            return 1;
+        return -1;
+    case 1:
+        return -1;
+    default:
+        return -1;
+    }
+}
+
+int transition_rparen(int state, int input)
+{
+    fail_if_empty(input);
+    switch (state) {
+    case 0:
+        if (input == 41)
+            return 1;
+        return -1;
+    case 1:
+        return -1;
+    default:
+        return -1;
+    }
+}
+
+int transition_comma(int state, int input)
+{
+    fail_if_empty(input);
+    switch (state) {
+    case 0:
+        if (input == 44)
+            return 1;
+        return -1;
+    case 1:
+        return -1;
+    default:
+        return -1;
+    }
+}
+
+int transition_star(int state, int input)
+{
+    fail_if_empty(input);
+    switch (state) {
+    case 0:
+        if (input == 42)
+            return 1;
+        return -1;
+    case 1:
+        return -1;
+    default:
+        return -1;
+    }
+}
+
+int transition_equal(int state, int input)
+{
+    fail_if_empty(input);
+    switch (state) {
+    case 0:
+        if (input == 61)
+            return 1;
+        return -1;
+    case 1:
+        return -1;
+    default:
+        return -1;
+    }
+}
+
+int transition_lbrace(int state, int input)
+{
+    fail_if_empty(input);
+    switch (state) {
+    case 0:
+        if (input == 123)
+            return 1;
+        return -1;
+    case 1:
+        return -1;
+    default:
+        return -1;
+    }
+}
+
+int transition_rbrace(int state, int input)
+{
+    fail_if_empty(input);
+    switch (state) {
+    case 0:
+        if (input == 125)
+            return 1;
+        return -1;
+    case 1:
+        return -1;
+    default:
+        return -1;
+    }
+}
+
+int transition_colon(int state, int input)
+{
+    fail_if_empty(input);
+    switch (state) {
+    case 0:
+        if (input == 58)
+            return 1;
+        return -1;
+    case 1:
+        return -1;
+    default:
+        return -1;
+    }
+}
+
+int transition_lbracket(int state, int input)
+{
+    fail_if_empty(input);
+    switch (state) {
+    case 0:
+        if (input == 91)
+            return 1;
+        return -1;
+    case 1:
+        return -1;
+    default:
+        return -1;
+    }
+}
+
+int transition_rbracket(int state, int input)
+{
+    fail_if_empty(input);
+    switch (state) {
+    case 0:
+        if (input == 93)
+            return 1;
+        return -1;
+    case 1:
+        return -1;
+    default:
+        return -1;
+    }
+}
+
+int transition_plus(int state, int input)
+{
+    fail_if_empty(input);
+    switch (state) {
+    case 0:
+        if (input == 43)
+            return 1;
+        return -1;
+    case 1:
+        return -1;
+    default:
+        return -1;
+    }
+}
+
+int transition_minus(int state, int input)
+{
+    fail_if_empty(input);
+    switch (state) {
+    case 0:
+        if (input == 45)
+            return 1;
+        return -1;
+    case 1:
+        return -1;
+    default:
+        return -1;
+    }
+}
+
+int transition_slash(int state, int input)
+{
+    fail_if_empty(input);
+    switch (state) {
+    case 0:
+        if (input == 47)
+            return 1;
+        return -1;
+    case 1:
+        return -1;
+    default:
+        return -1;
+    }
+}
+
+int transition_lessthan(int state, int input)
+{
+    fail_if_empty(input);
+    switch (state) {
+    case 0:
+        if (input == 60)
+            return 1;
+        return -1;
+    case 1:
+        return -1;
+    default:
+        return -1;
+    }
+}
+
+int transition_greaterthan(int state, int input)
+{
+    fail_if_empty(input);
+    switch (state) {
+    case 0:
+        if (input == 62)
+            return 1;
+        return -1;
+    case 1:
         return -1;
     default:
         return -1;

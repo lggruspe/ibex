@@ -46,5 +46,69 @@ def string():
     char = char.union(sg.symbols("\\").concatenation(sg.isymbols(32, 126)))
     return sg.symbols('"').concatenation(char.closure()).concatenation(sg.symbols('"'))
 
+@sg.token("dot")
+def dot():
+    return sg.symbols('.')
+
+@sg.token("lparen")
+def lparen():
+    return sg.symbols('(')
+
+@sg.token("rparen")
+def rparen():
+    return sg.symbols(')')
+
+@sg.token("comma")
+def comma():
+    return sg.symbols(',')
+
+@sg.token("star")
+def star():
+    return sg.symbols('*')
+
+@sg.token("equal")
+def equal():
+    return sg.symbols('=')
+
+@sg.token("lbrace")
+def lbrace():
+    return sg.symbols('{')
+
+@sg.token("rbrace")
+def rbrace():
+    return sg.symbols('}')
+
+@sg.token("colon")
+def colon():
+    return sg.symbols(':')
+
+@sg.token("lbracket")
+def lbracket():
+    return sg.symbols('[')
+
+@sg.token("rbracket")
+def rbracket():
+    return sg.symbols(']')
+
+@sg.token("plus")
+def plus():
+    return sg.symbols('+')
+
+@sg.token("minus")
+def minus():
+    return sg.symbols('-')
+
+@sg.token("slash")
+def slash():
+    return sg.symbols('/')
+
+@sg.token("lessthan")
+def lessthan():
+    return sg.symbols('<')
+
+@sg.token("greaterthan")
+def greaterthan():
+    return sg.symbols('>')
+
 if __name__ == "__main__":
     sg.generate()

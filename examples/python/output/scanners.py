@@ -319,4 +319,276 @@ class StringScanner(Scanner):
             return self.state
         raise TransitionError
 
+class DotScanner(Scanner):
+    def __init__(self):
+        super().__init__()
+        self.token = "dot"
+
+    def accepts(self):
+        return self.state in [1]
+
+    def s0(self, char):
+        if 46 <= char <= 46:
+            self.state = 1
+            return self.state
+        raise TransitionError
+
+    def s1(self, char):
+        raise TransitionError
+
+class LparenScanner(Scanner):
+    def __init__(self):
+        super().__init__()
+        self.token = "lparen"
+
+    def accepts(self):
+        return self.state in [1]
+
+    def s0(self, char):
+        if 40 <= char <= 40:
+            self.state = 1
+            return self.state
+        raise TransitionError
+
+    def s1(self, char):
+        raise TransitionError
+
+class RparenScanner(Scanner):
+    def __init__(self):
+        super().__init__()
+        self.token = "rparen"
+
+    def accepts(self):
+        return self.state in [1]
+
+    def s0(self, char):
+        if 41 <= char <= 41:
+            self.state = 1
+            return self.state
+        raise TransitionError
+
+    def s1(self, char):
+        raise TransitionError
+
+class CommaScanner(Scanner):
+    def __init__(self):
+        super().__init__()
+        self.token = "comma"
+
+    def accepts(self):
+        return self.state in [1]
+
+    def s0(self, char):
+        if 44 <= char <= 44:
+            self.state = 1
+            return self.state
+        raise TransitionError
+
+    def s1(self, char):
+        raise TransitionError
+
+class StarScanner(Scanner):
+    def __init__(self):
+        super().__init__()
+        self.token = "star"
+
+    def accepts(self):
+        return self.state in [1]
+
+    def s0(self, char):
+        if 42 <= char <= 42:
+            self.state = 1
+            return self.state
+        raise TransitionError
+
+    def s1(self, char):
+        raise TransitionError
+
+class EqualScanner(Scanner):
+    def __init__(self):
+        super().__init__()
+        self.token = "equal"
+
+    def accepts(self):
+        return self.state in [1]
+
+    def s0(self, char):
+        if 61 <= char <= 61:
+            self.state = 1
+            return self.state
+        raise TransitionError
+
+    def s1(self, char):
+        raise TransitionError
+
+class LbraceScanner(Scanner):
+    def __init__(self):
+        super().__init__()
+        self.token = "lbrace"
+
+    def accepts(self):
+        return self.state in [1]
+
+    def s0(self, char):
+        if 123 <= char <= 123:
+            self.state = 1
+            return self.state
+        raise TransitionError
+
+    def s1(self, char):
+        raise TransitionError
+
+class RbraceScanner(Scanner):
+    def __init__(self):
+        super().__init__()
+        self.token = "rbrace"
+
+    def accepts(self):
+        return self.state in [1]
+
+    def s0(self, char):
+        if 125 <= char <= 125:
+            self.state = 1
+            return self.state
+        raise TransitionError
+
+    def s1(self, char):
+        raise TransitionError
+
+class ColonScanner(Scanner):
+    def __init__(self):
+        super().__init__()
+        self.token = "colon"
+
+    def accepts(self):
+        return self.state in [1]
+
+    def s0(self, char):
+        if 58 <= char <= 58:
+            self.state = 1
+            return self.state
+        raise TransitionError
+
+    def s1(self, char):
+        raise TransitionError
+
+class LbracketScanner(Scanner):
+    def __init__(self):
+        super().__init__()
+        self.token = "lbracket"
+
+    def accepts(self):
+        return self.state in [1]
+
+    def s0(self, char):
+        if 91 <= char <= 91:
+            self.state = 1
+            return self.state
+        raise TransitionError
+
+    def s1(self, char):
+        raise TransitionError
+
+class RbracketScanner(Scanner):
+    def __init__(self):
+        super().__init__()
+        self.token = "rbracket"
+
+    def accepts(self):
+        return self.state in [1]
+
+    def s0(self, char):
+        if 93 <= char <= 93:
+            self.state = 1
+            return self.state
+        raise TransitionError
+
+    def s1(self, char):
+        raise TransitionError
+
+class PlusScanner(Scanner):
+    def __init__(self):
+        super().__init__()
+        self.token = "plus"
+
+    def accepts(self):
+        return self.state in [1]
+
+    def s0(self, char):
+        if 43 <= char <= 43:
+            self.state = 1
+            return self.state
+        raise TransitionError
+
+    def s1(self, char):
+        raise TransitionError
+
+class MinusScanner(Scanner):
+    def __init__(self):
+        super().__init__()
+        self.token = "minus"
+
+    def accepts(self):
+        return self.state in [1]
+
+    def s0(self, char):
+        if 45 <= char <= 45:
+            self.state = 1
+            return self.state
+        raise TransitionError
+
+    def s1(self, char):
+        raise TransitionError
+
+class SlashScanner(Scanner):
+    def __init__(self):
+        super().__init__()
+        self.token = "slash"
+
+    def accepts(self):
+        return self.state in [1]
+
+    def s0(self, char):
+        if 47 <= char <= 47:
+            self.state = 1
+            return self.state
+        raise TransitionError
+
+    def s1(self, char):
+        raise TransitionError
+
+class LessthanScanner(Scanner):
+    def __init__(self):
+        super().__init__()
+        self.token = "lessthan"
+
+    def accepts(self):
+        return self.state in [1]
+
+    def s0(self, char):
+        if 60 <= char <= 60:
+            self.state = 1
+            return self.state
+        raise TransitionError
+
+    def s1(self, char):
+        raise TransitionError
+
+class GreaterthanScanner(Scanner):
+    def __init__(self):
+        super().__init__()
+        self.token = "greaterthan"
+
+    def accepts(self):
+        return self.state in [1]
+
+    def s0(self, char):
+        if 62 <= char <= 62:
+            self.state = 1
+            return self.state
+        raise TransitionError
+
+    def s1(self, char):
+        raise TransitionError
+
 

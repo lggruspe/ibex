@@ -8,7 +8,6 @@ int main()
     EmptyScanner empty;
     IdentifierScanner identifier;
     WhitespaceScanner whitespace;
-    IntegerScanner integer;
     NumberScanner number;
     CharacterScanner character;
     StringScanner string;
