@@ -101,6 +101,6 @@ class RndConversionTest(unittest.TestCase):
 
 if __name__ == "__main__":
     for expr_type in EXPR_FN:
-        with open(f"testdata/{expr_type}.csv", "r") as file:
+        with open(f"data/{expr_type}.csv", "r") as file:
             TEST_DATA[expr_type].extend([(str(row[0]), int(row[1])) for row in csv.reader(file)])
     unittest.main()
