@@ -10,16 +10,15 @@ struct {{ scanner.token|title }}Scanner: public Scanner {
 ## set end = transition[0].end
 ## set next_state = transition[1]
 ## if start == end
-            if (c == {{ start }}) {
+            if (c == {{ start }})
 ## else
-            if ({{start}} <= c && c <= {{end}}) {
+            if ({{start}} <= c && c <= {{end}})
 ## endif
 ## if next_state in scanner.accepts
                 return change_state({{ next_state }}, true);
 ## else
                 return change_state({{ next_state }});
 ## endif
-            }
 ## endfor
             return change_state(-1);
 ## endfor
