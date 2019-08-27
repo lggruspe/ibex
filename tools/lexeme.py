@@ -2,18 +2,18 @@ import argparse
 import csv
 import random
 
-test_data_generators = set()
+LEXEME_GENERATORS = set()
 
-def test_data_generator(f):
-    """Decorator that automatically registers f in test_data_generators."""
-    test_data_generators.add(f)
+def generator(f):
+    """Decorator that automatically registers f in LEXEME_GENERATORS."""
+    LEXEME_GENERATORS.add(f)
     return f
 
-@test_data_generator
+@generator
 def empty():
     return ''
 
-@test_data_generator
+@generator
 def number():
     digits = "0123456789"
     def integer():
@@ -38,13 +38,13 @@ def number():
         rv += integer()
     return rv
 
-@test_data_generator
+@generator
 def character():
     escape = "\\{}".format(random.choice("nt\\"))
     char = chr(random.choice([32, 38] + [40, 91] + [93, 126]))
     return "'{}'".format(random.choice([escape, char]))
 
-@test_data_generator
+@generator
 def string():
     char = chr(random.choice([32, 33] + [35, 91] + [93, 126]))
     escape = "\\{}".format(chr(random.choice([32, 126])))
@@ -53,11 +53,11 @@ def string():
         string += random.choice([char, escape])
     return f'"{string}"'
 
-@test_data_generator
+@generator
 def whitespace():
     return random.choice([' ', "\\t", "\\n"])
 
-@test_data_generator
+@generator
 def identifier():
     A = "_abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
     B = "0123456789"
@@ -72,9 +72,9 @@ def create_examples(f, n: int, p: float) -> {(str, bool)}:
     The output isn't guaranteed to have n examples, because duplicate examples
     can be generated, which are not added to the output.
     """
-    assert f in test_data_generators
+    assert f in LEXEME_GENERATORS
     assert 0 <= p <= 1
-    generators = test_data_generators - {f}
+    generators = LEXEME_GENERATORS - {f}
     examples = set()
     for i in range(n):
         g = random.sample(generators, 1)[0]
@@ -92,29 +92,32 @@ def output_examples(examples, filename=""):
         for example in examples:
             print(example[0], example[1])
 
-def get_args(description):
-    parser = argparse.ArgumentParser(description=description)
-    parser.add_argument("-n",
-            type=int,
-            default=30,
-            help="number of examples for each type of test (default: 30)")
-    parser.add_argument("-p",
-            type=float,
-            default=0.8,
-            help="ratio of positive examples (default: 0.8)")
-    parser.add_argument("-od",
-            default=".",
-            dest="outdir",
-            help="output directory (default: current directory")
-    return parser.parse_args()
+def main():
+    def get_args(description):
+        parser = argparse.ArgumentParser(description=description)
+        parser.add_argument("-n",
+                type=int,
+                default=30,
+                help="number of examples for each lexeme type (default: 30)")
+        parser.add_argument("-p",
+                type=float,
+                default=0.8,
+                help="ratio of positive examples (default: 0.8)")
+        parser.add_argument("-od",
+                default=".",
+                dest="outdir",
+                help="output directory (default: current directory")
+        return parser.parse_args()
 
-if __name__ == "__main__":
-    args = get_args("Generate random test data for test.py")
+    args = get_args("Generate random lexemes")
     n = args.n
     p = args.p
     outdir = args.outdir
 
-    for f in test_data_generators:
+    for f in LEXEME_GENERATORS:
         examples = create_examples(f, n, p)
         filename = outdir + "/" + f.__name__ + ".csv"
         output_examples(examples, filename)
+
+if __name__ == "__main__":
+    main()
