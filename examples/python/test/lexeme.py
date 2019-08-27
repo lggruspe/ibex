@@ -59,5 +59,69 @@ def identifier():
         rv += random.choice(A + B)
     return rv
 
+@examples.instances
+def dot():
+    return '.'
+
+@examples.instances
+def lparen():
+    return '('
+
+@examples.instances
+def rparen():
+    return ')'
+
+@examples.instances
+def comma():
+    return ','
+
+@examples.instances
+def star():
+    return '*'
+
+@examples.instances
+def equal():
+    return '='
+
+@examples.instances
+def lbrace():
+    return '{'
+
+@examples.instances
+def rbrace():
+    return '}'
+
+@examples.instances
+def colon():
+    return ':'
+
+@examples.instances
+def lbracket():
+    return '['
+
+@examples.instances
+def rbracket():
+    return ']'
+
+@examples.instances
+def plus():
+    return '+'
+
+@examples.instances
+def minus():
+    return '-'
+
+@examples.instances
+def slash():
+    return '/'
+
+@examples.instances
+def lessthan():
+    return '<'
+
+@examples.instances
+def greaterthan():
+    return '>'
+
 if __name__ == "__main__":
     examples.main()
