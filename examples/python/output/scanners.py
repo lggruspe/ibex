@@ -7,13 +7,17 @@ class Scanner:
     def __init__(self):
         self.checkpoint = [0]
         self.token = ""
+        self._accepts = False
 
     @property
     def state(self):
         return self.checkpoint[-1] if self.checkpoint else -1
 
-    @state.setter
-    def state(self, next_state):
+    def change_state(self, next_state, checkpoint=False):
+        """Transition and set checkpoint if visiting an accept state."""
+        if checkpoint:
+            self.checkpoint = []
+            self._accepts = True
         self.checkpoint.append(next_state)
 
     def next(self, char):
@@ -23,51 +27,45 @@ class Scanner:
                 getattr(self, f"s{self.state}")(ord(char))
                 return self.state != -1
             except:
-                self.state = -1
+                self.change_state(-1)
                 return False
         return False
 
-    def backtrack(self):
-        """Backtrack to most recent accept state, return number of steps."""
-        steps = 0
-        while not self.accepts() and len(self.checkpoint) > 1:
-            self.checkpoint.pop()
-            steps += 1
-        return steps
+    def backtrack_steps(self):
+        """Number of steps from most recent accept or initial state.."""
+        return len(self.checkpoint) - 1
 
     def __repr__(self):
         return f"<Scanner {self.token} state:{self.state} checkpoint:{self.checkpoint}>"
 
     def accepts(self):
-        raise NotImplementedError
+        """Returns true if the scanner passes an accept state even once."""
+        return self._accepts
 
 class IdentifierScanner(Scanner):
     def __init__(self):
         super().__init__()
         self.token = "identifier"
 
-    def accepts(self):
-        return self.state in [1]
-
     def s0(self, char):
         if 65 <= char <= 90:
-            self.state = 1
+            self.change_state(1, checkpoint=True)
         elif char == 95:
-            self.state = 1
+            self.change_state(1, checkpoint=True)
         elif 97 <= char <= 122:
-            self.state = 1
+            self.change_state(1, checkpoint=True)
         else:
             raise TransitionError
 
     def s1(self, char):
         if 48 <= char <= 57:
-            self.state = 1
+            self.change_state(1, checkpoint=True)
         elif 65 <= char <= 90:
-            self.state = 1
+            self.change_state(1, checkpoint=True)
         elif char == 95:
-            self.state = 1
+            self.change_state(1, checkpoint=True)
         elif 97 <= char <= 122:
-            self.state = 1
+            self.change_state(1, checkpoint=True)
         else:
             raise TransitionError
 
@@ -76,16 +74,13 @@ class WhitespaceScanner(Scanner):
         super().__init__()
         self.token = "whitespace"
 
-    def accepts(self):
-        return self.state in [1]
-
     def s0(self, char):
         if char == 9:
-            self.state = 1
+            self.change_state(1, checkpoint=True)
         elif char == 10:
-            self.state = 1
+            self.change_state(1, checkpoint=True)
         elif char == 32:
-            self.state = 1
+            self.change_state(1, checkpoint=True)
         else:
             raise TransitionError
 
@@ -97,66 +92,63 @@ class NumberScanner(Scanner):
         super().__init__()
         self.token = "number"
 
-    def accepts(self):
-        return self.state in [1, 3, 5, 6, 8]
-
     def s0(self, char):
         if char == 48:
-            self.state = 5
+            self.change_state(5, checkpoint=True)
         elif 49 <= char <= 57:
-            self.state = 1
+            self.change_state(1, checkpoint=True)
         else:
             raise TransitionError
 
     def s5(self, char):
         if char == 46:
-            self.state = 7
+            self.change_state(7)
         elif char == 69:
-            self.state = 2
+            self.change_state(2)
         elif char == 101:
-            self.state = 2
+            self.change_state(2)
         else:
             raise TransitionError
 
     def s1(self, char):
         if char == 46:
-            self.state = 7
+            self.change_state(7)
         elif char == 48:
-            self.state = 1
+            self.change_state(1, checkpoint=True)
         elif 49 <= char <= 57:
-            self.state = 1
+            self.change_state(1, checkpoint=True)
         elif char == 69:
-            self.state = 2
+            self.change_state(2)
         elif char == 101:
-            self.state = 2
+            self.change_state(2)
         else:
             raise TransitionError
 
     def s7(self, char):
         if char == 48:
-            self.state = 3
+            self.change_state(3, checkpoint=True)
         elif 49 <= char <= 57:
-            self.state = 3
+            self.change_state(3, checkpoint=True)
         else:
             raise TransitionError
 
     def s2(self, char):
         if char == 43:
-            self.state = 4
+            self.change_state(4)
         elif char == 45:
-            self.state = 4
+            self.change_state(4)
         elif char == 48:
-            self.state = 6
+            self.change_state(6, checkpoint=True)
         elif 49 <= char <= 57:
-            self.state = 8
+            self.change_state(8, checkpoint=True)
         else:
             raise TransitionError
 
     def s4(self, char):
         if char == 48:
-            self.state = 6
+            self.change_state(6, checkpoint=True)
         elif 49 <= char <= 57:
-            self.state = 8
+            self.change_state(8, checkpoint=True)
         else:
             raise TransitionError
 
@@ -165,21 +157,21 @@ class NumberScanner(Scanner):
 
     def s8(self, char):
         if char == 48:
-            self.state = 8
+            self.change_state(8, checkpoint=True)
         elif 49 <= char <= 57:
-            self.state = 8
+            self.change_state(8, checkpoint=True)
         else:
             raise TransitionError
 
     def s3(self, char):
         if char == 48:
-            self.state = 3
+            self.change_state(3, checkpoint=True)
         elif 49 <= char <= 57:
-            self.state = 3
+            self.change_state(3, checkpoint=True)
         elif char == 69:
-            self.state = 2
+            self.change_state(2)
         elif char == 101:
-            self.state = 2
+            self.change_state(2)
         else:
             raise TransitionError
 
@@ -188,24 +180,21 @@ class CharacterScanner(Scanner):
         super().__init__()
         self.token = "character"
 
-    def accepts(self):
-        return self.state in [1]
-
     def s0(self, char):
         if char == 39:
-            self.state = 2
+            self.change_state(2)
         else:
             raise TransitionError
 
     def s2(self, char):
         if 32 <= char <= 38:
-            self.state = 3
+            self.change_state(3)
         elif 40 <= char <= 91:
-            self.state = 3
+            self.change_state(3)
         elif char == 92:
-            self.state = 4
+            self.change_state(4)
         elif 93 <= char <= 126:
-            self.state = 3
+            self.change_state(3)
         else:
             raise TransitionError
 
@@ -214,17 +203,17 @@ class CharacterScanner(Scanner):
 
     def s3(self, char):
         if char == 39:
-            self.state = 1
+            self.change_state(1, checkpoint=True)
         else:
             raise TransitionError
 
     def s4(self, char):
         if char == 39:
-            self.state = 3
+            self.change_state(3)
         elif char == 92:
-            self.state = 3
+            self.change_state(3)
         elif 93 <= char <= 126:
-            self.state = 3
+            self.change_state(3)
         else:
             raise TransitionError
 
@@ -233,26 +222,23 @@ class StringScanner(Scanner):
         super().__init__()
         self.token = "string"
 
-    def accepts(self):
-        return self.state in [1]
-
     def s0(self, char):
         if char == 34:
-            self.state = 2
+            self.change_state(2)
         else:
             raise TransitionError
 
     def s2(self, char):
         if 32 <= char <= 33:
-            self.state = 2
+            self.change_state(2)
         elif char == 34:
-            self.state = 1
+            self.change_state(1, checkpoint=True)
         elif 35 <= char <= 91:
-            self.state = 2
+            self.change_state(2)
         elif char == 92:
-            self.state = 3
+            self.change_state(3)
         elif 93 <= char <= 126:
-            self.state = 2
+            self.change_state(2)
         else:
             raise TransitionError
 
@@ -261,15 +247,15 @@ class StringScanner(Scanner):
 
     def s3(self, char):
         if 32 <= char <= 33:
-            self.state = 2
+            self.change_state(2)
         elif char == 34:
-            self.state = 2
+            self.change_state(2)
         elif 35 <= char <= 91:
-            self.state = 2
+            self.change_state(2)
         elif char == 92:
-            self.state = 2
+            self.change_state(2)
         elif 93 <= char <= 126:
-            self.state = 2
+            self.change_state(2)
         else:
             raise TransitionError
 
@@ -278,12 +264,9 @@ class DotScanner(Scanner):
         super().__init__()
         self.token = "dot"
 
-    def accepts(self):
-        return self.state in [1]
-
     def s0(self, char):
         if char == 46:
-            self.state = 1
+            self.change_state(1, checkpoint=True)
         else:
             raise TransitionError
 
@@ -295,12 +278,9 @@ class LparenScanner(Scanner):
         super().__init__()
         self.token = "lparen"
 
-    def accepts(self):
-        return self.state in [1]
-
     def s0(self, char):
         if char == 40:
-            self.state = 1
+            self.change_state(1, checkpoint=True)
         else:
             raise TransitionError
 
@@ -312,12 +292,9 @@ class RparenScanner(Scanner):
         super().__init__()
         self.token = "rparen"
 
-    def accepts(self):
-        return self.state in [1]
-
     def s0(self, char):
         if char == 41:
-            self.state = 1
+            self.change_state(1, checkpoint=True)
         else:
             raise TransitionError
 
@@ -329,12 +306,9 @@ class CommaScanner(Scanner):
         super().__init__()
         self.token = "comma"
 
-    def accepts(self):
-        return self.state in [1]
-
     def s0(self, char):
         if char == 44:
-            self.state = 1
+            self.change_state(1, checkpoint=True)
         else:
             raise TransitionError
 
@@ -346,12 +320,9 @@ class StarScanner(Scanner):
         super().__init__()
         self.token = "star"
 
-    def accepts(self):
-        return self.state in [1]
-
     def s0(self, char):
         if char == 42:
-            self.state = 1
+            self.change_state(1, checkpoint=True)
         else:
             raise TransitionError
 
@@ -363,12 +334,9 @@ class EqualScanner(Scanner):
         super().__init__()
         self.token = "equal"
 
-    def accepts(self):
-        return self.state in [1]
-
     def s0(self, char):
         if char == 61:
-            self.state = 1
+            self.change_state(1, checkpoint=True)
         else:
             raise TransitionError
 
@@ -380,12 +348,9 @@ class LbraceScanner(Scanner):
         super().__init__()
         self.token = "lbrace"
 
-    def accepts(self):
-        return self.state in [1]
-
     def s0(self, char):
         if char == 123:
-            self.state = 1
+            self.change_state(1, checkpoint=True)
         else:
             raise TransitionError
 
@@ -397,12 +362,9 @@ class RbraceScanner(Scanner):
         super().__init__()
         self.token = "rbrace"
 
-    def accepts(self):
-        return self.state in [1]
-
     def s0(self, char):
         if char == 125:
-            self.state = 1
+            self.change_state(1, checkpoint=True)
         else:
             raise TransitionError
 
@@ -414,12 +376,9 @@ class ColonScanner(Scanner):
         super().__init__()
         self.token = "colon"
 
-    def accepts(self):
-        return self.state in [1]
-
     def s0(self, char):
         if char == 58:
-            self.state = 1
+            self.change_state(1, checkpoint=True)
         else:
             raise TransitionError
 
@@ -431,12 +390,9 @@ class LbracketScanner(Scanner):
         super().__init__()
         self.token = "lbracket"
 
-    def accepts(self):
-        return self.state in [1]
-
     def s0(self, char):
         if char == 91:
-            self.state = 1
+            self.change_state(1, checkpoint=True)
         else:
             raise TransitionError
 
@@ -448,12 +404,9 @@ class RbracketScanner(Scanner):
         super().__init__()
         self.token = "rbracket"
 
-    def accepts(self):
-        return self.state in [1]
-
     def s0(self, char):
         if char == 93:
-            self.state = 1
+            self.change_state(1, checkpoint=True)
         else:
             raise TransitionError
 
@@ -465,12 +418,9 @@ class PlusScanner(Scanner):
         super().__init__()
         self.token = "plus"
 
-    def accepts(self):
-        return self.state in [1]
-
     def s0(self, char):
         if char == 43:
-            self.state = 1
+            self.change_state(1, checkpoint=True)
         else:
             raise TransitionError
 
@@ -482,12 +432,9 @@ class MinusScanner(Scanner):
         super().__init__()
         self.token = "minus"
 
-    def accepts(self):
-        return self.state in [1]
-
     def s0(self, char):
         if char == 45:
-            self.state = 1
+            self.change_state(1, checkpoint=True)
         else:
             raise TransitionError
 
@@ -499,12 +446,9 @@ class SlashScanner(Scanner):
         super().__init__()
         self.token = "slash"
 
-    def accepts(self):
-        return self.state in [1]
-
     def s0(self, char):
         if char == 47:
-            self.state = 1
+            self.change_state(1, checkpoint=True)
         else:
             raise TransitionError
 
@@ -516,12 +460,9 @@ class LessthanScanner(Scanner):
         super().__init__()
         self.token = "lessthan"
 
-    def accepts(self):
-        return self.state in [1]
-
     def s0(self, char):
         if char == 60:
-            self.state = 1
+            self.change_state(1, checkpoint=True)
         else:
             raise TransitionError
 
@@ -533,12 +474,9 @@ class GreaterthanScanner(Scanner):
         super().__init__()
         self.token = "greaterthan"
 
-    def accepts(self):
-        return self.state in [1]
-
     def s0(self, char):
         if char == 62:
-            self.state = 1
+            self.change_state(1, checkpoint=True)
         else:
             raise TransitionError
 

@@ -3,9 +3,6 @@ class {{ scanner.token|title }}Scanner(Scanner):
         super().__init__()
         self.token = "{{ scanner.token }}"
 
-    def accepts(self):
-        return self.state in [{{ scanner.accepts | join(", ") }}]
-
 ## for state in scanner.transitions
 
     def s{{ state }}(self, char):
@@ -26,7 +23,11 @@ class {{ scanner.token|title }}Scanner(Scanner):
         elif {{ start }} <= char <= {{ end }}:
 ## endif
 ## endif
-            self.state = {{ next_state }}
+## if next_state in scanner.accepts
+            self.change_state({{ next_state }}, checkpoint=True)
+## else
+            self.change_state({{ next_state }})
+## endif
 ## endfor
 ## if scanner.transitions[state]|length == 0
         raise TransitionError

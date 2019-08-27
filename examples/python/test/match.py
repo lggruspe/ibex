@@ -34,7 +34,7 @@ def fsingle(file, scanner_constructor):
         if not scanner.next(char):
             for a in reversed(lexeme):
                 io_unget(a)
-            steps = scanner.backtrack()
+            steps = scanner.backtrack_steps()
             if steps > 0:
                 lexeme = lexeme[:-steps]
             break
@@ -56,7 +56,7 @@ def flongest(file, *args):
             if not scanner.next(char):
                 for a in reversed(lexeme):
                     io_unget(a)
-                steps = scanner.backtrack()
+                steps = scanner.backtrack_steps()
                 if steps > 0:
                     lexeme = lexeme[:-steps]
                 if scanner.accepts():
