@@ -8,12 +8,12 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from output.scanners import *
 
 scanners = {
-    "empty": EmptyScanner(),
-    "identifier": IdentifierScanner(),
-    "whitespace": WhitespaceScanner(),
-    "number": NumberScanner(),
-    "character": CharacterScanner(),
-    "string": StringScanner(),
+    "empty": EmptyScanner,
+    "identifier": IdentifierScanner,
+    "whitespace": WhitespaceScanner,
+    "number": NumberScanner,
+    "character": CharacterScanner,
+    "string": StringScanner,
 }
 
 def test_longest_match():

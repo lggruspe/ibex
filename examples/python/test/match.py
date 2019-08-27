@@ -26,7 +26,8 @@ def io_iterate(file=None):
             break
         yield char
 
-def fsingle(file, scanner):
+def fsingle(file, scanner_constructor):
+    scanner = scanner_constructor()
     lexeme = ""
     for char in io_iterate(file):
         lexeme += char
@@ -45,7 +46,7 @@ def single(scanner):
 def flongest(file, *args):
     if not args:
         return "", ""
-    scanners = args[:]
+    scanners = [scanner() for scanner in args]
     record_scanner = None
     record_lexeme = ""
     for scanner in scanners:
@@ -71,8 +72,8 @@ def flongest(file, *args):
             io_get(file)
     return token, record_lexeme
 
-def longest(*args):
-    return flongest(None, *args)
+def longest(*scanners):
+    return flongest(None, *scanners)
 
 def ftokenizer(file, *scanners):
     while True:
