@@ -89,9 +89,9 @@ std::ostream& operator<<(std::ostream& out, Token token)
 struct Scanner {
     Token token;
     std::vector<int> checkpoint;
-    bool accept;
+    bool accepts;
 
-    Scanner(Token token) : token(token), checkpoint({0}), accept(false) {}
+    Scanner(Token token) : token(token), checkpoint({0}), accepts(false) {}
     virtual ~Scanner() {}
     virtual bool next(int) = 0;
 
@@ -104,7 +104,7 @@ struct Scanner {
     {
         if (checkpoint) {
             this->checkpoint.clear();
-            accept = true;
+            accepts = true;
         }
         this->checkpoint.push_back(next_state);
         return next_state != -1;
@@ -149,7 +149,6 @@ struct IdentifierScanner: public Scanner {
             }
             return change_state(-1);
         case 1:
-            accept = state();
             checkpoint.clear();
             if (48 <= c && c <= 57) {
                 return change_state(1, true);
@@ -165,7 +164,7 @@ struct IdentifierScanner: public Scanner {
             }
             return change_state(-1);
         default:
-            return false;
+            return change_state(-1);
         }
     }
 };
@@ -193,11 +192,10 @@ struct WhitespaceScanner: public Scanner {
             }
             return change_state(-1);
         case 1:
-            accept = state();
             checkpoint.clear();
             return change_state(-1);
         default:
-            return false;
+            return change_state(-1);
         }
     }
 };
@@ -222,7 +220,6 @@ struct NumberScanner: public Scanner {
             }
             return change_state(-1);
         case 5:
-            accept = state();
             checkpoint.clear();
             if (c == 46) {
                 return change_state(7);
@@ -235,7 +232,6 @@ struct NumberScanner: public Scanner {
             }
             return change_state(-1);
         case 1:
-            accept = state();
             checkpoint.clear();
             if (c == 46) {
                 return change_state(7);
@@ -284,11 +280,9 @@ struct NumberScanner: public Scanner {
             }
             return change_state(-1);
         case 6:
-            accept = state();
             checkpoint.clear();
             return change_state(-1);
         case 8:
-            accept = state();
             checkpoint.clear();
             if (c == 48) {
                 return change_state(8, true);
@@ -298,7 +292,6 @@ struct NumberScanner: public Scanner {
             }
             return change_state(-1);
         case 3:
-            accept = state();
             checkpoint.clear();
             if (c == 48) {
                 return change_state(3, true);
@@ -314,7 +307,7 @@ struct NumberScanner: public Scanner {
             }
             return change_state(-1);
         default:
-            return false;
+            return change_state(-1);
         }
     }
 };
@@ -350,7 +343,6 @@ struct CharacterScanner: public Scanner {
             }
             return change_state(-1);
         case 1:
-            accept = state();
             checkpoint.clear();
             return change_state(-1);
         case 3:
@@ -370,7 +362,7 @@ struct CharacterScanner: public Scanner {
             }
             return change_state(-1);
         default:
-            return false;
+            return change_state(-1);
         }
     }
 };
@@ -409,7 +401,6 @@ struct StringScanner: public Scanner {
             }
             return change_state(-1);
         case 1:
-            accept = state();
             checkpoint.clear();
             return change_state(-1);
         case 3:
@@ -430,7 +421,7 @@ struct StringScanner: public Scanner {
             }
             return change_state(-1);
         default:
-            return false;
+            return change_state(-1);
         }
     }
 };
@@ -452,11 +443,10 @@ struct DotScanner: public Scanner {
             }
             return change_state(-1);
         case 1:
-            accept = state();
             checkpoint.clear();
             return change_state(-1);
         default:
-            return false;
+            return change_state(-1);
         }
     }
 };
@@ -478,11 +468,10 @@ struct LparenScanner: public Scanner {
             }
             return change_state(-1);
         case 1:
-            accept = state();
             checkpoint.clear();
             return change_state(-1);
         default:
-            return false;
+            return change_state(-1);
         }
     }
 };
@@ -504,11 +493,10 @@ struct RparenScanner: public Scanner {
             }
             return change_state(-1);
         case 1:
-            accept = state();
             checkpoint.clear();
             return change_state(-1);
         default:
-            return false;
+            return change_state(-1);
         }
     }
 };
@@ -530,11 +518,10 @@ struct CommaScanner: public Scanner {
             }
             return change_state(-1);
         case 1:
-            accept = state();
             checkpoint.clear();
             return change_state(-1);
         default:
-            return false;
+            return change_state(-1);
         }
     }
 };
@@ -556,11 +543,10 @@ struct StarScanner: public Scanner {
             }
             return change_state(-1);
         case 1:
-            accept = state();
             checkpoint.clear();
             return change_state(-1);
         default:
-            return false;
+            return change_state(-1);
         }
     }
 };
@@ -582,11 +568,10 @@ struct EqualScanner: public Scanner {
             }
             return change_state(-1);
         case 1:
-            accept = state();
             checkpoint.clear();
             return change_state(-1);
         default:
-            return false;
+            return change_state(-1);
         }
     }
 };
@@ -608,11 +593,10 @@ struct LbraceScanner: public Scanner {
             }
             return change_state(-1);
         case 1:
-            accept = state();
             checkpoint.clear();
             return change_state(-1);
         default:
-            return false;
+            return change_state(-1);
         }
     }
 };
@@ -634,11 +618,10 @@ struct RbraceScanner: public Scanner {
             }
             return change_state(-1);
         case 1:
-            accept = state();
             checkpoint.clear();
             return change_state(-1);
         default:
-            return false;
+            return change_state(-1);
         }
     }
 };
@@ -660,11 +643,10 @@ struct ColonScanner: public Scanner {
             }
             return change_state(-1);
         case 1:
-            accept = state();
             checkpoint.clear();
             return change_state(-1);
         default:
-            return false;
+            return change_state(-1);
         }
     }
 };
@@ -686,11 +668,10 @@ struct LbracketScanner: public Scanner {
             }
             return change_state(-1);
         case 1:
-            accept = state();
             checkpoint.clear();
             return change_state(-1);
         default:
-            return false;
+            return change_state(-1);
         }
     }
 };
@@ -712,11 +693,10 @@ struct RbracketScanner: public Scanner {
             }
             return change_state(-1);
         case 1:
-            accept = state();
             checkpoint.clear();
             return change_state(-1);
         default:
-            return false;
+            return change_state(-1);
         }
     }
 };
@@ -738,11 +718,10 @@ struct PlusScanner: public Scanner {
             }
             return change_state(-1);
         case 1:
-            accept = state();
             checkpoint.clear();
             return change_state(-1);
         default:
-            return false;
+            return change_state(-1);
         }
     }
 };
@@ -764,11 +743,10 @@ struct MinusScanner: public Scanner {
             }
             return change_state(-1);
         case 1:
-            accept = state();
             checkpoint.clear();
             return change_state(-1);
         default:
-            return false;
+            return change_state(-1);
         }
     }
 };
@@ -790,11 +768,10 @@ struct SlashScanner: public Scanner {
             }
             return change_state(-1);
         case 1:
-            accept = state();
             checkpoint.clear();
             return change_state(-1);
         default:
-            return false;
+            return change_state(-1);
         }
     }
 };
@@ -816,11 +793,10 @@ struct LessthanScanner: public Scanner {
             }
             return change_state(-1);
         case 1:
-            accept = state();
             checkpoint.clear();
             return change_state(-1);
         default:
-            return false;
+            return change_state(-1);
         }
     }
 };
@@ -842,11 +818,10 @@ struct GreaterthanScanner: public Scanner {
             }
             return change_state(-1);
         case 1:
-            accept = state();
             checkpoint.clear();
             return change_state(-1);
         default:
-            return false;
+            return change_state(-1);
         }
     }
 };

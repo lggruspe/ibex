@@ -12,7 +12,6 @@ struct {{ scanner.token|title }}Scanner: public Scanner {
 ## for state in scanner.transitions
         case {{state}}:
 ## if state in scanner.accepts
-            accept = state();
             checkpoint.clear();
 ## endif
 ## for transition in scanner.transitions[state]
@@ -34,7 +33,7 @@ struct {{ scanner.token|title }}Scanner: public Scanner {
             return change_state(-1);
 ## endfor
         default:
-            return false;
+            return change_state(-1);
         }
     }
 };

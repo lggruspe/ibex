@@ -33,9 +33,9 @@ std::ostream& operator<<(std::ostream& out, Token token)
 struct Scanner {
     Token token;
     std::vector<int> checkpoint;
-    bool accept;
+    bool accepts;
 
-    Scanner(Token token) : token(token), checkpoint({0}), accept(false) {}
+    Scanner(Token token) : token(token), checkpoint({0}), accepts(false) {}
     virtual ~Scanner() {}
     virtual bool next(int) = 0;
 
@@ -48,7 +48,7 @@ struct Scanner {
     {
         if (checkpoint) {
             this->checkpoint.clear();
-            accept = true;
+            accepts = true;
         }
         this->checkpoint.push_back(next_state);
         return next_state != -1;
