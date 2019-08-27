@@ -11,7 +11,6 @@ from output.scanners import *
 
 SCANNERS = {
     "identifier": IdentifierScanner,
-    "empty": EmptyScanner,
     "whitespace": WhitespaceScanner,
     "number": NumberScanner,
     "character": CharacterScanner,
@@ -21,11 +20,19 @@ SCANNERS = {
 TEST_DATA = {}
 
 def run_longest(pinput):
+    """Wrapper for running python run.py longest."""
     out = subprocess.check_output(
         ["python", "run.py", "longest"],
         input=f"{pinput}\n".encode())
     token, lexeme = out.decode()[:-1].split('\n', maxsplit=1)
     return token, lexeme
+
+def run_single(scanner_type, pinput):
+    """Wrapper for running python run.py single -s {scanner_type}."""
+    out = subprocess.check_output(
+        ["python", "run.py", "single", "-s", scanner_type],
+        input=f"{pinput}\n".encode())
+    return out.decode()[:-1]
 
 def parametrize_longest_match_test(test_case, scanner_type):
     for word, label in TEST_DATA[scanner_type]:
@@ -36,43 +43,27 @@ def parametrize_longest_match_test(test_case, scanner_type):
         else:
             test_case.assertNotEqual(token, scanner_type)
 
-class LongestMatchTest(unittest.TestCase):
-    @unittest.skip("")
-    def test_empty(self):
-        parametrize_longest_match_test(self, "empty")
+def parametrize_single_match_test(test_case, scanner_type):
+    for word, label in TEST_DATA[scanner_type]:
+        lexeme = run_single(scanner_type, word)
+        test_case.assertEqual(lexeme, word if label else "")
 
-    def test_except_empty(self):
+class LongestMatchTest(unittest.TestCase):
+    def test_random_data(self):
         for scanner_type in SCANNERS:
-            if scanner_type != "empty":
-                with self.subTest(scanner_type=scanner_type):
-                    parametrize_longest_match_test(self, scanner_type)
+            with self.subTest(scanner_type=scanner_type):
+                parametrize_longest_match_test(self, scanner_type)
 
 class SingleMatchTest(unittest.TestCase):
     @unittest.skip("")
-    def test_empty(self):
-        scanner = EmptyScanner()
-        lexeme = match.single(scanner)
-        self.assertEqual("", lexeme)
-
-    @unittest.skip("")
-    def test_identifier(self):
-        scanner = IdentifierScanner()
-
-    @unittest.skip("")
     def test_whitespace(self):
-        scanner = WhitespaceScanner()
+        parametrize_single_match_test(self, "whitespace")
 
-    @unittest.skip("")
-    def test_number(self):
-        scanner = NumberScanner()
-
-    @unittest.skip("")
-    def test_character(self):
-        scanner = CharacterScanner()
-
-    @unittest.skip("")
-    def test_string(self):
-        scanner = StringScanner()
+    def test_except_whitespace(self):
+        for scanner_type in SCANNERS:
+            if scanner_type != "whitespace":
+                with self.subTest(scanner_type=scanner_type):
+                    parametrize_single_match_test(self, scanner_type)
 
 class TokenizerTest(unittest.TestCase):
     def setUp(self):
