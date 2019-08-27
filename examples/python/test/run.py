@@ -22,8 +22,8 @@ def test_longest_match():
     print(token, f"\"{lexeme}\"")
 
 def test_single_match(scanner):
-    token, lexeme = match.single(scanner)
-    print(token, f"\"{lexeme}\"")
+    lexeme = match.single(scanner)
+    print(lexeme)
 
 def test_tokenizer():
     tokenize = match.tokenizer(*(scanners.values()))

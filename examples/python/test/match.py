@@ -30,9 +30,7 @@ def single(scanner):
             if steps > 0:
                 lexeme = lexeme[:-steps]
             break
-    if not lexeme:
-        return "", ""
-    return scanner.token, lexeme
+    return lexeme
 
 def longest(*args):
     if not args:
@@ -88,5 +86,8 @@ def longest(*args):
             else:
                 continue
             break
-    return single(scanners[0], lexeme)
+    lexeme = single(scanners[0], lexeme)
+    if not lexeme:
+        return "", ""
+    return scanner.token, lexeme
 '''
