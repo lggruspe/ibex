@@ -11,7 +11,7 @@ std::string single(std::istream& in, Scanner& scanner, std::string lexeme="")
     for (int c = in.get(); c != EOF; c = in.get()) {
         lexeme += (char)c;
         if (!scanner.next(c)) {
-            int steps = scanner.backtrack();
+            int steps = scanner.backtrack_steps();
             std::cout << "steps: " << steps << std::endl;
             std::cout << "lexeme.size: " << lexeme.size() << std::endl;
             for (int i = 0; i < steps; ++i) {

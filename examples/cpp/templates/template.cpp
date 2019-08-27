@@ -33,27 +33,42 @@ std::ostream& operator<<(std::ostream& out, Token token)
 struct Scanner {
     Token token;
     std::vector<int> checkpoint;
-    int accept;
+    bool accept;
 
-    Scanner(Token token) : token(token), checkpoint({0}) {}
+    Scanner(Token token) : token(token), checkpoint({0}), accept(false) {}
     virtual ~Scanner() {}
     virtual bool next(int) = 0;
 
     int state() const
     {
-        return checkpoint.back();
+        return checkpoint.empty() ? -1 : checkpoint.back();
     }
 
-    int backtrack(bool clear=false)
+    int change_state(int next_state, bool checkpoint=false)
     {
-        int steps = checkpoint.size();
-        if (clear) {
-            checkpoint.clear();
-            checkpoint.push_back(0);
+        if (checkpoint) {
+            this->checkpoint.clear();
+            accept = true;
         }
-        return steps;
+        this->checkpoint.push_back(next_state);
+        return next_state != -1;
+    }
+
+    int backtrack_steps() const
+    {
+        return checkpoint.size() - 1;
     }
 };
+
+std::ostream& operator<<(std::ostream& out, const Scanner& scanner)
+{
+    return out << "<Scanner " << scanner.token << " state:" << scanner.state()
+        << " checkpoint:[";
+    for (const auto& state: scanner.checkpoint) {
+        out << " " << state;
+    }
+    return out << " ]>";
+}
 
 ## for scanner in scanners
 {% include "scanner.cpp" %}
