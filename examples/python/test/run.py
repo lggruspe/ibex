@@ -11,7 +11,6 @@ scanners = {
     "empty": EmptyScanner(),
     "identifier": IdentifierScanner(),
     "whitespace": WhitespaceScanner(),
-    "integer": IntegerScanner(),
     "number": NumberScanner(),
     "character": CharacterScanner(),
     "string": StringScanner(),
