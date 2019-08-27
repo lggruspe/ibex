@@ -35,7 +35,11 @@ struct Scanner {
     std::vector<int> checkpoint;
     bool accepts;
 
-    Scanner(Token token) : token(token), checkpoint({0}), accepts(false) {}
+    Scanner(Token token) 
+        : token(token)
+        , checkpoint({0})
+        , accepts(false) {}
+
     virtual ~Scanner() {}
     virtual bool next(int) = 0;
 
