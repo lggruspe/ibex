@@ -4,14 +4,7 @@ from rnd import ExprSymbols, convert, Dfa, DfaSymbols
 from rnd.internals import crnd
 import examples
 
-TEST_DATA = {
-    "empty": [],
-    "number": [],
-    "identifier": [],
-    "string": [],
-    "character": [],
-    "whitespace": [],
-}
+TEST_DATA = {}
 
 def sym(a, b=None):
     if b is None:
