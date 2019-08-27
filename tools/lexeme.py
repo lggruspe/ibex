@@ -4,67 +4,10 @@ import random
 
 LEXEME_GENERATORS = set()
 
-def generator(f):
-    """Decorator that automatically registers f in LEXEME_GENERATORS."""
-    LEXEME_GENERATORS.add(f)
-    return f
-
-@generator
-def empty():
-    return ''
-
-@generator
-def number():
-    digits = "0123456789"
-    def integer():
-        n = random.randint(1, 9)
-        if n == 1:
-            return random.choice(digits)
-
-        rv = random.choice(digits[1:])
-        for i in range(1, n):
-            rv += random.choice(digits)
-        return rv
-
-    rv = integer()
-    if random.randint(0, 1):
-        rv += "."
-        for _ in range(random.randint(1, 9)):
-            rv += random.choice(digits)
-    if random.randint(0, 1):
-        rv += random.choice("eE")
-        if random.randint(0, 1):
-            rv += random.choice("+-")
-        rv += integer()
-    return rv
-
-@generator
-def character():
-    escape = "\\{}".format(random.choice("nt\\"))
-    char = chr(random.choice([32, 38] + [40, 91] + [93, 126]))
-    return "'{}'".format(random.choice([escape, char]))
-
-@generator
-def string():
-    char = chr(random.choice([32, 33] + [35, 91] + [93, 126]))
-    escape = "\\{}".format(chr(random.choice([32, 126])))
-    string = ""
-    for i in range(random.randint(0, 32)):
-        string += random.choice([char, escape])
-    return f'"{string}"'
-
-@generator
-def whitespace():
-    return random.choice([' ', "\\t", "\\n"])
-
-@generator
-def identifier():
-    A = "_abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
-    B = "0123456789"
-    rv = random.choice(A)
-    for _ in range(random.randint(0, 15)):
-        rv += random.choice(A + B)
-    return rv
+def randomizer(fn):
+    """Register fn as a random lexeme generator."""
+    LEXEME_GENERATORS.add(fn)
+    return fn
 
 def create_examples(f, n: int, p: float) -> {(str, bool)}:
     """Create ~n*p true examples for f and ~n*(1-p) false examples.
@@ -103,10 +46,10 @@ def main():
                 type=float,
                 default=0.8,
                 help="ratio of positive examples (default: 0.8)")
-        parser.add_argument("-od",
+        parser.add_argument("-o",
                 default=".",
                 dest="outdir",
-                help="output directory (default: current directory")
+                help="output directory (default: current directory)")
         return parser.parse_args()
 
     args = get_args("Generate random lexemes")
