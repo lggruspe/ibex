@@ -5,9 +5,13 @@ class Scanner:
     """Base class for scangen-generated scanners."""
 
     def __init__(self):
+        """
+        checkpoint: every state visited since the last accept state
+        accepts: True if an accept state is ever visited
+        """
         self.checkpoint = [0]
         self.token = ""
-        self._accepts = False
+        self.accepts = False
 
     @property
     def state(self):
@@ -17,7 +21,7 @@ class Scanner:
         """Transition and set checkpoint if visiting an accept state."""
         if checkpoint:
             self.checkpoint = []
-            self._accepts = True
+            self.accepts = True
         self.checkpoint.append(next_state)
 
     def next(self, char):
@@ -37,10 +41,6 @@ class Scanner:
 
     def __repr__(self):
         return f"<Scanner {self.token} state:{self.state} checkpoint:{self.checkpoint}>"
-
-    def accepts(self):
-        """Returns true if the scanner passes an accept state even once."""
-        return self._accepts
 
 class IdentifierScanner(Scanner):
     def __init__(self):

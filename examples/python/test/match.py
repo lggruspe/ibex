@@ -59,7 +59,7 @@ def flongest(file, *args):
                 steps = scanner.backtrack_steps()
                 if steps > 0:
                     lexeme = lexeme[:-steps]
-                if scanner.accepts():
+                if scanner.accepts:
                     if len(lexeme) > len(record_lexeme):
                         record_scanner = scanner
                         record_lexeme = lexeme
