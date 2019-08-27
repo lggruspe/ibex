@@ -20,7 +20,8 @@ class Scanner:
         """State transition on input char, returns True if successful."""
         if self.state != -1:
             try:
-                return getattr(self, f"s{self.state}")(ord(char))
+                getattr(self, f"s{self.state}")(ord(char))
+                return self.state != -1
             except:
                 self.state = -1
                 return False
