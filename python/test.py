@@ -4,11 +4,14 @@ import unittest
 from rnd import ExprSymbols, convert, Dfa, DfaSymbols
 from rnd.internals import crnd
 
-empty_data = []
-number_data = []
-identifier_data = []
-string_data = []
-character_data = []
+TEST_DATA = {
+    "empty": [],
+    "number": [],
+    "identifier": [],
+    "string": [],
+    "character": [],
+    "whitespace": [],
+}
 
 def sym(a, b=None):
     if b is None:
@@ -62,6 +65,23 @@ def character_expr():
                 escape ])
     return sym("'").concatenation(middle).concatenation(sym("'"))
 
+EXPR_FN = {
+    "empty": empty_expr,
+    "number": number_expr,
+    "identifier": identifier_expr,
+    "string": string_expr,
+    "character": character_expr,
+    "whitespace": whitespace_expr,
+}
+
+def parametrize_expr_test(test_case, expr_type):
+    test_case.dfa = to_dfa(EXPR_FN[expr_type]())
+    test_case.assertTrue(TEST_DATA[expr_type])
+    for word, label in TEST_DATA[expr_type]:
+        word = word.encode().decode()
+        accepted = test_case.dfa.compute(map(ord, word))
+        test_case.assertFalse(accepted ^ label)
+
 class RndConversionTest(unittest.TestCase):
     def setUp(self):
         self.dfa = Dfa()
@@ -70,24 +90,13 @@ class RndConversionTest(unittest.TestCase):
         self.dfa = Dfa()
 
     def test_identifier(self):
-        self.dfa = to_dfa(identifier_expr())
-        self.assertTrue(identifier_data)
-        for word, label in identifier_data:
-            word = word.encode().decode()
-            accepted = self.dfa.compute(map(ord, word))
-            self.assertFalse(accepted ^ label)
+        parametrize_expr_test(self, "identifier")
 
     def test_empty(self):
-        self.dfa = to_dfa(empty_expr())
-        self.assertTrue(empty_data)
-        for word, label in empty_data:
-            word = word.encode().decode()
-            accepted = self.dfa.compute(map(ord, word))
-            self.assertFalse(accepted ^ label)
+        parametrize_expr_test(self, "empty")
 
     def test_whitespace(self):
         self.dfa = to_dfa(whitespace_expr())
-
         self.assertTrue(self.dfa.compute(map(ord, "\t")))
         self.assertTrue(self.dfa.compute(map(ord, "\n")))
         self.assertTrue(self.dfa.compute(map(ord, " ")))
@@ -95,28 +104,13 @@ class RndConversionTest(unittest.TestCase):
         self.assertFalse(self.dfa.compute(map(ord, "  ")))
 
     def test_number(self):
-        self.dfa = to_dfa(number_expr())
-        self.assertTrue(number_data)
-        for word, label in number_data:
-            word = word.encode().decode()
-            accepted = self.dfa.compute(map(ord, word))
-            self.assertFalse(accepted ^ label)
+        parametrize_expr_test(self, "number")
 
     def test_string(self):
-        self.dfa = to_dfa(string_expr())
-        self.assertTrue(string_data)
-        for word, label in string_data:
-            word = word.encode().decode()
-            accepted = self.dfa.compute(map(ord, word))
-            self.assertFalse(accepted ^ label)
+        parametrize_expr_test(self, "string")
 
     def test_character(self):
-        self.dfa = to_dfa(character_expr())
-        self.assertTrue(character_data)
-        for word, label in character_data:
-            word = word.encode().decode()
-            accepted = self.dfa.compute(map(ord, word))
-            self.assertFalse(accepted ^ label)
+        parametrize_expr_test(self, "character")
 
     def test_leaks(self):
         to_dfa(empty_expr())
@@ -133,9 +127,9 @@ def init_data(filename, seq):
         seq.extend([(str(row[0]), int(row[1])) for row in csv.reader(f)])
 
 if __name__ == "__main__":
-    init_data("testdata/identifier.csv", identifier_data)
-    init_data("testdata/number.csv", number_data)
-    init_data("testdata/empty.csv", empty_data)
-    init_data("testdata/string.csv", string_data)
-    init_data("testdata/character.csv", character_data)
+    init_data("testdata/identifier.csv", TEST_DATA["identifier"])
+    init_data("testdata/number.csv", TEST_DATA["number"])
+    init_data("testdata/empty.csv", TEST_DATA["empty"])
+    init_data("testdata/string.csv", TEST_DATA["string"])
+    init_data("testdata/character.csv", TEST_DATA["character"])
     unittest.main()
