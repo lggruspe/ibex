@@ -31,7 +31,7 @@ def fsingle(file, scanner_constructor):
     lexeme = ""
     for char in io_iterate(file):
         lexeme += char
-        if not scanner.next(char):
+        if not scanner.next(ord(char)):
             for a in reversed(lexeme):
                 io_unget(a)
             steps = scanner.backtrack_steps()
@@ -53,7 +53,7 @@ def flongest(file, *args):
         lexeme = ""
         for char in io_iterate(file):
             lexeme += char
-            if not scanner.next(char):
+            if not scanner.next(ord(char)):
                 for a in reversed(lexeme):
                     io_unget(a)
                 steps = scanner.backtrack_steps()
@@ -96,7 +96,7 @@ def longest(*args):
             lexeme += char
             for node in scanners.iteratenodes():
                 scanner = node.data
-                if not scanner.next(char):
+                if not scanner.next(ord(char)):
                     scanners.deletenode(node)
                 if len(scanners) <= 1:
                     break
