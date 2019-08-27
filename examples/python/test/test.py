@@ -3,7 +3,7 @@ import subprocess
 import sys
 import unittest
 import examples
-import match
+import lexeme as lex
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
@@ -33,6 +33,13 @@ def run_single(scanner_type, pinput):
         ["python", "run.py", "single", "-s", scanner_type],
         input=f"{pinput}\n".encode())
     return out.decode()[:-1]
+
+def run_tokenizer(pinput):
+    """Wrapper for running python run.py tokenizer."""
+    out = subprocess.check_output(
+        ["python", "run.py", "tokenizer"],
+        input=f"{pinput}\n".encode())
+    return out.decode()
 
 def parametrize_longest_match_test(test_case, scanner_type):
     for word, label in TEST_DATA[scanner_type]:
@@ -66,14 +73,22 @@ class SingleMatchTest(unittest.TestCase):
                     parametrize_single_match_test(self, scanner_type)
 
 class TokenizerTest(unittest.TestCase):
-    def setUp(self):
-        self.scanners = [scanner() for scanner in SCANNERS.values()]
-
-    @unittest.skip("")
     def test_tokenize(self):
-        tokenize = match.tokenizer(*(self.scanners))
-        for token, lexeme in tokenize:
-            pass
+        identifier = lex.identifier()
+        number = lex.number()
+        character = lex.character()
+        string = lex.string()
+        expected = "".join([
+            f"identifier {identifier}\n",
+            f"whitespace  \n",
+            f"number {number}\n",
+            f"whitespace \t\n",
+            f"character {character}\n",
+            f"whitespace \n\n",
+            f"string {string}\n",
+        ])
+        actual = run_tokenizer(f"{identifier} {number}\t{character}\n{string}")
+        self.assertEqual(actual, expected)
 
 if __name__ == "__main__":
     for scanner_type in SCANNERS:
