@@ -36,14 +36,14 @@ std::string single(std::string lexeme="")
 template <class Token, class BaseScanner, class... Scanners>
 std::pair<Token, std::string> flongest(std::istream& in)
 {
+    Token record_token = static_cast<Token>(0);
+    std::string record_lexeme;
     if constexpr(sizeof...(Scanners) == 0) {
-        return {Token(), ""};
+        return {record_token, record_lexeme};
     }
 
     std::vector<std::shared_ptr<BaseScanner>> scanners = { std::make_shared<Scanners>() ... };
 
-    Token record_token;
-    std::string record_lexeme;
     for (auto& scanner_ptr: scanners) {
         std::string lexeme;
         for (int c = in.get(); c != EOF; c = in.get()) {
@@ -100,7 +100,7 @@ struct Tokenizer {
             }
             return {token, lexeme};
         }
-        return {Token(), ""};
+        return {static_cast<Token>(0), ""};
     }
 };
 

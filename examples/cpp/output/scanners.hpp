@@ -31,7 +31,7 @@
     GreaterthanScanner
 
 enum class Token {
-    empty,
+    empty = 0,
     identifier,
     whitespace,
     number,

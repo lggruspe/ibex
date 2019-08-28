@@ -18,7 +18,7 @@
 ## endfor
 
 enum class Token {
-    empty,
+    empty = 0,
 ## for scanner in scanners
     {{ scanner.token }},
 ## endfor
