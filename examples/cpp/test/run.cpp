@@ -5,13 +5,7 @@
 
 int main()
 {
-    IdentifierScanner identifier;
-    WhitespaceScanner whitespace;
-    NumberScanner number;
-    CharacterScanner character;
-    StringScanner string;
-    
-    std::string lexeme = match::single(std::cin, number);
+    std::string lexeme = match::single<NumberScanner>();
     std::string token = (lexeme.empty() ? "SyntaxError" : "Number");
     std::cout << "token: " << token << std::endl;
     std::cout << "lexeme: " << lexeme << std::endl;

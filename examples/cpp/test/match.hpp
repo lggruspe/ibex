@@ -6,20 +6,17 @@
 namespace match {
 
 template <class Scanner>
-std::string single(std::istream& in, Scanner& scanner, std::string lexeme="")
+std::string fsingle(std::istream& in, std::string lexeme="")
 {
+    Scanner scanner;
     for (int c = in.get(); c != EOF; c = in.get()) {
         lexeme += (char)c;
         if (!scanner.next(c)) {
-            int steps = scanner.backtrack_steps();
-            std::cout << "steps: " << steps << std::endl;
-            std::cout << "lexeme.size: " << lexeme.size() << std::endl;
-            for (int i = 0; i < steps; ++i) {
-                in.unget();
-                if (!lexeme.empty()) {
-                    in.putback((int)(lexeme.back()));
-                    lexeme.pop_back();
-                }
+            for (auto it = lexeme.rbegin(); it != lexeme.rend(); ++it) {
+                in.putback((int)(*it));
+            }
+            for (int i = 0; i < scanner.backtrack_steps(); ++i) {
+                lexeme.pop_back();
             }
             break;
         }
@@ -27,4 +24,9 @@ std::string single(std::istream& in, Scanner& scanner, std::string lexeme="")
     return lexeme;
 }
 
+template <class Scanner>
+std::string single(std::string lexeme="")
+{
+    return fsingle<Scanner>(std::cin, lexeme);
+}
 }
