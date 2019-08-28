@@ -13,8 +13,10 @@ output/scanner_utils.hpp:	templates/scanner_utils.cpp
 
 .PHONY:	clean
 clean:
-	-rm -rf a.out
+	-rm -rf test/a.out
 
 .PHONY:	compile
-compile:	all
-	$(CXX) $(CXXFLAGS) test/run.cpp
+compile:	test/a.out
+
+test/a.out:	test/run.cpp test/match.hpp
+	$(CXX) $(CXXFLAGS) -o $@ $<
