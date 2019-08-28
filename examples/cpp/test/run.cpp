@@ -2,6 +2,7 @@
 #include "match.hpp"
 #include <iostream>
 #include <string>
+#include <tuple>
 
 int main()
 {
@@ -11,8 +12,18 @@ int main()
     std::cout << "token: " << token << std::endl;
     std::cout << "lexeme: " << lexeme << std::endl;
     */
-    
+   
+    /*
     auto [token, lexeme] = match::longest<Token, Scanner, NumberScanner, IdentifierScanner>();
     std::cout << "token: " << token << std::endl;
     std::cout << "lexeme: " << lexeme << std::endl;
+    */
+
+    match::Tokenizer<SCAN_ALL> tokenizer;
+    for (auto [token, lexeme] = tokenizer.tokenize(); 
+            !tokenizer.done;
+            std::tie(token, lexeme) = tokenizer.tokenize()) {
+        std::cout << "token: " << token << std::endl;
+        std::cout << "lexeme: " << lexeme << std::endl;
+    }
 }

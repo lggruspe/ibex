@@ -81,4 +81,27 @@ std::pair<Token, std::string> longest()
     return flongest<Token, BaseScanner, Scanners...>(std::cin);
 }
 
+template <class Token, class BaseScanner, class... Scanners>
+struct Tokenizer {
+    std::istream* in;
+    bool done;
+
+    Tokenizer(std::istream& in=std::cin)
+        : in(&in)
+        , done(false)
+    {}
+
+    std::pair<Token, std::string> tokenize()
+    {
+        if (!done) {
+            auto [token, lexeme] = flongest<Token, BaseScanner, Scanners...>(*in);
+            if (lexeme.empty()) {
+                done = true;
+            }
+            return {token, lexeme};
+        }
+        return {Token(), ""};
+    }
+};
+
 }
