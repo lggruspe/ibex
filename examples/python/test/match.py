@@ -1,5 +1,4 @@
 import sys
-from linkedlist import LinkedList
 
 INPUT_STACK = []
 
@@ -84,27 +83,3 @@ def ftokenizer(file, *scanners):
 
 def tokenizer(*scanners):
     return ftokenizer(None, *scanners)
-
-'''
-def longest(*args):
-    if not args:
-        return "", ""
-    scanners = LinkedList(args)
-    lexeme = ""
-    if len(scanners) > 1:
-        for char in io_iterate():
-            lexeme += char
-            for node in scanners.iteratenodes():
-                scanner = node.data
-                if not scanner.next(ord(char)):
-                    scanners.deletenode(node)
-                if len(scanners) <= 1:
-                    break
-            else:
-                continue
-            break
-    lexeme = single(scanners[0], lexeme)
-    if not lexeme:
-        return "", ""
-    return scanner.token, lexeme
-'''
