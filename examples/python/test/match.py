@@ -25,7 +25,7 @@ def io_iterate(file=None):
             break
         yield char
 
-def fsingle(file, scanner_constructor):
+def single_default(file, scanner_constructor, record_token="", record_lexeme=""):
     scanner = scanner_constructor()
     lexeme = ""
     for char in io_iterate(file):
@@ -36,40 +36,28 @@ def fsingle(file, scanner_constructor):
             steps = scanner.backtrack_steps()
             if steps > 0:
                 lexeme = lexeme[:-steps]
+            if len(lexeme) > len(record_lexeme):
+                record_token = scanner.token
+                record_lexeme = lexeme
             break
+    return record_token, record_lexeme, lexeme
+
+def fsingle(file, scanner_constructor):
+    _, _, lexeme = single_default(file, scanner_constructor)
     return lexeme
 
 def single(scanner):
     return fsingle(None, scanner)
 
-def flongest(file, *args):
-    if not args:
+def flongest(file, *scanners):
+    if not scanners:
         return "", ""
-    scanners = [scanner() for scanner in args]
-    record_scanner = None
+    record_token = ""
     record_lexeme = ""
-    for scanner in scanners:
-        lexeme = ""
-        for char in io_iterate(file):
-            lexeme += char
-            if not scanner.next(ord(char)):
-                for a in reversed(lexeme):
-                    io_unget(a)
-                steps = scanner.backtrack_steps()
-                if steps > 0:
-                    lexeme = lexeme[:-steps]
-                if scanner.accepts:
-                    if len(lexeme) > len(record_lexeme):
-                        record_scanner = scanner
-                        record_lexeme = lexeme
-                break
-
-    token = ""
-    if record_lexeme:
-        token = record_scanner.token
-        for _ in record_lexeme:
-            io_get(file)
-    return token, record_lexeme
+    for scanner_constructor in scanners:
+        record_token, record_lexeme, _ = single_default(
+            file, scanner_constructor, record_token, record_lexeme)
+    return record_token, record_lexeme
 
 def longest(*scanners):
     return flongest(None, *scanners)
@@ -77,6 +65,8 @@ def longest(*scanners):
 def ftokenizer(file, *scanners):
     while True:
         token, lexeme = longest(*scanners)
+        for _ in lexeme:
+            io_get(file)
         if not token:
             break
         yield token, lexeme
