@@ -1,6 +1,7 @@
+#include "scanners.hpp"
+#include "match.hpp"
 #include "grammar.hpp"
 #include "parser.hpp"
-#include "scanner.h"
 #include <algorithm>
 #include <iostream>
 #include <variant>
@@ -58,18 +59,26 @@ void shift_cb(TokenLexemePair lookahead)
     ++counter;
 }
 
+struct Scan {
+    match::Tokenizer<SCAN_ALL> tokenizer;
+
+    std::pair<Token, std::string> operator()()
+    {
+        return tokenizer.tokenize();
+    }
+};
+
 int main()
 {
     sagl::Grammar<Symbol>
-    grammar(Variable::start, Token::_empty, {
+    grammar(Variable::start, Token::empty, {
             {Variable::start, {Variable::list}},
             {Variable::list, {Token::a, Variable::list}},
             {Variable::list, {Token::a}}
             });
     sagl::Parser parse(grammar);
 
-    ScannerCollection scan;
-    auto success = parse(scan, accept_cb, reduce_cb, shift_cb);
+    auto success = parse(Scan(), accept_cb, reduce_cb, shift_cb);
     std::cout << "success = " << success << std::endl;
     std::cout << "counter = " << counter << std::endl;
 }
