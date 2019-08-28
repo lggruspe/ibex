@@ -60,13 +60,6 @@ std::pair<Token, std::string> longest(std::istream& in=std::cin)
             }
         }
     }
-
-    if (!record_lexeme.empty()) {
-        std::for_each(record_lexeme.begin(), record_lexeme.end(),
-                [&in](const auto&) {
-                    in.get();
-                });
-    }
     return {record_token, record_lexeme};
 }
 
@@ -86,6 +79,11 @@ struct Tokenizer {
             auto [token, lexeme] = longest<Token, BaseScanner, Scanners...>(*in);
             if (lexeme.empty()) {
                 done = true;
+            } else {
+                std::for_each(record_lexeme.begin(), record_lexeme.end(),
+                        [&in](const auto&) {
+                            in.get();
+                        });
             }
             return {token, lexeme};
         }

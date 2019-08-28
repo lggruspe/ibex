@@ -47,24 +47,17 @@ def parametrize_single_match_test(test_case, scanner_type):
         lexeme = run_single(scanner_type, word)
         test_case.assertEqual(lexeme, word if label else "")
 
-class LongestMatchTest(unittest.TestCase):
-    def test_random_data(self):
+class MatchTest(unittest.TestCase):
+    def test_longest(self):
         for scanner_type in scanners.SCANNERS:
             with self.subTest(scanner_type=scanner_type):
                 parametrize_longest_match_test(self, scanner_type)
 
-class SingleMatchTest(unittest.TestCase):
-    @unittest.skip("")
-    def test_whitespace(self):
-        parametrize_single_match_test(self, "whitespace")
-
-    def test_except_whitespace(self):
+    def test_single(self):
         for scanner_type in scanners.SCANNERS:
-            if scanner_type != "whitespace":
-                with self.subTest(scanner_type=scanner_type):
-                    parametrize_single_match_test(self, scanner_type)
+            with self.subTest(scanner_type=scanner_type):
+                parametrize_single_match_test(self, scanner_type)
 
-class TokenizerTest(unittest.TestCase):
     def test_tokenize(self):
         identifier = lex.identifier()
         number = lex.number()
