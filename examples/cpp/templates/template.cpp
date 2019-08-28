@@ -5,10 +5,20 @@
 #include <utility>
 #include <vector>
 
+#define SCAN_ALL \
+    Token,\
+    Scanner,\
+## for scanner in scanners
+## if loop.index == loop.length
+    {{ scanner.token|title }}Scanner
+
+## else
+    {{ scanner.token|title }}Scanner,\
+## endif
+## endfor
+
 enum class Token {
-    _empty,
-    _other,
-    _ignore,
+    empty,
 ## for scanner in scanners
     {{ scanner.token }},
 ## endfor
@@ -17,10 +27,8 @@ enum class Token {
 std::ostream& operator<<(std::ostream& out, Token token)
 {
     switch (token) {
-    case Token::_other:
-        return out << "_other";
-    case Token::_empty:
-        return out << "_empty";
+    case Token::empty:
+        return out << "empty";
 ## for scanner in scanners
     case Token::{{ scanner.token }}:
         return out << "{{ scanner.token }}";

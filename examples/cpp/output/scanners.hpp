@@ -5,10 +5,33 @@
 #include <utility>
 #include <vector>
 
+#define SCAN_ALL \
+    Token,\
+    Scanner,\
+    IdentifierScanner,\
+    WhitespaceScanner,\
+    NumberScanner,\
+    CharacterScanner,\
+    StringScanner,\
+    DotScanner,\
+    LparenScanner,\
+    RparenScanner,\
+    CommaScanner,\
+    StarScanner,\
+    EqualScanner,\
+    LbraceScanner,\
+    RbraceScanner,\
+    ColonScanner,\
+    LbracketScanner,\
+    RbracketScanner,\
+    PlusScanner,\
+    MinusScanner,\
+    SlashScanner,\
+    LessthanScanner,\
+    GreaterthanScanner
+
 enum class Token {
-    _empty,
-    _other,
-    _ignore,
+    empty,
     identifier,
     whitespace,
     number,
@@ -35,10 +58,8 @@ enum class Token {
 std::ostream& operator<<(std::ostream& out, Token token)
 {
     switch (token) {
-    case Token::_other:
-        return out << "_other";
-    case Token::_empty:
-        return out << "_empty";
+    case Token::empty:
+        return out << "empty";
     case Token::identifier:
         return out << "identifier";
     case Token::whitespace:
