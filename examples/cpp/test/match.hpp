@@ -9,9 +9,10 @@
 namespace match {
 
 template <class Scanner>
-std::string fsingle(std::istream& in, std::string lexeme="")
+std::string single(std::istream& in=std::cin)
 {
     Scanner scanner;
+    std::string lexeme;
     for (int c = in.get(); c != EOF; c = in.get()) {
         lexeme += (char)c;
         if (!scanner.next(c)) {
@@ -27,14 +28,8 @@ std::string fsingle(std::istream& in, std::string lexeme="")
     return lexeme;
 }
 
-template <class Scanner>
-std::string single(std::string lexeme="")
-{
-    return fsingle<Scanner>(std::cin, lexeme);
-}
-
 template <class Token, class BaseScanner, class... Scanners>
-std::pair<Token, std::string> flongest(std::istream& in)
+std::pair<Token, std::string> longest(std::istream& in=std::cin)
 {
     Token record_token = static_cast<Token>(0);
     std::string record_lexeme;
@@ -76,12 +71,6 @@ std::pair<Token, std::string> flongest(std::istream& in)
 }
 
 template <class Token, class BaseScanner, class... Scanners>
-std::pair<Token, std::string> longest()
-{
-    return flongest<Token, BaseScanner, Scanners...>(std::cin);
-}
-
-template <class Token, class BaseScanner, class... Scanners>
 struct Tokenizer {
     std::istream* in;
     bool done;
@@ -94,7 +83,7 @@ struct Tokenizer {
     std::pair<Token, std::string> tokenize()
     {
         if (!done) {
-            auto [token, lexeme] = flongest<Token, BaseScanner, Scanners...>(*in);
+            auto [token, lexeme] = longest<Token, BaseScanner, Scanners...>(*in);
             if (lexeme.empty()) {
                 done = true;
             }
