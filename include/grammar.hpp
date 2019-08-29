@@ -11,7 +11,6 @@
 
 namespace sagl
 {
-;
 
 template <class Symbol>
 struct Grammar {
@@ -22,18 +21,12 @@ struct Grammar {
     Symbol empty;
    
     Grammar(Symbol start, Symbol empty, 
-            std::initializer_list<Rule<Symbol>> rules)
-    : start(start)
-    , empty(empty)
-    , rules(rules)
+            const std::multimap<Symbol, Sentence>& rules)
+        : start(start)
+        , empty(empty)
+        , rules(rules)
     {
-        symbols.insert(start);
-        symbols.insert(empty);
-        for (const auto& rule: this->rules) {
-            rules_table.insert(rule);
-            symbols.insert(rule.lhs);
-            symbols.insert(rule.rhs.begin(), rule.rhs.end());
-        }
+        initialize_symbols();
         compute_first_sets();
     }
 
@@ -50,16 +43,10 @@ struct Grammar {
         return res;
     }
 
-    std::pair<typename std::set<Rule<Symbol>>::iterator,
-        typename std::set<Rule<Symbol>>::iterator>
-    rules_for(Symbol sym) const
+    template <class T = typename std::multimap<Symbol, Sentence>::const_iterator>
+    std::pair<T, T> rules_for(Symbol sym) const
     {
-        auto lb = rules.lower_bound({sym, {}});
-        auto ub = std::find_if(lb, rules.end(),
-                [&sym](const auto& rule) {
-                    return rule.lhs != sym;
-                });
-        return std::make_pair(lb, ub);
+        return std::make_pair(rules.lower_bound(sym), rules.upper_bound(sym));
     }
 
     int rule_index(const Rule<Symbol>& rule) const
@@ -80,7 +67,7 @@ struct Grammar {
 
 private:
     std::map<Symbol, std::set<Symbol>> first_sets;
-    std::set<Rule<Symbol>> rules;
+    std::multimap<Symbol, Sentence> rules;
     Enumeration<Rule<Symbol>> rules_table;
 
     std::set<Symbol> first(Symbol sym) const
@@ -105,8 +92,12 @@ private:
             changed = false;
             for (const auto& var: variables) {
                 auto [start, end] = rules_for(var);
+
                 for (auto it = start; it != end; ++it) {
-                    const auto& rule = *it;
+
+                    const auto& [lhs, sentence] = *it;
+                    Rule rule(lhs, sentence);
+                    
                     for (const auto& symbol: first(rule.rhs)) {
                         auto [_, cond] = first_sets[var].insert(symbol);
                         if (cond) {
@@ -114,7 +105,20 @@ private:
                         }
                     }
                 }
+
             }
+        }
+    }
+
+    void initialize_symbols()
+    {
+        symbols.insert(start);
+        symbols.insert(empty);
+        for (const auto& [symbol, sentence]: rules) {
+            auto rule = Rule<Symbol>(symbol, sentence);
+            rules_table.insert(rule);
+            symbols.insert(rule.lhs);
+            symbols.insert(rule.rhs.begin(), rule.rhs.end());
         }
     }
 };

@@ -37,7 +37,7 @@ struct State {
                     sentence.push_back(item.lookahead);
                     auto new_lookaheads = grammar.first(sentence);
 
-                    const auto& rule = *it;
+                    Rule<Symbol> rule(it->first, it->second);
                     int rule_id = grammar.rule_index(rule);
                     for (const auto& new_lookahead: new_lookaheads) {
                         Item<Symbol> new_item(rule_id, rule, new_lookahead);

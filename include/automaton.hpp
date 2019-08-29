@@ -53,7 +53,7 @@ private:
     Item<Symbol> start_item(const Grammar<Symbol>& grammar) const
     {
         auto [_start, _] = grammar.rules_for(grammar.start);
-        const Rule<Symbol>& rule = *_start;
+        Rule<Symbol> rule(_start->first, _start->second);
         return Item(grammar.rule_index(rule), rule, grammar.empty);
     }
 };
