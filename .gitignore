@@ -1,11 +1,9 @@
 a.out
 *.o
 *.a
-bin/main
 Makefile.in
 aclocal.m4
 *.log
-bin
 compile
 config.*
 configure
@@ -17,3 +15,5 @@ missing
 stamp-h1
 test-driver
 *.cache
+bin
+build
