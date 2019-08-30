@@ -1,13 +1,32 @@
 #pragma once
 #include "enumeration.hpp"
-#include "rule.hpp"
 #include <map>
 #include <set>
+#include <tuple>
 #include <utility>
 #include <vector>
 
 namespace sagl
 {
+
+template <class Symbol>
+struct Rule {
+    using Sentence = std::vector<Symbol>;
+    Symbol lhs;
+    Sentence rhs;
+
+    Rule() {}   // should only be used by map
+    Rule(Symbol lhs, Sentence rhs) : lhs(lhs), rhs(rhs) {}
+    Rule(std::pair<Symbol, Sentence> rule) 
+        : lhs(rule.first)
+        , rhs(rule.second)
+    {}
+
+    bool operator<(const Rule& other) const
+    {
+        return std::tie(lhs, rhs) < std::tie(other.lhs, other.rhs);
+    }
+};
 
 template <class Symbol>
 struct Grammar {
@@ -46,12 +65,12 @@ struct Grammar {
         return { rules.lower_bound(sym), rules.upper_bound(sym) };
     }
 
-    int rule_index(const Rule<Symbol>& rule) const
+    int rule_index(const std::pair<Symbol, Sentence>& rule) const
     {
         return rules_table.index(rule);
     }
 
-    const Rule<Symbol>& rule_value(int index) const
+    const std::pair<Symbol, Sentence>& rule_value(int index) const
     {
         return rules_table.value(index);
     }
@@ -65,7 +84,7 @@ struct Grammar {
 private:
     std::map<Symbol, std::set<Symbol>> first_sets;
     std::multimap<Symbol, Sentence> rules;
-    Enumeration<Rule<Symbol>> rules_table;
+    Enumeration<std::pair<Symbol, Sentence>> rules_table;
 
     std::set<Symbol> first(Symbol sym) const
     {
@@ -107,7 +126,7 @@ private:
         symbols.insert(start);
         symbols.insert(empty);
         for (const auto& [symbol, sentence]: rules) {
-            rules_table.insert(Rule(symbol, sentence));
+            rules_table.insert({symbol, sentence});
             symbols.insert(symbol);
             symbols.insert(sentence.begin(), sentence.end());;
         }

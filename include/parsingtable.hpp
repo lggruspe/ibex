@@ -47,7 +47,7 @@ private:
         for (const auto& item: state.items) {
             if (item.reduces()) {
                 // check if accept
-                if (item.rule.lhs == grammar.start 
+                if (item.rule.first == grammar.start 
                         && item.lookahead == grammar.empty) {
                     table[state_id][grammar.empty] = Action('a');
                 } else {

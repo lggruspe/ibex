@@ -1,5 +1,4 @@
 #pragma once
-#include "rule.hpp"
 #include <iostream>
 #include <iterator>
 #include <tuple>
@@ -14,11 +13,12 @@ template <class Symbol>
 struct Item {
     using Sentence = std::vector<Symbol>;
     int rule_id;
-    Rule<Symbol> rule;
+    std::pair<Symbol, Sentence> rule;
     Symbol lookahead;
 
-    Item(int rule_id, 
-            const Rule<Symbol>& rule, 
+    Item(
+            int rule_id,
+            const std::pair<Symbol, Sentence>& rule,
             Symbol lookahead,
             typename Sentence::size_type dot_index=0)
         : rule_id(rule_id)
@@ -34,13 +34,13 @@ struct Item {
 
     bool reduces() const
     {
-        return dot_index == rule.rhs.size();
+        return dot_index == rule.second.size();
     }
 
     // symbol after the dot
     typename Sentence::const_iterator after() const
     {
-        return rule.rhs.cbegin() + dot_index;
+        return rule.second.cbegin() + dot_index;
     }
 
     // has special meaning when end = 0
@@ -51,9 +51,9 @@ struct Item {
             typename Sentence::size_type end) const
     {
         // TODO make sure that the iterators are valid
-        return std::make_pair(rule.rhs.cbegin() + dot_index + start,
-                end ? rule.rhs.cbegin() + dot_index + end
-                    : rule.rhs.cend());
+        return std::make_pair(rule.second.cbegin() + dot_index + start,
+                end ? rule.second.cbegin() + dot_index + end
+                    : rule.second.cend());
     }
 
     bool operator<(const Item<Symbol>& other) const
@@ -72,14 +72,14 @@ private:
 template <class Symbol>
 std::ostream& operator<<(std::ostream& out, const Item<Symbol>& item)
 {
-    out << "{" << item.rule.lhs << " -> ";
-    for (auto i = 0; i < item.rule.rhs.size(); ++i) {
+    out << "{" << item.rule.first << " -> ";
+    for (auto i = 0; i < item.rule.second.size(); ++i) {
         if (i == item.dot_index) {
             out << ". ";
         }
-        out << item.rule.rhs[i] << " ";
+        out << item.rule.second[i] << " ";
     }
-    if (item.dot_index == item.rule.rhs.size()) {
+    if (item.dot_index == item.rule.second.size()) {
         out << ".";
     }
     out << ", " << item.lookahead << "}";

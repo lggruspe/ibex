@@ -68,11 +68,11 @@ public:
             case 'r': {
                 const auto& rule = grammar->rule_value(action.value);
                 reduce_cb(rule);
-                std::for_each(rule.rhs.begin(), rule.rhs.end(),
+                std::for_each(rule.second.begin(), rule.second.end(),
                         [&states](const auto&) {
                         states.pop_back();
                         });
-                action = table[states.back()][rule.lhs];
+                action = table[states.back()][rule.first];
                 states.push_back(action.value);
                 }
                 break;

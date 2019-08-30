@@ -2,14 +2,13 @@
 #include "enumeration.hpp"
 #include "grammar.hpp"
 #include "item.hpp"
-#include "rule.hpp"
 #include "state.hpp"
 #include <map>
+#include <utility>
 #include <vector>
 
 namespace sagl
 {
-;
 
 template <class Symbol>
 struct Automaton {
@@ -52,8 +51,9 @@ private:
     Enumeration<State<Symbol>> states;
     Item<Symbol> start_item(const Grammar<Symbol>& grammar) const
     {
+        using Sentence = std::vector<Symbol>;
         auto [_start, _] = grammar.rules_for(grammar.start);
-        Rule<Symbol> rule(_start->first, _start->second);
+        std::pair<Symbol, Sentence> rule = {_start->first, _start->second};
         return Item(grammar.rule_index(rule), rule, grammar.empty);
     }
 };

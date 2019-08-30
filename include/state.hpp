@@ -9,7 +9,6 @@
 
 namespace sagl
 {
-;
 
 template <class Symbol>
 struct State {
@@ -37,7 +36,8 @@ struct State {
                     sentence.push_back(item.lookahead);
                     auto new_lookaheads = grammar.first(sentence);
 
-                    Rule<Symbol> rule(it->first, it->second);
+                    using Sentence = std::vector<Symbol>;
+                    std::pair<Symbol, Sentence> rule = *it;
                     int rule_id = grammar.rule_index(rule);
                     for (const auto& new_lookahead: new_lookaheads) {
                         Item<Symbol> new_item(rule_id, rule, new_lookahead);
