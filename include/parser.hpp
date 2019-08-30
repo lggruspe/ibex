@@ -6,6 +6,7 @@
 #include <map>
 #include <stdexcept>
 #include <string>
+#include <tuple>
 #include <vector>
 
 namespace sagl
@@ -58,27 +59,27 @@ public:
             shift_callback_t<V> shift_cb = empty_shift_cb)
     {
         std::vector<int> states = {start_state};
-        auto lookahead = scan();
+        auto [token, lexeme] = scan();
         for (;;) {
-            auto action = table[states.back()][lookahead.first];
+            auto action = table[states.back()][token];
             switch (action.type) {
             case 'a':
                 return accept_cb(true);
             case 'r': {
-                const auto& rule = grammar->rule_value(action.value);
-                reduce_cb(rule);
-                std::for_each(rule.second.begin(), rule.second.end(),
+                const auto& [lhs, rhs] = grammar->rule_value(action.value);
+                reduce_cb({lhs, rhs});
+                std::for_each(rhs.begin(), rhs.end(),
                         [&states](const auto&) {
-                        states.pop_back();
+                            states.pop_back();
                         });
-                action = table[states.back()][rule.first];
+                action = table[states.back()][lhs];
                 states.push_back(action.value);
                 }
                 break;
             case 's':
-                shift_cb(lookahead);
+                shift_cb({token, lexeme});
                 states.push_back(action.value);
-                lookahead = scan();
+                std::tie(token, lexeme) = scan();
                 break;
             default:
                 return accept_cb(false);
@@ -86,4 +87,5 @@ public:
         }
     }
 };
+
 } // end namespace

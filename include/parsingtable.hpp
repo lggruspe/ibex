@@ -6,7 +6,6 @@
 
 namespace sagl
 {
-;
 
 struct Action {
     char type;
