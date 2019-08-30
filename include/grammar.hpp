@@ -1,9 +1,6 @@
 #pragma once
 #include "enumeration.hpp"
 #include "rule.hpp"
-#include <algorithm>
-#include <cassert>
-#include <initializer_list>
 #include <map>
 #include <set>
 #include <utility>
@@ -46,7 +43,7 @@ struct Grammar {
     template <class T = typename std::multimap<Symbol, Sentence>::const_iterator>
     std::pair<T, T> rules_for(Symbol sym) const
     {
-        return std::make_pair(rules.lower_bound(sym), rules.upper_bound(sym));
+        return { rules.lower_bound(sym), rules.upper_bound(sym) };
     }
 
     int rule_index(const Rule<Symbol>& rule) const
@@ -72,7 +69,6 @@ private:
 
     std::set<Symbol> first(Symbol sym) const
     {
-        assert(symbols.count(sym));
         return first_sets.at(sym);
     }
 
@@ -92,12 +88,9 @@ private:
             changed = false;
             for (const auto& var: variables) {
                 auto [start, end] = rules_for(var);
-
                 for (auto it = start; it != end; ++it) {
-
                     const auto& [lhs, sentence] = *it;
                     Rule rule(lhs, sentence);
-                    
                     for (const auto& symbol: first(rule.rhs)) {
                         auto [_, cond] = first_sets[var].insert(symbol);
                         if (cond) {
@@ -105,7 +98,6 @@ private:
                         }
                     }
                 }
-
             }
         }
     }
@@ -115,10 +107,9 @@ private:
         symbols.insert(start);
         symbols.insert(empty);
         for (const auto& [symbol, sentence]: rules) {
-            auto rule = Rule<Symbol>(symbol, sentence);
-            rules_table.insert(rule);
-            symbols.insert(rule.lhs);
-            symbols.insert(rule.rhs.begin(), rule.rhs.end());
+            rules_table.insert(Rule(symbol, sentence));
+            symbols.insert(symbol);
+            symbols.insert(sentence.begin(), sentence.end());;
         }
     }
 };
