@@ -13,7 +13,8 @@ template <class Symbol>
 struct Item {
     using Sentence = std::vector<Symbol>;
     int rule_id;
-    std::pair<Symbol, Sentence> rule;
+    Symbol left;
+    Sentence right;
     Symbol lookahead;
 
     Item(
@@ -22,25 +23,26 @@ struct Item {
             Symbol lookahead,
             typename Sentence::size_type dot_index=0)
         : rule_id(rule_id)
-        , rule(rule)
+        , left(rule.first)
+        , right(rule.second)
         , lookahead(lookahead)
         , dot_index(dot_index)
     {}
 
     Item shifted() const
     {
-        return Item(rule_id, rule, lookahead, dot_index+1);
+        return Item(rule_id, {left, right}, lookahead, dot_index+1);
     }
 
     bool reduces() const
     {
-        return dot_index == rule.second.size();
+        return dot_index == right.size();
     }
 
     // symbol after the dot
     typename Sentence::const_iterator after() const
     {
-        return rule.second.cbegin() + dot_index;
+        return right.cbegin() + dot_index;
     }
 
     // has special meaning when end = 0
@@ -51,9 +53,9 @@ struct Item {
             typename Sentence::size_type end) const
     {
         // TODO make sure that the iterators are valid
-        return std::make_pair(rule.second.cbegin() + dot_index + start,
-                end ? rule.second.cbegin() + dot_index + end
-                    : rule.second.cend());
+        return std::make_pair(right.cbegin() + dot_index + start,
+                end ? right.cbegin() + dot_index + end
+                    : right.cend());
     }
 
     bool operator<(const Item<Symbol>& other) const
@@ -72,14 +74,14 @@ private:
 template <class Symbol>
 std::ostream& operator<<(std::ostream& out, const Item<Symbol>& item)
 {
-    out << "{" << item.rule.first << " -> ";
-    for (auto i = 0; i < item.rule.second.size(); ++i) {
+    out << "{" << item.left << " -> ";
+    for (auto i = 0; i < item.right.size(); ++i) {
         if (i == item.dot_index) {
             out << ". ";
         }
-        out << item.rule.second[i] << " ";
+        out << item.right[i] << " ";
     }
-    if (item.dot_index == item.rule.second.size()) {
+    if (item.dot_index == item.right.size()) {
         out << ".";
     }
     out << ", " << item.lookahead << "}";
