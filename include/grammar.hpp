@@ -10,25 +10,6 @@ namespace sagl
 {
 
 template <class Symbol>
-struct Rule {
-    using Sentence = std::vector<Symbol>;
-    Symbol lhs;
-    Sentence rhs;
-
-    Rule() {}   // should only be used by map
-    Rule(Symbol lhs, Sentence rhs) : lhs(lhs), rhs(rhs) {}
-    Rule(std::pair<Symbol, Sentence> rule) 
-        : lhs(rule.first)
-        , rhs(rule.second)
-    {}
-
-    bool operator<(const Rule& other) const
-    {
-        return std::tie(lhs, rhs) < std::tie(other.lhs, other.rhs);
-    }
-};
-
-template <class Symbol>
 struct Grammar {
     using Sentence = std::vector<Symbol>;
 
@@ -109,8 +90,7 @@ private:
                 auto [start, end] = rules_for(var);
                 for (auto it = start; it != end; ++it) {
                     const auto& [lhs, sentence] = *it;
-                    Rule rule(lhs, sentence);
-                    for (const auto& symbol: first(rule.rhs)) {
+                    for (const auto& symbol: sentence) {
                         auto [_, cond] = first_sets[var].insert(symbol);
                         if (cond) {
                             changed = true;

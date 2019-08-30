@@ -44,12 +44,13 @@ int accept_cb(bool accept)
 template <class Rule>
 void reduce_cb(Rule rule)
 {
-    std::for_each(rule.rhs.begin(), rule.rhs.end(),
+    const auto& [symbol, sentence] = rule;
+    std::for_each(sentence.begin(), sentence.end(),
             [](const auto&) {
-            symbols.pop_back();
+                symbols.pop_back();
             });
-    symbols.push_back(rule.lhs);
-    counter += (rule.rhs.size() - 1);
+    symbols.push_back(symbol);
+    counter += sentence.size() - 1;
 }
 
 template <class TokenLexemePair>

@@ -10,7 +10,6 @@
 
 namespace sagl
 {
-;
 
 template <class T>
 using accept_callback_t = T(bool);
@@ -51,7 +50,7 @@ public:
     // assume tokens can be implicitly converted to symbols
     template <class Scanner, 
              class T=bool,
-             class U=Rule<Symbol>,
+             class U=std::pair<Symbol, std::vector<Symbol>>,
              class V=std::pair<Symbol, std::string>>
     T operator()(Scanner scan, 
             accept_callback_t<T> accept_cb = empty_accept_cb,
