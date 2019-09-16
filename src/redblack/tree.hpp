@@ -1,5 +1,5 @@
 #pragma once
-#include <stdexcept>
+#include <cassert>
 #include <utility>
 
 namespace rb
@@ -100,10 +100,7 @@ Tree<T>* predecessor(Tree<T>* node)
 template <class T>
 Tree<T>* rotate_left(Tree<T>* root, Tree<T>* x)
 {
-    if (!root || !x || !x->right) {
-        throw std::invalid_argument("inputs must not be null");
-    }
-
+    assert(root && x && x->right);
     auto y = x->right;
     x->right = y->left;
     if (x->right) {
@@ -126,10 +123,7 @@ Tree<T>* rotate_left(Tree<T>* root, Tree<T>* x)
 template <class T>
 Tree<T>* rotate_right(Tree<T>* root, Tree<T>* y)
 {
-    if (!root || !y || !y->left) {
-        throw std::invalid_argument("inputs must not be null");
-    }
-
+    assert(root && y && y->left);
     auto x = y->left;
     y->left = x->right;
     if (y->left) {
