@@ -1,5 +1,5 @@
 #pragma once
-#include <cassert>
+//#include <cassert>
 #include <utility>
 
 namespace rb
@@ -100,7 +100,7 @@ Tree<T>* predecessor(Tree<T>* node)
 template <class T>
 Tree<T>* rotate_left(Tree<T>* root, Tree<T>* x)
 {
-    assert(root && x && x->right);
+    //assert(root && x && x->right);
     auto y = x->right;
     x->right = y->left;
     if (x->right) {
@@ -123,7 +123,7 @@ Tree<T>* rotate_left(Tree<T>* root, Tree<T>* x)
 template <class T>
 Tree<T>* rotate_right(Tree<T>* root, Tree<T>* y)
 {
-    assert(root && y && y->left);
+    //assert(root && y && y->left);
     auto x = y->left;
     y->left = x->right;
     if (y->left) {

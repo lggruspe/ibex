@@ -27,9 +27,9 @@ bool Interval::operator==(const Interval& other) const
 }
 
 
-bool contains(DisTree* tree, int point)
+bool DisSet::contains(int point) const
 {
-    auto node = rb::search(tree, Interval(point, point));
+    auto node = rb::search(this->tree, Interval(point, point));
     return node && node->data.start <= point && point <= node->data.end;
 }
 

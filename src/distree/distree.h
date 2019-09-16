@@ -24,8 +24,6 @@ struct Interval {
 
 using DisTree = rb::Tree<Interval>;
 
-bool contains(DisTree* tree, int point);
-
 DisTree* insert(DisTree* root, DisTree* node, Interval interval);
 
 struct DisSet {
@@ -40,8 +38,11 @@ struct DisSet {
     void clear();
     void insert(int a, int b);
     void combine(const DisSet& other);
+
     // leftmost interval that overlaps
     DisTree* first_overlap(int start, int end) const;
+
+    bool contains(int point) const;
 };
 
 std::ostream& operator<<(std::ostream& out, const Interval& interval);
