@@ -1,8 +1,6 @@
 #include "scanners.hpp"
 #include "match.hpp"
-#include "grammar.hpp"
-#include "parser.hpp"
-#include "parsetable.hpp"
+#include "sagl.hpp"
 #include <algorithm>
 #include <iostream>
 #include <variant>
