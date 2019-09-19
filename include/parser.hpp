@@ -42,21 +42,17 @@ public:
     Parser(Grammar<Symbol>& grammar) : grammar(&grammar)
     {
         Automaton automaton(grammar);
-        ParsingTable parsing_table(automaton, grammar);
-        table = parsing_table.table;
+        table = make_parse_table(grammar, automaton);
         start_state = automaton.start;
     }
 
     // scan returns a token, string pair
     // assume tokens can be implicitly converted to symbols
-    template <class Scanner, 
-             class T=bool,
-             class U=std::pair<Symbol, std::vector<Symbol>>,
-             class V=std::pair<Symbol, std::string>>
+    template <class Scanner, class T = bool>
     T operator()(Scanner scan, 
             accept_callback_t<T> accept_cb = empty_accept_cb,
-            reduce_callback_t<U> reduce_cb = empty_reduce_cb,
-            shift_callback_t<V> shift_cb = empty_shift_cb)
+            reduce_callback_t<std::pair<Symbol, std::vector<Symbol>>> reduce_cb = empty_reduce_cb,
+            shift_callback_t<std::pair<Symbol, std::string>> shift_cb = empty_shift_cb)
     {
         std::vector<int> states = {start_state};
         auto [token, lexeme] = scan();
