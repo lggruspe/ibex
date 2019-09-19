@@ -7,18 +7,18 @@ else
 	C++17=--std=c++17
 endif
 
-CPPFLAGS = -I include
+CPPFLAGS = -I include -I src -I src/sagl
 CFLAGS = -g -Wall
 CXXFLAGS = -g -Wall $(C++17)
 
 vpath main.cpp src
 
-bin/main:	main.cpp $(shell find include -name "*.hpp")
+bin/sagl:	main.cpp $(shell find include -name "*.hpp")
 	$(CXX) $(CXXFLAGS) $(CPPFLAGS) -o $@ $<
 
 .PHONY:	clean
 clean:
-	-rm -f bin/main
+	-rm -f bin/sagl
 
-example:	bin/main
-	./bin/main
+example:	bin/sagl
+	./bin/sagl
