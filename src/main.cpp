@@ -2,6 +2,7 @@
 #include "match.hpp"
 #include "grammar.hpp"
 #include "parser.hpp"
+#include "parsetable.hpp"
 #include <algorithm>
 #include <iostream>
 #include <variant>
@@ -77,9 +78,9 @@ int main()
             {Variable::list, {Token::a, Variable::list}},
             {Variable::list, {Token::a}}
             });
-    sagl::Parser parse(grammar);
-
-    auto success = parse(Scan(), accept_cb, reduce_cb, shift_cb);
+    sagl::ParseTable parse_table(grammar);
+    auto success = sagl::parse<Symbol>(Scan(), parse_table, grammar,
+            accept_cb, reduce_cb, shift_cb);
     std::cout << "success = " << success << std::endl;
     std::cout << "counter = " << counter << std::endl;
 }

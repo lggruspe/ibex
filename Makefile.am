@@ -7,7 +7,7 @@ bin_sagl_SOURCES = \
 	src/sagl/enumeration.hpp \
 	include/grammar.hpp \
 	include/parser.hpp \
-	src/sagl/parsingtable.hpp
+	include/parsetable.hpp
 
 bin_sagl_CXXFLAGS = -g -Wall -Wextra -Wpedantic
 bin_sagl_CPPFLAGS = \

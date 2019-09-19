@@ -64,15 +64,17 @@ void fill_in_row(
 }
 
 template <class Symbol>
-std::map<int, std::map<Symbol, Action>> make_parse_table(
-    const Grammar<Symbol>& grammar,
-    const Automaton<Symbol>& automaton)
-{
+struct ParseTable {
     std::map<int, std::map<Symbol, Action>> table;
-    for (auto [state_id, _]: automaton.transitions) {
-        fill_in_row(grammar, automaton, table, state_id);
+    int start_state;
+
+    ParseTable(const Grammar<Symbol>& grammar)
+    {
+        Automaton automaton(grammar);
+        for (auto [state_id, _]: automaton.transitions) {
+            fill_in_row(grammar, automaton, table, state_id);
+        }
     }
-    return table;
-}
+};
 
 } // end namespace
