@@ -6,6 +6,7 @@
 #include <map>
 #include <set>
 
+// TODO what should comparison return if either interval is empty?
 struct SymbolInterval {
     int start;
     int end;
@@ -17,6 +18,12 @@ struct SymbolInterval {
 
     SymbolInterval() : SymbolInterval(0, 0) {}
     // empty string
+
+    // true iff not empty
+    explicit operator bool() const
+    {
+        return start < end;
+    }
 
     bool operator<(const SymbolInterval& other) const
     {
@@ -42,6 +49,7 @@ struct SymbolInterval {
 
 struct Expr {
     // invariant: start = 0, accept = 1
+    // symbols shouldn't contain "empty" symbols
     std::set<SymbolInterval> symbols;
     std::map<int, std::map<SymbolInterval, std::set<int>>> transitions;
 
@@ -69,7 +77,6 @@ Expr closure(const Expr& expr)
         }
     }
     SymbolInterval eps;
-    res.symbols.insert(eps);
     res.transitions[0][eps].insert(1);
     res.transitions[0][eps].insert(2);
     res.transitions[3][eps].insert(1);
@@ -92,6 +99,7 @@ std::array<SymbolInterval, 3> split_overlap(
 
 void combine_symbols(std::set<SymbolInterval>& A, SymbolInterval b)
 {
+    assert(b);
     std::set<SymbolInterval> B = {b};
     while (!B.empty()) {
         b = *(B.begin());
@@ -99,10 +107,18 @@ void combine_symbols(std::set<SymbolInterval>& A, SymbolInterval b)
         auto [it, ok] = A.insert(b);
         if (!ok) {
             auto split = split_overlap(*it, b);
+
+            assert(*it);        // symbols shouldn't have empty symbols
+            assert(split[1]);   // true as long as a and b overlap
+
             A.erase(it);          // or *it = split[1]?
-            A.insert(split[1]); //
-            combine_symbols(B, split[0]);
-            combine_symbols(B, split[2]);
+            A.insert(split[1]);
+            if (split[0]) {         // ex: [0, 1) and [0, 2)
+                combine_symbols(B, split[0]);
+            }
+            if (split[2]) {         // ex: [
+                combine_symbols(B, split[2]);
+            }
         }
     }
 }
@@ -142,7 +158,6 @@ Expr alternate(const Expr& A, const Expr& B)
 
     int offset = A.transitions.size()+2;
     SymbolInterval eps;
-    res.symbols.insert(eps);
     res.transitions[0][eps].insert(2);
     res.transitions[0][eps].insert(offset);
     res.transitions[3][eps].insert(1);
@@ -163,7 +178,6 @@ Expr concatenate(const Expr& A, const Expr& B)
 
     int offset = A.transitions.size() + 2;
     SymbolInterval eps;
-    res.symbols.insert(eps);
     res.transitions[0][eps].insert(2);
     res.transitions[3][eps].insert(offset);
     res.transitions[offset+1][eps].insert(1);
