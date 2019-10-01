@@ -8,8 +8,8 @@
 
 // TODO what should comparison return if either interval is empty?
 struct SymbolInterval {
-    int start;
-    int end;
+    mutable int start;
+    mutable int end;
 
     SymbolInterval(int start, int end) : start(start), end(end) 
     {
@@ -97,30 +97,42 @@ std::array<SymbolInterval, 3> split_overlap(
     };
 }
 
-void combine_symbols(std::set<SymbolInterval>& A, SymbolInterval b)
+void insert_symbol(std::set<SymbolInterval>& A, SymbolInterval b)
 {
     assert(b);
-    std::set<SymbolInterval> B = {b};
+    std::vector<SymbolInterval> B = {b};
     while (!B.empty()) {
-        b = *(B.begin());
-        B.erase(B.begin());
+        b = B.back();
+        B.pop_back();
         auto [it, ok] = A.insert(b);
         if (!ok) {
             auto split = split_overlap(*it, b);
 
             assert(*it);        // symbols shouldn't have empty symbols
             assert(split[1]);   // true as long as a and b overlap
+            assert(split[0] != split[2]);
 
-            A.erase(it);          // or *it = split[1]?
-            A.insert(split[1]);
-            if (split[0]) {         // ex: [0, 1) and [0, 2)
-                combine_symbols(B, split[0]);
+            it->start = split[1].start;
+            it->end = split[1].end;
+            if (split[2]) {
+                B.push_back(split[2]);
             }
-            if (split[2]) {         // ex: [
-                combine_symbols(B, split[2]);
+            if (split[0]) {         // ex: [0, 1) and [0, 2)
+                B.push_back(split[0]);
             }
         }
     }
+}
+
+std::set<SymbolInterval> combine_symbols(
+    const std::set<SymbolInterval>& A,
+    const std::set<SymbolInterval>& B)
+{
+    std::set<SymbolInterval> symbols = A;
+    for (const auto& a: B) {
+        insert_symbol(symbols, a);
+    }
+    return symbols;
 }
 
 void copy_transitions(
@@ -147,14 +159,10 @@ void copy_transitions(
 
 Expr alternate(const Expr& A, const Expr& B)
 {
-    std::set<SymbolInterval> symbols = A.symbols;
-    for (const auto& a: B.symbols) {
-        combine_symbols(symbols, a);
-    }
     Expr res;
-    res.symbols = symbols;
-    copy_transitions(res, A, symbols, 2);
-    copy_transitions(res, B, symbols, A.transitions.size() + 2);
+    res.symbols = combine_symbols(A.symbols, B.symbols);
+    copy_transitions(res, A, res.symbols, 2);
+    copy_transitions(res, B, res.symbols, A.transitions.size() + 2);
 
     int offset = A.transitions.size()+2;
     SymbolInterval eps;
@@ -167,14 +175,10 @@ Expr alternate(const Expr& A, const Expr& B)
 
 Expr concatenate(const Expr& A, const Expr& B)
 {
-    std::set<SymbolInterval> symbols = A.symbols;
-    for (const auto& a: B.symbols) {
-        combine_symbols(symbols, a);
-    }
     Expr res;
-    res.symbols = symbols;
-    copy_transitions(res, A, symbols, 2);
-    copy_transitions(res, B, symbols, A.transitions.size() + 2);
+    res.symbols = combine_symbols(A.symbols, B.symbols);
+    copy_transitions(res, A, res.symbols, 2);
+    copy_transitions(res, B, res.symbols, A.transitions.size() + 2);
 
     int offset = A.transitions.size() + 2;
     SymbolInterval eps;
