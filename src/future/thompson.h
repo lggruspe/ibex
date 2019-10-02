@@ -5,6 +5,7 @@
 #include <iostream>
 #include <map>
 #include <set>
+#include <unordered_map>
 
 // TODO what should comparison return if either interval is empty?
 struct SymbolInterval {
@@ -135,20 +136,51 @@ std::set<SymbolInterval> combine_symbols(
     return symbols;
 }
 
+std::pair<std::set<SymbolInterval>::iterator, std::set<SymbolInterval>::iterator>
+overlap_range(const std::set<SymbolInterval>& symbols,  const SymbolInterval& a)
+{
+    auto [lb, ub] = symbols.equal_range(a);
+    auto it = lb;
+    it--;
+    while (it != symbols.begin() && *it == a) {
+        --it;
+        --lb;
+    }
+    return {lb, ub};
+}
+
 void copy_transitions(
     Expr& A,
     const Expr& B,
     const std::set<SymbolInterval>& symbols, 
     int offset)
 {
+    /*
+    using T = std::set<SymbolInterval>::Iterator;
+    std::unordered_map<SymbolInterval, std::pair<T, T>> overlap_ranges;
+    for (const auto& a: symbols) {
+        overlap_ranges[a] = overlap_range(symbols, a);
+    }
     A.transitions[offset];
     A.transitions[offset+1];
     for (const auto& [q, dq]: B.transitions) {
         for (const auto& [a, R]: dq) {
+            auto [lb, ub] = overlap_ranges[a];
             for (const auto& r: R) {
-                //[lb, ub) contains all intervals that overlap with a
-                auto lb = symbols.lower_bound(a);   // what if symbols still has an even lower bound?
-                auto ub = symbols.upper_bound(a);
+                for (auto it = lb; it != ub; it++) {
+                    A.transitions[q+offset][*it].insert(r+offset);
+                }
+            }
+        }
+    }
+    */
+
+    A.transitions[offset];
+    A.transitions[offset+1];
+    for (const auto& [q, dq]: B.transitions) {
+        for (const auto& [a, R]: dq) {
+            auto [lb, ub] = overlap_range(symbols, a);
+            for (const auto& r: R) {
                 for (auto it = lb; it != ub; it++) {
                     A.transitions[q+offset][*it].insert(r+offset);
                 }

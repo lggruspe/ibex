@@ -2,7 +2,7 @@
 
 import ctypes
 
-crnd = ctypes.CDLL("libcrnd.so")
+crnd = ctypes.CDLL("libcrnd.so.0.0.0")
 
 class CRange(ctypes.Structure):
     """Wrapper for struct rnd_range."""
