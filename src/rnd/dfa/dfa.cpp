@@ -53,7 +53,7 @@ void compute_predecessors(const nfa::Nfa& nfa,
         std::map<int, std::set<int>>& predecessors)
 {
     // assume predecessors is empty
-    auto epsilon = symbol_range(0, 0);
+    auto epsilon = SymbolRange(0, 0);
     for (const auto& [p, trans]: nfa.delta) {
         if (trans.find(epsilon) != trans.end()) {
             for (auto q: trans.at(epsilon)) {
@@ -76,7 +76,7 @@ std::map<int, std::set<int>> epsilon_closure(const nfa::Nfa& nfa)
         queue.push_back(q);
     }
 
-    auto epsilon = symbol_range(0, 0);
+    auto epsilon = SymbolRange(0, 0);
     while (!queue.empty()) {
         int q = queue.front();
         queue.pop_front();

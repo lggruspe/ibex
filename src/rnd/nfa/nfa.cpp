@@ -49,7 +49,7 @@ int add_state(Nfa& nfa)
     return add_state(nfa, q);
 }
 
-void add_transition(Nfa& nfa, int q, int r, SymbolRange a=symbol_range(0, 0))
+void add_transition(Nfa& nfa, int q, int r, SymbolRange a=SymbolRange(0, 0))
 {
     add_state(nfa, q);
     add_state(nfa, r);

@@ -27,7 +27,7 @@ struct ExpTree {
             Expr right=nullptr)
         : type(type)
         , alphabet(alphabet)
-        , value(symbol_range(0, 0))
+        , value(SymbolRange(0, 0))
         , left(left)
         , right(right)
     {}
@@ -36,7 +36,7 @@ struct ExpTree {
     ExpTree(int a, int b)
         : type(Type::Symbol)
         , alphabet(std::make_shared<Alphabet>())
-        , value(symbol_range(a, b))
+        , value(SymbolRange(a, b))
         , left(nullptr)
         , right(nullptr)
 
