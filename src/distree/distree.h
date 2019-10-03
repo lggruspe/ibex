@@ -38,10 +38,7 @@ struct DisSet {
     void insert(const Interval& a);
     void combine(const DisSet& other);
 
-    // leftmost interval that overlaps
-    Tree first_overlap(int start, int end) const;
-
-    std::pair<Tree, Tree> overlap_range(const Interval& a);
+    std::pair<Tree, Tree> overlap_range(const Interval& a) const;
 
     bool contains(int point) const;
 };

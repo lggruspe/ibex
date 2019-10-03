@@ -91,10 +91,9 @@ void DisSet::combine(const DisSet& other)
     }
 }
 
-// leftmost interval that overlaps
-DisSet::Tree DisSet::first_overlap(int start, int end) const
+std::pair<DisSet::Tree, DisSet::Tree> DisSet::overlap_range(const Interval& a) const
 {
-    return rb::lower_bound(tree, Interval(start, end));
+    return rb::equal_range(this->tree, a);
 }
 
 std::ostream& operator<<(std::ostream& out, const Interval& interval)

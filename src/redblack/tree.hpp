@@ -58,7 +58,7 @@ Tree<T>* upper_bound(Tree<T>* root, const T& data)
 {
     Tree<T>* node = nullptr;
     while (root) {
-        if (root->data > data) {
+        if (data < root->data) {
             // is root > data? if so, we've found a new candidate
             // let's look for a smaller one
             node = root;
