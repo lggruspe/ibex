@@ -31,21 +31,25 @@ struct SymbolInterval {
         return end <= other.start;
     }
 
+    /*
     bool operator>(const SymbolInterval& other) const
     {
         return start >= other.end;
     }
+    */
 
     bool operator!=(const SymbolInterval& other) const
     {
-        return (*this < other) || (*this > other);
+        return (*this < other) || (other < *this);
     }
 
+    /*
     bool operator==(const SymbolInterval& other) const
     {
         // checks if this and other overlap
-        return !(*this != other);
+        return !(*this < other) & !(other < *this);
     }
+    */
 };
 
 struct Expr {
@@ -136,50 +140,23 @@ std::set<SymbolInterval> combine_symbols(
     return symbols;
 }
 
-std::pair<std::set<SymbolInterval>::iterator, std::set<SymbolInterval>::iterator>
-overlap_range(const std::set<SymbolInterval>& symbols,  const SymbolInterval& a)
-{
-    auto [lb, ub] = symbols.equal_range(a);
-    auto it = lb;
-    it--;
-    while (it != symbols.begin() && *it == a) {
-        --it;
-        --lb;
-    }
-    return {lb, ub};
-}
-
 void copy_transitions(
     Expr& A,
     const Expr& B,
     const std::set<SymbolInterval>& symbols, 
     int offset)
 {
-    /*
-    using T = std::set<SymbolInterval>::Iterator;
-    std::unordered_map<SymbolInterval, std::pair<T, T>> overlap_ranges;
+    using T = std::set<SymbolInterval>::iterator;
+    std::map<SymbolInterval, std::pair<T, T>> overlap_ranges;
     for (const auto& a: symbols) {
-        overlap_ranges[a] = overlap_range(symbols, a);
+        overlap_ranges[a] = symbols.equal_range(a); // only tested on g++ 9.1.0
     }
-    A.transitions[offset];
-    A.transitions[offset+1];
-    for (const auto& [q, dq]: B.transitions) {
-        for (const auto& [a, R]: dq) {
-            auto [lb, ub] = overlap_ranges[a];
-            for (const auto& r: R) {
-                for (auto it = lb; it != ub; it++) {
-                    A.transitions[q+offset][*it].insert(r+offset);
-                }
-            }
-        }
-    }
-    */
 
     A.transitions[offset];
     A.transitions[offset+1];
     for (const auto& [q, dq]: B.transitions) {
         for (const auto& [a, R]: dq) {
-            auto [lb, ub] = overlap_range(symbols, a);
+            auto [lb, ub] = overlap_ranges[a];
             for (const auto& r: R) {
                 for (auto it = lb; it != ub; it++) {
                     A.transitions[q+offset][*it].insert(r+offset);
