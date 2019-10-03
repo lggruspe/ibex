@@ -28,13 +28,52 @@ struct Tree {
 };
 
 template <class T>
-Tree<T>* search(Tree<T>* tree, const T& data)
+Tree<T>* lower_bound(Tree<T>* root, const T& data)
 {
-    auto node = tree;
-    while (node && node->data != data) {
-        node = data < node->data ? node->left : node->right;
+    Tree<T>* node = nullptr;
+    while (root) {
+        if (!(root->data < data)) {
+            node = root;
+            root = root->left;
+        } else {
+            root = root->right;
+        }
     }
     return node;
+}
+
+template <class T>
+Tree<T>* search(Tree<T>* root, const T& data)
+{
+    auto node = lower_bound(root, data);
+    //assert(!(root->data < data));
+    if (!node || data < root->data || root->data < data) {
+        return nullptr;
+    }
+    return node;
+}
+
+template <class T>
+Tree<T>* upper_bound(Tree<T>* root, const T& data)
+{
+    Tree<T>* node = nullptr;
+    while (root) {
+        if (root->data > data) {
+            // is root > data? if so, we've found a new candidate
+            // let's look for a smaller one
+            node = root;
+            root = root->left;
+        } else {
+            root = root->right;
+        }
+    }
+    return node;
+}
+
+template <class T>
+std::pair<Tree<T>*, Tree<T>*> equal_range(Tree<T>* root, const T& data)
+{
+    return std::make_pair(lower_bound(root, data), upper_bound(root, data));
 }
 
 template <class T>

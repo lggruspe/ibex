@@ -94,17 +94,7 @@ void DisSet::combine(const DisSet& other)
 // leftmost interval that overlaps
 DisSet::Tree DisSet::first_overlap(int start, int end) const
 {
-    Interval interval(start, end);
-    auto node = rb::search(tree, interval);
-    if (!node) {
-        return nullptr;
-    }
-    auto pred = rb::predecessor(node);
-    while  (pred && pred->data == interval) {
-        node = pred;
-        pred = rb::predecessor(pred);
-    }
-    return node;
+    return rb::lower_bound(tree, Interval(start, end));
 }
 
 std::ostream& operator<<(std::ostream& out, const Interval& interval)
