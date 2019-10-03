@@ -2,6 +2,7 @@
 #include "redblack/tree.hpp"
 #include <iostream>
 #include <stdexcept>
+#include <utility>
 
 namespace distree
 {
@@ -16,18 +17,16 @@ struct Interval {
         }
     }
 
+    Interval() : Interval(0, 0) {}
     explicit operator bool() const;
     bool operator<(const Interval& other) const;
     bool operator!=(const Interval& other) const;
     bool operator==(const Interval& other) const;
 };
 
-using DisTree = rb::Tree<Interval>;
-
-DisTree* insert(DisTree* root, DisTree* node, Interval interval);
-
 struct DisSet {
-    DisTree* tree;
+    using Tree = rb::Tree<Interval>*;
+    Tree tree;
 
     DisSet() : tree(nullptr) {}
     ~DisSet()
@@ -36,18 +35,20 @@ struct DisSet {
     }
 
     void clear();
-    void insert(int a, int b);
+    void insert(const Interval& a);
     void combine(const DisSet& other);
 
     // leftmost interval that overlaps
-    DisTree* first_overlap(int start, int end) const;
+    Tree first_overlap(int start, int end) const;
+
+    std::pair<Tree, Tree> overlap_range(const Interval& a);
 
     bool contains(int point) const;
 };
 
 std::ostream& operator<<(std::ostream& out, const Interval& interval);
 
-std::ostream& operator<<(std::ostream& out, DisTree* node);
+std::ostream& operator<<(std::ostream& out, rb::Tree<Interval>* node);
 
 std::ostream& operator<<(std::ostream& out, const DisSet& set);
 

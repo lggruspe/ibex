@@ -23,9 +23,8 @@ bool Interval::operator!=(const Interval& other) const
 
 bool Interval::operator==(const Interval& other) const
 {
-    return !(*this != other);
+    return !(*this < other) && !(other < *this);
 }
-
 
 bool DisSet::contains(int point) const
 {
@@ -33,7 +32,7 @@ bool DisSet::contains(int point) const
     return node && node->data.start <= point && point <= node->data.end;
 }
 
-DisTree* insert(DisTree* root, DisTree* node, Interval interval)
+DisSet::Tree insert(DisSet::Tree root, DisSet::Tree node, Interval interval)
 {
     if (interval.start > interval.end) {
         return root;
@@ -72,30 +71,28 @@ DisTree* insert(DisTree* root, DisTree* node, Interval interval)
     return root;
 }
 
-
-
 void DisSet::clear()
 {
     rb::destroy(tree);
     tree = nullptr;
 }
 
-void DisSet::insert(int a, int b)
+void DisSet::insert(const Interval& a)
 {
-    tree = distree::insert(tree, tree, Interval(a, b));
+    tree = distree::insert(tree, tree, a);
 }
 
 void DisSet::combine(const DisSet& other)
 {
     auto node = rb::minimum(other.tree);
     while (node) {
-        insert(node->data.start, node->data.end);
+        insert(node->data);
         node = rb::successor(node);
     }
 }
 
 // leftmost interval that overlaps
-DisTree* DisSet::first_overlap(int start, int end) const
+DisSet::Tree DisSet::first_overlap(int start, int end) const
 {
     Interval interval(start, end);
     auto node = rb::search(tree, interval);
@@ -118,7 +115,7 @@ std::ostream& operator<<(std::ostream& out, const Interval& interval)
     return out << "[" << interval.start << ", " << interval.end << "]";
 }
 
-std::ostream& operator<<(std::ostream& out, DisTree* node)
+std::ostream& operator<<(std::ostream& out, DisSet::Tree node)
 {
     if (node) {
         out << node->left;

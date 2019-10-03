@@ -22,8 +22,8 @@ void teardown(DistreeTest* test)
 
 void test_duplicates(DistreeTest* test)
 {
-    test->set.insert(0, 1);
-    test->set.insert(0, 1);
+    test->set.insert(Interval(0, 1));
+    test->set.insert(Interval(0, 1));
 
     test->assert(weight(test->set) == 1);
     test->assert(height(test->set) == 1);
@@ -35,7 +35,7 @@ void test_duplicates(DistreeTest* test)
 void test_height(DistreeTest* test)
 {
     for (int i = 0; i < 100; ++i) {
-        test->set.insert(i, i);
+        test->set.insert(Interval(i, i));
     }
 
     auto n = weight(test->set);
@@ -46,9 +46,9 @@ void test_height(DistreeTest* test)
 void test_combine(DistreeTest* test)
 {
     DisSet set;
-    set.insert(2, 4);
-    set.insert(0, 0);
-    test->set.insert(1, 3);
+    set.insert(Interval(2, 4));
+    set.insert(Interval(0, 0));
+    test->set.insert(Interval(1, 3));
     test->set.combine(set);
     test->assert(weight(test->set) == 4);
 }
@@ -60,7 +60,7 @@ void test_print(DistreeTest* test)
     for (int i = 0; i < 100; ++i) {
         auto end = rand() % 100;
         auto start = rand() % (end + 1);
-        test->set.insert(start, end);
+        test->set.insert(Interval(start, end));
     }
     std::cout << "test_print: " << test->set << std::endl;
 }

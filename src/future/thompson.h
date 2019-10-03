@@ -5,7 +5,6 @@
 #include <iostream>
 #include <map>
 #include <set>
-#include <unordered_map>
 
 // TODO what should comparison return if either interval is empty?
 struct SymbolInterval {

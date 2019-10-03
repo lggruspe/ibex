@@ -13,12 +13,7 @@ struct Alphabet {
 
     void insert(const SymbolRange& interval)
     {
-        insert(interval.start, interval.end);
-    }
-
-    void insert(int a, int b)
-    {
-        set.insert(a, b);
+        set.insert(distree::Interval(interval.start, interval.end));
     }
 
     void combine(const Alphabet& other)
@@ -26,13 +21,13 @@ struct Alphabet {
         set.combine(other.set);
     }
 
-    distree::DisTree* begin() const
+    distree::DisSet::Tree begin() const
     {
         return set.tree;
     }
 
     // returns leftmost interval that overlaps with interval
-    distree::DisTree* first_overlap(int start, int end) const
+    distree::DisSet::Tree first_overlap(int start, int end) const
     {
         return set.first_overlap(start, end);
     }
