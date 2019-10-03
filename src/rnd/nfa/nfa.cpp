@@ -54,7 +54,7 @@ void add_transition(Nfa& nfa, int q, int r, SymbolRange a=SymbolRange(0, 0))
     add_state(nfa, q);
     add_state(nfa, r);
     nfa.delta[q][a].insert(r);
-    if (!is_empty(a)) {
+    if (a) {
         nfa.symbols.insert(a);
     }
 }

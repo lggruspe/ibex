@@ -44,7 +44,7 @@ void add_transition(Dfa& dfa, int q, int r, SymbolRange a)
     add_state(dfa, q);
     add_state(dfa, r);
     dfa.delta[q][a] = r;
-    if (!is_empty(a)) {
+    if (a) {
         dfa.symbols.insert(a);
     }
 }
