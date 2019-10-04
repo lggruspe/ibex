@@ -9,7 +9,7 @@ lib_libcrnd_la_SOURCES = \
     src/rnd/nfa/nfa.h \
     src/rnd/dfa/dfa.cpp \
     src/rnd/dfa/dfa.h \
-    src/rnd/dfa/enumeration2.h \
+	src/rnd/dfa/uhs.hpp \
     src/rnd/dfa/partition.h \
     src/distree/distree.cpp \
     src/distree/distree.h \
