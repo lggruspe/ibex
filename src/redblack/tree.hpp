@@ -183,11 +183,11 @@ Tree<T>* rotate_right(Tree<T>* root, Tree<T>* y)
 }
 
 template <class T>
-Tree<T>* closest_match(Tree<T>* tree, const T& data)
+Tree<T>* closest_match(Tree<T>* root, const T& data)
 {
     Tree<T>* parent = nullptr;
-    auto child = tree;
-    while (child && child->data != data) {
+    auto child = root;
+    while (child && (child->data < data || data < child->data)) {
         parent = child;
         child = data < child->data ? child->left : child->right;
     }
@@ -253,7 +253,15 @@ std::pair<Tree<T>*, Tree<T>*> insert(
         location = root;
     }
     auto closest = closest_match(location, node->data);
-    if (node->data == closest->data) {
+    if (node->data < closest->data) {
+        closest->left = node;
+        node->parent = closest;
+        node->color = Color::red;
+    } else if (closest->data < node->data) {
+        closest->right = node;
+        node->parent = closest;
+        node->color = Color::red;
+    } else {
         node->left = closest->left;
         node->right = closest->right;
         node->parent = closest->parent;
@@ -271,12 +279,13 @@ std::pair<Tree<T>*, Tree<T>*> insert(
         } else if (node->parent->right == closest) {
             node->parent->right = node;
         }
-    } else {
-        (node->data < closest->data ? closest->left : closest->right) = node;
-        node->parent = closest;
-        node->color = Color::red;
     }
-    return { repair(root, node), node->data == closest->data ? closest : nullptr };
+    return {
+        repair(root, node),
+        !(node->data < closest->data) && !(closest->data < node->data)
+            ? closest
+            : nullptr
+    };
 }
 
 template <class T>
