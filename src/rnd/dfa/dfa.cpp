@@ -1,5 +1,5 @@
 #include "dfa.h"
-#include "enumeration2.h"
+#include "uhs.hpp"
 #include "partition.h"
 #include "rnd/alphabet/alphabet.hpp"
 #include "rnd/nfa/nfa.h"
@@ -134,10 +134,10 @@ std::set<int> next_state(
 Dfa subset_construction(const nfa::Nfa& nfa)
 {
     std::map<int, std::set<int> > closures = epsilon_closure(nfa);
-    Enumeration<std::set<int>> names;
+    UniqueHandleSet<std::set<int>> names;
     
     Dfa dfa;
-    dfa.start = add_state(dfa, names.insert(closures[nfa.start]));
+    dfa.start = add_state(dfa, names.index(closures[nfa.start]));
 
     std::list<int> queue;
     queue.push_back(dfa.start);
@@ -160,8 +160,8 @@ Dfa subset_construction(const nfa::Nfa& nfa)
                 continue;
             }
 
-            if (!names.has_value(R)) {
-                int name = names.insert(R);
+            if (!names.contains(R)) {
+                int name = names.index(R);
                 add_state(dfa, name);
                 queue.push_back(name);
                 for (auto r: R) {
