@@ -1,5 +1,5 @@
 #pragma once
-#include "../../intervals/cis.hpp"
+#include "cis.hpp"
 #include <iostream>
 #include <map>
 #include <set>
