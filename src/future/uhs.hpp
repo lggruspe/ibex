@@ -1,5 +1,7 @@
-#include <vector>
+#pragma once
 #include <map>
+#include <utility>
+#include <vector>
 
 template <class T>
 class UniqueHandleSet {
@@ -9,15 +11,20 @@ class UniqueHandleSet {
     Vector vector;
 
 public:
-    int index(const T& t)
+    std::pair<int, bool> index(const T& t)
     {
         auto [it, ok] = map.insert({t, vector.size()});
         if (!ok) {
-            return it->second;
+            return {it->second, false};
         }
         int handle = vector.size();
         vector.push_back(it);
-        return handle;
+        return {handle, true};
+    }
+    int index_only(const T& t)
+    {
+        auto [id, _] = index(t);
+        return id;
     }
 
     const T& value(int ind) const

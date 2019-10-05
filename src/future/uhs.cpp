@@ -1,6 +1,7 @@
 #include "uhs.hpp"
 #include <iostream>
 #include <set>
+#include <tuple>
 
 int main()
 {
@@ -9,9 +10,12 @@ int main()
     std::set<int> u = s;
 
     UniqueHandleSet<std::set<int>> H;
-    std::cout << H.index(s) << std::endl;
-    std::cout << H.index(t) << std::endl;
-    std::cout << H.index(u) << std::endl;
+    auto [i, _] = H.index(s);
+    std::cout << i << std::endl;
+    std::tie(i, _) = H.index(t);
+    std::cout << i << std::endl;
+    std::tie(i, _) = H.index(u);
+    std::cout << i << std::endl;
 
     /*
     std::cout << H.index(s) << std::endl;
