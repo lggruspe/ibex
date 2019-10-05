@@ -21,6 +21,7 @@ public:
         vector.push_back(it);
         return {handle, true};
     }
+
     int index_only(const T& t)
     {
         auto [id, _] = index(t);
