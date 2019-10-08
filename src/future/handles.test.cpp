@@ -1,4 +1,4 @@
-#include "uhs.hpp"
+#include "handles.hpp"
 #include <iostream>
 #include <set>
 #include <tuple>
@@ -9,7 +9,7 @@ int main()
     std::set<int> t = {2, 11};
     std::set<int> u = s;
 
-    UniqueHandleSet<std::set<int>> H;
+    HandleSet<std::set<int>> H;
     auto [i, _] = H.index(s);
     std::cout << i << std::endl;
     std::tie(i, _) = H.index(t);

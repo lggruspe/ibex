@@ -4,7 +4,7 @@
 #include <iostream>
 #include <map>
 
-#include "uhs.hpp"
+#include "handles.hpp"
 #include <cassert>
 #include <vector>
 
@@ -116,7 +116,7 @@ std::set<int> epsilon_closure(
 void subset_construction(Fsm& fsm, const Expr& expr)
 {
     auto closure = epsilon_closures(expr);
-    UniqueHandleSet<std::set<int>> states;
+    HandleSet<std::set<int>> states;
     fsm.symbols = expr.symbols;
     auto Q = closure[0];
     auto [state, _] = states.index(Q);

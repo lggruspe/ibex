@@ -4,7 +4,7 @@
 #include <vector>
 
 template <class T>
-class UniqueHandleSet {
+class HandleSet {
     using Map = std::map<T, int>;
     using Vector = std::vector<typename Map::iterator>;
     Map map;

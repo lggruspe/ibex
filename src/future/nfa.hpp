@@ -48,16 +48,16 @@ Expr closure(const Expr& expr)
 void copy_transitions(
     Expr& A,
     const Expr& B,
-    const ClosedIntervalSet& symbols, 
     int offset)
 {
     // B[0] -> A[offset]
-    // assume symbols is the combined alphabet of A and B
+    // Assume A.symbols == B.symbols
+    // assume A has no transitions yet
     A.transitions[offset];
     A.transitions[offset+1];
     for (const auto& [q, dq]: B.transitions) {
         for (const auto& [a, R]: dq) {
-            auto [lb, ub] = overlap_range(symbols, a);  // TODO factor out and use unordered_map?
+            auto [lb, ub] = overlap_range(A.symbols, a);  // TODO factor out and use unordered_map?
             for (const auto& r: R) {
                 for (auto it = lb; it != ub; it++) {
                     A.transitions[q+offset][*it].insert(r+offset);
@@ -71,8 +71,8 @@ Expr alternate(const Expr& A, const Expr& B)
 {
     Expr res;
     res.symbols = combine_interval_sets(A.symbols, B.symbols);
-    copy_transitions(res, A, res.symbols, 2);
-    copy_transitions(res, B, res.symbols, A.transitions.size() + 2);
+    copy_transitions(res, A, 2);
+    copy_transitions(res, B, A.transitions.size() + 2);
 
     int offset = A.transitions.size()+2;
     ClosedInterval eps;
@@ -87,8 +87,8 @@ Expr concatenate(const Expr& A, const Expr& B)
 {
     Expr res;
     res.symbols = combine_interval_sets(A.symbols, B.symbols);
-    copy_transitions(res, A, res.symbols, 2);
-    copy_transitions(res, B, res.symbols, A.transitions.size() + 2);
+    copy_transitions(res, A, 2);
+    copy_transitions(res, B, A.transitions.size() + 2);
 
     int offset = A.transitions.size() + 2;
     ClosedInterval eps;
