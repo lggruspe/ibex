@@ -1,6 +1,6 @@
 #pragma once
 #include "cis.hpp"
-#include "nfa2.hpp"
+#include "nfa.hpp"
 #include <iostream>
 #include <map>
 

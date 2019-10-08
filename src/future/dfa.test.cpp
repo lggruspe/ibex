@@ -1,5 +1,5 @@
-#include "dfa.h"
-#include "nfa2.hpp"
+#include "dfa.hpp"
+#include "nfa.hpp"
 #include "cis.hpp"
 #include <iostream>
 
