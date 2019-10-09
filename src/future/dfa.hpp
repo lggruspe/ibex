@@ -144,29 +144,25 @@ void subset_construction(Fsm& fsm, const Expr& expr)
 
 struct Partition {
     std::map<int, std::set<int>> id_to_class;
-    std::map<int, bool> id_is_accept;
     std::map<int, int> item_to_id;
 
-    void insert(int id, int item, bool is_accept)
+    void insert(int id, int item)
     {
         // assume item is not in any class yet
         id_to_class[id].insert(item);
         item_to_id[item] = id;
-        id_is_accept[id] = is_accept;
     }
 
     void update(int new_id, int item)
     {
         int old_id = item_to_id[item];
         id_to_class[old_id].erase(item);
-        bool is_accept = id_is_accept[old_id];
-        insert(new_id, item, is_accept);
+        insert(new_id, item);
     }
 
-    void bulk_insert(const std::set<int>& items, bool is_accept)
+    void bulk_insert(const std::set<int>& items)
     {
         int id = id_to_class.size();
-        id_is_accept[id] = is_accept;
         id_to_class[id] = items;
         for (const auto& q: items) {
             item_to_id[q] = id;
@@ -180,7 +176,7 @@ Partition first_partition(const Fsm& fsm)
     Partition p;
     for (const auto& [q, _]: fsm.transitions) {
         int id = (fsm.accepts.find(q) == fsm.accepts.end());
-        p.insert(id, q, !id);
+        p.insert(id, q);
     }
     return p;
 
@@ -242,15 +238,15 @@ void minimize(Fsm& fsm)
         split(p, id, fsm);
     }
 
-    std::set<int> accepts;
     std::map<int, std::map<ClosedInterval, int>> transitions;
     for (const auto& [q, dq]: fsm.transitions) {
         for (const auto& a: fsm.symbols) {
             transitions[p.item_to_id[q]][a] = p.item_to_id[dq.at(a)];
         }
-        if (p.id_is_accept[p.item_to_id[q]]) {
-            accepts.insert(p.item_to_id[q]);
-        }
+    }
+    std::set<int> accepts;
+    for (const auto& q: fsm.accepts) {
+        accepts.insert(p.item_to_id[q]);
     }
     fsm.transitions = transitions;
     fsm.accepts = accepts;
