@@ -26,9 +26,18 @@ struct Expr {
     }
 };
 
+bool is_empty_expr(const Expr& expr)
+{
+    return expr.symbols.empty() && expr.transitions.at(0).empty() &&
+        expr.transitions.at(1).empty();
+}
+
 Expr closure(const Expr& expr)
 {
     ClosedInterval eps;
+    if (is_empty_expr(expr)) {
+        return Expr(eps);
+    }
     Expr res;
     res.symbols = expr.symbols;
     for (const auto& [q, dq]: expr.transitions) {
@@ -82,6 +91,11 @@ void copy_transitions(
 
 Expr alternate(const Expr& A, const Expr& B)
 {
+    if (is_empty_expr(A)) {
+        return B;
+    } else if (is_empty_expr(B)) {
+        return A;
+    }
     Expr res;
     res.symbols = combine_interval_sets(A.symbols, B.symbols);
     copy_transitions(res, A, 2);
@@ -98,6 +112,9 @@ Expr alternate(const Expr& A, const Expr& B)
 
 Expr concatenate(const Expr& A, const Expr& B)
 {
+    if (is_empty_expr(A) || is_empty_expr(B)) {
+        return Expr();
+    }
     Expr res;
     res.symbols = combine_interval_sets(A.symbols, B.symbols);
     copy_transitions(res, A, 2);
