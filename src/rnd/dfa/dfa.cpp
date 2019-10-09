@@ -135,13 +135,10 @@ Dfa subset_construction(const nfa::Nfa& nfa)
 {
     std::map<int, std::set<int> > closures = epsilon_closure(nfa);
     UniqueHandleSet<std::set<int>> names;
-    
     Dfa dfa;
     dfa.start = add_state(dfa, names.index(closures[nfa.start]));
-
     std::list<int> queue;
     queue.push_back(dfa.start);
-
     // check if dfa.start is an accept state
     {
         auto closure = closures[nfa.start];
@@ -149,8 +146,6 @@ Dfa subset_construction(const nfa::Nfa& nfa)
             dfa.accept.insert(dfa.start);
         }
     }
-
-    /// subset construction
     while (!queue.empty()) {
         int Q = queue.front();
         queue.pop_front();

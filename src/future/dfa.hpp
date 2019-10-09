@@ -19,7 +19,6 @@ struct Fsm {
     std::map<int, std::map<ClosedInterval, int>> transitions;
     std::set<int> accepts;
 
-    //Fsm() {}
     Fsm(const Expr& expr);
 };
 
@@ -61,10 +60,9 @@ std::map<int, std::set<int>> epsilon_predecessors(const Expr& expr)
     ClosedInterval eps;
     std::map<int, std::set<int>> pred;
     for (auto& [q, dq]: expr.transitions) {
-        auto it = dq.find(eps);
-        if (it != dq.end()) {
+        if (auto it = dq.find(eps); it != dq.end()) {
             for (const auto& r: it->second) {
-                pred[q].insert(r);
+                pred[r].insert(q);
             }
         }
     }
@@ -74,18 +72,17 @@ std::map<int, std::set<int>> epsilon_predecessors(const Expr& expr)
 std::map<int, std::set<int>> epsilon_closures(const Expr& expr)
 {
     ClosedInterval eps;
-    auto predecessor = epsilon_predecessors(expr);
     std::map<int, std::set<int>> closure;
     std::vector<int> stack;
     for (const auto& [q, dq]: expr.transitions) {
         stack.push_back(q);
-        closure[q] = {q};
-        auto it = dq.find(eps);
-        if (it != dq.end()) {
+        closure[q].insert(q);
+        if (auto it = dq.find(eps); it != dq.end()) {
             const auto& R = it->second;
             closure[q].insert(R.begin(), R.end());
         }
     }
+    auto predecessor = epsilon_predecessors(expr);
     while (!stack.empty()) {
         int q = stack.back();
         stack.pop_back();
@@ -133,12 +130,13 @@ void subset_construction(Fsm& fsm, const Expr& expr)
             auto R = epsilon_closure(closure, next_nfa_state(expr, Q, a));
             auto [rid, ok] = states.index(R);
             fsm.transitions[qid][a] = rid;
-            if (R.find(1) != R.end()) {
-                fsm.accepts.insert(rid);
-            }
             if (ok) {
                 // if index is newly inserted
                 stack.push_back(rid);
+                // add if accept state
+                if (R.find(1) != R.end()) {
+                    fsm.accepts.insert(rid);
+                }
             }
         }
     }
