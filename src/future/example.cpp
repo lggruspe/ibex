@@ -2,8 +2,7 @@
 
 Expr optional(const Expr& expr)
 {
-    Expr empty;
-    return alternate(expr, empty);
+    return alternate(expr, Expr(ClosedInterval()));
 }
 
 Expr integer()
