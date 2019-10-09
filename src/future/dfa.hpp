@@ -159,15 +159,6 @@ struct Partition {
         id_to_class[old_id].erase(item);
         insert(new_id, item);
     }
-
-    void bulk_insert(const std::set<int>& items)
-    {
-        int id = id_to_class.size();
-        id_to_class[id] = items;
-        for (const auto& q: items) {
-            item_to_id[q] = id;
-        }
-    }
 };
 
 Partition first_partition(const Fsm& fsm)
@@ -179,23 +170,6 @@ Partition first_partition(const Fsm& fsm)
         p.insert(id, q);
     }
     return p;
-
-    /* or:
-    Partition p;
-    std::set<int> nonaccepts;
-    for (const auto& [q, _]: fsm.transitions) {
-        if (auto it = fsm.accepts.find(q); it == fsm.accepts.end()) {
-            nonaccepts.insert(q);
-        }
-    }
-    if (!fsm.accepts.empty()) {
-        p.bulk_insert(fsm.accepts, true);
-    }
-    if (!nonaccepts.empty()) {
-        p.bulk_insert(nonaccepts, false);
-    }
-    return p;
-    */
 }
 
 std::map<int, std::set<int>> map_transitions(
@@ -205,6 +179,7 @@ std::map<int, std::set<int>> map_transitions(
     const ClosedInterval& a)
 {
     // outbound: id of destination -> source state
+    // groups states in the same class by their outbound transitions at a
     std::map<int, std::set<int>> outbound;
     for (const auto& q: p.id_to_class.at(id)) {
         outbound[p.item_to_id.at(fsm.transitions.at(q).at(a))].insert(q);
@@ -212,32 +187,39 @@ std::map<int, std::set<int>> map_transitions(
     return outbound;
 }
 
-void split(Partition& p, int id, const Fsm& fsm)
+void split(Partition& p, int id, const std::set<int>& cls, const Fsm& fsm)
 {
+    // assume p.id_to_class.at(id) == cls
     for (const auto& a: fsm.symbols) {
-        auto& cls = p.id_to_class.at(id);
         if (cls.size() <= 1) {
             break;
         }
         auto outbound = map_transitions(p, id, fsm, a);
         assert(!outbound.empty());
         for (auto it = std::next(outbound.begin()); it != outbound.end(); ++it) {
-            const auto& Q = it->second;
             int new_id = p.id_to_class.size();
-            for (const auto& q: Q) {
+            for (const auto& q: it->second) {
                 p.update(new_id, q);
             }
         }
     }
 }
 
+Partition refined_states(const Fsm& fsm)
+{
+     //  TODO test if the resulting state space is a permutation of 0, 1, ..., k
+    //  for some k
+    auto p = first_partition(fsm);
+    for (const auto& [id, cls]: p.id_to_class) {
+        split(p, id, cls, fsm);
+    }
+    return p;
+}
+
 void minimize(Fsm& fsm)
 {
-    auto p = first_partition(fsm);
-    for (const auto& [id, _]: p.id_to_class) {
-        split(p, id, fsm);
-    }
-
+    auto p = refined_states(fsm);
+    // TODO swap 0 and p.item_to_id[0] so that the start state is still 0
     std::map<int, std::map<ClosedInterval, int>> transitions;
     for (const auto& [q, dq]: fsm.transitions) {
         for (const auto& a: fsm.symbols) {
