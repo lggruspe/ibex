@@ -118,14 +118,14 @@ void subset_construction(Fsm& fsm, const Expr& expr)
     auto Q = closure[0];
     auto [state, _] = states.index(Q);
     std::vector<int> stack = {state};
-    if (Q.find(1) != Q.end()) {
-        fsm.accepts.insert(state);
-    }
     while (!stack.empty()) {
         int qid = stack.back();
         stack.pop_back();
         fsm.transitions[qid];
         auto Q = states.value(qid);
+        if (Q.find(1) != Q.end()) {
+            fsm.accepts.insert(qid);
+        }
         for (const auto& a: fsm.symbols) {
             auto R = epsilon_closure(closure, next_nfa_state(expr, Q, a));
             auto [rid, ok] = states.index(R);
@@ -133,10 +133,6 @@ void subset_construction(Fsm& fsm, const Expr& expr)
             if (ok) {
                 // if index is newly inserted
                 stack.push_back(rid);
-                // add if accept state
-                if (R.find(1) != R.end()) {
-                    fsm.accepts.insert(rid);
-                }
             }
         }
     }
