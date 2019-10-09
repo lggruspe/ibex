@@ -28,6 +28,7 @@ struct Expr {
 
 Expr closure(const Expr& expr)
 {
+    ClosedInterval eps;
     Expr res;
     res.symbols = expr.symbols;
     for (const auto& [q, dq]: expr.transitions) {
@@ -36,8 +37,13 @@ Expr closure(const Expr& expr)
                 res.transitions[q+2][a].insert(r+2);
             }
         }
+        // also copy epsilon-transitions if any
+        if (auto it = dq.find(eps); it != dq.end()) {
+            for (const auto& r: it->second) {
+                res.transitions[q+2][eps].insert(r+2);
+            }
+        }
     }
-    ClosedInterval eps;
     res.transitions[0][eps].insert(1);
     res.transitions[0][eps].insert(2);
     res.transitions[3][eps].insert(1);
@@ -55,6 +61,7 @@ void copy_transitions(
     // assume A has no transitions yet
     A.transitions[offset];
     A.transitions[offset+1];
+    ClosedInterval eps;
     for (const auto& [q, dq]: B.transitions) {
         for (const auto& [a, R]: dq) {
             auto [lb, ub] = overlap_range(A.symbols, a);  // TODO factor out and use unordered_map?
@@ -62,6 +69,12 @@ void copy_transitions(
                 for (auto it = lb; it != ub; it++) {
                     A.transitions[q+offset][*it].insert(r+offset);
                 }
+            }
+        }
+        // also copy epsilon-transitions if any
+        if (auto it = dq.find(eps); it != dq.end()) {
+            for (const auto& r: it->second) {
+                A.transitions[q+offset][eps].insert(r+offset);
             }
         }
     }
