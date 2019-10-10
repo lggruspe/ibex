@@ -14,8 +14,8 @@
 #include <utility>
 
 struct Fsm {
+    // invariant: start state is always 0
     ClosedIntervalSet symbols;
-    int start;  // only gets modified when minimized
     std::map<int, std::map<ClosedInterval, int>> transitions;
     std::set<int> accepts;
 
@@ -24,7 +24,6 @@ struct Fsm {
 
 std::ostream& operator<<(std::ostream& os, const Fsm& fsm)
 {
-    os << "start: " << fsm.start << std::endl;
     os << "accept: ";
     for (const auto& q: fsm.accepts) {
         os << q << " ";
@@ -212,28 +211,37 @@ Partition refined_states(const Fsm& fsm)
     return p;
 }
 
+int pid_to_state(const Partition& p, int item)
+{
+    int oid = p.item_to_id.at(0);
+    int id = p.item_to_id.at(item);
+    if (id == 0) {
+        return oid;
+    } else if (id == oid) {
+        return 0;
+    }
+    return id;
+}
+
 void minimize(Fsm& fsm)
 {
     auto p = refined_states(fsm);
-    // TODO swap 0 and p.item_to_id[0] so that the start state is still 0
     std::map<int, std::map<ClosedInterval, int>> transitions;
     for (const auto& [q, dq]: fsm.transitions) {
         for (const auto& a: fsm.symbols) {
-            transitions[p.item_to_id[q]][a] = p.item_to_id[dq.at(a)];
+            transitions[pid_to_state(p, q)][a] = pid_to_state(p, dq.at(a));
         }
     }
     std::set<int> accepts;
     for (const auto& q: fsm.accepts) {
-        accepts.insert(p.item_to_id[q]);
+        accepts.insert(pid_to_state(p, q));
     }
     fsm.transitions = transitions;
     fsm.accepts = accepts;
-    fsm.start = p.item_to_id[0];
 }
 
 Fsm::Fsm(const Expr& expr)
 {
-    start = 0;
     subset_construction(*this, expr);
     minimize(*this);
 }
