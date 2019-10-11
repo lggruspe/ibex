@@ -228,8 +228,9 @@ void minimize(Fsm& fsm)
     auto p = refined_states(fsm);
     std::map<int, std::map<ClosedInterval, int>> transitions;
     for (const auto& [q, dq]: fsm.transitions) {
+        auto& trans = transitions[pid_to_state(p, q)];
         for (const auto& a: fsm.symbols) {
-            transitions[pid_to_state(p, q)][a] = pid_to_state(p, dq.at(a));
+            trans[a] = pid_to_state(p, dq.at(a));
         }
     }
     std::set<int> accepts;

@@ -9,7 +9,7 @@ Expr ir_to_nfa(rnd_expr* c_expr)
     switch (c_expr->type) {
     case RND_SYMBOL: {
         ClosedInterval in(c_expr->value.start, c_expr->value.end);
-        return Expr(ClosedInterval(in));
+        return Expr(in);
      }
     case RND_UNION:
         return alternate(ir_to_nfa(c_expr->left), ir_to_nfa(c_expr->right));
