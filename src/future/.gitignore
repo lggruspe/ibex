@@ -3,3 +3,5 @@ handles.test
 dfa.test
 example
 example_c
+dot.test
+*.pdf
