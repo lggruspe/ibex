@@ -182,9 +182,10 @@ std::map<int, std::set<int>> map_transitions(
     return outbound;
 }
 
-void split(Partition& p, int id, const std::set<int>& cls, const Fsm& fsm)
+bool split(Partition& p, int id, const std::set<int>& cls, const Fsm& fsm)
 {
     // assume p.id_to_class.at(id) == cls
+    bool changed = false;
     for (const auto& a: fsm.symbols) {
         if (cls.size() <= 1) {
             break;
@@ -192,12 +193,15 @@ void split(Partition& p, int id, const std::set<int>& cls, const Fsm& fsm)
         auto outbound = map_transitions(p, id, fsm, a);
         assert(!outbound.empty());
         for (auto it = std::next(outbound.begin()); it != outbound.end(); ++it) {
+            assert(!it->second.empty());
+            changed = true;
             int new_id = p.id_to_class.size();
             for (const auto& q: it->second) {
                 p.update(new_id, q);
             }
         }
     }
+    return changed;
 }
 
 Partition refined_states(const Fsm& fsm)
@@ -205,8 +209,14 @@ Partition refined_states(const Fsm& fsm)
      //  TODO test if the resulting state space is a permutation of 0, 1, ..., k
     //  for some k
     auto p = first_partition(fsm);
-    for (const auto& [id, cls]: p.id_to_class) {
-        split(p, id, cls, fsm);
+    for (;;) {
+        bool changed = false;
+        for (const auto& [id, cls]: p.id_to_class) {
+            changed = changed || split(p, id, cls, fsm);
+        }
+        if (!changed) {
+            break;
+        }
     }
     return p;
 }
