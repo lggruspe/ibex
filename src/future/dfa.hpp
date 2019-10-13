@@ -137,22 +137,51 @@ void subset_construction(Fsm& fsm, const Expr& expr)
     }
 }
 
-struct Partition {
+class Partition {
     std::map<int, std::set<int>> id_to_class;
     std::map<int, int> item_to_id;
 
-    void insert(int id, int item)
+public:
+    auto begin()
     {
-        // assume item is not in any class yet
-        id_to_class[id].insert(item);
-        item_to_id[item] = id;
+        return id_to_class.begin();
     }
 
-    void update(int new_id, int item)
+    auto end()
     {
-        int old_id = item_to_id[item];
-        id_to_class[old_id].erase(item);
-        insert(new_id, item);
+        return id_to_class.end();
+    }
+
+    int size() const
+    {
+        return id_to_class.size();
+    }
+
+    void set(int id, int item)
+    {
+        auto it = item_to_id.find(item);
+        if (it != item_to_id.end()) {
+            id_to_class[it->second].erase(item);
+        }
+        item_to_id[item] = id;
+        id_to_class[id].insert(item);
+    }
+
+    int classify(int item) const
+    {
+        return item_to_id.at(item);
+    }
+
+    int to_state(int q) const
+    {
+        if (q == 0) {
+            return 0;
+        }
+        int id = classify(q);
+        if (id == 0) {
+            return classify(0);
+        }
+        return id;
     }
 };
 
@@ -161,45 +190,56 @@ Partition first_partition(const Fsm& fsm)
     // 0: accepts, 1: nonaccepts
     Partition p;
     for (const auto& [q, _]: fsm.transitions) {
-        int id = (fsm.accepts.find(q) == fsm.accepts.end());
-        p.insert(id, q);
+        int id = fsm.accepts.find(q) == fsm.accepts.end();
+        p.set(id, q);
     }
     return p;
 }
 
-std::map<int, std::set<int>> map_transitions(
+std::map<int, std::set<int>> transition_groups(
     const Partition& p,
-    int id,
+    const std::set<int>& cls,
     const Fsm& fsm,
     const ClosedInterval& a)
 {
-    // outbound: id of destination -> source state
     // groups states in the same class by their outbound transitions at a
-    std::map<int, std::set<int>> outbound;
-    for (const auto& q: p.id_to_class.at(id)) {
-        outbound[p.item_to_id.at(fsm.transitions.at(q).at(a))].insert(q);
+    // group keys don't actually mean anything outside the function
+    std::map<int, std::set<int>> groups;
+    for (const auto& q: cls) {
+        const auto& dq = fsm.transitions.at(q);
+        int r = dq.at(a);
+        groups[p.classify(r)].insert(q);
     }
-    return outbound;
+    return groups;
 }
 
-bool split(Partition& p, int id, const std::set<int>& cls, const Fsm& fsm)
+bool split_by_transition(
+    Partition& p,
+    const std::set<int>& cls,
+    const Fsm& fsm,
+    const ClosedInterval& a)
 {
-    // assume p.id_to_class.at(id) == cls
+    bool changed = false;
+    auto groups = transition_groups(p, cls, fsm, a);
+    for (auto it = std::next(groups.begin()); it != groups.end(); ++it) {
+        const auto& Q = it->second;
+        changed = true;
+        int id = p.size();
+        for (const auto& q: Q) {
+            p.set(id, q);
+        }
+    }
+    return changed;
+}
+
+bool split(Partition& p, const std::set<int>& cls, const Fsm& fsm)
+{
     bool changed = false;
     for (const auto& a: fsm.symbols) {
         if (cls.size() <= 1) {
             break;
         }
-        auto outbound = map_transitions(p, id, fsm, a);
-        assert(!outbound.empty());
-        for (auto it = std::next(outbound.begin()); it != outbound.end(); ++it) {
-            assert(!it->second.empty());
-            changed = true;
-            int new_id = p.id_to_class.size();
-            for (const auto& q: it->second) {
-                p.update(new_id, q);
-            }
-        }
+        changed = changed || split_by_transition(p, cls, fsm, a);
     }
     return changed;
 }
@@ -211,8 +251,8 @@ Partition refined_states(const Fsm& fsm)
     auto p = first_partition(fsm);
     for (;;) {
         bool changed = false;
-        for (const auto& [id, cls]: p.id_to_class) {
-            changed = changed || split(p, id, cls, fsm);
+        for (const auto& [_, cls]: p) {
+            changed = changed || split(p, cls, fsm);
         }
         if (!changed) {
             break;
@@ -221,31 +261,19 @@ Partition refined_states(const Fsm& fsm)
     return p;
 }
 
-int pid_to_state(const Partition& p, int item)
-{
-    int oid = p.item_to_id.at(0);
-    int id = p.item_to_id.at(item);
-    if (id == 0) {
-        return oid;
-    } else if (id == oid) {
-        return 0;
-    }
-    return id;
-}
-
 void minimize(Fsm& fsm)
 {
     auto p = refined_states(fsm);
     std::map<int, std::map<ClosedInterval, int>> transitions;
     for (const auto& [q, dq]: fsm.transitions) {
-        auto& trans = transitions[pid_to_state(p, q)];
+        auto& Tq = transitions[p.to_state(q)];
         for (const auto& a: fsm.symbols) {
-            trans[a] = pid_to_state(p, dq.at(a));
+            Tq[a] = p.to_state(dq.at(a));
         }
     }
     std::set<int> accepts;
     for (const auto& q: fsm.accepts) {
-        accepts.insert(pid_to_state(p, q));
+        accepts.insert(p.to_state(q));
     }
     fsm.transitions = transitions;
     fsm.accepts = accepts;
