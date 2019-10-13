@@ -24,4 +24,4 @@ example_c:	example.c
 
 .PHONY:	clean
 clean:
-	-rm -rf $(targets) vgcore* example_c
+	-rm -rf $(targets) vgcore* example_c *.pdf *.so *.a
