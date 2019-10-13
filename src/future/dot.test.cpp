@@ -119,5 +119,7 @@ int main(int argc, char **argv)
         M_PRINT_CONVERT(character);
     } else if (input == "number") {
         M_PRINT_CONVERT(number);
+    } else if (input == "whitespace") {
+        M_PRINT_CONVERT(whitespace);
     }
 }
