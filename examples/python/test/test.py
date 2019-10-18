@@ -12,24 +12,24 @@ import output.scanners as scanners
 TEST_DATA = {}
 
 def run_longest(pinput):
-    """Wrapper for running python run.py longest."""
+    """Wrapper for running 'run_match longest.'"""
     out = subprocess.check_output(
-        ["python", "run.py", "longest"],
+        ["./run_match", "longest"],
         input=f"{pinput}\n".encode())
     token, lexeme = out.decode()[:-1].split('\n', maxsplit=1)
     return token, lexeme
 
 def run_single(scanner_type, pinput):
-    """Wrapper for running python run.py single -s {scanner_type}."""
+    """Wrapper for running run_match single -s {scanner_type}."""
     out = subprocess.check_output(
-        ["python", "run.py", "single", "-s", scanner_type],
+        ["./run_match", "single", "-s", scanner_type],
         input=f"{pinput}\n".encode())
     return out.decode()[:-1]
 
 def run_tokenizer(pinput):
-    """Wrapper for running python run.py tokenizer."""
+    """Wrapper for running run_match tokenizer."""
     out = subprocess.check_output(
-        ["python", "run.py", "tokenizer"],
+        ["./run_match", "tokenizer"],
         input=f"{pinput}\n".encode())
     return out.decode()
 
