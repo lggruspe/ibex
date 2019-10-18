@@ -80,9 +80,9 @@ struct Tokenizer {
             if (lexeme.empty()) {
                 done = true;
             } else {
-                std::for_each(record_lexeme.begin(), record_lexeme.end(),
-                        [&in](const auto&) {
-                            in.get();
+                std::for_each(lexeme.begin(), lexeme.end(),
+                        [this](const auto&) {
+                            in->get();
                         });
             }
             return {token, lexeme};

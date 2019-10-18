@@ -14,7 +14,7 @@ TEST_DATA = {}
 def run_longest(pinput):
     """Wrapper for running match::longest."""
     out = subprocess.check_output(
-        ["./a.out", "longest"],
+        ["./run_match", "longest"],
         input=f"{pinput}\n".encode())
     token, lexeme = out.decode()[:-1].split('\n', maxsplit=1)
     return token, lexeme
@@ -22,14 +22,14 @@ def run_longest(pinput):
 def run_single(scanner_type, pinput):
     """Wrapper for running match::single."""
     out = subprocess.check_output(
-        ["./a.out", "single", "-s", scanner_type],
+        ["./run_match", "single", "-s", scanner_type],
         input=f"{pinput}\n".encode())
     return out.decode()[:-1]
 
 def run_tokenizer(pinput):
     """Wrapper for running match::Tokenizer."""
     out = subprocess.check_output(
-        ["./a.out", "tokenizer"],
+        ["./run_match", "tokenizer"],
         input=f"{pinput}\n".encode())
     return out.decode()
 

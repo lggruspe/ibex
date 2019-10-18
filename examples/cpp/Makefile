@@ -3,7 +3,7 @@ CXXFLAGS = -g -std=gnu++17 -Wall -Wextra -Wpedantic
 CPPFLAGS = -I../extra
 
 .PHONY:	all
-all:	output/scanners.hpp output/scanner_utils.hpp
+all:	output/scanners.hpp output/scanner_utils.hpp compile
 
 output/scanners.hpp:	templates/template.cpp templates/scanner.cpp
 	python ../example.py template.cpp -d templates > $@
@@ -13,10 +13,10 @@ output/scanner_utils.hpp:	templates/scanner_utils.cpp
 
 .PHONY:	clean
 clean:
-	-rm -rf test/a.out
+	-rm -rf test/run_match
 
 .PHONY:	compile
-compile:	test/a.out
+compile:	test/run_match
 
-test/a.out:	test/run.cpp test/match.hpp
+test/run_match:	test/run.cpp test/match.hpp
 	$(CXX) $(CXXFLAGS) -o $@ $<
