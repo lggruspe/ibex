@@ -30,7 +30,7 @@ def single_default(file, scanner_constructor, record_token="", record_lexeme="")
     lexeme = ""
     for char in io_iterate(file):
         lexeme += char
-        if not scanner.next(ord(char)):
+        if not scanner.next(ord(char)) or char == '\n':
             for a in reversed(lexeme):
                 io_unget(a)
             steps = scanner.backtrack_steps()
