@@ -4,6 +4,7 @@
 #include <limits>
 #include <set>
 #include <tuple>
+#include <utility>
 
 namespace poc
 {
@@ -83,6 +84,17 @@ ZPartitionIterator ZPartition::begin() const
 ZPartitionIterator ZPartition::end() const
 {
     return ZPartitionIterator(p_.end(), p_.end());
+}
+
+std::pair<ZPartitionIterator, ZPartitionIterator>
+ZPartition::overlap_range(int a, int b) const
+{
+    auto end = p_.end();
+    auto lb_ = p_.lower_bound(a);
+    auto ub_ = p_.upper_bound(b);
+    ZPartitionIterator lb(lb_, end);
+    ZPartitionIterator ub(ub_, end);
+    return {lb, ub};
 }
 
 }

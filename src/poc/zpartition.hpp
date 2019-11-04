@@ -1,6 +1,7 @@
 #pragma once
 #include <set>
 #include <tuple>
+#include <utility>
 
 namespace poc
 {
@@ -42,6 +43,9 @@ public:
     ZPartitionIterator begin() const;
 
     ZPartitionIterator end() const;
+
+    std::pair<ZPartitionIterator, ZPartitionIterator>
+    overlap_range(int a, int b) const;
 };
 
 }

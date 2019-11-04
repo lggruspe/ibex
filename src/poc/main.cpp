@@ -26,4 +26,10 @@ int main()
 
     auto r = p.combined(q);
     std::cout << r << std::endl;
+
+    auto [lb, ub] = r.overlap_range(3, 10);
+    for (auto it = lb; it != ub; ++it) {
+        auto [a, b] = *it;
+        std::cout << "[" << a << ", " << b << ")" << std::endl;
+    }
 }
