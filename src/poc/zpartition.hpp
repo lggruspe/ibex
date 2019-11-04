@@ -7,21 +7,21 @@ namespace poc
 {
 
 class ZPartitionIterator {
-    std::set<int>::const_iterator it;
-    std::set<int>::const_iterator end;
+    std::set<unsigned int>::const_iterator it;
+    std::set<unsigned int>::const_iterator end;
 
 public:
     ZPartitionIterator(
-        std::set<int>::const_iterator start,
-        std::set<int>::const_iterator end);
+        std::set<unsigned int>::const_iterator start,
+        std::set<unsigned int>::const_iterator end);
 
-    ZPartitionIterator(const std::set<int>& p);
+    ZPartitionIterator(const std::set<unsigned int>& p);
 
     bool operator==(const ZPartitionIterator& other) const;
 
     bool operator!=(const ZPartitionIterator& other) const;
 
-    const std::tuple<const int&, const int&> operator*() const;
+    const std::tuple<const unsigned int&, const unsigned int&> operator*() const;
     
     ZPartitionIterator& operator++();
 
@@ -29,14 +29,14 @@ public:
 };
 
 class ZPartition {
-    std::set<int> p_;
+    std::set<unsigned int> p_;
 
-    ZPartition(std::set<int> p_) : p_(p_) {}
+    ZPartition(std::set<unsigned int> p_) : p_(p_) {}
 
 public:
     ZPartition();
 
-    void insert(int, int);
+    void insert(unsigned int, unsigned int);
 
     ZPartition combined(const ZPartition& other) const;
 
@@ -45,7 +45,7 @@ public:
     ZPartitionIterator end() const;
 
     std::pair<ZPartitionIterator, ZPartitionIterator>
-    overlap_range(int a, int b) const;
+    overlap_range(unsigned int a, unsigned int b) const;
 };
 
 }

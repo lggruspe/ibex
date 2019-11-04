@@ -9,17 +9,17 @@
 namespace poc
 {
 
-const int lower_bound = 0;
-const int upper_bound = std::numeric_limits<int>::max();
+const unsigned int lower_bound = 0;
+const unsigned int upper_bound = std::numeric_limits<unsigned int>::max();
 
 ZPartitionIterator::ZPartitionIterator(
-    std::set<int>::const_iterator start,
-    std::set<int>::const_iterator end)
+    std::set<unsigned int>::const_iterator start,
+    std::set<unsigned int>::const_iterator end)
     : it(start)
     , end(end)
 {}
 
-ZPartitionIterator::ZPartitionIterator(const std::set<int>& p) 
+ZPartitionIterator::ZPartitionIterator(const std::set<unsigned int>& p) 
     : ZPartitionIterator(p.begin(), p.end())
 {}
 
@@ -33,7 +33,7 @@ bool ZPartitionIterator::operator!=(const ZPartitionIterator& other) const
     return it != other.it;
 }
 
-const std::tuple<const int&, const int&> ZPartitionIterator::operator*() const
+const std::tuple<const unsigned int&, const unsigned int&> ZPartitionIterator::operator*() const
 {
     auto jt = std::next(it);
     if (jt == end) {
@@ -55,11 +55,11 @@ ZPartitionIterator ZPartitionIterator::operator++(int)
     return it;
 }
 
-ZPartition::ZPartition() : p_(std::set<int>{lower_bound})
+ZPartition::ZPartition() : p_(std::set<unsigned int>{lower_bound})
     // contains closed end partition points of [lower_bound, upper_bound)
 {}
 
-void ZPartition::insert(int a, int b)
+void ZPartition::insert(unsigned int a, unsigned int b)
 {
     // insert nonempty [a, b), must be within [lb, ub)
     assert(a < b && a >= lower_bound && b < upper_bound);
@@ -71,7 +71,7 @@ ZPartition ZPartition::combined(const ZPartition& other) const
 {
     // combine nonempty partitions of [lower_bound, upper_bound)
     assert(!p_.empty() && !other.p_.empty());
-    std::set<int> p = p_;
+    std::set<unsigned int> p = p_;
     p.insert(other.p_.begin(), other.p_.end());
     return ZPartition(p);
 }
@@ -87,7 +87,7 @@ ZPartitionIterator ZPartition::end() const
 }
 
 std::pair<ZPartitionIterator, ZPartitionIterator>
-ZPartition::overlap_range(int a, int b) const
+ZPartition::overlap_range(unsigned int a, unsigned int b) const
 {
     auto end = p_.end();
     auto lb_ = p_.lower_bound(a);
