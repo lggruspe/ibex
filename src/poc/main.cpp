@@ -1,4 +1,4 @@
-#include "zpartition.hpp"
+#include "zpartition.h"
 #include <iostream>
 
 using namespace poc;

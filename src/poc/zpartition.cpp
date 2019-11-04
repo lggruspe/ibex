@@ -1,4 +1,4 @@
-#include "zpartition.hpp"
+#include "zpartition.h"
 #include <cassert>
 #include <iterator>
 #include <limits>
