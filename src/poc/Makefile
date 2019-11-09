@@ -1,8 +1,8 @@
 CXX = g++
 CXXFLAGS = -g -Wall -Wextra -Wpedantic -Werror -std=c++17
 
-main:	main.cpp zsymbols.hpp
+zsymbols.test:	zsymbols.test.cpp zsymbols.hpp
 	$(CXX) $(CXXFLAGS) -o $@ $<
 
 clean:
-	-rm -rf main
+	-rm -rf zsymbols.test

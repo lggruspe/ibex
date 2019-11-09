@@ -9,6 +9,12 @@ struct ZRange {
 
     ZRange(unsigned int start, unsigned int end) : start(start), end(end) {}
 
+    ZRange()
+        : ZRange(
+            std::numeric_limits<unsigned int>::max(),
+            std::numeric_limits<unsigned int>::max())
+    {}
+
     explicit operator bool() const
     {
         return start < end;
