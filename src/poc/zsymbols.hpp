@@ -19,6 +19,12 @@ struct ZRange {
     {
         return start < end;
     }
+
+    bool operator<(const ZRange& other) const
+    {
+        // warning: doesn't induce equivalence relation
+        return end <= other.start;
+    }
 };
 
 struct ZPartition {
