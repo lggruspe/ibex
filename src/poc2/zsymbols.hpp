@@ -30,7 +30,7 @@ struct ZPartition {
         }
     }
 
-    ZPartition combined(const ZPartition& other)
+    ZPartition combined(const ZPartition& other) const
     {
         ZPartition rv = *this;
         rv.points.insert(other.points.begin(), other.points.end());
