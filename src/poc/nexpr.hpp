@@ -3,13 +3,15 @@
 #include <map>
 #include <set>
 
+// TODO handle cases when input is emptyset (concatenate, closure, alternate)?
+
 struct NExpr {
     // start state = 0
     // accept state = 1
     ZPartition symbols;
     std::map<int, std::map<ZRange, std::set<int>>> states;
 
-    NExpr()
+    NExpr() // empty set (note: use other constructor for epsilon)
     {
         states[0];
         states[1];
