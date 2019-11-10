@@ -42,3 +42,53 @@ auto epsilon_closures(const NExpr& expr)
     }
     return closures;
 }
+
+auto next_state(
+    const NExpr& expr,
+    const std::set<int>& Q,
+    const ZRange& a,
+    const std::map<int, std::set<int>>& closures)
+{
+    std::set<int> R;
+    for (int q: Q) {
+        const auto& dq = expr.states.at(q);
+        auto it = dq.find(a);
+        if (it == dq.end()) {
+            continue;
+        }
+        for (const auto& r: it->second) {
+            R.insert(closures.at(r).begin(), closures.at(r).end());
+        }
+    }
+    return R;
+}
+
+void subset_construction(Automaton* m, const NExpr& expr)
+{
+    // m must point to initialized memory
+    auto closures = epsilon_closures(expr);
+    HandleSet<std::set<int>> states;
+    std::set<int> queue = {states.index(closures[0])};
+    while (!queue.empty()) {
+        int qid = *(queue.begin());
+        queue.erase(queue.begin());
+        auto q = states.value(qid);
+        for (const auto& a: expr.symbols) {
+            auto r = next_state(expr, q, a, closures);
+            auto [rid, ok] = states.insert(r);
+            m->states[qid][a] = rid;
+            if (ok) {
+                queue.insert(rid);
+            }
+        }
+        if (q.count(1)) {
+            m->accepts.insert(qid);
+        }
+    }
+    m->symbols = expr.symbols;
+}
+
+Automaton::Automaton(const NExpr& expr)
+{
+    subset_construction(this, expr);
+}
