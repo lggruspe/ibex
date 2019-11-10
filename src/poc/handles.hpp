@@ -11,7 +11,7 @@ class HandleSet {
     Vector vector;
 
 public:
-    std::pair<int, bool> index(const T& t)
+    std::pair<int, bool> insert(const T& t)
     {
         int handle = vector.size();
         auto [it, ok] = map.insert({t, handle});
@@ -22,9 +22,9 @@ public:
         return {handle, true};
     }
 
-    int index_only(const T& t)
+    int index(const T& t)
     {
-        auto [id, _] = index(t);
+        auto [id, _] = insert(t);
         return id;
     }
 
