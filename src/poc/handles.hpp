@@ -13,11 +13,11 @@ class HandleSet {
 public:
     std::pair<int, bool> index(const T& t)
     {
-        auto [it, ok] = map.insert({t, vector.size()});
+        int handle = vector.size();
+        auto [it, ok] = map.insert({t, handle});
         if (!ok) {
             return {it->second, false};
         }
-        int handle = vector.size();
         vector.push_back(it);
         return {handle, true};
     }
