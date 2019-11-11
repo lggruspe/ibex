@@ -100,10 +100,25 @@ struct PartitionRefiner {
             set(q, m_->accepts.count(q));
         }
         refine();
+        oid_ = rep.at(0);
+    }
+
+    int get(int q) const
+    {
+        // class # of q
+        // property: class # of 0 is swapped so that get(0) = 0
+        if (int id = rep.at(q); id == oid_) {
+            return 0;
+        } else if (id == 0) {
+            return oid_;
+        } else {
+            return id;
+        }
     }
 
 private:
     Automaton* m_;
+    int oid_;
     std::vector<std::set<int>> cls;
     std::map<int, int> rep;
 
@@ -176,7 +191,18 @@ private:
 void minimize(Automaton* m)
 { 
     PartitionRefiner p(m);
-    // TODO copy results back to m
+    std::map<int, std::map<ZRange, int>> states;
+    for (const auto& [q, dq]: m->states) {
+        for (const auto& a: m->symbols) {
+            states[p.get(q)][a] = p.get(dq.at(a));
+        }
+    }
+    std::set<int> accepts;
+    for (const auto& f: m->accepts) {
+        accepts.insert(p.get(f));
+    }
+    m->states = states;
+    m->accepts = accepts;
 }
 
 void set_error_state(Automaton* m)
