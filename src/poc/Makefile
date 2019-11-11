@@ -1,6 +1,6 @@
 CXX = g++
 CXXFLAGS = -g -Wall -Wextra -Wpedantic -Werror -std=c++17
-TESTS = zsymbols.test nexpr.test automaton.test
+TESTS = $(patsubst %.cpp,%,$(shell find -name "*.test.cpp"))
 
 all:	$(TESTS)
 
