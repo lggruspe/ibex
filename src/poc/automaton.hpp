@@ -7,10 +7,12 @@
 
 struct Automaton {
     // start state = 0
-    // TODO explicit error state
+    // error state = -1 by default
+    // (assumes after minimization, that there's a single error state)
     ZPartition symbols;
     std::map<int, std::map<ZRange, int>> states;
     std::set<int> accepts;
+    int error;
 
     Automaton(const NExpr& expr);
 };
@@ -88,7 +90,21 @@ void subset_construction(Automaton* m, const NExpr& expr)
     m->symbols = expr.symbols;
 }
 
+void partition_refinement(Automaton* m)
+{
+    m->error = -1;
+    // TODO
+}
+
+void set_error_state(Automaton* m)
+{
+    m->error = -1;
+    // TODO find sink state, assuming m is minimized
+}
+
 Automaton::Automaton(const NExpr& expr)
 {
     subset_construction(this, expr);
+    partition_refinement(this);
+    set_error_state(this);
 }
