@@ -29,6 +29,7 @@ std::ostream& operator<<(std::ostream& os, const Automaton& fsm)
     for (const auto& f: fsm.accepts) {
         os << f << " ";
     }
+    os << "\nerror: " << fsm.error;
     return os;
 }
 
