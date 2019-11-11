@@ -3,6 +3,7 @@
 #include "nexpr.hpp"
 #include "zsymbols.hpp"
 #include <cassert>
+#include <iterator>
 #include <map>
 #include <set>
 
@@ -119,21 +120,38 @@ private:
         }
     }
 
+    int next_index() const
+    {
+        return cls.size();
+    }
+
     bool split(int index, const ZRange& a)
     {
-        bool changed = false;
-        index = a.start;    // delete
-        changed = index;    // delete
-        return changed;
+        const auto& c = cls[index];
+        std::map<int, std::set<int>> destinations;
+        for (int q: c) {
+            int r = m_->states.at(q).at(a);
+            destinations[rep[r]].insert(q);
+        }
+        if (destinations.size() == 1) {
+            return false;
+        }
+        auto it = std::next(destinations.begin());
+        while (it != destinations.end()) {
+            int i = next_index();
+            for (int q: it->second) {
+                set(q, i);
+            }
+            ++it;
+        }
+        return true;
     }
 
     bool split(int index)
     {
         bool changed = false;
         for (const auto& a: m_->symbols) {
-            if (split(index, a)) {
-                changed = true;
-            }
+            changed = changed || split(index, a);
         }
         return changed;
     }
@@ -142,9 +160,7 @@ private:
     {
         bool changed = false;
         for (int i = 0; i < (int)(cls.size()); ++i) {
-            if (split(i)) {
-                changed = true;
-            }
+            changed = changed || split(i);
         }
         return changed;
     }
@@ -156,7 +172,7 @@ private:
     }
 };
 
-void partition_refinement(Automaton* m)
+void minimize(Automaton* m)
 { 
     PartitionRefiner p(m);
     // TODO copy results back to m
@@ -171,6 +187,6 @@ void set_error_state(Automaton* m)
 Automaton::Automaton(const NExpr& expr)
 {
     subset_construction(this, expr);
-    partition_refinement(this);
+    minimize(this);
     set_error_state(this);
 }
