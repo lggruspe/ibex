@@ -110,8 +110,9 @@ private:
     void set(int item, int i)
     {
         assert(i <= (int)(cls.size()));
-        int j = rep[item];
-        cls[j].erase(item);
+        if (auto it = rep.find(item); it != rep.end()) {
+            cls[it->second].erase(item);
+        }
         rep[item] = i;
         if (i < (int)(cls.size())) {
             cls[i].insert(item);
