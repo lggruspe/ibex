@@ -1,36 +1,39 @@
 #include "rnd.h"
-#include "dfa.hpp"
+#include "automaton.hpp"
+#include "nexpr.hpp"
+#include "zsymbols.hpp"
+#include <cassert>
 #include <unordered_set>
 #include <vector>
 
-Expr ir_to_nfa(rnd_expr* c_expr)
+NExpr ir_to_expr(rnd_expr* c_expr)
 {
     // c_expr must not be null
     switch (c_expr->type) {
     case RND_SYMBOL: {
-        ClosedInterval in(c_expr->value.start, c_expr->value.end);
-        return Expr(in);
-     }
+        ZRange in(c_expr->value.start, c_expr->value.end);
+        return NExpr(in);
+    }
     case RND_UNION:
-        return alternate(ir_to_nfa(c_expr->left), ir_to_nfa(c_expr->right));
+        return alternate(ir_to_expr(c_expr->left), ir_to_expr(c_expr->right));
     case RND_CONCATENATION:
-        return concatenate(ir_to_nfa(c_expr->left), ir_to_nfa(c_expr->right));
+        return concatenate(ir_to_expr(c_expr->left), ir_to_expr(c_expr->right));
     case RND_CLOSURE:
-        return closure(ir_to_nfa(c_expr->left));
+        return closure(ir_to_expr(c_expr->left));
     default:
         assert(false);
     }
-    return Expr();
+    return NExpr();
 }
 
-rnd_dfa serialize(const Fsm& fsm)
+rnd_dfa serialize(const Automaton& fsm)
 {
     rnd_dfa dfa;
-    dfa.order = fsm.transitions.size();
+    dfa.order = fsm.states.size();
     dfa.states = new rnd_state[dfa.order];
-    dfa.error = nullptr;
+    dfa.error = fsm.error;
     int i = 0;
-    for (const auto& [q, dq]: fsm.transitions) {
+    for (const auto& [q, dq]: fsm.states) {
         assert(i == q);
         auto& state = dfa.states[q];
         state.accept = false;
@@ -54,8 +57,8 @@ rnd_dfa serialize(const Fsm& fsm)
 
 rnd_dfa rnd_convert(rnd_expr* c_expr)
 {
-    Fsm fsm(ir_to_nfa(c_expr));
-    return serialize(fsm);
+    Automaton m(ir_to_expr(c_expr));
+    return serialize(m);
 }
 
 void rnd_dfa_destroy(rnd_dfa* dfa)
@@ -70,7 +73,6 @@ void rnd_dfa_destroy(rnd_dfa* dfa)
             dfa->states = nullptr;
         }
         dfa->order = 0;
-        dfa->error = nullptr;
     }
 }
 
