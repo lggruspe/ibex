@@ -213,6 +213,9 @@ void set_error_state(Automaton* m)
     // finds error state of m (if it exists), assuming m is minimized
     m->error = -1;
     for (const auto& [q, dq]: m->states) {
+        if (m->accepts.count(q)) {
+            continue;
+        }
         std::set<int> R;
         for (const auto& [a, r]: dq) {
             if (R.size() > 1) {
