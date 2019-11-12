@@ -3,6 +3,7 @@
 #include <iterator>
 #include <limits>
 #include <set>
+#include <tuple>
 
 struct ZRange {
     unsigned int start, end;
@@ -22,8 +23,12 @@ struct ZRange {
 
     bool operator<(const ZRange& other) const
     {
-        // warning: doesn't induce equivalence relation
-        return end <= other.start;
+        // used to store ZRanges in a set/map
+        // all the ZRanges must be disjoint
+        assert(start <= end && other.start <= other.end);
+        assert(end <= other.start || other.end <= start || 
+            std::tie(start, end) == std::tie(other.start, other.end));
+        return std::tie(start, end) < std::tie(other.start, other.end);
     }
 };
 
