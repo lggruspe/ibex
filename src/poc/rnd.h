@@ -40,10 +40,11 @@ struct rnd_state {
 // states:
 //      an array of states. indices serve as state ids
 //      invariant: states[0] is the start state
+// error: explicit error state (non-accept state that transitions to itself)
 struct rnd_dfa {
     int order;
     struct rnd_state *states;
-    const char *error;
+    int error;
 };
 
 #ifdef __cplusplus
