@@ -207,8 +207,21 @@ void minimize(Automaton* m)
 
 void set_error_state(Automaton* m)
 {
+    // finds error state of m (if it exists), assuming m is minimized
     m->error = -1;
-    // TODO find sink state, assuming m is minimized
+    for (const auto& [q, dq]: m->states) {
+        std::set<int> R;
+        for (const auto& [a, r]: dq) {
+            if (R.size() > 1) {
+                break;
+            }
+            R.insert(r);
+        }
+        if (R.size() == 1) {
+            m->error = q;
+            return;
+        }
+    }
 }
 
 Automaton::Automaton(const NExpr& expr)
