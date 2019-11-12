@@ -7,8 +7,8 @@
 #endif
 
 struct rnd_range {
-    int start;
-    int end;
+    unsigned int start;
+    unsigned int end;
 };
 
 enum rnd_type { 
