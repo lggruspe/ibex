@@ -19,7 +19,7 @@ libfuture.so:	wrapper.cxx rnd.h automaton.hpp nexpr.hpp zsymbols.hpp
 	rm _future_.o
 
 example_c:	example.c libfuture.so libfuture.a
-	gcc -I. -L. $< -o $@ -lfuture
+	gcc -g -Wall -Wextra -Wpedantic -Werror -I. -L. $< -o $@ -lfuture
 
 check:	all
 	@for i in $(TESTS); \
