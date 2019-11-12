@@ -95,9 +95,12 @@ void subset_construction(Automaton* m, const NExpr& expr)
 struct PartitionRefiner {
     PartitionRefiner(Automaton* m_) : m_(m_)
     {
-        // initial partition: accept 1, else 0
+        // initial partition, nonaccept 0, accept 1
         for (const auto& [q, _]: m_->states) {
-            set(q, m_->accepts.count(q));
+            set(q, 0);
+        }
+        for (const auto& f: m_->accepts) {
+            set(f, 1);
         }
         refine();
         oid_ = rep.at(0);
