@@ -3,7 +3,8 @@
 #include <map>
 #include <set>
 
-// TODO handle cases when input is emptyset (concatenate, closure, alternate)?
+// NOTE no need to handle emptyset as special cases to concatenate, closure and
+// alternate, because subset construction and minimization handles all cases
 
 struct NExpr {
     // start state = 0
