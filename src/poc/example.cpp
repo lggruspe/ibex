@@ -1,28 +1,61 @@
-#include "dfa.hpp"
+#include "automaton.hpp"
+#include "nexpr.hpp"
+#include "zsymbols.hpp"
+#include <iostream>
 
-Expr optional(const Expr& expr)
+std::ostream& operator<<(std::ostream& os, const NExpr& expr)
 {
-    return alternate(expr, Expr(ClosedInterval()));
+    for (const auto& [q, dq]: expr.states) {
+        os << "q = " << q << std::endl;
+        for (const auto& [a, R]: dq) {
+            os << "[" << a.start << ", " << a.end << "): ";
+            for (const auto& r: R) {
+                os << r << " ";
+            }
+            os << std::endl;
+        }
+    }
+    return os;
 }
 
-Expr integer()
+std::ostream& operator<<(std::ostream& os, const Automaton& fsm)
 {
-    ClosedInterval nonzero('1', '9');
-    ClosedInterval zero('0', '0');
-    ClosedInterval digit('0', '9');
+    for (const auto& [q, dq]: fsm.states) {
+        for (const auto& [a, r]: dq) {
+            os << "d(" << q << ", [" << a.start << ", " << a.end << ")) = " << r << std::endl;
+        }
+    }
+    os << "accepts: ";
+    for (const auto& f: fsm.accepts) {
+        os << f << " ";
+    }
+    os << "\nerror: " << fsm.error;
+    return os;
+}
+
+NExpr optional(const NExpr& expr)
+{
+    return alternate(expr, NExpr(ZRange()));
+}
+
+NExpr integer()
+{
+    ZRange nonzero('1', '9');
+    ZRange zero('0', '0');
+    ZRange digit('0', '9');
     return alternate(zero, concatenate(nonzero, closure(digit)));
 }
 
-Expr number()
+NExpr number()
 {
-    ClosedInterval digit('0', '9');
-    ClosedInterval dot('.', '.');
+    ZRange digit('0', '9');
+    ZRange dot('.', '.');
     auto decimal = concatenate(dot, concatenate(digit, closure(digit)));
 
-    ClosedInterval e('e', 'e');
-    ClosedInterval E('E', 'E');
-    ClosedInterval plus('+', '+');
-    ClosedInterval minus('-', '-');
+    ZRange e('e', 'e');
+    ZRange E('E', 'E');
+    ZRange plus('+', '+');
+    ZRange minus('-', '-');
     auto exponent = concatenate(
         alternate(e, E),
         concatenate(
@@ -35,30 +68,30 @@ Expr number()
             optional(exponent)));
 }
 
-Expr identifier()
+NExpr identifier()
 {
-    ClosedInterval small('a', 'z');
-    ClosedInterval big('A', 'Z');
-    ClosedInterval under('_', '_');
-    ClosedInterval digit('0', '9');
+    ZRange small('a', 'z');
+    ZRange big('A', 'Z');
+    ZRange under('_', '_');
+    ZRange digit('0', '9');
     auto front = alternate(small, alternate(big, under));
     return concatenate(front, closure(alternate(front, digit)));
 }
 
-Expr whitespace()
+NExpr whitespace()
 {
-    ClosedInterval tab('\t', '\t');
-    ClosedInterval nl('\n', '\n');
-    ClosedInterval space(' ', ' ');
+    ZRange tab('\t', '\t');
+    ZRange nl('\n', '\n');
+    ZRange space(' ', ' ');
     return alternate(tab, alternate(nl, space));
 }
 
-Expr character()
+NExpr character()
 {
-    ClosedInterval quote('\'', '\'');
-    ClosedInterval backslash('\\', '\\');
-    ClosedInterval t('t', 't');
-    ClosedInterval n('n', 'n');
+    ZRange quote('\'', '\'');
+    ZRange backslash('\\', '\\');
+    ZRange t('t', 't');
+    ZRange n('n', 'n');
     auto escape = concatenate(backslash, 
         alternate(
             quote, 
@@ -68,29 +101,29 @@ Expr character()
                     t, 
                     n))));
     auto middle = alternate(
-        ClosedInterval(32, 38),
+        ZRange(32, 38),
         alternate(
-            ClosedInterval(40, 91),
+            ZRange(40, 91),
             alternate(
-                ClosedInterval(93, 126),
+                ZRange(93, 126),
                 escape)));
     return concatenate(quote, concatenate(middle, quote));
 }
 
-Expr string()
+NExpr string()
 {
-    ClosedInterval quotes('"', '"');
-    ClosedInterval backslash('\\', '\\');
+    ZRange quotes('"', '"');
+    ZRange backslash('\\', '\\');
     auto middle = closure(
         alternate(
-            ClosedInterval(32, 33),
+            ZRange(32, 33),
             alternate(
-                ClosedInterval(35, 91),
+                ZRange(35, 91),
                 alternate(
-                    ClosedInterval(93, 126),
+                    ZRange(93, 126),
                     concatenate(
                         backslash,
-                        ClosedInterval(32, 126))))));
+                        ZRange(32, 126))))));
     return concatenate(quotes, concatenate(middle, quotes));
 }
 
@@ -98,7 +131,7 @@ Expr string()
     auto expr = Expr_(); \
     std::cout << #Expr_ << std::endl; \
     std::cout << expr << std::endl; \
-    std::cout << Fsm(expr) << std::endl; \
+    std::cout << Automaton(expr) << std::endl; \
 } while (0)
 
 int main()
