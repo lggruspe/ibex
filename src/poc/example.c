@@ -69,8 +69,8 @@ void print_dfa(struct rnd_dfa *dfa)
         return;
     }
     printf("start: 0\n");
+    printf("error: %d\n", dfa->error);
     printf("accept:");
-
     for (int i = 0; i < dfa->order; ++i) {
         if (dfa->states[i].accept) {
             printf(" %d", i);
