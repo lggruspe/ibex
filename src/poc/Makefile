@@ -32,4 +32,4 @@ check:	all
 
 .PHONY:	clean
 clean:
-	-rm -rf $(TESTS) example_c example_cpp *.so *.a
+	-rm -rf $(TESTS) example_c example_cpp *.so *.a vgcore*
