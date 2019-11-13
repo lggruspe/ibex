@@ -40,22 +40,22 @@ NExpr optional(const NExpr& expr)
 
 NExpr integer()
 {
-    ZRange nonzero('1', '9');
-    ZRange zero('0', '0');
-    ZRange digit('0', '9');
+    ZRange nonzero('1', '9'+1);
+    ZRange zero('0', '0'+1);
+    ZRange digit('0', '9'+1);
     return alternate(zero, concatenate(nonzero, closure(digit)));
 }
 
 NExpr number()
 {
-    ZRange digit('0', '9');
-    ZRange dot('.', '.');
+    ZRange digit('0', '9'+1);
+    ZRange dot('.', '.'+1);
     auto decimal = concatenate(dot, concatenate(digit, closure(digit)));
 
-    ZRange e('e', 'e');
-    ZRange E('E', 'E');
-    ZRange plus('+', '+');
-    ZRange minus('-', '-');
+    ZRange e('e', 'e'+1);
+    ZRange E('E', 'E'+1);
+    ZRange plus('+', '+'+1);
+    ZRange minus('-', '-'+1);
     auto exponent = concatenate(
         alternate(e, E),
         concatenate(
@@ -70,28 +70,28 @@ NExpr number()
 
 NExpr identifier()
 {
-    ZRange small('a', 'z');
-    ZRange big('A', 'Z');
-    ZRange under('_', '_');
-    ZRange digit('0', '9');
+    ZRange small('a', 'z'+1);
+    ZRange big('A', 'Z'+1);
+    ZRange under('_', '_'+1);
+    ZRange digit('0', '9'+1);
     auto front = alternate(small, alternate(big, under));
     return concatenate(front, closure(alternate(front, digit)));
 }
 
 NExpr whitespace()
 {
-    ZRange tab('\t', '\t');
-    ZRange nl('\n', '\n');
-    ZRange space(' ', ' ');
+    ZRange tab('\t', '\t'+1);
+    ZRange nl('\n', '\n'+1);
+    ZRange space(' ', ' '+1);
     return alternate(tab, alternate(nl, space));
 }
 
 NExpr character()
 {
-    ZRange quote('\'', '\'');
-    ZRange backslash('\\', '\\');
-    ZRange t('t', 't');
-    ZRange n('n', 'n');
+    ZRange quote('\'', '\''+1);
+    ZRange backslash('\\', '\\'+1);
+    ZRange t('t', 't'+1);
+    ZRange n('n', 'n'+1);
     auto escape = concatenate(backslash, 
         alternate(
             quote, 
@@ -101,29 +101,29 @@ NExpr character()
                     t, 
                     n))));
     auto middle = alternate(
-        ZRange(32, 38),
+        ZRange(32, 38+1),
         alternate(
-            ZRange(40, 91),
+            ZRange(40, 91+1),
             alternate(
-                ZRange(93, 126),
+                ZRange(93, 126+1),
                 escape)));
     return concatenate(quote, concatenate(middle, quote));
 }
 
 NExpr string()
 {
-    ZRange quotes('"', '"');
-    ZRange backslash('\\', '\\');
+    ZRange quotes('"', '"'+1);
+    ZRange backslash('\\', '\\'+1);
     auto middle = closure(
         alternate(
-            ZRange(32, 33),
+            ZRange(32, 33+1),
             alternate(
-                ZRange(35, 91),
+                ZRange(35, 91+1),
                 alternate(
-                    ZRange(93, 126),
+                    ZRange(93, 126+1),
                     concatenate(
                         backslash,
-                        ZRange(32, 126))))));
+                        ZRange(32, 126+1))))));
     return concatenate(quotes, concatenate(middle, quotes));
 }
 
