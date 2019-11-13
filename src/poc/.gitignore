@@ -1,5 +1,3 @@
-zsymbols.test
-nexpr.test
-automaton.test
+*.test
 example_c
 example_cpp
