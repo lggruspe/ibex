@@ -39,8 +39,13 @@ void copy_transitions(NExpr& to, const NExpr& from, int offset)
     for (const auto& [q, dq]: from.states) {
         to.states[q+offset];
         for (const auto& [a, R]: dq) {
+            if (!a) {
+                for (const auto& r: R) {
+                    to.states[q+offset][eps].insert(r+offset);
+                }
+                continue;
+            }
             auto [lb, ub] = to.symbols.overlap_range(a);
-            assert(lb != ub);
             for (auto it = lb; it != ub; ++it) {
                 assert(*it);
                 for (const auto& r: R) {
