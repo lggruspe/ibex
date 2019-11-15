@@ -155,18 +155,14 @@ class DfaSymbols:
         """Check if self is on the left of other."""
         assert self.start <= self.end
         assert other.start <= other.end
-        return self.end < other.start
+        return self.end <= other.start
 
     def __gt__(self, other):
         """Check if self is on the right of other."""
-        assert self.start <= self.end
-        assert other.start <= other.end
-        return self.start > other.end
+        return other < self
 
     def __eq__(self, other):
         """Check if self and other overlap."""
-        assert self.start <= self.end
-        assert other.start <= other.end
         return not (self < other) and not (self > other)
 
 class Dfa:
@@ -176,9 +172,11 @@ class Dfa:
         self.start = 0
         self.accepts = set()
         self.transitions = {}
+        self.error = -1
 
     def __repr__(self):
         return f"<rnd.Dfa start={self.start!r}, accepts={self.accepts!r}, "\
+                f"error={self.error}, "\
                 f"transitions={self.transitions!r}>"
 
     def compute(self, inputs):
@@ -188,7 +186,7 @@ class Dfa:
         """
         state = self.start
         for a in inputs:
-            if state not in self.transitions:
+            if state not in self.transitions or state == self.error:
                 return False
             state = self.transitions[state].get(DfaSymbols(a), -1)
         return state in self.accepts
@@ -196,6 +194,7 @@ class Dfa:
 def _cdfa_to_pydfa(_dfa: internals.CDfa) -> Dfa:
     dfa = Dfa()
     dfa.transitions[dfa.start] = containers.Map()
+    dfa.error = _dfa.error
 
     for q in range(_dfa.order):
         state = _dfa.states[q]
