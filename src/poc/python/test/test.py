@@ -1,21 +1,30 @@
 import functools
+import os
+import sys
 import unittest
+import examples
+
+sys.path.append(os.path.abspath(os.path.pardir))
 from rnd import ExprSymbols, convert, Dfa, DfaSymbols
 from rnd.internals import crnd
-import examples
 
 TEST_DATA = {}
 
-def sym(a, b=None):
-    if b is None:
-        b = a
-    assert len(a) == 1 and len(b) == 1
-    a, b = ord(a), ord(b)
-    assert a <= b
+def sym(a=None, b=None):
+    if a is None:
+        return ExprSymbols()
+    return ExprSymbols(ord(a), None if b is None else ord(b))
+
+def closed_range(a, b=None):
+    a = ord(a)
+    if b:
+        b = ord(b)+1
+    else:
+        b = min(0xffffffff, a+1)
     return ExprSymbols(a, b)
 
 def optional(expr):
-    return expr.union(sym('\0'))
+    return expr.union(sym())
 
 def to_dfa(expr):
     """Converts expr to dfa and destroys expr."""
@@ -24,39 +33,39 @@ def to_dfa(expr):
     return dfa
 
 def empty_expr():
-    return sym('\0')
+    return sym()
 
 def identifier_expr():
-    letters = sym('_').union(sym('a', 'z')).union(sym('A', 'Z'))
-    return letters.concatenation(letters.union(sym('0', '9')).closure())
+    letters = closed_range('_').union(closed_range('a', 'z')).union(closed_range('A', 'Z'))
+    return letters.concatenation(letters.union(closed_range('0', '9')).closure())
 
 def integer_expr():
-    return sym('0').union(sym('1', '9').concatenation(sym('0', '9').closure()))
+    return closed_range('0').union(closed_range('1', '9').concatenation(closed_range('0', '9').closure()))
 
 def whitespace_expr():
-    return sym(' ').union(sym('\t')).union(sym('\n'))
+    return closed_range(' ').union(closed_range('\t')).union(closed_range('\n'))
 
 def number_expr():
-    digit = sym('0', '9')
-    decimal = sym('.').concatenation(digit).concatenation(digit.closure())
-    sign = optional(sym('-').union(sym('+')))
-    exponent = (sym('e').union(sym('E'))).concatenation(sign).concatenation(integer_expr())
+    digit = closed_range('0', '9')
+    decimal = closed_range('.').concatenation(digit).concatenation(digit.closure())
+    sign = optional(closed_range('-').union(closed_range('+')))
+    exponent = (closed_range('e').union(closed_range('E'))).concatenation(sign).concatenation(integer_expr())
     return integer_expr().concatenation(optional(decimal)).concatenation(optional(exponent))
 
 def string_expr():
     char = functools.reduce(lambda a, b: a.union(b),
             [ ExprSymbols(32, 33), ExprSymbols(35, 91), ExprSymbols(93, 126) ])
-    char = char.union(sym("\\").concatenation(ExprSymbols(32, 126)))
+    char = char.union(closed_range("\\").concatenation(ExprSymbols(32, 126)))
     string = char.closure()
-    return sym('"').concatenation(string).concatenation(sym('"'))
+    return closed_range('"').concatenation(string).concatenation(closed_range('"'))
 
 def character_expr():
-    escape = sym("\\").concatenation(functools.reduce(lambda a, b: a.union(b),
-        [sym("'"), sym("\\"), sym("t"), sym("n")]))
+    escape = closed_range("\\").concatenation(functools.reduce(lambda a, b: a.union(b),
+        [closed_range("'"), closed_range("\\"), closed_range("t"), closed_range("n")]))
     middle = functools.reduce(lambda a, b: a.union(b),
             [ ExprSymbols(32, 38), ExprSymbols(40, 91), ExprSymbols(93, 126),
                 escape ])
-    return sym("'").concatenation(middle).concatenation(sym("'"))
+    return closed_range("'").concatenation(middle).concatenation(closed_range("'"))
 
 EXPR_FN = {
     "empty": empty_expr,
