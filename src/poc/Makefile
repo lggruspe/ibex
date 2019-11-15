@@ -33,3 +33,13 @@ check:	all
 .PHONY:	clean
 clean:
 	-rm -rf $(TESTS) example_c example_cpp *.so *.a vgcore*
+
+.PHONY:	install
+install:	libfuture.so
+	cp rnd.h /usr/local/include
+	cp libfuture.so /usr/local/lib/librndpoc.so
+
+.PHONY:	uninstall
+uninstall:
+	rm /usr/local/include/rnd.h
+	rm /usr/local/lib/librndpoc.so
