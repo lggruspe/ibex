@@ -60,7 +60,7 @@ void rnd_dfa_destroy(struct rnd_dfa*);
 #ifdef __cplusplus
 extern "C" 
 #endif
-struct rnd_expr *rnd_symbol(int, int);
+struct rnd_expr *rnd_symbol(unsigned int, unsigned int);
 
 #ifdef __cplusplus
 extern "C" 
