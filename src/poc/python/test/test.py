@@ -82,7 +82,8 @@ def parametrize_expr_test(test_case, expr_type):
     for word, label in TEST_DATA[expr_type]:
         word = word.encode().decode()
         accepted = test_case.dfa.compute(map(ord, word))
-        test_case.assertFalse(accepted ^ label)
+        label = bool(label)
+        test_case.assertEqual(accepted, label)
 
 class RndConversionTest(unittest.TestCase):
     def setUp(self):
