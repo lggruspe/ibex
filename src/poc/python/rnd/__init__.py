@@ -20,9 +20,9 @@ class ExprSymbols:
     Needs to be destroyed after use, either directly or indirectly.
     """
 
-    def __init__(self, start: int = 0, end: int = None):
+    def __init__(self, start=0xffffffff, end=None):
         if end is None:
-            end = start
+            end = min(0xffffffff, start+1)
         if start > end:
             raise ValueError("start must be <= end")
         self.start = start
@@ -54,9 +54,11 @@ class ExprSymbols:
         self.cpointer = None
 
     def __repr__(self):
-        if self.start == self.end:
+        if self.start >= self.end:
+            return "nil"
+        elif self.start+1 == self.end:
             return str(self.start)
-        return f"[{self.start}, {self.end}]"
+        return f"[{self.start}, {self.end})"
 
 def _get_expr_pointer(expr):
     return None if not expr else expr.cpointer
@@ -100,7 +102,6 @@ class Expr:
 
         Does not need to be called if invoked from another Expr.
         """
-
         if self.cpointer:
             crnd.rnd_expr_free(self.cpointer)
         self.cpointer = None
@@ -135,18 +136,20 @@ def closure(expr: Expr or ExprSymbols) -> Expr:
 class DfaSymbols:
     """Similar to CRange, but with built in comparator."""
 
-    def __init__(self, start: int = 0, end: int = None):
+    def __init__(self, start=0xffffffff, end=None):
         if end is None:
-            end = start
+            end = min(0xffffffff, start+1)
         if start > end:
             raise ValueError("start must be <= end")
         self.start = start
         self.end = end
 
     def __repr__(self):
-        if self.start == self.end:
+        if self.start >= self.end:
+            return "nil"
+        elif self.start+1 == self.end:
             return str(self.start)
-        return f"[{self.start}, {self.end}]"
+        return f"[{self.start}, {self.end})"
 
     def __lt__(self, other):
         """Check if self is on the left of other."""

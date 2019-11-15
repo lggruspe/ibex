@@ -8,8 +8,8 @@ class CRange(ctypes.Structure):
     """Wrapper for struct rnd_range."""
 
     _fields_ = [
-        ("start", ctypes.c_uint),
-        ("end", ctypes.c_uint)
+        ("start", ctypes.c_uint32),
+        ("end", ctypes.c_uint32)
     ]
 
 class CExpr(ctypes.Structure):
@@ -54,7 +54,7 @@ crnd.rnd_convert.restype = CDfa
 crnd.rnd_dfa_destroy.argtypes = [ctypes.POINTER(CDfa)]
 crnd.rnd_dfa_destroy.restype = None
 
-crnd.rnd_symbol.argtypes = [ctypes.c_uint, ctypes.c_uint]
+crnd.rnd_symbol.argtypes = [ctypes.c_uint32, ctypes.c_uint32]
 crnd.rnd_symbol.restype = ctypes.POINTER(CExpr)
 
 crnd.rnd_union.argtypes = [ctypes.POINTER(CExpr), ctypes.POINTER(CExpr)]
