@@ -2,14 +2,14 @@
 
 import ctypes
 
-crnd = ctypes.CDLL("libcrnd.so.0.0.0")
+crnd = ctypes.CDLL("librndpoc.so")
 
 class CRange(ctypes.Structure):
     """Wrapper for struct rnd_range."""
 
     _fields_ = [
-        ("start", ctypes.c_int),
-        ("end", ctypes.c_int)
+        ("start", ctypes.c_uint),
+        ("end", ctypes.c_uint)
     ]
 
 class CExpr(ctypes.Structure):
@@ -45,7 +45,7 @@ class CDfa(ctypes.Structure):
     _fields_ = [
         ("order", ctypes.c_int),
         ("states", ctypes.POINTER(CState)),
-        ("error", ctypes.c_char_p)
+        ("error", ctypes.c_int)
     ]
 
 crnd.rnd_convert.argtypes = [ctypes.POINTER(CExpr)]
@@ -54,7 +54,7 @@ crnd.rnd_convert.restype = CDfa
 crnd.rnd_dfa_destroy.argtypes = [ctypes.POINTER(CDfa)]
 crnd.rnd_dfa_destroy.restype = None
 
-crnd.rnd_symbol.argtypes = [ctypes.c_int, ctypes.c_int]
+crnd.rnd_symbol.argtypes = [ctypes.c_uint, ctypes.c_uint]
 crnd.rnd_symbol.restype = ctypes.POINTER(CExpr)
 
 crnd.rnd_union.argtypes = [ctypes.POINTER(CExpr), ctypes.POINTER(CExpr)]
