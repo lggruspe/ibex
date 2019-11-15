@@ -54,8 +54,8 @@ def number_expr():
 
 def string_expr():
     char = functools.reduce(lambda a, b: a.union(b),
-            [ ExprSymbols(32, 33), ExprSymbols(35, 91), ExprSymbols(93, 126) ])
-    char = char.union(closed_range("\\").concatenation(ExprSymbols(32, 126)))
+            [ ExprSymbols(32, 33+1), ExprSymbols(35, 91+1), ExprSymbols(93, 126+1) ])
+    char = char.union(closed_range("\\").concatenation(ExprSymbols(32, 126+1)))
     string = char.closure()
     return closed_range('"').concatenation(string).concatenation(closed_range('"'))
 
@@ -63,7 +63,7 @@ def character_expr():
     escape = closed_range("\\").concatenation(functools.reduce(lambda a, b: a.union(b),
         [closed_range("'"), closed_range("\\"), closed_range("t"), closed_range("n")]))
     middle = functools.reduce(lambda a, b: a.union(b),
-            [ ExprSymbols(32, 38), ExprSymbols(40, 91), ExprSymbols(93, 126),
+            [ ExprSymbols(32, 38+1), ExprSymbols(40, 91+1), ExprSymbols(93, 126+1),
                 escape ])
     return closed_range("'").concatenation(middle).concatenation(closed_range("'"))
 
