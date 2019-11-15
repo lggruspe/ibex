@@ -82,8 +82,8 @@ rnd_expr* rnd_expr_new(
     rnd_type type,
     rnd_expr* left = nullptr,
     rnd_expr* right = nullptr,
-    unsigned int start = 0,
-    unsigned int end = 0)
+    uint32_t start = 0,
+    uint32_t end = 0)
 {
     rnd_expr* expr = new rnd_expr;
     ++expr_counter;
@@ -95,7 +95,7 @@ rnd_expr* rnd_expr_new(
     return expr;
 }
 
-rnd_expr* rnd_symbol(unsigned int start, unsigned int end)
+rnd_expr* rnd_symbol(uint32_t start, uint32_t end)
 {
     return rnd_expr_new(RND_SYMBOL, nullptr, nullptr, start, end); 
 }

@@ -1,19 +1,20 @@
 #pragma once
 #include <cassert>
+#include <cstdint>
 #include <iterator>
 #include <limits>
 #include <set>
 #include <tuple>
 
 struct ZRange {
-    unsigned int start, end;
+    uint32_t start, end;
 
-    ZRange(unsigned int start, unsigned int end) : start(start), end(end) {}
+    ZRange(uint32_t start, uint32_t end) : start(start), end(end) {}
 
     ZRange()
         : ZRange(
-            std::numeric_limits<unsigned int>::max(),
-            std::numeric_limits<unsigned int>::max())
+            std::numeric_limits<uint32_t>::max(),
+            std::numeric_limits<uint32_t>::max())
     {}
 
     explicit operator bool() const
@@ -33,7 +34,7 @@ struct ZRange {
 };
 
 struct ZPartition {
-    std::set<unsigned int> points;
+    std::set<uint32_t> points;
 
     ZPartition() : points({0}) {}
 
@@ -41,7 +42,7 @@ struct ZPartition {
     {
         if (ran) {
             points.insert(ran.start);
-            if (ran.end < std::numeric_limits<unsigned int>::max()) {
+            if (ran.end < std::numeric_limits<uint32_t>::max()) {
                 points.insert(ran.end);
             }
         }
@@ -55,14 +56,14 @@ struct ZPartition {
     }
 
     class Iterator {
-        std::set<unsigned int>::const_iterator it;
-        std::set<unsigned int>::const_iterator jt;
-        std::set<unsigned int>::const_iterator end;
+        std::set<uint32_t>::const_iterator it;
+        std::set<uint32_t>::const_iterator jt;
+        std::set<uint32_t>::const_iterator end;
 
     public:
         Iterator(
-            const std::set<unsigned int>& points,
-            std::set<unsigned int>::const_iterator it)
+            const std::set<uint32_t>& points,
+            std::set<uint32_t>::const_iterator it)
             : it(it)
             , jt(it == points.end() ? it : std::next(it))
             , end(points.end())
@@ -80,8 +81,8 @@ struct ZPartition {
 
         ZRange operator*() const
         {
-            unsigned int a = std::numeric_limits<unsigned int>::max();
-            unsigned int b = a;
+            uint32_t a = std::numeric_limits<uint32_t>::max();
+            uint32_t b = a;
             if (it != end) {
                 a = *it;
                 assert(std::next(it) == jt);

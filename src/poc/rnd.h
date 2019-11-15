@@ -1,14 +1,16 @@
 #pragma once
 #ifdef __cplusplus
 #include <cstddef>
+#include <cstdint>
 #else
 #include <stdbool.h>
 #include <stddef.h>
+#include <stdint.h>
 #endif
 
 struct rnd_range {
-    unsigned int start;
-    unsigned int end;
+    uint32_t start;
+    uint32_t end;
 };
 
 enum rnd_type { 
@@ -60,7 +62,7 @@ void rnd_dfa_destroy(struct rnd_dfa*);
 #ifdef __cplusplus
 extern "C" 
 #endif
-struct rnd_expr *rnd_symbol(unsigned int, unsigned int);
+struct rnd_expr *rnd_symbol(uint32_t, uint32_t);
 
 #ifdef __cplusplus
 extern "C" 
