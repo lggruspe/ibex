@@ -15,7 +15,7 @@ std::string single(std::istream& in=std::cin)
     std::string lexeme;
     for (int c = in.get(); c != EOF; c = in.get()) {
         lexeme += (char)c;
-        if (!scanner.next(c)) {
+        if (!scanner.next(c) || c == '\n') {
             for (auto it = lexeme.rbegin(); it != lexeme.rend(); ++it) {
                 in.putback((int)(*it));
             }
@@ -43,7 +43,7 @@ std::pair<Token, std::string> longest(std::istream& in=std::cin)
         std::string lexeme;
         for (int c = in.get(); c != EOF; c = in.get()) {
             lexeme += (char)c;
-            if (!scanner_ptr->next(c)) {
+            if (!scanner_ptr->next(c) || c == '\n') {
                 for (auto it = lexeme.rbegin(); it != lexeme.rend(); ++it) {
                     in.putback((int)(*it));
                 }

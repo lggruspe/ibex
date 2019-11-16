@@ -71,6 +71,7 @@ class MatchTest(unittest.TestCase):
             f"character {character}\n",
             f"whitespace \n\n",
             f"string {string}\n",
+            f"whitespace \n\n",
         ])
         actual = run_tokenizer(f"{identifier} {number}\t{character}\n{string}")
         self.assertEqual(actual, expected)
