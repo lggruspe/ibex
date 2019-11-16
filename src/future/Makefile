@@ -25,3 +25,15 @@ example_c:	example.c libfuture.so libfuture.a
 .PHONY:	clean
 clean:
 	-rm -rf $(targets) vgcore* example_c *.pdf *.so *.a
+
+.PHONY:	install
+install:	libfuture.so
+	cp rnd.h /usr/local/include
+	cp libfuture.so /usr/local/lib/libcrnd.so
+	cp libfuture.so /usr/local/lib/libcrnd.so.0.0.0
+
+.PHONY:	uninstall
+uninstall:
+	rm /usr/local/include/rnd.h
+	rm /usr/local/lib/libcrnd.so
+	rm /usr/local/lib/libcrnd.so.0.0.0
