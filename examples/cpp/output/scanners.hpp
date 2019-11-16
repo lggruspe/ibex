@@ -157,24 +157,12 @@ struct IdentifierScanner: public Scanner {
     {
         switch (state()) {
         case 0:
-            if (48 <= c && c <= 57)
-                return change_state(2);
             if (65 <= c && c <= 90)
                 return change_state(1, true);
             if (c == 95)
                 return change_state(1, true);
             if (97 <= c && c <= 122)
                 return change_state(1, true);
-            return change_state(-1);
-        case 2:
-            if (48 <= c && c <= 57)
-                return change_state(2);
-            if (65 <= c && c <= 90)
-                return change_state(2);
-            if (c == 95)
-                return change_state(2);
-            if (97 <= c && c <= 122)
-                return change_state(2);
             return change_state(-1);
         case 1:
             if (48 <= c && c <= 57)
@@ -206,20 +194,6 @@ struct WhitespaceScanner: public Scanner {
                 return change_state(1, true);
             return change_state(-1);
         case 1:
-            if (c == 9)
-                return change_state(2);
-            if (c == 10)
-                return change_state(2);
-            if (c == 32)
-                return change_state(2);
-            return change_state(-1);
-        case 2:
-            if (c == 9)
-                return change_state(2);
-            if (c == 10)
-                return change_state(2);
-            if (c == 32)
-                return change_state(2);
             return change_state(-1);
         default:
             return change_state(-1);
@@ -233,164 +207,70 @@ struct NumberScanner: public Scanner {
     {
         switch (state()) {
         case 0:
-            if (c == 43)
-                return change_state(3);
-            if (c == 45)
-                return change_state(3);
-            if (c == 46)
-                return change_state(3);
             if (c == 48)
-                return change_state(2, true);
+                return change_state(5, true);
             if (49 <= c && c <= 57)
-                return change_state(4, true);
-            if (c == 69)
-                return change_state(3);
-            if (c == 101)
-                return change_state(3);
+                return change_state(1, true);
             return change_state(-1);
-        case 3:
-            if (c == 43)
-                return change_state(3);
-            if (c == 45)
-                return change_state(3);
+        case 5:
             if (c == 46)
-                return change_state(3);
-            if (c == 48)
-                return change_state(3);
-            if (49 <= c && c <= 57)
-                return change_state(3);
+                return change_state(7);
             if (c == 69)
-                return change_state(3);
+                return change_state(2);
             if (c == 101)
-                return change_state(3);
+                return change_state(2);
+            return change_state(-1);
+        case 1:
+            if (c == 46)
+                return change_state(7);
+            if (c == 48)
+                return change_state(1, true);
+            if (49 <= c && c <= 57)
+                return change_state(1, true);
+            if (c == 69)
+                return change_state(2);
+            if (c == 101)
+                return change_state(2);
+            return change_state(-1);
+        case 7:
+            if (c == 48)
+                return change_state(3, true);
+            if (49 <= c && c <= 57)
+                return change_state(3, true);
             return change_state(-1);
         case 2:
             if (c == 43)
-                return change_state(3);
+                return change_state(4);
             if (c == 45)
-                return change_state(3);
-            if (c == 46)
-                return change_state(1);
+                return change_state(4);
             if (c == 48)
-                return change_state(3);
+                return change_state(6, true);
             if (49 <= c && c <= 57)
-                return change_state(3);
-            if (c == 69)
-                return change_state(7);
-            if (c == 101)
-                return change_state(7);
+                return change_state(8, true);
             return change_state(-1);
         case 4:
-            if (c == 43)
-                return change_state(3);
-            if (c == 45)
-                return change_state(3);
-            if (c == 46)
-                return change_state(1);
-            if (c == 48)
-                return change_state(4, true);
-            if (49 <= c && c <= 57)
-                return change_state(4, true);
-            if (c == 69)
-                return change_state(7);
-            if (c == 101)
-                return change_state(7);
-            return change_state(-1);
-        case 1:
-            if (c == 43)
-                return change_state(3);
-            if (c == 45)
-                return change_state(3);
-            if (c == 46)
-                return change_state(3);
-            if (c == 48)
-                return change_state(9, true);
-            if (49 <= c && c <= 57)
-                return change_state(9, true);
-            if (c == 69)
-                return change_state(3);
-            if (c == 101)
-                return change_state(3);
-            return change_state(-1);
-        case 9:
-            if (c == 43)
-                return change_state(3);
-            if (c == 45)
-                return change_state(3);
-            if (c == 46)
-                return change_state(3);
-            if (c == 48)
-                return change_state(9, true);
-            if (49 <= c && c <= 57)
-                return change_state(9, true);
-            if (c == 69)
-                return change_state(7);
-            if (c == 101)
-                return change_state(7);
-            return change_state(-1);
-        case 7:
-            if (c == 43)
-                return change_state(8);
-            if (c == 45)
-                return change_state(8);
-            if (c == 46)
-                return change_state(3);
             if (c == 48)
                 return change_state(6, true);
             if (49 <= c && c <= 57)
-                return change_state(5, true);
-            if (c == 69)
-                return change_state(3);
-            if (c == 101)
-                return change_state(3);
-            return change_state(-1);
-        case 5:
-            if (c == 43)
-                return change_state(3);
-            if (c == 45)
-                return change_state(3);
-            if (c == 46)
-                return change_state(3);
-            if (c == 48)
-                return change_state(5, true);
-            if (49 <= c && c <= 57)
-                return change_state(5, true);
-            if (c == 69)
-                return change_state(3);
-            if (c == 101)
-                return change_state(3);
+                return change_state(8, true);
             return change_state(-1);
         case 6:
-            if (c == 43)
-                return change_state(3);
-            if (c == 45)
-                return change_state(3);
-            if (c == 46)
-                return change_state(3);
-            if (c == 48)
-                return change_state(3);
-            if (49 <= c && c <= 57)
-                return change_state(3);
-            if (c == 69)
-                return change_state(3);
-            if (c == 101)
-                return change_state(3);
             return change_state(-1);
         case 8:
-            if (c == 43)
-                return change_state(3);
-            if (c == 45)
-                return change_state(3);
-            if (c == 46)
-                return change_state(3);
             if (c == 48)
-                return change_state(6, true);
+                return change_state(8, true);
             if (49 <= c && c <= 57)
-                return change_state(5, true);
+                return change_state(8, true);
+            return change_state(-1);
+        case 3:
+            if (c == 48)
+                return change_state(3, true);
+            if (49 <= c && c <= 57)
+                return change_state(3, true);
             if (c == 69)
-                return change_state(3);
+                return change_state(2);
             if (c == 101)
-                return change_state(3);
+                return change_state(2);
             return change_state(-1);
         default:
             return change_state(-1);
@@ -404,124 +284,32 @@ struct CharacterScanner: public Scanner {
     {
         switch (state()) {
         case 0:
-            if (32 <= c && c <= 38)
-                return change_state(5);
             if (c == 39)
                 return change_state(2);
-            if (40 <= c && c <= 91)
-                return change_state(5);
-            if (c == 92)
-                return change_state(5);
-            if (93 <= c && c <= 109)
-                return change_state(5);
-            if (c == 110)
-                return change_state(5);
-            if (111 <= c && c <= 115)
-                return change_state(5);
-            if (c == 116)
-                return change_state(5);
-            if (117 <= c && c <= 126)
-                return change_state(5);
-            return change_state(-1);
-        case 5:
-            if (32 <= c && c <= 38)
-                return change_state(5);
-            if (c == 39)
-                return change_state(5);
-            if (40 <= c && c <= 91)
-                return change_state(5);
-            if (c == 92)
-                return change_state(5);
-            if (93 <= c && c <= 109)
-                return change_state(5);
-            if (c == 110)
-                return change_state(5);
-            if (111 <= c && c <= 115)
-                return change_state(5);
-            if (c == 116)
-                return change_state(5);
-            if (117 <= c && c <= 126)
-                return change_state(5);
             return change_state(-1);
         case 2:
             if (32 <= c && c <= 38)
-                return change_state(1);
-            if (c == 39)
-                return change_state(5);
-            if (40 <= c && c <= 91)
-                return change_state(1);
-            if (c == 92)
                 return change_state(3);
-            if (93 <= c && c <= 109)
-                return change_state(1);
-            if (c == 110)
-                return change_state(1);
-            if (111 <= c && c <= 115)
-                return change_state(1);
-            if (c == 116)
-                return change_state(1);
-            if (117 <= c && c <= 126)
-                return change_state(1);
+            if (40 <= c && c <= 91)
+                return change_state(3);
+            if (c == 92)
+                return change_state(4);
+            if (93 <= c && c <= 126)
+                return change_state(3);
             return change_state(-1);
         case 1:
-            if (32 <= c && c <= 38)
-                return change_state(5);
-            if (c == 39)
-                return change_state(4, true);
-            if (40 <= c && c <= 91)
-                return change_state(5);
-            if (c == 92)
-                return change_state(5);
-            if (93 <= c && c <= 109)
-                return change_state(5);
-            if (c == 110)
-                return change_state(5);
-            if (111 <= c && c <= 115)
-                return change_state(5);
-            if (c == 116)
-                return change_state(5);
-            if (117 <= c && c <= 126)
-                return change_state(5);
-            return change_state(-1);
-        case 4:
-            if (32 <= c && c <= 38)
-                return change_state(5);
-            if (c == 39)
-                return change_state(5);
-            if (40 <= c && c <= 91)
-                return change_state(5);
-            if (c == 92)
-                return change_state(5);
-            if (93 <= c && c <= 109)
-                return change_state(5);
-            if (c == 110)
-                return change_state(5);
-            if (111 <= c && c <= 115)
-                return change_state(5);
-            if (c == 116)
-                return change_state(5);
-            if (117 <= c && c <= 126)
-                return change_state(5);
             return change_state(-1);
         case 3:
-            if (32 <= c && c <= 38)
-                return change_state(5);
             if (c == 39)
-                return change_state(1);
-            if (40 <= c && c <= 91)
-                return change_state(5);
+                return change_state(1, true);
+            return change_state(-1);
+        case 4:
+            if (c == 39)
+                return change_state(3);
             if (c == 92)
-                return change_state(1);
-            if (93 <= c && c <= 109)
-                return change_state(5);
-            if (c == 110)
-                return change_state(1);
-            if (111 <= c && c <= 115)
-                return change_state(5);
-            if (c == 116)
-                return change_state(1);
-            if (117 <= c && c <= 126)
-                return change_state(5);
+                return change_state(3);
+            if (93 <= c && c <= 126)
+                return change_state(3);
             return change_state(-1);
         default:
             return change_state(-1);
@@ -535,64 +323,34 @@ struct StringScanner: public Scanner {
     {
         switch (state()) {
         case 0:
-            if (32 <= c && c <= 33)
-                return change_state(4);
             if (c == 34)
-                return change_state(1);
-            if (35 <= c && c <= 91)
-                return change_state(4);
-            if (c == 92)
-                return change_state(4);
-            if (93 <= c && c <= 126)
-                return change_state(4);
-            return change_state(-1);
-        case 4:
-            if (32 <= c && c <= 33)
-                return change_state(4);
-            if (c == 34)
-                return change_state(4);
-            if (35 <= c && c <= 91)
-                return change_state(4);
-            if (c == 92)
-                return change_state(4);
-            if (93 <= c && c <= 126)
-                return change_state(4);
-            return change_state(-1);
-        case 1:
-            if (32 <= c && c <= 33)
-                return change_state(1);
-            if (c == 34)
-                return change_state(3, true);
-            if (35 <= c && c <= 91)
-                return change_state(1);
-            if (c == 92)
                 return change_state(2);
-            if (93 <= c && c <= 126)
-                return change_state(1);
-            return change_state(-1);
-        case 3:
-            if (32 <= c && c <= 33)
-                return change_state(4);
-            if (c == 34)
-                return change_state(4);
-            if (35 <= c && c <= 91)
-                return change_state(4);
-            if (c == 92)
-                return change_state(4);
-            if (93 <= c && c <= 126)
-                return change_state(4);
             return change_state(-1);
         case 2:
             if (32 <= c && c <= 33)
-                return change_state(1);
+                return change_state(2);
             if (c == 34)
-                return change_state(1);
+                return change_state(1, true);
             if (35 <= c && c <= 91)
-                return change_state(1);
+                return change_state(2);
             if (c == 92)
-                return change_state(1);
+                return change_state(3);
             if (93 <= c && c <= 126)
-                return change_state(1);
+                return change_state(2);
+            return change_state(-1);
+        case 1:
+            return change_state(-1);
+        case 3:
+            if (32 <= c && c <= 33)
+                return change_state(2);
+            if (c == 34)
+                return change_state(2);
+            if (35 <= c && c <= 91)
+                return change_state(2);
+            if (c == 92)
+                return change_state(2);
+            if (93 <= c && c <= 126)
+                return change_state(2);
             return change_state(-1);
         default:
             return change_state(-1);
@@ -610,12 +368,6 @@ struct DotScanner: public Scanner {
                 return change_state(1, true);
             return change_state(-1);
         case 1:
-            if (c == 46)
-                return change_state(2);
-            return change_state(-1);
-        case 2:
-            if (c == 46)
-                return change_state(2);
             return change_state(-1);
         default:
             return change_state(-1);
@@ -633,12 +385,6 @@ struct LparenScanner: public Scanner {
                 return change_state(1, true);
             return change_state(-1);
         case 1:
-            if (c == 40)
-                return change_state(2);
-            return change_state(-1);
-        case 2:
-            if (c == 40)
-                return change_state(2);
             return change_state(-1);
         default:
             return change_state(-1);
@@ -656,12 +402,6 @@ struct RparenScanner: public Scanner {
                 return change_state(1, true);
             return change_state(-1);
         case 1:
-            if (c == 41)
-                return change_state(2);
-            return change_state(-1);
-        case 2:
-            if (c == 41)
-                return change_state(2);
             return change_state(-1);
         default:
             return change_state(-1);
@@ -679,12 +419,6 @@ struct CommaScanner: public Scanner {
                 return change_state(1, true);
             return change_state(-1);
         case 1:
-            if (c == 44)
-                return change_state(2);
-            return change_state(-1);
-        case 2:
-            if (c == 44)
-                return change_state(2);
             return change_state(-1);
         default:
             return change_state(-1);
@@ -702,12 +436,6 @@ struct StarScanner: public Scanner {
                 return change_state(1, true);
             return change_state(-1);
         case 1:
-            if (c == 42)
-                return change_state(2);
-            return change_state(-1);
-        case 2:
-            if (c == 42)
-                return change_state(2);
             return change_state(-1);
         default:
             return change_state(-1);
@@ -725,12 +453,6 @@ struct EqualScanner: public Scanner {
                 return change_state(1, true);
             return change_state(-1);
         case 1:
-            if (c == 61)
-                return change_state(2);
-            return change_state(-1);
-        case 2:
-            if (c == 61)
-                return change_state(2);
             return change_state(-1);
         default:
             return change_state(-1);
@@ -748,12 +470,6 @@ struct LbraceScanner: public Scanner {
                 return change_state(1, true);
             return change_state(-1);
         case 1:
-            if (c == 123)
-                return change_state(2);
-            return change_state(-1);
-        case 2:
-            if (c == 123)
-                return change_state(2);
             return change_state(-1);
         default:
             return change_state(-1);
@@ -771,12 +487,6 @@ struct RbraceScanner: public Scanner {
                 return change_state(1, true);
             return change_state(-1);
         case 1:
-            if (c == 125)
-                return change_state(2);
-            return change_state(-1);
-        case 2:
-            if (c == 125)
-                return change_state(2);
             return change_state(-1);
         default:
             return change_state(-1);
@@ -794,12 +504,6 @@ struct ColonScanner: public Scanner {
                 return change_state(1, true);
             return change_state(-1);
         case 1:
-            if (c == 58)
-                return change_state(2);
-            return change_state(-1);
-        case 2:
-            if (c == 58)
-                return change_state(2);
             return change_state(-1);
         default:
             return change_state(-1);
@@ -817,12 +521,6 @@ struct LbracketScanner: public Scanner {
                 return change_state(1, true);
             return change_state(-1);
         case 1:
-            if (c == 91)
-                return change_state(2);
-            return change_state(-1);
-        case 2:
-            if (c == 91)
-                return change_state(2);
             return change_state(-1);
         default:
             return change_state(-1);
@@ -840,12 +538,6 @@ struct RbracketScanner: public Scanner {
                 return change_state(1, true);
             return change_state(-1);
         case 1:
-            if (c == 93)
-                return change_state(2);
-            return change_state(-1);
-        case 2:
-            if (c == 93)
-                return change_state(2);
             return change_state(-1);
         default:
             return change_state(-1);
@@ -863,12 +555,6 @@ struct PlusScanner: public Scanner {
                 return change_state(1, true);
             return change_state(-1);
         case 1:
-            if (c == 43)
-                return change_state(2);
-            return change_state(-1);
-        case 2:
-            if (c == 43)
-                return change_state(2);
             return change_state(-1);
         default:
             return change_state(-1);
@@ -886,12 +572,6 @@ struct MinusScanner: public Scanner {
                 return change_state(1, true);
             return change_state(-1);
         case 1:
-            if (c == 45)
-                return change_state(2);
-            return change_state(-1);
-        case 2:
-            if (c == 45)
-                return change_state(2);
             return change_state(-1);
         default:
             return change_state(-1);
@@ -909,12 +589,6 @@ struct SlashScanner: public Scanner {
                 return change_state(1, true);
             return change_state(-1);
         case 1:
-            if (c == 47)
-                return change_state(2);
-            return change_state(-1);
-        case 2:
-            if (c == 47)
-                return change_state(2);
             return change_state(-1);
         default:
             return change_state(-1);
@@ -932,12 +606,6 @@ struct LessthanScanner: public Scanner {
                 return change_state(1, true);
             return change_state(-1);
         case 1:
-            if (c == 60)
-                return change_state(2);
-            return change_state(-1);
-        case 2:
-            if (c == 60)
-                return change_state(2);
             return change_state(-1);
         default:
             return change_state(-1);
@@ -955,12 +623,6 @@ struct GreaterthanScanner: public Scanner {
                 return change_state(1, true);
             return change_state(-1);
         case 1:
-            if (c == 62)
-                return change_state(2);
-            return change_state(-1);
-        case 2:
-            if (c == 62)
-                return change_state(2);
             return change_state(-1);
         default:
             return change_state(-1);

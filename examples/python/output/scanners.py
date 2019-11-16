@@ -46,25 +46,12 @@ class IdentifierScanner(Scanner):
         self.token = "identifier"
 
     def s0(self, char):
-        if 48 <= char <= 57:
-            return self.change_state(2)
         if 65 <= char <= 90:
             return self.change_state(1, checkpoint=True)
         if char == 95:
             return self.change_state(1, checkpoint=True)
         if 97 <= char <= 122:
             return self.change_state(1, checkpoint=True)
-        return self.change_state(-1)
-
-    def s2(self, char):
-        if 48 <= char <= 57:
-            return self.change_state(2)
-        if 65 <= char <= 90:
-            return self.change_state(2)
-        if char == 95:
-            return self.change_state(2)
-        if 97 <= char <= 122:
-            return self.change_state(2)
         return self.change_state(-1)
 
     def s1(self, char):
@@ -93,21 +80,6 @@ class WhitespaceScanner(Scanner):
         return self.change_state(-1)
 
     def s1(self, char):
-        if char == 9:
-            return self.change_state(2)
-        if char == 10:
-            return self.change_state(2)
-        if char == 32:
-            return self.change_state(2)
-        return self.change_state(-1)
-
-    def s2(self, char):
-        if char == 9:
-            return self.change_state(2)
-        if char == 10:
-            return self.change_state(2)
-        if char == 32:
-            return self.change_state(2)
         return self.change_state(-1)
 
 class NumberScanner(Scanner):
@@ -116,173 +88,78 @@ class NumberScanner(Scanner):
         self.token = "number"
 
     def s0(self, char):
-        if char == 43:
-            return self.change_state(3)
-        if char == 45:
-            return self.change_state(3)
-        if char == 46:
-            return self.change_state(3)
         if char == 48:
-            return self.change_state(2, checkpoint=True)
+            return self.change_state(5, checkpoint=True)
         if 49 <= char <= 57:
-            return self.change_state(4, checkpoint=True)
-        if char == 69:
-            return self.change_state(3)
-        if char == 101:
-            return self.change_state(3)
+            return self.change_state(1, checkpoint=True)
         return self.change_state(-1)
 
-    def s3(self, char):
-        if char == 43:
-            return self.change_state(3)
-        if char == 45:
-            return self.change_state(3)
+    def s5(self, char):
         if char == 46:
-            return self.change_state(3)
-        if char == 48:
-            return self.change_state(3)
-        if 49 <= char <= 57:
-            return self.change_state(3)
+            return self.change_state(7)
         if char == 69:
-            return self.change_state(3)
+            return self.change_state(2)
         if char == 101:
-            return self.change_state(3)
+            return self.change_state(2)
+        return self.change_state(-1)
+
+    def s1(self, char):
+        if char == 46:
+            return self.change_state(7)
+        if char == 48:
+            return self.change_state(1, checkpoint=True)
+        if 49 <= char <= 57:
+            return self.change_state(1, checkpoint=True)
+        if char == 69:
+            return self.change_state(2)
+        if char == 101:
+            return self.change_state(2)
+        return self.change_state(-1)
+
+    def s7(self, char):
+        if char == 48:
+            return self.change_state(3, checkpoint=True)
+        if 49 <= char <= 57:
+            return self.change_state(3, checkpoint=True)
         return self.change_state(-1)
 
     def s2(self, char):
         if char == 43:
-            return self.change_state(3)
+            return self.change_state(4)
         if char == 45:
-            return self.change_state(3)
-        if char == 46:
-            return self.change_state(1)
+            return self.change_state(4)
         if char == 48:
-            return self.change_state(3)
+            return self.change_state(6, checkpoint=True)
         if 49 <= char <= 57:
-            return self.change_state(3)
-        if char == 69:
-            return self.change_state(7)
-        if char == 101:
-            return self.change_state(7)
+            return self.change_state(8, checkpoint=True)
         return self.change_state(-1)
 
     def s4(self, char):
-        if char == 43:
-            return self.change_state(3)
-        if char == 45:
-            return self.change_state(3)
-        if char == 46:
-            return self.change_state(1)
-        if char == 48:
-            return self.change_state(4, checkpoint=True)
-        if 49 <= char <= 57:
-            return self.change_state(4, checkpoint=True)
-        if char == 69:
-            return self.change_state(7)
-        if char == 101:
-            return self.change_state(7)
-        return self.change_state(-1)
-
-    def s1(self, char):
-        if char == 43:
-            return self.change_state(3)
-        if char == 45:
-            return self.change_state(3)
-        if char == 46:
-            return self.change_state(3)
-        if char == 48:
-            return self.change_state(9, checkpoint=True)
-        if 49 <= char <= 57:
-            return self.change_state(9, checkpoint=True)
-        if char == 69:
-            return self.change_state(3)
-        if char == 101:
-            return self.change_state(3)
-        return self.change_state(-1)
-
-    def s9(self, char):
-        if char == 43:
-            return self.change_state(3)
-        if char == 45:
-            return self.change_state(3)
-        if char == 46:
-            return self.change_state(3)
-        if char == 48:
-            return self.change_state(9, checkpoint=True)
-        if 49 <= char <= 57:
-            return self.change_state(9, checkpoint=True)
-        if char == 69:
-            return self.change_state(7)
-        if char == 101:
-            return self.change_state(7)
-        return self.change_state(-1)
-
-    def s7(self, char):
-        if char == 43:
-            return self.change_state(8)
-        if char == 45:
-            return self.change_state(8)
-        if char == 46:
-            return self.change_state(3)
         if char == 48:
             return self.change_state(6, checkpoint=True)
         if 49 <= char <= 57:
-            return self.change_state(5, checkpoint=True)
-        if char == 69:
-            return self.change_state(3)
-        if char == 101:
-            return self.change_state(3)
-        return self.change_state(-1)
-
-    def s5(self, char):
-        if char == 43:
-            return self.change_state(3)
-        if char == 45:
-            return self.change_state(3)
-        if char == 46:
-            return self.change_state(3)
-        if char == 48:
-            return self.change_state(5, checkpoint=True)
-        if 49 <= char <= 57:
-            return self.change_state(5, checkpoint=True)
-        if char == 69:
-            return self.change_state(3)
-        if char == 101:
-            return self.change_state(3)
+            return self.change_state(8, checkpoint=True)
         return self.change_state(-1)
 
     def s6(self, char):
-        if char == 43:
-            return self.change_state(3)
-        if char == 45:
-            return self.change_state(3)
-        if char == 46:
-            return self.change_state(3)
-        if char == 48:
-            return self.change_state(3)
-        if 49 <= char <= 57:
-            return self.change_state(3)
-        if char == 69:
-            return self.change_state(3)
-        if char == 101:
-            return self.change_state(3)
         return self.change_state(-1)
 
     def s8(self, char):
-        if char == 43:
-            return self.change_state(3)
-        if char == 45:
-            return self.change_state(3)
-        if char == 46:
-            return self.change_state(3)
         if char == 48:
-            return self.change_state(6, checkpoint=True)
+            return self.change_state(8, checkpoint=True)
         if 49 <= char <= 57:
-            return self.change_state(5, checkpoint=True)
+            return self.change_state(8, checkpoint=True)
+        return self.change_state(-1)
+
+    def s3(self, char):
+        if char == 48:
+            return self.change_state(3, checkpoint=True)
+        if 49 <= char <= 57:
+            return self.change_state(3, checkpoint=True)
         if char == 69:
-            return self.change_state(3)
+            return self.change_state(2)
         if char == 101:
-            return self.change_state(3)
+            return self.change_state(2)
         return self.change_state(-1)
 
 class CharacterScanner(Scanner):
@@ -291,129 +168,36 @@ class CharacterScanner(Scanner):
         self.token = "character"
 
     def s0(self, char):
-        if 32 <= char <= 38:
-            return self.change_state(5)
         if char == 39:
             return self.change_state(2)
-        if 40 <= char <= 91:
-            return self.change_state(5)
-        if char == 92:
-            return self.change_state(5)
-        if 93 <= char <= 109:
-            return self.change_state(5)
-        if char == 110:
-            return self.change_state(5)
-        if 111 <= char <= 115:
-            return self.change_state(5)
-        if char == 116:
-            return self.change_state(5)
-        if 117 <= char <= 126:
-            return self.change_state(5)
-        return self.change_state(-1)
-
-    def s5(self, char):
-        if 32 <= char <= 38:
-            return self.change_state(5)
-        if char == 39:
-            return self.change_state(5)
-        if 40 <= char <= 91:
-            return self.change_state(5)
-        if char == 92:
-            return self.change_state(5)
-        if 93 <= char <= 109:
-            return self.change_state(5)
-        if char == 110:
-            return self.change_state(5)
-        if 111 <= char <= 115:
-            return self.change_state(5)
-        if char == 116:
-            return self.change_state(5)
-        if 117 <= char <= 126:
-            return self.change_state(5)
         return self.change_state(-1)
 
     def s2(self, char):
         if 32 <= char <= 38:
-            return self.change_state(1)
-        if char == 39:
-            return self.change_state(5)
-        if 40 <= char <= 91:
-            return self.change_state(1)
-        if char == 92:
             return self.change_state(3)
-        if 93 <= char <= 109:
-            return self.change_state(1)
-        if char == 110:
-            return self.change_state(1)
-        if 111 <= char <= 115:
-            return self.change_state(1)
-        if char == 116:
-            return self.change_state(1)
-        if 117 <= char <= 126:
-            return self.change_state(1)
+        if 40 <= char <= 91:
+            return self.change_state(3)
+        if char == 92:
+            return self.change_state(4)
+        if 93 <= char <= 126:
+            return self.change_state(3)
         return self.change_state(-1)
 
     def s1(self, char):
-        if 32 <= char <= 38:
-            return self.change_state(5)
-        if char == 39:
-            return self.change_state(4, checkpoint=True)
-        if 40 <= char <= 91:
-            return self.change_state(5)
-        if char == 92:
-            return self.change_state(5)
-        if 93 <= char <= 109:
-            return self.change_state(5)
-        if char == 110:
-            return self.change_state(5)
-        if 111 <= char <= 115:
-            return self.change_state(5)
-        if char == 116:
-            return self.change_state(5)
-        if 117 <= char <= 126:
-            return self.change_state(5)
-        return self.change_state(-1)
-
-    def s4(self, char):
-        if 32 <= char <= 38:
-            return self.change_state(5)
-        if char == 39:
-            return self.change_state(5)
-        if 40 <= char <= 91:
-            return self.change_state(5)
-        if char == 92:
-            return self.change_state(5)
-        if 93 <= char <= 109:
-            return self.change_state(5)
-        if char == 110:
-            return self.change_state(5)
-        if 111 <= char <= 115:
-            return self.change_state(5)
-        if char == 116:
-            return self.change_state(5)
-        if 117 <= char <= 126:
-            return self.change_state(5)
         return self.change_state(-1)
 
     def s3(self, char):
-        if 32 <= char <= 38:
-            return self.change_state(5)
         if char == 39:
-            return self.change_state(1)
-        if 40 <= char <= 91:
-            return self.change_state(5)
+            return self.change_state(1, checkpoint=True)
+        return self.change_state(-1)
+
+    def s4(self, char):
+        if char == 39:
+            return self.change_state(3)
         if char == 92:
-            return self.change_state(1)
-        if 93 <= char <= 109:
-            return self.change_state(5)
-        if char == 110:
-            return self.change_state(1)
-        if 111 <= char <= 115:
-            return self.change_state(5)
-        if char == 116:
-            return self.change_state(1)
-        if 117 <= char <= 126:
-            return self.change_state(5)
+            return self.change_state(3)
+        if 93 <= char <= 126:
+            return self.change_state(3)
         return self.change_state(-1)
 
 class StringScanner(Scanner):
@@ -422,68 +206,37 @@ class StringScanner(Scanner):
         self.token = "string"
 
     def s0(self, char):
-        if 32 <= char <= 33:
-            return self.change_state(4)
         if char == 34:
-            return self.change_state(1)
-        if 35 <= char <= 91:
-            return self.change_state(4)
-        if char == 92:
-            return self.change_state(4)
-        if 93 <= char <= 126:
-            return self.change_state(4)
-        return self.change_state(-1)
-
-    def s4(self, char):
-        if 32 <= char <= 33:
-            return self.change_state(4)
-        if char == 34:
-            return self.change_state(4)
-        if 35 <= char <= 91:
-            return self.change_state(4)
-        if char == 92:
-            return self.change_state(4)
-        if 93 <= char <= 126:
-            return self.change_state(4)
-        return self.change_state(-1)
-
-    def s1(self, char):
-        if 32 <= char <= 33:
-            return self.change_state(1)
-        if char == 34:
-            return self.change_state(3, checkpoint=True)
-        if 35 <= char <= 91:
-            return self.change_state(1)
-        if char == 92:
             return self.change_state(2)
-        if 93 <= char <= 126:
-            return self.change_state(1)
-        return self.change_state(-1)
-
-    def s3(self, char):
-        if 32 <= char <= 33:
-            return self.change_state(4)
-        if char == 34:
-            return self.change_state(4)
-        if 35 <= char <= 91:
-            return self.change_state(4)
-        if char == 92:
-            return self.change_state(4)
-        if 93 <= char <= 126:
-            return self.change_state(4)
         return self.change_state(-1)
 
     def s2(self, char):
         if 32 <= char <= 33:
-            return self.change_state(1)
+            return self.change_state(2)
         if char == 34:
-            return self.change_state(1)
+            return self.change_state(1, checkpoint=True)
         if 35 <= char <= 91:
-            return self.change_state(1)
+            return self.change_state(2)
         if char == 92:
-            return self.change_state(1)
+            return self.change_state(3)
         if 93 <= char <= 126:
-            return self.change_state(1)
+            return self.change_state(2)
+        return self.change_state(-1)
+
+    def s1(self, char):
+        return self.change_state(-1)
+
+    def s3(self, char):
+        if 32 <= char <= 33:
+            return self.change_state(2)
+        if char == 34:
+            return self.change_state(2)
+        if 35 <= char <= 91:
+            return self.change_state(2)
+        if char == 92:
+            return self.change_state(2)
+        if 93 <= char <= 126:
+            return self.change_state(2)
         return self.change_state(-1)
 
 class DotScanner(Scanner):
@@ -497,13 +250,6 @@ class DotScanner(Scanner):
         return self.change_state(-1)
 
     def s1(self, char):
-        if char == 46:
-            return self.change_state(2)
-        return self.change_state(-1)
-
-    def s2(self, char):
-        if char == 46:
-            return self.change_state(2)
         return self.change_state(-1)
 
 class LparenScanner(Scanner):
@@ -517,13 +263,6 @@ class LparenScanner(Scanner):
         return self.change_state(-1)
 
     def s1(self, char):
-        if char == 40:
-            return self.change_state(2)
-        return self.change_state(-1)
-
-    def s2(self, char):
-        if char == 40:
-            return self.change_state(2)
         return self.change_state(-1)
 
 class RparenScanner(Scanner):
@@ -537,13 +276,6 @@ class RparenScanner(Scanner):
         return self.change_state(-1)
 
     def s1(self, char):
-        if char == 41:
-            return self.change_state(2)
-        return self.change_state(-1)
-
-    def s2(self, char):
-        if char == 41:
-            return self.change_state(2)
         return self.change_state(-1)
 
 class CommaScanner(Scanner):
@@ -557,13 +289,6 @@ class CommaScanner(Scanner):
         return self.change_state(-1)
 
     def s1(self, char):
-        if char == 44:
-            return self.change_state(2)
-        return self.change_state(-1)
-
-    def s2(self, char):
-        if char == 44:
-            return self.change_state(2)
         return self.change_state(-1)
 
 class StarScanner(Scanner):
@@ -577,13 +302,6 @@ class StarScanner(Scanner):
         return self.change_state(-1)
 
     def s1(self, char):
-        if char == 42:
-            return self.change_state(2)
-        return self.change_state(-1)
-
-    def s2(self, char):
-        if char == 42:
-            return self.change_state(2)
         return self.change_state(-1)
 
 class EqualScanner(Scanner):
@@ -597,13 +315,6 @@ class EqualScanner(Scanner):
         return self.change_state(-1)
 
     def s1(self, char):
-        if char == 61:
-            return self.change_state(2)
-        return self.change_state(-1)
-
-    def s2(self, char):
-        if char == 61:
-            return self.change_state(2)
         return self.change_state(-1)
 
 class LbraceScanner(Scanner):
@@ -617,13 +328,6 @@ class LbraceScanner(Scanner):
         return self.change_state(-1)
 
     def s1(self, char):
-        if char == 123:
-            return self.change_state(2)
-        return self.change_state(-1)
-
-    def s2(self, char):
-        if char == 123:
-            return self.change_state(2)
         return self.change_state(-1)
 
 class RbraceScanner(Scanner):
@@ -637,13 +341,6 @@ class RbraceScanner(Scanner):
         return self.change_state(-1)
 
     def s1(self, char):
-        if char == 125:
-            return self.change_state(2)
-        return self.change_state(-1)
-
-    def s2(self, char):
-        if char == 125:
-            return self.change_state(2)
         return self.change_state(-1)
 
 class ColonScanner(Scanner):
@@ -657,13 +354,6 @@ class ColonScanner(Scanner):
         return self.change_state(-1)
 
     def s1(self, char):
-        if char == 58:
-            return self.change_state(2)
-        return self.change_state(-1)
-
-    def s2(self, char):
-        if char == 58:
-            return self.change_state(2)
         return self.change_state(-1)
 
 class LbracketScanner(Scanner):
@@ -677,13 +367,6 @@ class LbracketScanner(Scanner):
         return self.change_state(-1)
 
     def s1(self, char):
-        if char == 91:
-            return self.change_state(2)
-        return self.change_state(-1)
-
-    def s2(self, char):
-        if char == 91:
-            return self.change_state(2)
         return self.change_state(-1)
 
 class RbracketScanner(Scanner):
@@ -697,13 +380,6 @@ class RbracketScanner(Scanner):
         return self.change_state(-1)
 
     def s1(self, char):
-        if char == 93:
-            return self.change_state(2)
-        return self.change_state(-1)
-
-    def s2(self, char):
-        if char == 93:
-            return self.change_state(2)
         return self.change_state(-1)
 
 class PlusScanner(Scanner):
@@ -717,13 +393,6 @@ class PlusScanner(Scanner):
         return self.change_state(-1)
 
     def s1(self, char):
-        if char == 43:
-            return self.change_state(2)
-        return self.change_state(-1)
-
-    def s2(self, char):
-        if char == 43:
-            return self.change_state(2)
         return self.change_state(-1)
 
 class MinusScanner(Scanner):
@@ -737,13 +406,6 @@ class MinusScanner(Scanner):
         return self.change_state(-1)
 
     def s1(self, char):
-        if char == 45:
-            return self.change_state(2)
-        return self.change_state(-1)
-
-    def s2(self, char):
-        if char == 45:
-            return self.change_state(2)
         return self.change_state(-1)
 
 class SlashScanner(Scanner):
@@ -757,13 +419,6 @@ class SlashScanner(Scanner):
         return self.change_state(-1)
 
     def s1(self, char):
-        if char == 47:
-            return self.change_state(2)
-        return self.change_state(-1)
-
-    def s2(self, char):
-        if char == 47:
-            return self.change_state(2)
         return self.change_state(-1)
 
 class LessthanScanner(Scanner):
@@ -777,13 +432,6 @@ class LessthanScanner(Scanner):
         return self.change_state(-1)
 
     def s1(self, char):
-        if char == 60:
-            return self.change_state(2)
-        return self.change_state(-1)
-
-    def s2(self, char):
-        if char == 60:
-            return self.change_state(2)
         return self.change_state(-1)
 
 class GreaterthanScanner(Scanner):
@@ -797,13 +445,6 @@ class GreaterthanScanner(Scanner):
         return self.change_state(-1)
 
     def s1(self, char):
-        if char == 62:
-            return self.change_state(2)
-        return self.change_state(-1)
-
-    def s2(self, char):
-        if char == 62:
-            return self.change_state(2)
         return self.change_state(-1)
 
 SCANNERS = {
