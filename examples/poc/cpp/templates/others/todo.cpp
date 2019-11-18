@@ -25,8 +25,28 @@ struct BaseRecognizer {
 
     virtual std::pair<int, int> next(int q, uint32_t a) const = 0;
 
-    virtual std::pair<bool, std::string>
-    match(std::istream& in = std::cin) const = 0;
+    std::pair<bool, std::string> match(std::istream& in = std::cin)
+    {
+        std::vector<int> checkpoint = {0};
+        std::vector<uint32_t> lexeme;
+        uint32_t a = -1;
+        while (checkpoint.back() != error && (a = in.get()) != eof) {
+            auto [status, r] = next(checkpoint.back(), a);
+            if (status == 1) {
+                accept = true;
+                checkpoint.clear();
+            }
+            checkpoint.push_back(r);
+            lexeme.push_back(a);
+        }
+        for (int i = 1; i < checkpoint.size(); ++i) {
+            // rollback to most recent accept state, if any
+            // (if accept is true, checkpoint[0] is the most recent accept state)
+            in.unget();
+            lexeme.pop_back();
+        }
+        return { accept, std::string(lexeme.begin(), lexeme.end()) };
+    }
 
 protected:
     bool accept;
@@ -68,29 +88,6 @@ struct Identifier: public BaseRecognizer {
         default:
             return {-1, 2};
         }
-    }
-
-    std::pair<bool, std::string> match(std::istream& in = std::cin)
-    {
-        std::vector<int> checkpoint = {0};
-        std::vector<uint32_t> lexeme;
-        uint32_t a = -1;
-        while (checkpoint.back() != error && (a = in.get()) != eof) {
-            auto [status, r] = next(checkpoint.back(), a);
-            if (status == 1) {
-                accept = true;
-                checkpoint.clear();
-            }
-            checkpoint.push_back(r);
-            lexeme.push_back(a);
-        }
-        for (int i = 1; i < checkpoint.size(); ++i) {
-            // rollback to most recent accept state, if any
-            // (if accept is true, checkpoint[0] is the most recent accept state)
-            in.unget();
-            lexeme.pop_back();
-        }
-        return { accept, std::string(lexeme.begin(), lexeme.end()) };
     }
 };
 
