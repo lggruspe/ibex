@@ -14,27 +14,28 @@ struct BaseRecognizer {
     Token token;
 
     BaseRecognizer(
-        Token token = Token::INVALID)
+        Token token = Token::INVALID,
+        bool accept = false, // should be true if 0 is an accept state
+        int error = -1)
         : token(token)
+        , accept(accept)
+        , eof(std::char_traits<char>::eof())
+        , error(error)
     {}
 
     virtual std::pair<int, int> next(int q, uint32_t a) const = 0;
 
     virtual std::pair<bool, std::string>
     match(std::istream& in = std::cin) const = 0;
+
+protected:
+    bool accept;
+    uint32_t eof;
+    int const error;
 };
 
 struct Identifier: public BaseRecognizer {
-    int const error;
-    uint32_t eof;
-    bool accept;
-
-    Identifier()
-        : BaseRecognizer(Token::IDENTIFIER)
-        , error(2)
-        , eof(std::char_traits<char>::eof())
-        , accept(false) // true if 0 is an accept state
-    {}
+    Identifier() : BaseRecognizer(Token::IDENTIFIER, false, 2) {}
 
     std::pair<int, int> next(int q, uint32_t a) const
     {
