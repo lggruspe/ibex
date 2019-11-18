@@ -19,7 +19,6 @@ struct BaseRecognizer {
         int error = -1)
         : token(token)
         , accept(accept)
-        , eof(std::char_traits<char>::eof())
         , error(error)
     {}
 
@@ -30,6 +29,7 @@ struct BaseRecognizer {
         std::vector<int> checkpoint = {0};
         std::vector<uint32_t> lexeme;
         uint32_t a = -1;
+        uint32_t eof = std::char_traits<char>::eof();
         while (checkpoint.back() != error && (a = in.get()) != eof) {
             auto [status, r] = next(checkpoint.back(), a);
             if (status == 1) {
@@ -50,7 +50,6 @@ struct BaseRecognizer {
 
 protected:
     bool accept;
-    uint32_t eof;
     int const error;
 };
 
