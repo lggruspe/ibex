@@ -1,4 +1,5 @@
 #pragma once
+#include <cstdint>
 #include <iostream>
 #include <memory>
 #include <string>
@@ -42,18 +43,21 @@ struct Scanner {
     Token token;
     std::vector<int> checkpoint;
     bool accepts;
+    int error;
 
     Scanner(Token token) 
         : token(token)
         , checkpoint({0})
-        , accepts(false) {}
+        , accepts(false)
+        , error(-1)
+    {}
 
     virtual ~Scanner() {}
-    virtual bool next(int) = 0;
+    virtual bool next(uint32_t) = 0;
 
     int state() const
     {
-        return checkpoint.empty() ? -1 : checkpoint.back();
+        return checkpoint.empty() ? error : checkpoint.back();
     }
 
     int change_state(int next_state, bool checkpoint=false)
@@ -63,7 +67,7 @@ struct Scanner {
             accepts = true;
         }
         this->checkpoint.push_back(next_state);
-        return next_state != -1;
+        return next_state != error;
     }
 
     int backtrack_steps() const
