@@ -39,7 +39,7 @@ struct BaseRecognizer {
             checkpoint.push_back(r);
             lexeme.push_back(a);
         }
-        for (int i = 1; i < checkpoint.size(); ++i) {
+        for (auto i = checkpoint.size(); i > 1; --i) {
             // rollback to most recent accept state, if any
             // (if accept is true, checkpoint[0] is the most recent accept state)
             in.unget();
