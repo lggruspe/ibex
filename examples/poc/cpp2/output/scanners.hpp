@@ -159,7 +159,7 @@ struct Identifier: public BaseRecognizer {
     {
         switch (q) {
         case 0:
-            if (0 <= a && a < 48) {
+            if (a < 48) {
                 return {-1, 2};
             }
             if (48 <= a && a < 58) {
@@ -174,10 +174,10 @@ struct Identifier: public BaseRecognizer {
             if (91 <= a && a < 95) {
                 return {-1, 2};
             }
-            if (95 <= a && a < 96) {
+            if (a == 95) {
                 return {1, 1};
             }
-            if (96 <= a && a < 97) {
+            if (a == 96) {
                 return {-1, 2};
             }
             if (97 <= a && a < 123) {
@@ -188,7 +188,7 @@ struct Identifier: public BaseRecognizer {
             }
             return {-1, 2};
         case 1:
-            if (0 <= a && a < 48) {
+            if (a < 48) {
                 return {-1, 2};
             }
             if (48 <= a && a < 58) {
@@ -203,10 +203,10 @@ struct Identifier: public BaseRecognizer {
             if (91 <= a && a < 95) {
                 return {-1, 2};
             }
-            if (95 <= a && a < 96) {
+            if (a == 95) {
                 return {1, 1};
             }
-            if (96 <= a && a < 97) {
+            if (a == 96) {
                 return {-1, 2};
             }
             if (97 <= a && a < 123) {
@@ -229,19 +229,19 @@ struct Whitespace: public BaseRecognizer {
     {
         switch (q) {
         case 0:
-            if (0 <= a && a < 9) {
+            if (a < 9) {
                 return {-1, 2};
             }
-            if (9 <= a && a < 10) {
+            if (a == 9) {
                 return {1, 1};
             }
-            if (10 <= a && a < 11) {
+            if (a == 10) {
                 return {1, 1};
             }
             if (11 <= a && a < 32) {
                 return {-1, 2};
             }
-            if (32 <= a && a < 33) {
+            if (a == 32) {
                 return {1, 1};
             }
             if (33 <= a && a < 4294967295) {
@@ -249,19 +249,19 @@ struct Whitespace: public BaseRecognizer {
             }
             return {-1, 2};
         case 1:
-            if (0 <= a && a < 9) {
+            if (a < 9) {
                 return {-1, 2};
             }
-            if (9 <= a && a < 10) {
+            if (a == 9) {
                 return {-1, 2};
             }
-            if (10 <= a && a < 11) {
+            if (a == 10) {
                 return {-1, 2};
             }
             if (11 <= a && a < 32) {
                 return {-1, 2};
             }
-            if (32 <= a && a < 33) {
+            if (a == 32) {
                 return {-1, 2};
             }
             if (33 <= a && a < 4294967295) {
@@ -281,25 +281,25 @@ struct Number: public BaseRecognizer {
     {
         switch (q) {
         case 0:
-            if (0 <= a && a < 43) {
+            if (a < 43) {
                 return {-1, 6};
             }
-            if (43 <= a && a < 44) {
+            if (a == 43) {
                 return {-1, 6};
             }
-            if (44 <= a && a < 45) {
+            if (a == 44) {
                 return {-1, 6};
             }
-            if (45 <= a && a < 46) {
+            if (a == 45) {
                 return {-1, 6};
             }
-            if (46 <= a && a < 47) {
+            if (a == 46) {
                 return {-1, 6};
             }
-            if (47 <= a && a < 48) {
+            if (a == 47) {
                 return {-1, 6};
             }
-            if (48 <= a && a < 49) {
+            if (a == 48) {
                 return {1, 3};
             }
             if (49 <= a && a < 58) {
@@ -308,13 +308,13 @@ struct Number: public BaseRecognizer {
             if (58 <= a && a < 69) {
                 return {-1, 6};
             }
-            if (69 <= a && a < 70) {
+            if (a == 69) {
                 return {-1, 6};
             }
             if (70 <= a && a < 101) {
                 return {-1, 6};
             }
-            if (101 <= a && a < 102) {
+            if (a == 101) {
                 return {-1, 6};
             }
             if (102 <= a && a < 4294967295) {
@@ -322,25 +322,25 @@ struct Number: public BaseRecognizer {
             }
             return {-1, 6};
         case 3:
-            if (0 <= a && a < 43) {
+            if (a < 43) {
                 return {-1, 6};
             }
-            if (43 <= a && a < 44) {
+            if (a == 43) {
                 return {-1, 6};
             }
-            if (44 <= a && a < 45) {
+            if (a == 44) {
                 return {-1, 6};
             }
-            if (45 <= a && a < 46) {
+            if (a == 45) {
                 return {-1, 6};
             }
-            if (46 <= a && a < 47) {
+            if (a == 46) {
                 return {0, 7};
             }
-            if (47 <= a && a < 48) {
+            if (a == 47) {
                 return {-1, 6};
             }
-            if (48 <= a && a < 49) {
+            if (a == 48) {
                 return {-1, 6};
             }
             if (49 <= a && a < 58) {
@@ -349,13 +349,13 @@ struct Number: public BaseRecognizer {
             if (58 <= a && a < 69) {
                 return {-1, 6};
             }
-            if (69 <= a && a < 70) {
+            if (a == 69) {
                 return {0, 5};
             }
             if (70 <= a && a < 101) {
                 return {-1, 6};
             }
-            if (101 <= a && a < 102) {
+            if (a == 101) {
                 return {0, 5};
             }
             if (102 <= a && a < 4294967295) {
@@ -363,25 +363,25 @@ struct Number: public BaseRecognizer {
             }
             return {-1, 6};
         case 8:
-            if (0 <= a && a < 43) {
+            if (a < 43) {
                 return {-1, 6};
             }
-            if (43 <= a && a < 44) {
+            if (a == 43) {
                 return {-1, 6};
             }
-            if (44 <= a && a < 45) {
+            if (a == 44) {
                 return {-1, 6};
             }
-            if (45 <= a && a < 46) {
+            if (a == 45) {
                 return {-1, 6};
             }
-            if (46 <= a && a < 47) {
+            if (a == 46) {
                 return {0, 7};
             }
-            if (47 <= a && a < 48) {
+            if (a == 47) {
                 return {-1, 6};
             }
-            if (48 <= a && a < 49) {
+            if (a == 48) {
                 return {1, 8};
             }
             if (49 <= a && a < 58) {
@@ -390,13 +390,13 @@ struct Number: public BaseRecognizer {
             if (58 <= a && a < 69) {
                 return {-1, 6};
             }
-            if (69 <= a && a < 70) {
+            if (a == 69) {
                 return {0, 5};
             }
             if (70 <= a && a < 101) {
                 return {-1, 6};
             }
-            if (101 <= a && a < 102) {
+            if (a == 101) {
                 return {0, 5};
             }
             if (102 <= a && a < 4294967295) {
@@ -404,25 +404,25 @@ struct Number: public BaseRecognizer {
             }
             return {-1, 6};
         case 1:
-            if (0 <= a && a < 43) {
+            if (a < 43) {
                 return {-1, 6};
             }
-            if (43 <= a && a < 44) {
+            if (a == 43) {
                 return {-1, 6};
             }
-            if (44 <= a && a < 45) {
+            if (a == 44) {
                 return {-1, 6};
             }
-            if (45 <= a && a < 46) {
+            if (a == 45) {
                 return {-1, 6};
             }
-            if (46 <= a && a < 47) {
+            if (a == 46) {
                 return {-1, 6};
             }
-            if (47 <= a && a < 48) {
+            if (a == 47) {
                 return {-1, 6};
             }
-            if (48 <= a && a < 49) {
+            if (a == 48) {
                 return {-1, 6};
             }
             if (49 <= a && a < 58) {
@@ -431,13 +431,13 @@ struct Number: public BaseRecognizer {
             if (58 <= a && a < 69) {
                 return {-1, 6};
             }
-            if (69 <= a && a < 70) {
+            if (a == 69) {
                 return {-1, 6};
             }
             if (70 <= a && a < 101) {
                 return {-1, 6};
             }
-            if (101 <= a && a < 102) {
+            if (a == 101) {
                 return {-1, 6};
             }
             if (102 <= a && a < 4294967295) {
@@ -445,25 +445,25 @@ struct Number: public BaseRecognizer {
             }
             return {-1, 6};
         case 2:
-            if (0 <= a && a < 43) {
+            if (a < 43) {
                 return {-1, 6};
             }
-            if (43 <= a && a < 44) {
+            if (a == 43) {
                 return {-1, 6};
             }
-            if (44 <= a && a < 45) {
+            if (a == 44) {
                 return {-1, 6};
             }
-            if (45 <= a && a < 46) {
+            if (a == 45) {
                 return {-1, 6};
             }
-            if (46 <= a && a < 47) {
+            if (a == 46) {
                 return {-1, 6};
             }
-            if (47 <= a && a < 48) {
+            if (a == 47) {
                 return {-1, 6};
             }
-            if (48 <= a && a < 49) {
+            if (a == 48) {
                 return {1, 1};
             }
             if (49 <= a && a < 58) {
@@ -472,13 +472,13 @@ struct Number: public BaseRecognizer {
             if (58 <= a && a < 69) {
                 return {-1, 6};
             }
-            if (69 <= a && a < 70) {
+            if (a == 69) {
                 return {-1, 6};
             }
             if (70 <= a && a < 101) {
                 return {-1, 6};
             }
-            if (101 <= a && a < 102) {
+            if (a == 101) {
                 return {-1, 6};
             }
             if (102 <= a && a < 4294967295) {
@@ -486,25 +486,25 @@ struct Number: public BaseRecognizer {
             }
             return {-1, 6};
         case 4:
-            if (0 <= a && a < 43) {
+            if (a < 43) {
                 return {-1, 6};
             }
-            if (43 <= a && a < 44) {
+            if (a == 43) {
                 return {-1, 6};
             }
-            if (44 <= a && a < 45) {
+            if (a == 44) {
                 return {-1, 6};
             }
-            if (45 <= a && a < 46) {
+            if (a == 45) {
                 return {-1, 6};
             }
-            if (46 <= a && a < 47) {
+            if (a == 46) {
                 return {-1, 6};
             }
-            if (47 <= a && a < 48) {
+            if (a == 47) {
                 return {-1, 6};
             }
-            if (48 <= a && a < 49) {
+            if (a == 48) {
                 return {1, 4};
             }
             if (49 <= a && a < 58) {
@@ -513,13 +513,13 @@ struct Number: public BaseRecognizer {
             if (58 <= a && a < 69) {
                 return {-1, 6};
             }
-            if (69 <= a && a < 70) {
+            if (a == 69) {
                 return {-1, 6};
             }
             if (70 <= a && a < 101) {
                 return {-1, 6};
             }
-            if (101 <= a && a < 102) {
+            if (a == 101) {
                 return {-1, 6};
             }
             if (102 <= a && a < 4294967295) {
@@ -527,25 +527,25 @@ struct Number: public BaseRecognizer {
             }
             return {-1, 6};
         case 7:
-            if (0 <= a && a < 43) {
+            if (a < 43) {
                 return {-1, 6};
             }
-            if (43 <= a && a < 44) {
+            if (a == 43) {
                 return {-1, 6};
             }
-            if (44 <= a && a < 45) {
+            if (a == 44) {
                 return {-1, 6};
             }
-            if (45 <= a && a < 46) {
+            if (a == 45) {
                 return {-1, 6};
             }
-            if (46 <= a && a < 47) {
+            if (a == 46) {
                 return {-1, 6};
             }
-            if (47 <= a && a < 48) {
+            if (a == 47) {
                 return {-1, 6};
             }
-            if (48 <= a && a < 49) {
+            if (a == 48) {
                 return {1, 9};
             }
             if (49 <= a && a < 58) {
@@ -554,13 +554,13 @@ struct Number: public BaseRecognizer {
             if (58 <= a && a < 69) {
                 return {-1, 6};
             }
-            if (69 <= a && a < 70) {
+            if (a == 69) {
                 return {-1, 6};
             }
             if (70 <= a && a < 101) {
                 return {-1, 6};
             }
-            if (101 <= a && a < 102) {
+            if (a == 101) {
                 return {-1, 6};
             }
             if (102 <= a && a < 4294967295) {
@@ -568,25 +568,25 @@ struct Number: public BaseRecognizer {
             }
             return {-1, 6};
         case 5:
-            if (0 <= a && a < 43) {
+            if (a < 43) {
                 return {-1, 6};
             }
-            if (43 <= a && a < 44) {
+            if (a == 43) {
                 return {0, 2};
             }
-            if (44 <= a && a < 45) {
+            if (a == 44) {
                 return {-1, 6};
             }
-            if (45 <= a && a < 46) {
+            if (a == 45) {
                 return {0, 2};
             }
-            if (46 <= a && a < 47) {
+            if (a == 46) {
                 return {-1, 6};
             }
-            if (47 <= a && a < 48) {
+            if (a == 47) {
                 return {-1, 6};
             }
-            if (48 <= a && a < 49) {
+            if (a == 48) {
                 return {1, 1};
             }
             if (49 <= a && a < 58) {
@@ -595,13 +595,13 @@ struct Number: public BaseRecognizer {
             if (58 <= a && a < 69) {
                 return {-1, 6};
             }
-            if (69 <= a && a < 70) {
+            if (a == 69) {
                 return {-1, 6};
             }
             if (70 <= a && a < 101) {
                 return {-1, 6};
             }
-            if (101 <= a && a < 102) {
+            if (a == 101) {
                 return {-1, 6};
             }
             if (102 <= a && a < 4294967295) {
@@ -609,25 +609,25 @@ struct Number: public BaseRecognizer {
             }
             return {-1, 6};
         case 9:
-            if (0 <= a && a < 43) {
+            if (a < 43) {
                 return {-1, 6};
             }
-            if (43 <= a && a < 44) {
+            if (a == 43) {
                 return {-1, 6};
             }
-            if (44 <= a && a < 45) {
+            if (a == 44) {
                 return {-1, 6};
             }
-            if (45 <= a && a < 46) {
+            if (a == 45) {
                 return {-1, 6};
             }
-            if (46 <= a && a < 47) {
+            if (a == 46) {
                 return {-1, 6};
             }
-            if (47 <= a && a < 48) {
+            if (a == 47) {
                 return {-1, 6};
             }
-            if (48 <= a && a < 49) {
+            if (a == 48) {
                 return {1, 9};
             }
             if (49 <= a && a < 58) {
@@ -636,13 +636,13 @@ struct Number: public BaseRecognizer {
             if (58 <= a && a < 69) {
                 return {-1, 6};
             }
-            if (69 <= a && a < 70) {
+            if (a == 69) {
                 return {0, 5};
             }
             if (70 <= a && a < 101) {
                 return {-1, 6};
             }
-            if (101 <= a && a < 102) {
+            if (a == 101) {
                 return {0, 5};
             }
             if (102 <= a && a < 4294967295) {
@@ -662,31 +662,31 @@ struct Character: public BaseRecognizer {
     {
         switch (q) {
         case 0:
-            if (0 <= a && a < 32) {
+            if (a < 32) {
                 return {-1, 5};
             }
             if (32 <= a && a < 39) {
                 return {-1, 5};
             }
-            if (39 <= a && a < 40) {
+            if (a == 39) {
                 return {0, 3};
             }
             if (40 <= a && a < 92) {
                 return {-1, 5};
             }
-            if (92 <= a && a < 93) {
+            if (a == 92) {
                 return {-1, 5};
             }
             if (93 <= a && a < 110) {
                 return {-1, 5};
             }
-            if (110 <= a && a < 111) {
+            if (a == 110) {
                 return {-1, 5};
             }
             if (111 <= a && a < 116) {
                 return {-1, 5};
             }
-            if (116 <= a && a < 117) {
+            if (a == 116) {
                 return {-1, 5};
             }
             if (117 <= a && a < 127) {
@@ -697,31 +697,31 @@ struct Character: public BaseRecognizer {
             }
             return {-1, 5};
         case 3:
-            if (0 <= a && a < 32) {
+            if (a < 32) {
                 return {-1, 5};
             }
             if (32 <= a && a < 39) {
                 return {0, 2};
             }
-            if (39 <= a && a < 40) {
+            if (a == 39) {
                 return {-1, 5};
             }
             if (40 <= a && a < 92) {
                 return {0, 2};
             }
-            if (92 <= a && a < 93) {
+            if (a == 92) {
                 return {0, 4};
             }
             if (93 <= a && a < 110) {
                 return {0, 2};
             }
-            if (110 <= a && a < 111) {
+            if (a == 110) {
                 return {0, 2};
             }
             if (111 <= a && a < 116) {
                 return {0, 2};
             }
-            if (116 <= a && a < 117) {
+            if (a == 116) {
                 return {0, 2};
             }
             if (117 <= a && a < 127) {
@@ -732,31 +732,31 @@ struct Character: public BaseRecognizer {
             }
             return {-1, 5};
         case 1:
-            if (0 <= a && a < 32) {
+            if (a < 32) {
                 return {-1, 5};
             }
             if (32 <= a && a < 39) {
                 return {-1, 5};
             }
-            if (39 <= a && a < 40) {
+            if (a == 39) {
                 return {-1, 5};
             }
             if (40 <= a && a < 92) {
                 return {-1, 5};
             }
-            if (92 <= a && a < 93) {
+            if (a == 92) {
                 return {-1, 5};
             }
             if (93 <= a && a < 110) {
                 return {-1, 5};
             }
-            if (110 <= a && a < 111) {
+            if (a == 110) {
                 return {-1, 5};
             }
             if (111 <= a && a < 116) {
                 return {-1, 5};
             }
-            if (116 <= a && a < 117) {
+            if (a == 116) {
                 return {-1, 5};
             }
             if (117 <= a && a < 127) {
@@ -767,31 +767,31 @@ struct Character: public BaseRecognizer {
             }
             return {-1, 5};
         case 2:
-            if (0 <= a && a < 32) {
+            if (a < 32) {
                 return {-1, 5};
             }
             if (32 <= a && a < 39) {
                 return {-1, 5};
             }
-            if (39 <= a && a < 40) {
+            if (a == 39) {
                 return {1, 1};
             }
             if (40 <= a && a < 92) {
                 return {-1, 5};
             }
-            if (92 <= a && a < 93) {
+            if (a == 92) {
                 return {-1, 5};
             }
             if (93 <= a && a < 110) {
                 return {-1, 5};
             }
-            if (110 <= a && a < 111) {
+            if (a == 110) {
                 return {-1, 5};
             }
             if (111 <= a && a < 116) {
                 return {-1, 5};
             }
-            if (116 <= a && a < 117) {
+            if (a == 116) {
                 return {-1, 5};
             }
             if (117 <= a && a < 127) {
@@ -802,31 +802,31 @@ struct Character: public BaseRecognizer {
             }
             return {-1, 5};
         case 4:
-            if (0 <= a && a < 32) {
+            if (a < 32) {
                 return {-1, 5};
             }
             if (32 <= a && a < 39) {
                 return {-1, 5};
             }
-            if (39 <= a && a < 40) {
+            if (a == 39) {
                 return {0, 2};
             }
             if (40 <= a && a < 92) {
                 return {-1, 5};
             }
-            if (92 <= a && a < 93) {
+            if (a == 92) {
                 return {0, 2};
             }
             if (93 <= a && a < 110) {
                 return {-1, 5};
             }
-            if (110 <= a && a < 111) {
+            if (a == 110) {
                 return {0, 2};
             }
             if (111 <= a && a < 116) {
                 return {-1, 5};
             }
-            if (116 <= a && a < 117) {
+            if (a == 116) {
                 return {0, 2};
             }
             if (117 <= a && a < 127) {
@@ -849,19 +849,19 @@ struct String: public BaseRecognizer {
     {
         switch (q) {
         case 0:
-            if (0 <= a && a < 32) {
+            if (a < 32) {
                 return {-1, 4};
             }
             if (32 <= a && a < 34) {
                 return {-1, 4};
             }
-            if (34 <= a && a < 35) {
+            if (a == 34) {
                 return {0, 2};
             }
             if (35 <= a && a < 92) {
                 return {-1, 4};
             }
-            if (92 <= a && a < 93) {
+            if (a == 92) {
                 return {-1, 4};
             }
             if (93 <= a && a < 127) {
@@ -872,19 +872,19 @@ struct String: public BaseRecognizer {
             }
             return {-1, 4};
         case 2:
-            if (0 <= a && a < 32) {
+            if (a < 32) {
                 return {-1, 4};
             }
             if (32 <= a && a < 34) {
                 return {0, 2};
             }
-            if (34 <= a && a < 35) {
+            if (a == 34) {
                 return {1, 1};
             }
             if (35 <= a && a < 92) {
                 return {0, 2};
             }
-            if (92 <= a && a < 93) {
+            if (a == 92) {
                 return {0, 3};
             }
             if (93 <= a && a < 127) {
@@ -895,19 +895,19 @@ struct String: public BaseRecognizer {
             }
             return {-1, 4};
         case 1:
-            if (0 <= a && a < 32) {
+            if (a < 32) {
                 return {-1, 4};
             }
             if (32 <= a && a < 34) {
                 return {-1, 4};
             }
-            if (34 <= a && a < 35) {
+            if (a == 34) {
                 return {-1, 4};
             }
             if (35 <= a && a < 92) {
                 return {-1, 4};
             }
-            if (92 <= a && a < 93) {
+            if (a == 92) {
                 return {-1, 4};
             }
             if (93 <= a && a < 127) {
@@ -918,19 +918,19 @@ struct String: public BaseRecognizer {
             }
             return {-1, 4};
         case 3:
-            if (0 <= a && a < 32) {
+            if (a < 32) {
                 return {-1, 4};
             }
             if (32 <= a && a < 34) {
                 return {0, 2};
             }
-            if (34 <= a && a < 35) {
+            if (a == 34) {
                 return {0, 2};
             }
             if (35 <= a && a < 92) {
                 return {0, 2};
             }
-            if (92 <= a && a < 93) {
+            if (a == 92) {
                 return {0, 2};
             }
             if (93 <= a && a < 127) {
@@ -953,10 +953,10 @@ struct Dot: public BaseRecognizer {
     {
         switch (q) {
         case 0:
-            if (0 <= a && a < 46) {
+            if (a < 46) {
                 return {-1, 2};
             }
-            if (46 <= a && a < 47) {
+            if (a == 46) {
                 return {1, 1};
             }
             if (47 <= a && a < 4294967295) {
@@ -964,10 +964,10 @@ struct Dot: public BaseRecognizer {
             }
             return {-1, 2};
         case 1:
-            if (0 <= a && a < 46) {
+            if (a < 46) {
                 return {-1, 2};
             }
-            if (46 <= a && a < 47) {
+            if (a == 46) {
                 return {-1, 2};
             }
             if (47 <= a && a < 4294967295) {
@@ -987,10 +987,10 @@ struct Lparen: public BaseRecognizer {
     {
         switch (q) {
         case 0:
-            if (0 <= a && a < 40) {
+            if (a < 40) {
                 return {-1, 2};
             }
-            if (40 <= a && a < 41) {
+            if (a == 40) {
                 return {1, 1};
             }
             if (41 <= a && a < 4294967295) {
@@ -998,10 +998,10 @@ struct Lparen: public BaseRecognizer {
             }
             return {-1, 2};
         case 1:
-            if (0 <= a && a < 40) {
+            if (a < 40) {
                 return {-1, 2};
             }
-            if (40 <= a && a < 41) {
+            if (a == 40) {
                 return {-1, 2};
             }
             if (41 <= a && a < 4294967295) {
@@ -1021,10 +1021,10 @@ struct Rparen: public BaseRecognizer {
     {
         switch (q) {
         case 0:
-            if (0 <= a && a < 41) {
+            if (a < 41) {
                 return {-1, 2};
             }
-            if (41 <= a && a < 42) {
+            if (a == 41) {
                 return {1, 1};
             }
             if (42 <= a && a < 4294967295) {
@@ -1032,10 +1032,10 @@ struct Rparen: public BaseRecognizer {
             }
             return {-1, 2};
         case 1:
-            if (0 <= a && a < 41) {
+            if (a < 41) {
                 return {-1, 2};
             }
-            if (41 <= a && a < 42) {
+            if (a == 41) {
                 return {-1, 2};
             }
             if (42 <= a && a < 4294967295) {
@@ -1055,10 +1055,10 @@ struct Comma: public BaseRecognizer {
     {
         switch (q) {
         case 0:
-            if (0 <= a && a < 44) {
+            if (a < 44) {
                 return {-1, 2};
             }
-            if (44 <= a && a < 45) {
+            if (a == 44) {
                 return {1, 1};
             }
             if (45 <= a && a < 4294967295) {
@@ -1066,10 +1066,10 @@ struct Comma: public BaseRecognizer {
             }
             return {-1, 2};
         case 1:
-            if (0 <= a && a < 44) {
+            if (a < 44) {
                 return {-1, 2};
             }
-            if (44 <= a && a < 45) {
+            if (a == 44) {
                 return {-1, 2};
             }
             if (45 <= a && a < 4294967295) {
@@ -1089,10 +1089,10 @@ struct Star: public BaseRecognizer {
     {
         switch (q) {
         case 0:
-            if (0 <= a && a < 42) {
+            if (a < 42) {
                 return {-1, 2};
             }
-            if (42 <= a && a < 43) {
+            if (a == 42) {
                 return {1, 1};
             }
             if (43 <= a && a < 4294967295) {
@@ -1100,10 +1100,10 @@ struct Star: public BaseRecognizer {
             }
             return {-1, 2};
         case 1:
-            if (0 <= a && a < 42) {
+            if (a < 42) {
                 return {-1, 2};
             }
-            if (42 <= a && a < 43) {
+            if (a == 42) {
                 return {-1, 2};
             }
             if (43 <= a && a < 4294967295) {
@@ -1123,10 +1123,10 @@ struct Equal: public BaseRecognizer {
     {
         switch (q) {
         case 0:
-            if (0 <= a && a < 61) {
+            if (a < 61) {
                 return {-1, 2};
             }
-            if (61 <= a && a < 62) {
+            if (a == 61) {
                 return {1, 1};
             }
             if (62 <= a && a < 4294967295) {
@@ -1134,10 +1134,10 @@ struct Equal: public BaseRecognizer {
             }
             return {-1, 2};
         case 1:
-            if (0 <= a && a < 61) {
+            if (a < 61) {
                 return {-1, 2};
             }
-            if (61 <= a && a < 62) {
+            if (a == 61) {
                 return {-1, 2};
             }
             if (62 <= a && a < 4294967295) {
@@ -1157,10 +1157,10 @@ struct Lbrace: public BaseRecognizer {
     {
         switch (q) {
         case 0:
-            if (0 <= a && a < 123) {
+            if (a < 123) {
                 return {-1, 2};
             }
-            if (123 <= a && a < 124) {
+            if (a == 123) {
                 return {1, 1};
             }
             if (124 <= a && a < 4294967295) {
@@ -1168,10 +1168,10 @@ struct Lbrace: public BaseRecognizer {
             }
             return {-1, 2};
         case 1:
-            if (0 <= a && a < 123) {
+            if (a < 123) {
                 return {-1, 2};
             }
-            if (123 <= a && a < 124) {
+            if (a == 123) {
                 return {-1, 2};
             }
             if (124 <= a && a < 4294967295) {
@@ -1191,10 +1191,10 @@ struct Rbrace: public BaseRecognizer {
     {
         switch (q) {
         case 0:
-            if (0 <= a && a < 125) {
+            if (a < 125) {
                 return {-1, 2};
             }
-            if (125 <= a && a < 126) {
+            if (a == 125) {
                 return {1, 1};
             }
             if (126 <= a && a < 4294967295) {
@@ -1202,10 +1202,10 @@ struct Rbrace: public BaseRecognizer {
             }
             return {-1, 2};
         case 1:
-            if (0 <= a && a < 125) {
+            if (a < 125) {
                 return {-1, 2};
             }
-            if (125 <= a && a < 126) {
+            if (a == 125) {
                 return {-1, 2};
             }
             if (126 <= a && a < 4294967295) {
@@ -1225,10 +1225,10 @@ struct Colon: public BaseRecognizer {
     {
         switch (q) {
         case 0:
-            if (0 <= a && a < 58) {
+            if (a < 58) {
                 return {-1, 2};
             }
-            if (58 <= a && a < 59) {
+            if (a == 58) {
                 return {1, 1};
             }
             if (59 <= a && a < 4294967295) {
@@ -1236,10 +1236,10 @@ struct Colon: public BaseRecognizer {
             }
             return {-1, 2};
         case 1:
-            if (0 <= a && a < 58) {
+            if (a < 58) {
                 return {-1, 2};
             }
-            if (58 <= a && a < 59) {
+            if (a == 58) {
                 return {-1, 2};
             }
             if (59 <= a && a < 4294967295) {
@@ -1259,10 +1259,10 @@ struct Lbracket: public BaseRecognizer {
     {
         switch (q) {
         case 0:
-            if (0 <= a && a < 91) {
+            if (a < 91) {
                 return {-1, 2};
             }
-            if (91 <= a && a < 92) {
+            if (a == 91) {
                 return {1, 1};
             }
             if (92 <= a && a < 4294967295) {
@@ -1270,10 +1270,10 @@ struct Lbracket: public BaseRecognizer {
             }
             return {-1, 2};
         case 1:
-            if (0 <= a && a < 91) {
+            if (a < 91) {
                 return {-1, 2};
             }
-            if (91 <= a && a < 92) {
+            if (a == 91) {
                 return {-1, 2};
             }
             if (92 <= a && a < 4294967295) {
@@ -1293,10 +1293,10 @@ struct Rbracket: public BaseRecognizer {
     {
         switch (q) {
         case 0:
-            if (0 <= a && a < 93) {
+            if (a < 93) {
                 return {-1, 2};
             }
-            if (93 <= a && a < 94) {
+            if (a == 93) {
                 return {1, 1};
             }
             if (94 <= a && a < 4294967295) {
@@ -1304,10 +1304,10 @@ struct Rbracket: public BaseRecognizer {
             }
             return {-1, 2};
         case 1:
-            if (0 <= a && a < 93) {
+            if (a < 93) {
                 return {-1, 2};
             }
-            if (93 <= a && a < 94) {
+            if (a == 93) {
                 return {-1, 2};
             }
             if (94 <= a && a < 4294967295) {
@@ -1327,10 +1327,10 @@ struct Plus: public BaseRecognizer {
     {
         switch (q) {
         case 0:
-            if (0 <= a && a < 43) {
+            if (a < 43) {
                 return {-1, 2};
             }
-            if (43 <= a && a < 44) {
+            if (a == 43) {
                 return {1, 1};
             }
             if (44 <= a && a < 4294967295) {
@@ -1338,10 +1338,10 @@ struct Plus: public BaseRecognizer {
             }
             return {-1, 2};
         case 1:
-            if (0 <= a && a < 43) {
+            if (a < 43) {
                 return {-1, 2};
             }
-            if (43 <= a && a < 44) {
+            if (a == 43) {
                 return {-1, 2};
             }
             if (44 <= a && a < 4294967295) {
@@ -1361,10 +1361,10 @@ struct Minus: public BaseRecognizer {
     {
         switch (q) {
         case 0:
-            if (0 <= a && a < 45) {
+            if (a < 45) {
                 return {-1, 2};
             }
-            if (45 <= a && a < 46) {
+            if (a == 45) {
                 return {1, 1};
             }
             if (46 <= a && a < 4294967295) {
@@ -1372,10 +1372,10 @@ struct Minus: public BaseRecognizer {
             }
             return {-1, 2};
         case 1:
-            if (0 <= a && a < 45) {
+            if (a < 45) {
                 return {-1, 2};
             }
-            if (45 <= a && a < 46) {
+            if (a == 45) {
                 return {-1, 2};
             }
             if (46 <= a && a < 4294967295) {
@@ -1395,10 +1395,10 @@ struct Slash: public BaseRecognizer {
     {
         switch (q) {
         case 0:
-            if (0 <= a && a < 47) {
+            if (a < 47) {
                 return {-1, 2};
             }
-            if (47 <= a && a < 48) {
+            if (a == 47) {
                 return {1, 1};
             }
             if (48 <= a && a < 4294967295) {
@@ -1406,10 +1406,10 @@ struct Slash: public BaseRecognizer {
             }
             return {-1, 2};
         case 1:
-            if (0 <= a && a < 47) {
+            if (a < 47) {
                 return {-1, 2};
             }
-            if (47 <= a && a < 48) {
+            if (a == 47) {
                 return {-1, 2};
             }
             if (48 <= a && a < 4294967295) {
@@ -1429,10 +1429,10 @@ struct Lessthan: public BaseRecognizer {
     {
         switch (q) {
         case 0:
-            if (0 <= a && a < 60) {
+            if (a < 60) {
                 return {-1, 2};
             }
-            if (60 <= a && a < 61) {
+            if (a == 60) {
                 return {1, 1};
             }
             if (61 <= a && a < 4294967295) {
@@ -1440,10 +1440,10 @@ struct Lessthan: public BaseRecognizer {
             }
             return {-1, 2};
         case 1:
-            if (0 <= a && a < 60) {
+            if (a < 60) {
                 return {-1, 2};
             }
-            if (60 <= a && a < 61) {
+            if (a == 60) {
                 return {-1, 2};
             }
             if (61 <= a && a < 4294967295) {
@@ -1463,10 +1463,10 @@ struct Greaterthan: public BaseRecognizer {
     {
         switch (q) {
         case 0:
-            if (0 <= a && a < 62) {
+            if (a < 62) {
                 return {-1, 2};
             }
-            if (62 <= a && a < 63) {
+            if (a == 62) {
                 return {1, 1};
             }
             if (63 <= a && a < 4294967295) {
@@ -1474,10 +1474,10 @@ struct Greaterthan: public BaseRecognizer {
             }
             return {-1, 2};
         case 1:
-            if (0 <= a && a < 62) {
+            if (a < 62) {
                 return {-1, 2};
             }
-            if (62 <= a && a < 63) {
+            if (a == 62) {
                 return {-1, 2};
             }
             if (63 <= a && a < 4294967295) {
