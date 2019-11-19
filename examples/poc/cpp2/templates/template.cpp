@@ -45,6 +45,7 @@ struct BaseRecognizer {
     {}
 
     //virtual ~BaseRecognizer() {}    // TODO is this needed?
+
     virtual std::pair<int, int> next(int q, uint32_t a) const = 0;
 
     std::pair<bool, std::string> match(std::istream& in = std::cin)
@@ -81,8 +82,8 @@ protected:
 template <class... Recognizers>
 std::pair<Token, std::string> match_first(std::istream& in = std::cin)
 {
-    std::vector<std::unique_ptr<BaseRecognizer>> recs = {
-        std::make_unique<Recognizers>() ...
+    std::vector<std::shared_ptr<BaseRecognizer>> recs = {
+        std::make_shared<Recognizers>() ...
     };
     for (auto r: recs) {
         auto [ok, s] = r->match(in);
@@ -96,8 +97,8 @@ std::pair<Token, std::string> match_first(std::istream& in = std::cin)
 template <class... Recognizers>
 std::pair<Token, std::string> match_longest(std::istream& in = std::cin)
 {
-    std::vector<std::unique_ptr<BaseRecognizer>> recs = {
-        std::make_unique<Recognizers>() ...
+    std::vector<std::shared_ptr<BaseRecognizer>> recs = {
+        std::make_shared<Recognizers>() ...
     };
     Token token = Token::EMPTY;
     std::string lexeme;
