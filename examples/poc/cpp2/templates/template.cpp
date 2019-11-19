@@ -7,86 +7,108 @@
 #include <vector>
 
 #define SCAN_ALL \
-    Token,\
-    Scanner,\
-## for scanner in scanners
-## if loop.index == loop.length
-    {{ scanner.token|title }}Scanner
-
-## else
-    {{ scanner.token|title }}Scanner,\
-## endif
-## endfor
+    Token, \
+    BaseRecognizer, \
+    {%- for scanner in scanners %}
+    {{ scanner.token|title }}{% if loop.index != loop.length %}, \{% endif -%}
+    {% endfor %}
 
 enum class Token {
-    empty = 0,
-## for scanner in scanners
-    {{ scanner.token }},
-## endfor
+    EMPTY = 0,
+    {%- for scanner in scanners %}
+    {{ scanner.token|upper }},
+    {%- endfor %}
 };
 
 std::ostream& operator<<(std::ostream& out, Token token)
 {
     switch (token) {
-    case Token::empty:
+    case Token::EMPTY:
         return out << "empty";
-## for scanner in scanners
-    case Token::{{ scanner.token }}:
+    {%- for scanner in scanners %}
+    case Token::{{ scanner.token|upper }}:
         return out << "{{ scanner.token }}";
-## endfor
+    {%- endfor %}
     default:
         return out;
     }
 }
 
-struct Scanner {
+struct BaseRecognizer {
     Token token;
-    std::vector<int> checkpoint;
-    bool accepts;
-    int error;
 
-    Scanner(Token token) 
+    BaseRecognizer(
+        Token token = Token::EMPTY,
+        bool accept = false, // should be true if 0 is an accept state
+        int error = -1)
         : token(token)
-        , checkpoint({0})
-        , accepts(false)
-        , error(-1)
+        , accept(accept)
+        , error(error)
     {}
 
-    virtual ~Scanner() {}
-    virtual bool next(uint32_t) = 0;
+    //virtual ~BaseRecognizer() {}    // TODO is this needed?
+    virtual std::pair<int, int> next(int q, uint32_t a) const = 0;
 
-    int state() const
+    std::pair<bool, std::string> match(std::istream& in = std::cin)
     {
-        return checkpoint.empty() ? error : checkpoint.back();
-    }
-
-    int change_state(int next_state, bool checkpoint=false)
-    {
-        if (checkpoint) {
-            this->checkpoint.clear();
-            accepts = true;
+        std::vector<int> checkpoint = {0};
+        std::vector<uint32_t> lexeme;
+        uint32_t a = -1;
+        uint32_t eof = std::char_traits<char>::eof();
+        while (checkpoint.back() != error && (a = in.get()) != eof) {
+            auto [status, r] = next(checkpoint.back(), a);
+            if (status == 1) {
+                accept = true;
+                checkpoint.clear();
+            }
+            checkpoint.push_back(r);
+            lexeme.push_back(a);
         }
-        this->checkpoint.push_back(next_state);
-        return next_state != error;
+        for (auto i = checkpoint.size(); i > 1; --i) {
+            // rollback to most recent accept state, if any
+            // (if accept is true, checkpoint[0] is the most recent accept state)
+            in.unget();
+            lexeme.pop_back();
+        }
+        return { accept, std::string(lexeme.begin(), lexeme.end()) };
     }
 
-    int backtrack_steps() const
-    {
-        return checkpoint.size() - 1;
-    }
+protected:
+    bool accept;
+    int const error;
 };
-
-std::ostream& operator<<(std::ostream& out, const Scanner& scanner)
+{% for scanner in scanners %}
+{% include "scanner.cpp" %}
+{% endfor %}
+template <class... Recognizers>
+std::pair<Token, std::string> match_first(std::istream& in = std::cin)
 {
-    return out << "<Scanner " << scanner.token << " state:" << scanner.state()
-        << " checkpoint:[";
-    for (const auto& state: scanner.checkpoint) {
-        out << " " << state;
+    std::vector<std::unique_ptr<BaseRecognizer>> recs = {
+        std::make_unique<Recognizers>() ...
+    };
+    for (auto r: recs) {
+        auto [ok, s] = r->match(in);
+        if (ok) {
+            return {r->token, s};
+        }
     }
-    return out << " ]>";
+    return {Token::EMPTY, ""};
 }
 
-## for scanner in scanners
-{% include "scanner.cpp" %}
-
-## endfor
+template <class... Recognizers>
+std::pair<Token, std::string> match_longest(std::istream& in = std::cin)
+{
+    std::vector<std::unique_ptr<BaseRecognizer>> recs = {
+        std::make_unique<Recognizers>() ...
+    };
+    Token token = Token::EMPTY;
+    std::string lexeme;
+    for (auto r: recs) {
+        auto [ok, s] = r->match(in);
+        if (ok && s.size() > lexeme.size()) {
+            token = r->token;
+            lexeme = s;
+        }
+    }
+    return {token, lexeme};
+}
