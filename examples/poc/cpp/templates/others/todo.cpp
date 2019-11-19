@@ -125,4 +125,7 @@ std::pair<Token, std::string> match_longest(std::istream& in = std::cin)
 
 int main()
 {
+    Identifier rec;
+    auto [ok, s] = rec.match();
+    std::cout << ok << " " << s << std::endl;
 }
