@@ -7,1457 +7,1518 @@
 #include <vector>
 
 #define SCAN_ALL \
-    Token,\
-    Scanner,\
-    IdentifierScanner,\
-    WhitespaceScanner,\
-    NumberScanner,\
-    CharacterScanner,\
-    StringScanner,\
-    DotScanner,\
-    LparenScanner,\
-    RparenScanner,\
-    CommaScanner,\
-    StarScanner,\
-    EqualScanner,\
-    LbraceScanner,\
-    RbraceScanner,\
-    ColonScanner,\
-    LbracketScanner,\
-    RbracketScanner,\
-    PlusScanner,\
-    MinusScanner,\
-    SlashScanner,\
-    LessthanScanner,\
-    GreaterthanScanner
+    Token, \
+    BaseRecognizer, \
+    Identifier, \
+    Whitespace, \
+    Number, \
+    Character, \
+    String, \
+    Dot, \
+    Lparen, \
+    Rparen, \
+    Comma, \
+    Star, \
+    Equal, \
+    Lbrace, \
+    Rbrace, \
+    Colon, \
+    Lbracket, \
+    Rbracket, \
+    Plus, \
+    Minus, \
+    Slash, \
+    Lessthan, \
+    Greaterthan
 
 enum class Token {
-    empty = 0,
-    identifier,
-    whitespace,
-    number,
-    character,
-    string,
-    dot,
-    lparen,
-    rparen,
-    comma,
-    star,
-    equal,
-    lbrace,
-    rbrace,
-    colon,
-    lbracket,
-    rbracket,
-    plus,
-    minus,
-    slash,
-    lessthan,
-    greaterthan,
+    EMPTY = 0,
+    IDENTIFIER,
+    WHITESPACE,
+    NUMBER,
+    CHARACTER,
+    STRING,
+    DOT,
+    LPAREN,
+    RPAREN,
+    COMMA,
+    STAR,
+    EQUAL,
+    LBRACE,
+    RBRACE,
+    COLON,
+    LBRACKET,
+    RBRACKET,
+    PLUS,
+    MINUS,
+    SLASH,
+    LESSTHAN,
+    GREATERTHAN,
 };
 
 std::ostream& operator<<(std::ostream& out, Token token)
 {
     switch (token) {
-    case Token::empty:
+    case Token::EMPTY:
         return out << "empty";
-    case Token::identifier:
+    case Token::IDENTIFIER:
         return out << "identifier";
-    case Token::whitespace:
+    case Token::WHITESPACE:
         return out << "whitespace";
-    case Token::number:
+    case Token::NUMBER:
         return out << "number";
-    case Token::character:
+    case Token::CHARACTER:
         return out << "character";
-    case Token::string:
+    case Token::STRING:
         return out << "string";
-    case Token::dot:
+    case Token::DOT:
         return out << "dot";
-    case Token::lparen:
+    case Token::LPAREN:
         return out << "lparen";
-    case Token::rparen:
+    case Token::RPAREN:
         return out << "rparen";
-    case Token::comma:
+    case Token::COMMA:
         return out << "comma";
-    case Token::star:
+    case Token::STAR:
         return out << "star";
-    case Token::equal:
+    case Token::EQUAL:
         return out << "equal";
-    case Token::lbrace:
+    case Token::LBRACE:
         return out << "lbrace";
-    case Token::rbrace:
+    case Token::RBRACE:
         return out << "rbrace";
-    case Token::colon:
+    case Token::COLON:
         return out << "colon";
-    case Token::lbracket:
+    case Token::LBRACKET:
         return out << "lbracket";
-    case Token::rbracket:
+    case Token::RBRACKET:
         return out << "rbracket";
-    case Token::plus:
+    case Token::PLUS:
         return out << "plus";
-    case Token::minus:
+    case Token::MINUS:
         return out << "minus";
-    case Token::slash:
+    case Token::SLASH:
         return out << "slash";
-    case Token::lessthan:
+    case Token::LESSTHAN:
         return out << "lessthan";
-    case Token::greaterthan:
+    case Token::GREATERTHAN:
         return out << "greaterthan";
     default:
         return out;
     }
 }
 
-struct Scanner {
+struct BaseRecognizer {
     Token token;
-    std::vector<int> checkpoint;
-    bool accepts;
-    int error;
 
-    Scanner(Token token) 
+    BaseRecognizer(
+        Token token = Token::EMPTY,
+        bool accept = false, // should be true if 0 is an accept state
+        int error = -1)
         : token(token)
-        , checkpoint({0})
-        , accepts(false)
-        , error(-1)
+        , accept(accept)
+        , error(error)
     {}
 
-    virtual ~Scanner() {}
-    virtual bool next(uint32_t) = 0;
+    //virtual ~BaseRecognizer() {}    // TODO is this needed?
+    virtual std::pair<int, int> next(int q, uint32_t a) const = 0;
 
-    int state() const
+    std::pair<bool, std::string> match(std::istream& in = std::cin)
     {
-        return checkpoint.empty() ? error : checkpoint.back();
-    }
-
-    int change_state(int next_state, bool checkpoint=false)
-    {
-        if (checkpoint) {
-            this->checkpoint.clear();
-            accepts = true;
+        std::vector<int> checkpoint = {0};
+        std::vector<uint32_t> lexeme;
+        uint32_t a = -1;
+        uint32_t eof = std::char_traits<char>::eof();
+        while (checkpoint.back() != error && (a = in.get()) != eof) {
+            auto [status, r] = next(checkpoint.back(), a);
+            if (status == 1) {
+                accept = true;
+                checkpoint.clear();
+            }
+            checkpoint.push_back(r);
+            lexeme.push_back(a);
         }
-        this->checkpoint.push_back(next_state);
-        return next_state != error;
+        for (auto i = checkpoint.size(); i > 1; --i) {
+            // rollback to most recent accept state, if any
+            // (if accept is true, checkpoint[0] is the most recent accept state)
+            in.unget();
+            lexeme.pop_back();
+        }
+        return { accept, std::string(lexeme.begin(), lexeme.end()) };
     }
 
-    int backtrack_steps() const
+protected:
+    bool accept;
+    int const error;
+};
+
+struct Identifier: public BaseRecognizer {
+    Identifier() : BaseRecognizer(Token::IDENTIFIER, false, 2) {}
+
+    std::pair<int, int> next(int q, uint32_t a) const
     {
-        return checkpoint.size() - 1;
+        switch (q) {
+        case 0:
+            if (0 <= a && a < 48) {
+                return {-1, 2};
+            }
+            if (48 <= a && a < 58) {
+                return {-1, 2};
+            }
+            if (58 <= a && a < 65) {
+                return {-1, 2};
+            }
+            if (65 <= a && a < 91) {
+                return {1, 1};
+            }
+            if (91 <= a && a < 95) {
+                return {-1, 2};
+            }
+            if (95 <= a && a < 96) {
+                return {1, 1};
+            }
+            if (96 <= a && a < 97) {
+                return {-1, 2};
+            }
+            if (97 <= a && a < 123) {
+                return {1, 1};
+            }
+            if (123 <= a && a < 4294967295) {
+                return {-1, 2};
+            }
+            return {-1, 2};
+        case 1:
+            if (0 <= a && a < 48) {
+                return {-1, 2};
+            }
+            if (48 <= a && a < 58) {
+                return {1, 1};
+            }
+            if (58 <= a && a < 65) {
+                return {-1, 2};
+            }
+            if (65 <= a && a < 91) {
+                return {1, 1};
+            }
+            if (91 <= a && a < 95) {
+                return {-1, 2};
+            }
+            if (95 <= a && a < 96) {
+                return {1, 1};
+            }
+            if (96 <= a && a < 97) {
+                return {-1, 2};
+            }
+            if (97 <= a && a < 123) {
+                return {1, 1};
+            }
+            if (123 <= a && a < 4294967295) {
+                return {-1, 2};
+            }
+            return {-1, 2};
+        default:
+            return {-1, 2};
+        }
     }
 };
 
-std::ostream& operator<<(std::ostream& out, const Scanner& scanner)
-{
-    return out << "<Scanner " << scanner.token << " state:" << scanner.state()
-        << " checkpoint:[";
-    for (const auto& state: scanner.checkpoint) {
-        out << " " << state;
+struct Whitespace: public BaseRecognizer {
+    Whitespace() : BaseRecognizer(Token::WHITESPACE, false, 2) {}
+
+    std::pair<int, int> next(int q, uint32_t a) const
+    {
+        switch (q) {
+        case 0:
+            if (0 <= a && a < 9) {
+                return {-1, 2};
+            }
+            if (9 <= a && a < 10) {
+                return {1, 1};
+            }
+            if (10 <= a && a < 11) {
+                return {1, 1};
+            }
+            if (11 <= a && a < 32) {
+                return {-1, 2};
+            }
+            if (32 <= a && a < 33) {
+                return {1, 1};
+            }
+            if (33 <= a && a < 4294967295) {
+                return {-1, 2};
+            }
+            return {-1, 2};
+        case 1:
+            if (0 <= a && a < 9) {
+                return {-1, 2};
+            }
+            if (9 <= a && a < 10) {
+                return {-1, 2};
+            }
+            if (10 <= a && a < 11) {
+                return {-1, 2};
+            }
+            if (11 <= a && a < 32) {
+                return {-1, 2};
+            }
+            if (32 <= a && a < 33) {
+                return {-1, 2};
+            }
+            if (33 <= a && a < 4294967295) {
+                return {-1, 2};
+            }
+            return {-1, 2};
+        default:
+            return {-1, 2};
+        }
     }
-    return out << " ]>";
+};
+
+struct Number: public BaseRecognizer {
+    Number() : BaseRecognizer(Token::NUMBER, false, 6) {}
+
+    std::pair<int, int> next(int q, uint32_t a) const
+    {
+        switch (q) {
+        case 0:
+            if (0 <= a && a < 43) {
+                return {-1, 6};
+            }
+            if (43 <= a && a < 44) {
+                return {-1, 6};
+            }
+            if (44 <= a && a < 45) {
+                return {-1, 6};
+            }
+            if (45 <= a && a < 46) {
+                return {-1, 6};
+            }
+            if (46 <= a && a < 47) {
+                return {-1, 6};
+            }
+            if (47 <= a && a < 48) {
+                return {-1, 6};
+            }
+            if (48 <= a && a < 49) {
+                return {1, 3};
+            }
+            if (49 <= a && a < 58) {
+                return {1, 8};
+            }
+            if (58 <= a && a < 69) {
+                return {-1, 6};
+            }
+            if (69 <= a && a < 70) {
+                return {-1, 6};
+            }
+            if (70 <= a && a < 101) {
+                return {-1, 6};
+            }
+            if (101 <= a && a < 102) {
+                return {-1, 6};
+            }
+            if (102 <= a && a < 4294967295) {
+                return {-1, 6};
+            }
+            return {-1, 6};
+        case 3:
+            if (0 <= a && a < 43) {
+                return {-1, 6};
+            }
+            if (43 <= a && a < 44) {
+                return {-1, 6};
+            }
+            if (44 <= a && a < 45) {
+                return {-1, 6};
+            }
+            if (45 <= a && a < 46) {
+                return {-1, 6};
+            }
+            if (46 <= a && a < 47) {
+                return {0, 7};
+            }
+            if (47 <= a && a < 48) {
+                return {-1, 6};
+            }
+            if (48 <= a && a < 49) {
+                return {-1, 6};
+            }
+            if (49 <= a && a < 58) {
+                return {-1, 6};
+            }
+            if (58 <= a && a < 69) {
+                return {-1, 6};
+            }
+            if (69 <= a && a < 70) {
+                return {0, 5};
+            }
+            if (70 <= a && a < 101) {
+                return {-1, 6};
+            }
+            if (101 <= a && a < 102) {
+                return {0, 5};
+            }
+            if (102 <= a && a < 4294967295) {
+                return {-1, 6};
+            }
+            return {-1, 6};
+        case 8:
+            if (0 <= a && a < 43) {
+                return {-1, 6};
+            }
+            if (43 <= a && a < 44) {
+                return {-1, 6};
+            }
+            if (44 <= a && a < 45) {
+                return {-1, 6};
+            }
+            if (45 <= a && a < 46) {
+                return {-1, 6};
+            }
+            if (46 <= a && a < 47) {
+                return {0, 7};
+            }
+            if (47 <= a && a < 48) {
+                return {-1, 6};
+            }
+            if (48 <= a && a < 49) {
+                return {1, 8};
+            }
+            if (49 <= a && a < 58) {
+                return {1, 8};
+            }
+            if (58 <= a && a < 69) {
+                return {-1, 6};
+            }
+            if (69 <= a && a < 70) {
+                return {0, 5};
+            }
+            if (70 <= a && a < 101) {
+                return {-1, 6};
+            }
+            if (101 <= a && a < 102) {
+                return {0, 5};
+            }
+            if (102 <= a && a < 4294967295) {
+                return {-1, 6};
+            }
+            return {-1, 6};
+        case 1:
+            if (0 <= a && a < 43) {
+                return {-1, 6};
+            }
+            if (43 <= a && a < 44) {
+                return {-1, 6};
+            }
+            if (44 <= a && a < 45) {
+                return {-1, 6};
+            }
+            if (45 <= a && a < 46) {
+                return {-1, 6};
+            }
+            if (46 <= a && a < 47) {
+                return {-1, 6};
+            }
+            if (47 <= a && a < 48) {
+                return {-1, 6};
+            }
+            if (48 <= a && a < 49) {
+                return {-1, 6};
+            }
+            if (49 <= a && a < 58) {
+                return {-1, 6};
+            }
+            if (58 <= a && a < 69) {
+                return {-1, 6};
+            }
+            if (69 <= a && a < 70) {
+                return {-1, 6};
+            }
+            if (70 <= a && a < 101) {
+                return {-1, 6};
+            }
+            if (101 <= a && a < 102) {
+                return {-1, 6};
+            }
+            if (102 <= a && a < 4294967295) {
+                return {-1, 6};
+            }
+            return {-1, 6};
+        case 2:
+            if (0 <= a && a < 43) {
+                return {-1, 6};
+            }
+            if (43 <= a && a < 44) {
+                return {-1, 6};
+            }
+            if (44 <= a && a < 45) {
+                return {-1, 6};
+            }
+            if (45 <= a && a < 46) {
+                return {-1, 6};
+            }
+            if (46 <= a && a < 47) {
+                return {-1, 6};
+            }
+            if (47 <= a && a < 48) {
+                return {-1, 6};
+            }
+            if (48 <= a && a < 49) {
+                return {1, 1};
+            }
+            if (49 <= a && a < 58) {
+                return {1, 4};
+            }
+            if (58 <= a && a < 69) {
+                return {-1, 6};
+            }
+            if (69 <= a && a < 70) {
+                return {-1, 6};
+            }
+            if (70 <= a && a < 101) {
+                return {-1, 6};
+            }
+            if (101 <= a && a < 102) {
+                return {-1, 6};
+            }
+            if (102 <= a && a < 4294967295) {
+                return {-1, 6};
+            }
+            return {-1, 6};
+        case 4:
+            if (0 <= a && a < 43) {
+                return {-1, 6};
+            }
+            if (43 <= a && a < 44) {
+                return {-1, 6};
+            }
+            if (44 <= a && a < 45) {
+                return {-1, 6};
+            }
+            if (45 <= a && a < 46) {
+                return {-1, 6};
+            }
+            if (46 <= a && a < 47) {
+                return {-1, 6};
+            }
+            if (47 <= a && a < 48) {
+                return {-1, 6};
+            }
+            if (48 <= a && a < 49) {
+                return {1, 4};
+            }
+            if (49 <= a && a < 58) {
+                return {1, 4};
+            }
+            if (58 <= a && a < 69) {
+                return {-1, 6};
+            }
+            if (69 <= a && a < 70) {
+                return {-1, 6};
+            }
+            if (70 <= a && a < 101) {
+                return {-1, 6};
+            }
+            if (101 <= a && a < 102) {
+                return {-1, 6};
+            }
+            if (102 <= a && a < 4294967295) {
+                return {-1, 6};
+            }
+            return {-1, 6};
+        case 7:
+            if (0 <= a && a < 43) {
+                return {-1, 6};
+            }
+            if (43 <= a && a < 44) {
+                return {-1, 6};
+            }
+            if (44 <= a && a < 45) {
+                return {-1, 6};
+            }
+            if (45 <= a && a < 46) {
+                return {-1, 6};
+            }
+            if (46 <= a && a < 47) {
+                return {-1, 6};
+            }
+            if (47 <= a && a < 48) {
+                return {-1, 6};
+            }
+            if (48 <= a && a < 49) {
+                return {1, 9};
+            }
+            if (49 <= a && a < 58) {
+                return {1, 9};
+            }
+            if (58 <= a && a < 69) {
+                return {-1, 6};
+            }
+            if (69 <= a && a < 70) {
+                return {-1, 6};
+            }
+            if (70 <= a && a < 101) {
+                return {-1, 6};
+            }
+            if (101 <= a && a < 102) {
+                return {-1, 6};
+            }
+            if (102 <= a && a < 4294967295) {
+                return {-1, 6};
+            }
+            return {-1, 6};
+        case 5:
+            if (0 <= a && a < 43) {
+                return {-1, 6};
+            }
+            if (43 <= a && a < 44) {
+                return {0, 2};
+            }
+            if (44 <= a && a < 45) {
+                return {-1, 6};
+            }
+            if (45 <= a && a < 46) {
+                return {0, 2};
+            }
+            if (46 <= a && a < 47) {
+                return {-1, 6};
+            }
+            if (47 <= a && a < 48) {
+                return {-1, 6};
+            }
+            if (48 <= a && a < 49) {
+                return {1, 1};
+            }
+            if (49 <= a && a < 58) {
+                return {1, 4};
+            }
+            if (58 <= a && a < 69) {
+                return {-1, 6};
+            }
+            if (69 <= a && a < 70) {
+                return {-1, 6};
+            }
+            if (70 <= a && a < 101) {
+                return {-1, 6};
+            }
+            if (101 <= a && a < 102) {
+                return {-1, 6};
+            }
+            if (102 <= a && a < 4294967295) {
+                return {-1, 6};
+            }
+            return {-1, 6};
+        case 9:
+            if (0 <= a && a < 43) {
+                return {-1, 6};
+            }
+            if (43 <= a && a < 44) {
+                return {-1, 6};
+            }
+            if (44 <= a && a < 45) {
+                return {-1, 6};
+            }
+            if (45 <= a && a < 46) {
+                return {-1, 6};
+            }
+            if (46 <= a && a < 47) {
+                return {-1, 6};
+            }
+            if (47 <= a && a < 48) {
+                return {-1, 6};
+            }
+            if (48 <= a && a < 49) {
+                return {1, 9};
+            }
+            if (49 <= a && a < 58) {
+                return {1, 9};
+            }
+            if (58 <= a && a < 69) {
+                return {-1, 6};
+            }
+            if (69 <= a && a < 70) {
+                return {0, 5};
+            }
+            if (70 <= a && a < 101) {
+                return {-1, 6};
+            }
+            if (101 <= a && a < 102) {
+                return {0, 5};
+            }
+            if (102 <= a && a < 4294967295) {
+                return {-1, 6};
+            }
+            return {-1, 6};
+        default:
+            return {-1, 6};
+        }
+    }
+};
+
+struct Character: public BaseRecognizer {
+    Character() : BaseRecognizer(Token::CHARACTER, false, 5) {}
+
+    std::pair<int, int> next(int q, uint32_t a) const
+    {
+        switch (q) {
+        case 0:
+            if (0 <= a && a < 32) {
+                return {-1, 5};
+            }
+            if (32 <= a && a < 39) {
+                return {-1, 5};
+            }
+            if (39 <= a && a < 40) {
+                return {0, 3};
+            }
+            if (40 <= a && a < 92) {
+                return {-1, 5};
+            }
+            if (92 <= a && a < 93) {
+                return {-1, 5};
+            }
+            if (93 <= a && a < 110) {
+                return {-1, 5};
+            }
+            if (110 <= a && a < 111) {
+                return {-1, 5};
+            }
+            if (111 <= a && a < 116) {
+                return {-1, 5};
+            }
+            if (116 <= a && a < 117) {
+                return {-1, 5};
+            }
+            if (117 <= a && a < 127) {
+                return {-1, 5};
+            }
+            if (127 <= a && a < 4294967295) {
+                return {-1, 5};
+            }
+            return {-1, 5};
+        case 3:
+            if (0 <= a && a < 32) {
+                return {-1, 5};
+            }
+            if (32 <= a && a < 39) {
+                return {0, 2};
+            }
+            if (39 <= a && a < 40) {
+                return {-1, 5};
+            }
+            if (40 <= a && a < 92) {
+                return {0, 2};
+            }
+            if (92 <= a && a < 93) {
+                return {0, 4};
+            }
+            if (93 <= a && a < 110) {
+                return {0, 2};
+            }
+            if (110 <= a && a < 111) {
+                return {0, 2};
+            }
+            if (111 <= a && a < 116) {
+                return {0, 2};
+            }
+            if (116 <= a && a < 117) {
+                return {0, 2};
+            }
+            if (117 <= a && a < 127) {
+                return {0, 2};
+            }
+            if (127 <= a && a < 4294967295) {
+                return {-1, 5};
+            }
+            return {-1, 5};
+        case 1:
+            if (0 <= a && a < 32) {
+                return {-1, 5};
+            }
+            if (32 <= a && a < 39) {
+                return {-1, 5};
+            }
+            if (39 <= a && a < 40) {
+                return {-1, 5};
+            }
+            if (40 <= a && a < 92) {
+                return {-1, 5};
+            }
+            if (92 <= a && a < 93) {
+                return {-1, 5};
+            }
+            if (93 <= a && a < 110) {
+                return {-1, 5};
+            }
+            if (110 <= a && a < 111) {
+                return {-1, 5};
+            }
+            if (111 <= a && a < 116) {
+                return {-1, 5};
+            }
+            if (116 <= a && a < 117) {
+                return {-1, 5};
+            }
+            if (117 <= a && a < 127) {
+                return {-1, 5};
+            }
+            if (127 <= a && a < 4294967295) {
+                return {-1, 5};
+            }
+            return {-1, 5};
+        case 2:
+            if (0 <= a && a < 32) {
+                return {-1, 5};
+            }
+            if (32 <= a && a < 39) {
+                return {-1, 5};
+            }
+            if (39 <= a && a < 40) {
+                return {1, 1};
+            }
+            if (40 <= a && a < 92) {
+                return {-1, 5};
+            }
+            if (92 <= a && a < 93) {
+                return {-1, 5};
+            }
+            if (93 <= a && a < 110) {
+                return {-1, 5};
+            }
+            if (110 <= a && a < 111) {
+                return {-1, 5};
+            }
+            if (111 <= a && a < 116) {
+                return {-1, 5};
+            }
+            if (116 <= a && a < 117) {
+                return {-1, 5};
+            }
+            if (117 <= a && a < 127) {
+                return {-1, 5};
+            }
+            if (127 <= a && a < 4294967295) {
+                return {-1, 5};
+            }
+            return {-1, 5};
+        case 4:
+            if (0 <= a && a < 32) {
+                return {-1, 5};
+            }
+            if (32 <= a && a < 39) {
+                return {-1, 5};
+            }
+            if (39 <= a && a < 40) {
+                return {0, 2};
+            }
+            if (40 <= a && a < 92) {
+                return {-1, 5};
+            }
+            if (92 <= a && a < 93) {
+                return {0, 2};
+            }
+            if (93 <= a && a < 110) {
+                return {-1, 5};
+            }
+            if (110 <= a && a < 111) {
+                return {0, 2};
+            }
+            if (111 <= a && a < 116) {
+                return {-1, 5};
+            }
+            if (116 <= a && a < 117) {
+                return {0, 2};
+            }
+            if (117 <= a && a < 127) {
+                return {-1, 5};
+            }
+            if (127 <= a && a < 4294967295) {
+                return {-1, 5};
+            }
+            return {-1, 5};
+        default:
+            return {-1, 5};
+        }
+    }
+};
+
+struct String: public BaseRecognizer {
+    String() : BaseRecognizer(Token::STRING, false, 4) {}
+
+    std::pair<int, int> next(int q, uint32_t a) const
+    {
+        switch (q) {
+        case 0:
+            if (0 <= a && a < 32) {
+                return {-1, 4};
+            }
+            if (32 <= a && a < 34) {
+                return {-1, 4};
+            }
+            if (34 <= a && a < 35) {
+                return {0, 2};
+            }
+            if (35 <= a && a < 92) {
+                return {-1, 4};
+            }
+            if (92 <= a && a < 93) {
+                return {-1, 4};
+            }
+            if (93 <= a && a < 127) {
+                return {-1, 4};
+            }
+            if (127 <= a && a < 4294967295) {
+                return {-1, 4};
+            }
+            return {-1, 4};
+        case 2:
+            if (0 <= a && a < 32) {
+                return {-1, 4};
+            }
+            if (32 <= a && a < 34) {
+                return {0, 2};
+            }
+            if (34 <= a && a < 35) {
+                return {1, 1};
+            }
+            if (35 <= a && a < 92) {
+                return {0, 2};
+            }
+            if (92 <= a && a < 93) {
+                return {0, 3};
+            }
+            if (93 <= a && a < 127) {
+                return {0, 2};
+            }
+            if (127 <= a && a < 4294967295) {
+                return {-1, 4};
+            }
+            return {-1, 4};
+        case 1:
+            if (0 <= a && a < 32) {
+                return {-1, 4};
+            }
+            if (32 <= a && a < 34) {
+                return {-1, 4};
+            }
+            if (34 <= a && a < 35) {
+                return {-1, 4};
+            }
+            if (35 <= a && a < 92) {
+                return {-1, 4};
+            }
+            if (92 <= a && a < 93) {
+                return {-1, 4};
+            }
+            if (93 <= a && a < 127) {
+                return {-1, 4};
+            }
+            if (127 <= a && a < 4294967295) {
+                return {-1, 4};
+            }
+            return {-1, 4};
+        case 3:
+            if (0 <= a && a < 32) {
+                return {-1, 4};
+            }
+            if (32 <= a && a < 34) {
+                return {0, 2};
+            }
+            if (34 <= a && a < 35) {
+                return {0, 2};
+            }
+            if (35 <= a && a < 92) {
+                return {0, 2};
+            }
+            if (92 <= a && a < 93) {
+                return {0, 2};
+            }
+            if (93 <= a && a < 127) {
+                return {0, 2};
+            }
+            if (127 <= a && a < 4294967295) {
+                return {-1, 4};
+            }
+            return {-1, 4};
+        default:
+            return {-1, 4};
+        }
+    }
+};
+
+struct Dot: public BaseRecognizer {
+    Dot() : BaseRecognizer(Token::DOT, false, 2) {}
+
+    std::pair<int, int> next(int q, uint32_t a) const
+    {
+        switch (q) {
+        case 0:
+            if (0 <= a && a < 46) {
+                return {-1, 2};
+            }
+            if (46 <= a && a < 47) {
+                return {1, 1};
+            }
+            if (47 <= a && a < 4294967295) {
+                return {-1, 2};
+            }
+            return {-1, 2};
+        case 1:
+            if (0 <= a && a < 46) {
+                return {-1, 2};
+            }
+            if (46 <= a && a < 47) {
+                return {-1, 2};
+            }
+            if (47 <= a && a < 4294967295) {
+                return {-1, 2};
+            }
+            return {-1, 2};
+        default:
+            return {-1, 2};
+        }
+    }
+};
+
+struct Lparen: public BaseRecognizer {
+    Lparen() : BaseRecognizer(Token::LPAREN, false, 2) {}
+
+    std::pair<int, int> next(int q, uint32_t a) const
+    {
+        switch (q) {
+        case 0:
+            if (0 <= a && a < 40) {
+                return {-1, 2};
+            }
+            if (40 <= a && a < 41) {
+                return {1, 1};
+            }
+            if (41 <= a && a < 4294967295) {
+                return {-1, 2};
+            }
+            return {-1, 2};
+        case 1:
+            if (0 <= a && a < 40) {
+                return {-1, 2};
+            }
+            if (40 <= a && a < 41) {
+                return {-1, 2};
+            }
+            if (41 <= a && a < 4294967295) {
+                return {-1, 2};
+            }
+            return {-1, 2};
+        default:
+            return {-1, 2};
+        }
+    }
+};
+
+struct Rparen: public BaseRecognizer {
+    Rparen() : BaseRecognizer(Token::RPAREN, false, 2) {}
+
+    std::pair<int, int> next(int q, uint32_t a) const
+    {
+        switch (q) {
+        case 0:
+            if (0 <= a && a < 41) {
+                return {-1, 2};
+            }
+            if (41 <= a && a < 42) {
+                return {1, 1};
+            }
+            if (42 <= a && a < 4294967295) {
+                return {-1, 2};
+            }
+            return {-1, 2};
+        case 1:
+            if (0 <= a && a < 41) {
+                return {-1, 2};
+            }
+            if (41 <= a && a < 42) {
+                return {-1, 2};
+            }
+            if (42 <= a && a < 4294967295) {
+                return {-1, 2};
+            }
+            return {-1, 2};
+        default:
+            return {-1, 2};
+        }
+    }
+};
+
+struct Comma: public BaseRecognizer {
+    Comma() : BaseRecognizer(Token::COMMA, false, 2) {}
+
+    std::pair<int, int> next(int q, uint32_t a) const
+    {
+        switch (q) {
+        case 0:
+            if (0 <= a && a < 44) {
+                return {-1, 2};
+            }
+            if (44 <= a && a < 45) {
+                return {1, 1};
+            }
+            if (45 <= a && a < 4294967295) {
+                return {-1, 2};
+            }
+            return {-1, 2};
+        case 1:
+            if (0 <= a && a < 44) {
+                return {-1, 2};
+            }
+            if (44 <= a && a < 45) {
+                return {-1, 2};
+            }
+            if (45 <= a && a < 4294967295) {
+                return {-1, 2};
+            }
+            return {-1, 2};
+        default:
+            return {-1, 2};
+        }
+    }
+};
+
+struct Star: public BaseRecognizer {
+    Star() : BaseRecognizer(Token::STAR, false, 2) {}
+
+    std::pair<int, int> next(int q, uint32_t a) const
+    {
+        switch (q) {
+        case 0:
+            if (0 <= a && a < 42) {
+                return {-1, 2};
+            }
+            if (42 <= a && a < 43) {
+                return {1, 1};
+            }
+            if (43 <= a && a < 4294967295) {
+                return {-1, 2};
+            }
+            return {-1, 2};
+        case 1:
+            if (0 <= a && a < 42) {
+                return {-1, 2};
+            }
+            if (42 <= a && a < 43) {
+                return {-1, 2};
+            }
+            if (43 <= a && a < 4294967295) {
+                return {-1, 2};
+            }
+            return {-1, 2};
+        default:
+            return {-1, 2};
+        }
+    }
+};
+
+struct Equal: public BaseRecognizer {
+    Equal() : BaseRecognizer(Token::EQUAL, false, 2) {}
+
+    std::pair<int, int> next(int q, uint32_t a) const
+    {
+        switch (q) {
+        case 0:
+            if (0 <= a && a < 61) {
+                return {-1, 2};
+            }
+            if (61 <= a && a < 62) {
+                return {1, 1};
+            }
+            if (62 <= a && a < 4294967295) {
+                return {-1, 2};
+            }
+            return {-1, 2};
+        case 1:
+            if (0 <= a && a < 61) {
+                return {-1, 2};
+            }
+            if (61 <= a && a < 62) {
+                return {-1, 2};
+            }
+            if (62 <= a && a < 4294967295) {
+                return {-1, 2};
+            }
+            return {-1, 2};
+        default:
+            return {-1, 2};
+        }
+    }
+};
+
+struct Lbrace: public BaseRecognizer {
+    Lbrace() : BaseRecognizer(Token::LBRACE, false, 2) {}
+
+    std::pair<int, int> next(int q, uint32_t a) const
+    {
+        switch (q) {
+        case 0:
+            if (0 <= a && a < 123) {
+                return {-1, 2};
+            }
+            if (123 <= a && a < 124) {
+                return {1, 1};
+            }
+            if (124 <= a && a < 4294967295) {
+                return {-1, 2};
+            }
+            return {-1, 2};
+        case 1:
+            if (0 <= a && a < 123) {
+                return {-1, 2};
+            }
+            if (123 <= a && a < 124) {
+                return {-1, 2};
+            }
+            if (124 <= a && a < 4294967295) {
+                return {-1, 2};
+            }
+            return {-1, 2};
+        default:
+            return {-1, 2};
+        }
+    }
+};
+
+struct Rbrace: public BaseRecognizer {
+    Rbrace() : BaseRecognizer(Token::RBRACE, false, 2) {}
+
+    std::pair<int, int> next(int q, uint32_t a) const
+    {
+        switch (q) {
+        case 0:
+            if (0 <= a && a < 125) {
+                return {-1, 2};
+            }
+            if (125 <= a && a < 126) {
+                return {1, 1};
+            }
+            if (126 <= a && a < 4294967295) {
+                return {-1, 2};
+            }
+            return {-1, 2};
+        case 1:
+            if (0 <= a && a < 125) {
+                return {-1, 2};
+            }
+            if (125 <= a && a < 126) {
+                return {-1, 2};
+            }
+            if (126 <= a && a < 4294967295) {
+                return {-1, 2};
+            }
+            return {-1, 2};
+        default:
+            return {-1, 2};
+        }
+    }
+};
+
+struct Colon: public BaseRecognizer {
+    Colon() : BaseRecognizer(Token::COLON, false, 2) {}
+
+    std::pair<int, int> next(int q, uint32_t a) const
+    {
+        switch (q) {
+        case 0:
+            if (0 <= a && a < 58) {
+                return {-1, 2};
+            }
+            if (58 <= a && a < 59) {
+                return {1, 1};
+            }
+            if (59 <= a && a < 4294967295) {
+                return {-1, 2};
+            }
+            return {-1, 2};
+        case 1:
+            if (0 <= a && a < 58) {
+                return {-1, 2};
+            }
+            if (58 <= a && a < 59) {
+                return {-1, 2};
+            }
+            if (59 <= a && a < 4294967295) {
+                return {-1, 2};
+            }
+            return {-1, 2};
+        default:
+            return {-1, 2};
+        }
+    }
+};
+
+struct Lbracket: public BaseRecognizer {
+    Lbracket() : BaseRecognizer(Token::LBRACKET, false, 2) {}
+
+    std::pair<int, int> next(int q, uint32_t a) const
+    {
+        switch (q) {
+        case 0:
+            if (0 <= a && a < 91) {
+                return {-1, 2};
+            }
+            if (91 <= a && a < 92) {
+                return {1, 1};
+            }
+            if (92 <= a && a < 4294967295) {
+                return {-1, 2};
+            }
+            return {-1, 2};
+        case 1:
+            if (0 <= a && a < 91) {
+                return {-1, 2};
+            }
+            if (91 <= a && a < 92) {
+                return {-1, 2};
+            }
+            if (92 <= a && a < 4294967295) {
+                return {-1, 2};
+            }
+            return {-1, 2};
+        default:
+            return {-1, 2};
+        }
+    }
+};
+
+struct Rbracket: public BaseRecognizer {
+    Rbracket() : BaseRecognizer(Token::RBRACKET, false, 2) {}
+
+    std::pair<int, int> next(int q, uint32_t a) const
+    {
+        switch (q) {
+        case 0:
+            if (0 <= a && a < 93) {
+                return {-1, 2};
+            }
+            if (93 <= a && a < 94) {
+                return {1, 1};
+            }
+            if (94 <= a && a < 4294967295) {
+                return {-1, 2};
+            }
+            return {-1, 2};
+        case 1:
+            if (0 <= a && a < 93) {
+                return {-1, 2};
+            }
+            if (93 <= a && a < 94) {
+                return {-1, 2};
+            }
+            if (94 <= a && a < 4294967295) {
+                return {-1, 2};
+            }
+            return {-1, 2};
+        default:
+            return {-1, 2};
+        }
+    }
+};
+
+struct Plus: public BaseRecognizer {
+    Plus() : BaseRecognizer(Token::PLUS, false, 2) {}
+
+    std::pair<int, int> next(int q, uint32_t a) const
+    {
+        switch (q) {
+        case 0:
+            if (0 <= a && a < 43) {
+                return {-1, 2};
+            }
+            if (43 <= a && a < 44) {
+                return {1, 1};
+            }
+            if (44 <= a && a < 4294967295) {
+                return {-1, 2};
+            }
+            return {-1, 2};
+        case 1:
+            if (0 <= a && a < 43) {
+                return {-1, 2};
+            }
+            if (43 <= a && a < 44) {
+                return {-1, 2};
+            }
+            if (44 <= a && a < 4294967295) {
+                return {-1, 2};
+            }
+            return {-1, 2};
+        default:
+            return {-1, 2};
+        }
+    }
+};
+
+struct Minus: public BaseRecognizer {
+    Minus() : BaseRecognizer(Token::MINUS, false, 2) {}
+
+    std::pair<int, int> next(int q, uint32_t a) const
+    {
+        switch (q) {
+        case 0:
+            if (0 <= a && a < 45) {
+                return {-1, 2};
+            }
+            if (45 <= a && a < 46) {
+                return {1, 1};
+            }
+            if (46 <= a && a < 4294967295) {
+                return {-1, 2};
+            }
+            return {-1, 2};
+        case 1:
+            if (0 <= a && a < 45) {
+                return {-1, 2};
+            }
+            if (45 <= a && a < 46) {
+                return {-1, 2};
+            }
+            if (46 <= a && a < 4294967295) {
+                return {-1, 2};
+            }
+            return {-1, 2};
+        default:
+            return {-1, 2};
+        }
+    }
+};
+
+struct Slash: public BaseRecognizer {
+    Slash() : BaseRecognizer(Token::SLASH, false, 2) {}
+
+    std::pair<int, int> next(int q, uint32_t a) const
+    {
+        switch (q) {
+        case 0:
+            if (0 <= a && a < 47) {
+                return {-1, 2};
+            }
+            if (47 <= a && a < 48) {
+                return {1, 1};
+            }
+            if (48 <= a && a < 4294967295) {
+                return {-1, 2};
+            }
+            return {-1, 2};
+        case 1:
+            if (0 <= a && a < 47) {
+                return {-1, 2};
+            }
+            if (47 <= a && a < 48) {
+                return {-1, 2};
+            }
+            if (48 <= a && a < 4294967295) {
+                return {-1, 2};
+            }
+            return {-1, 2};
+        default:
+            return {-1, 2};
+        }
+    }
+};
+
+struct Lessthan: public BaseRecognizer {
+    Lessthan() : BaseRecognizer(Token::LESSTHAN, false, 2) {}
+
+    std::pair<int, int> next(int q, uint32_t a) const
+    {
+        switch (q) {
+        case 0:
+            if (0 <= a && a < 60) {
+                return {-1, 2};
+            }
+            if (60 <= a && a < 61) {
+                return {1, 1};
+            }
+            if (61 <= a && a < 4294967295) {
+                return {-1, 2};
+            }
+            return {-1, 2};
+        case 1:
+            if (0 <= a && a < 60) {
+                return {-1, 2};
+            }
+            if (60 <= a && a < 61) {
+                return {-1, 2};
+            }
+            if (61 <= a && a < 4294967295) {
+                return {-1, 2};
+            }
+            return {-1, 2};
+        default:
+            return {-1, 2};
+        }
+    }
+};
+
+struct Greaterthan: public BaseRecognizer {
+    Greaterthan() : BaseRecognizer(Token::GREATERTHAN, false, 2) {}
+
+    std::pair<int, int> next(int q, uint32_t a) const
+    {
+        switch (q) {
+        case 0:
+            if (0 <= a && a < 62) {
+                return {-1, 2};
+            }
+            if (62 <= a && a < 63) {
+                return {1, 1};
+            }
+            if (63 <= a && a < 4294967295) {
+                return {-1, 2};
+            }
+            return {-1, 2};
+        case 1:
+            if (0 <= a && a < 62) {
+                return {-1, 2};
+            }
+            if (62 <= a && a < 63) {
+                return {-1, 2};
+            }
+            if (63 <= a && a < 4294967295) {
+                return {-1, 2};
+            }
+            return {-1, 2};
+        default:
+            return {-1, 2};
+        }
+    }
+};
+
+template <class... Recognizers>
+std::pair<Token, std::string> match_first(std::istream& in = std::cin)
+{
+    std::vector<std::unique_ptr<BaseRecognizer>> recs = {
+        std::make_unique<Recognizers>() ...
+    };
+    for (auto r: recs) {
+        auto [ok, s] = r->match(in);
+        if (ok) {
+            return {r->token, s};
+        }
+    }
+    return {Token::EMPTY, ""};
 }
 
-struct IdentifierScanner: public Scanner {
-    IdentifierScanner() : Scanner(Token::identifier)
-    {
-        error = 2;
-    }
-
-    bool next(uint32_t c)
-    {
-        switch (state()) {
-        case 0:
-            if (0 <= c && c < 48)
-                return change_state(2);
-            if (48 <= c && c < 58)
-                return change_state(2);
-            if (58 <= c && c < 65)
-                return change_state(2);
-            if (65 <= c && c < 91)
-                return change_state(1, true);
-            if (91 <= c && c < 95)
-                return change_state(2);
-            if (95 <= c && c < 96)
-                return change_state(1, true);
-            if (96 <= c && c < 97)
-                return change_state(2);
-            if (97 <= c && c < 123)
-                return change_state(1, true);
-            if (123 <= c && c < 4294967295)
-                return change_state(2);
-            return change_state(error);
-        case 2:
-            if (0 <= c && c < 48)
-                return change_state(2);
-            if (48 <= c && c < 58)
-                return change_state(2);
-            if (58 <= c && c < 65)
-                return change_state(2);
-            if (65 <= c && c < 91)
-                return change_state(2);
-            if (91 <= c && c < 95)
-                return change_state(2);
-            if (95 <= c && c < 96)
-                return change_state(2);
-            if (96 <= c && c < 97)
-                return change_state(2);
-            if (97 <= c && c < 123)
-                return change_state(2);
-            if (123 <= c && c < 4294967295)
-                return change_state(2);
-            return change_state(error);
-        case 1:
-            if (0 <= c && c < 48)
-                return change_state(2);
-            if (48 <= c && c < 58)
-                return change_state(1, true);
-            if (58 <= c && c < 65)
-                return change_state(2);
-            if (65 <= c && c < 91)
-                return change_state(1, true);
-            if (91 <= c && c < 95)
-                return change_state(2);
-            if (95 <= c && c < 96)
-                return change_state(1, true);
-            if (96 <= c && c < 97)
-                return change_state(2);
-            if (97 <= c && c < 123)
-                return change_state(1, true);
-            if (123 <= c && c < 4294967295)
-                return change_state(2);
-            return change_state(error);
-        default:
-            return change_state(error);
+template <class... Recognizers>
+std::pair<Token, std::string> match_longest(std::istream& in = std::cin)
+{
+    std::vector<std::unique_ptr<BaseRecognizer>> recs = {
+        std::make_unique<Recognizers>() ...
+    };
+    Token token = Token::EMPTY;
+    std::string lexeme;
+    for (auto r: recs) {
+        auto [ok, s] = r->match(in);
+        if (ok && s.size() > lexeme.size()) {
+            token = r->token;
+            lexeme = s;
         }
     }
-};
-
-struct WhitespaceScanner: public Scanner {
-    WhitespaceScanner() : Scanner(Token::whitespace)
-    {
-        error = 2;
-    }
-
-    bool next(uint32_t c)
-    {
-        switch (state()) {
-        case 0:
-            if (0 <= c && c < 9)
-                return change_state(2);
-            if (9 <= c && c < 10)
-                return change_state(1, true);
-            if (10 <= c && c < 11)
-                return change_state(1, true);
-            if (11 <= c && c < 32)
-                return change_state(2);
-            if (32 <= c && c < 33)
-                return change_state(1, true);
-            if (33 <= c && c < 4294967295)
-                return change_state(2);
-            return change_state(error);
-        case 2:
-            if (0 <= c && c < 9)
-                return change_state(2);
-            if (9 <= c && c < 10)
-                return change_state(2);
-            if (10 <= c && c < 11)
-                return change_state(2);
-            if (11 <= c && c < 32)
-                return change_state(2);
-            if (32 <= c && c < 33)
-                return change_state(2);
-            if (33 <= c && c < 4294967295)
-                return change_state(2);
-            return change_state(error);
-        case 1:
-            if (0 <= c && c < 9)
-                return change_state(2);
-            if (9 <= c && c < 10)
-                return change_state(2);
-            if (10 <= c && c < 11)
-                return change_state(2);
-            if (11 <= c && c < 32)
-                return change_state(2);
-            if (32 <= c && c < 33)
-                return change_state(2);
-            if (33 <= c && c < 4294967295)
-                return change_state(2);
-            return change_state(error);
-        default:
-            return change_state(error);
-        }
-    }
-};
-
-struct NumberScanner: public Scanner {
-    NumberScanner() : Scanner(Token::number)
-    {
-        error = 6;
-    }
-
-    bool next(uint32_t c)
-    {
-        switch (state()) {
-        case 0:
-            if (0 <= c && c < 43)
-                return change_state(6);
-            if (43 <= c && c < 44)
-                return change_state(6);
-            if (44 <= c && c < 45)
-                return change_state(6);
-            if (45 <= c && c < 46)
-                return change_state(6);
-            if (46 <= c && c < 47)
-                return change_state(6);
-            if (47 <= c && c < 48)
-                return change_state(6);
-            if (48 <= c && c < 49)
-                return change_state(3, true);
-            if (49 <= c && c < 58)
-                return change_state(8, true);
-            if (58 <= c && c < 69)
-                return change_state(6);
-            if (69 <= c && c < 70)
-                return change_state(6);
-            if (70 <= c && c < 101)
-                return change_state(6);
-            if (101 <= c && c < 102)
-                return change_state(6);
-            if (102 <= c && c < 4294967295)
-                return change_state(6);
-            return change_state(error);
-        case 6:
-            if (0 <= c && c < 43)
-                return change_state(6);
-            if (43 <= c && c < 44)
-                return change_state(6);
-            if (44 <= c && c < 45)
-                return change_state(6);
-            if (45 <= c && c < 46)
-                return change_state(6);
-            if (46 <= c && c < 47)
-                return change_state(6);
-            if (47 <= c && c < 48)
-                return change_state(6);
-            if (48 <= c && c < 49)
-                return change_state(6);
-            if (49 <= c && c < 58)
-                return change_state(6);
-            if (58 <= c && c < 69)
-                return change_state(6);
-            if (69 <= c && c < 70)
-                return change_state(6);
-            if (70 <= c && c < 101)
-                return change_state(6);
-            if (101 <= c && c < 102)
-                return change_state(6);
-            if (102 <= c && c < 4294967295)
-                return change_state(6);
-            return change_state(error);
-        case 3:
-            if (0 <= c && c < 43)
-                return change_state(6);
-            if (43 <= c && c < 44)
-                return change_state(6);
-            if (44 <= c && c < 45)
-                return change_state(6);
-            if (45 <= c && c < 46)
-                return change_state(6);
-            if (46 <= c && c < 47)
-                return change_state(7);
-            if (47 <= c && c < 48)
-                return change_state(6);
-            if (48 <= c && c < 49)
-                return change_state(6);
-            if (49 <= c && c < 58)
-                return change_state(6);
-            if (58 <= c && c < 69)
-                return change_state(6);
-            if (69 <= c && c < 70)
-                return change_state(5);
-            if (70 <= c && c < 101)
-                return change_state(6);
-            if (101 <= c && c < 102)
-                return change_state(5);
-            if (102 <= c && c < 4294967295)
-                return change_state(6);
-            return change_state(error);
-        case 8:
-            if (0 <= c && c < 43)
-                return change_state(6);
-            if (43 <= c && c < 44)
-                return change_state(6);
-            if (44 <= c && c < 45)
-                return change_state(6);
-            if (45 <= c && c < 46)
-                return change_state(6);
-            if (46 <= c && c < 47)
-                return change_state(7);
-            if (47 <= c && c < 48)
-                return change_state(6);
-            if (48 <= c && c < 49)
-                return change_state(8, true);
-            if (49 <= c && c < 58)
-                return change_state(8, true);
-            if (58 <= c && c < 69)
-                return change_state(6);
-            if (69 <= c && c < 70)
-                return change_state(5);
-            if (70 <= c && c < 101)
-                return change_state(6);
-            if (101 <= c && c < 102)
-                return change_state(5);
-            if (102 <= c && c < 4294967295)
-                return change_state(6);
-            return change_state(error);
-        case 1:
-            if (0 <= c && c < 43)
-                return change_state(6);
-            if (43 <= c && c < 44)
-                return change_state(6);
-            if (44 <= c && c < 45)
-                return change_state(6);
-            if (45 <= c && c < 46)
-                return change_state(6);
-            if (46 <= c && c < 47)
-                return change_state(6);
-            if (47 <= c && c < 48)
-                return change_state(6);
-            if (48 <= c && c < 49)
-                return change_state(6);
-            if (49 <= c && c < 58)
-                return change_state(6);
-            if (58 <= c && c < 69)
-                return change_state(6);
-            if (69 <= c && c < 70)
-                return change_state(6);
-            if (70 <= c && c < 101)
-                return change_state(6);
-            if (101 <= c && c < 102)
-                return change_state(6);
-            if (102 <= c && c < 4294967295)
-                return change_state(6);
-            return change_state(error);
-        case 2:
-            if (0 <= c && c < 43)
-                return change_state(6);
-            if (43 <= c && c < 44)
-                return change_state(6);
-            if (44 <= c && c < 45)
-                return change_state(6);
-            if (45 <= c && c < 46)
-                return change_state(6);
-            if (46 <= c && c < 47)
-                return change_state(6);
-            if (47 <= c && c < 48)
-                return change_state(6);
-            if (48 <= c && c < 49)
-                return change_state(1, true);
-            if (49 <= c && c < 58)
-                return change_state(4, true);
-            if (58 <= c && c < 69)
-                return change_state(6);
-            if (69 <= c && c < 70)
-                return change_state(6);
-            if (70 <= c && c < 101)
-                return change_state(6);
-            if (101 <= c && c < 102)
-                return change_state(6);
-            if (102 <= c && c < 4294967295)
-                return change_state(6);
-            return change_state(error);
-        case 4:
-            if (0 <= c && c < 43)
-                return change_state(6);
-            if (43 <= c && c < 44)
-                return change_state(6);
-            if (44 <= c && c < 45)
-                return change_state(6);
-            if (45 <= c && c < 46)
-                return change_state(6);
-            if (46 <= c && c < 47)
-                return change_state(6);
-            if (47 <= c && c < 48)
-                return change_state(6);
-            if (48 <= c && c < 49)
-                return change_state(4, true);
-            if (49 <= c && c < 58)
-                return change_state(4, true);
-            if (58 <= c && c < 69)
-                return change_state(6);
-            if (69 <= c && c < 70)
-                return change_state(6);
-            if (70 <= c && c < 101)
-                return change_state(6);
-            if (101 <= c && c < 102)
-                return change_state(6);
-            if (102 <= c && c < 4294967295)
-                return change_state(6);
-            return change_state(error);
-        case 7:
-            if (0 <= c && c < 43)
-                return change_state(6);
-            if (43 <= c && c < 44)
-                return change_state(6);
-            if (44 <= c && c < 45)
-                return change_state(6);
-            if (45 <= c && c < 46)
-                return change_state(6);
-            if (46 <= c && c < 47)
-                return change_state(6);
-            if (47 <= c && c < 48)
-                return change_state(6);
-            if (48 <= c && c < 49)
-                return change_state(9, true);
-            if (49 <= c && c < 58)
-                return change_state(9, true);
-            if (58 <= c && c < 69)
-                return change_state(6);
-            if (69 <= c && c < 70)
-                return change_state(6);
-            if (70 <= c && c < 101)
-                return change_state(6);
-            if (101 <= c && c < 102)
-                return change_state(6);
-            if (102 <= c && c < 4294967295)
-                return change_state(6);
-            return change_state(error);
-        case 5:
-            if (0 <= c && c < 43)
-                return change_state(6);
-            if (43 <= c && c < 44)
-                return change_state(2);
-            if (44 <= c && c < 45)
-                return change_state(6);
-            if (45 <= c && c < 46)
-                return change_state(2);
-            if (46 <= c && c < 47)
-                return change_state(6);
-            if (47 <= c && c < 48)
-                return change_state(6);
-            if (48 <= c && c < 49)
-                return change_state(1, true);
-            if (49 <= c && c < 58)
-                return change_state(4, true);
-            if (58 <= c && c < 69)
-                return change_state(6);
-            if (69 <= c && c < 70)
-                return change_state(6);
-            if (70 <= c && c < 101)
-                return change_state(6);
-            if (101 <= c && c < 102)
-                return change_state(6);
-            if (102 <= c && c < 4294967295)
-                return change_state(6);
-            return change_state(error);
-        case 9:
-            if (0 <= c && c < 43)
-                return change_state(6);
-            if (43 <= c && c < 44)
-                return change_state(6);
-            if (44 <= c && c < 45)
-                return change_state(6);
-            if (45 <= c && c < 46)
-                return change_state(6);
-            if (46 <= c && c < 47)
-                return change_state(6);
-            if (47 <= c && c < 48)
-                return change_state(6);
-            if (48 <= c && c < 49)
-                return change_state(9, true);
-            if (49 <= c && c < 58)
-                return change_state(9, true);
-            if (58 <= c && c < 69)
-                return change_state(6);
-            if (69 <= c && c < 70)
-                return change_state(5);
-            if (70 <= c && c < 101)
-                return change_state(6);
-            if (101 <= c && c < 102)
-                return change_state(5);
-            if (102 <= c && c < 4294967295)
-                return change_state(6);
-            return change_state(error);
-        default:
-            return change_state(error);
-        }
-    }
-};
-
-struct CharacterScanner: public Scanner {
-    CharacterScanner() : Scanner(Token::character)
-    {
-        error = 5;
-    }
-
-    bool next(uint32_t c)
-    {
-        switch (state()) {
-        case 0:
-            if (0 <= c && c < 32)
-                return change_state(5);
-            if (32 <= c && c < 39)
-                return change_state(5);
-            if (39 <= c && c < 40)
-                return change_state(3);
-            if (40 <= c && c < 92)
-                return change_state(5);
-            if (92 <= c && c < 93)
-                return change_state(5);
-            if (93 <= c && c < 110)
-                return change_state(5);
-            if (110 <= c && c < 111)
-                return change_state(5);
-            if (111 <= c && c < 116)
-                return change_state(5);
-            if (116 <= c && c < 117)
-                return change_state(5);
-            if (117 <= c && c < 127)
-                return change_state(5);
-            if (127 <= c && c < 4294967295)
-                return change_state(5);
-            return change_state(error);
-        case 5:
-            if (0 <= c && c < 32)
-                return change_state(5);
-            if (32 <= c && c < 39)
-                return change_state(5);
-            if (39 <= c && c < 40)
-                return change_state(5);
-            if (40 <= c && c < 92)
-                return change_state(5);
-            if (92 <= c && c < 93)
-                return change_state(5);
-            if (93 <= c && c < 110)
-                return change_state(5);
-            if (110 <= c && c < 111)
-                return change_state(5);
-            if (111 <= c && c < 116)
-                return change_state(5);
-            if (116 <= c && c < 117)
-                return change_state(5);
-            if (117 <= c && c < 127)
-                return change_state(5);
-            if (127 <= c && c < 4294967295)
-                return change_state(5);
-            return change_state(error);
-        case 3:
-            if (0 <= c && c < 32)
-                return change_state(5);
-            if (32 <= c && c < 39)
-                return change_state(2);
-            if (39 <= c && c < 40)
-                return change_state(5);
-            if (40 <= c && c < 92)
-                return change_state(2);
-            if (92 <= c && c < 93)
-                return change_state(4);
-            if (93 <= c && c < 110)
-                return change_state(2);
-            if (110 <= c && c < 111)
-                return change_state(2);
-            if (111 <= c && c < 116)
-                return change_state(2);
-            if (116 <= c && c < 117)
-                return change_state(2);
-            if (117 <= c && c < 127)
-                return change_state(2);
-            if (127 <= c && c < 4294967295)
-                return change_state(5);
-            return change_state(error);
-        case 1:
-            if (0 <= c && c < 32)
-                return change_state(5);
-            if (32 <= c && c < 39)
-                return change_state(5);
-            if (39 <= c && c < 40)
-                return change_state(5);
-            if (40 <= c && c < 92)
-                return change_state(5);
-            if (92 <= c && c < 93)
-                return change_state(5);
-            if (93 <= c && c < 110)
-                return change_state(5);
-            if (110 <= c && c < 111)
-                return change_state(5);
-            if (111 <= c && c < 116)
-                return change_state(5);
-            if (116 <= c && c < 117)
-                return change_state(5);
-            if (117 <= c && c < 127)
-                return change_state(5);
-            if (127 <= c && c < 4294967295)
-                return change_state(5);
-            return change_state(error);
-        case 2:
-            if (0 <= c && c < 32)
-                return change_state(5);
-            if (32 <= c && c < 39)
-                return change_state(5);
-            if (39 <= c && c < 40)
-                return change_state(1, true);
-            if (40 <= c && c < 92)
-                return change_state(5);
-            if (92 <= c && c < 93)
-                return change_state(5);
-            if (93 <= c && c < 110)
-                return change_state(5);
-            if (110 <= c && c < 111)
-                return change_state(5);
-            if (111 <= c && c < 116)
-                return change_state(5);
-            if (116 <= c && c < 117)
-                return change_state(5);
-            if (117 <= c && c < 127)
-                return change_state(5);
-            if (127 <= c && c < 4294967295)
-                return change_state(5);
-            return change_state(error);
-        case 4:
-            if (0 <= c && c < 32)
-                return change_state(5);
-            if (32 <= c && c < 39)
-                return change_state(5);
-            if (39 <= c && c < 40)
-                return change_state(2);
-            if (40 <= c && c < 92)
-                return change_state(5);
-            if (92 <= c && c < 93)
-                return change_state(2);
-            if (93 <= c && c < 110)
-                return change_state(5);
-            if (110 <= c && c < 111)
-                return change_state(2);
-            if (111 <= c && c < 116)
-                return change_state(5);
-            if (116 <= c && c < 117)
-                return change_state(2);
-            if (117 <= c && c < 127)
-                return change_state(5);
-            if (127 <= c && c < 4294967295)
-                return change_state(5);
-            return change_state(error);
-        default:
-            return change_state(error);
-        }
-    }
-};
-
-struct StringScanner: public Scanner {
-    StringScanner() : Scanner(Token::string)
-    {
-        error = 4;
-    }
-
-    bool next(uint32_t c)
-    {
-        switch (state()) {
-        case 0:
-            if (0 <= c && c < 32)
-                return change_state(4);
-            if (32 <= c && c < 34)
-                return change_state(4);
-            if (34 <= c && c < 35)
-                return change_state(2);
-            if (35 <= c && c < 92)
-                return change_state(4);
-            if (92 <= c && c < 93)
-                return change_state(4);
-            if (93 <= c && c < 127)
-                return change_state(4);
-            if (127 <= c && c < 4294967295)
-                return change_state(4);
-            return change_state(error);
-        case 4:
-            if (0 <= c && c < 32)
-                return change_state(4);
-            if (32 <= c && c < 34)
-                return change_state(4);
-            if (34 <= c && c < 35)
-                return change_state(4);
-            if (35 <= c && c < 92)
-                return change_state(4);
-            if (92 <= c && c < 93)
-                return change_state(4);
-            if (93 <= c && c < 127)
-                return change_state(4);
-            if (127 <= c && c < 4294967295)
-                return change_state(4);
-            return change_state(error);
-        case 2:
-            if (0 <= c && c < 32)
-                return change_state(4);
-            if (32 <= c && c < 34)
-                return change_state(2);
-            if (34 <= c && c < 35)
-                return change_state(1, true);
-            if (35 <= c && c < 92)
-                return change_state(2);
-            if (92 <= c && c < 93)
-                return change_state(3);
-            if (93 <= c && c < 127)
-                return change_state(2);
-            if (127 <= c && c < 4294967295)
-                return change_state(4);
-            return change_state(error);
-        case 1:
-            if (0 <= c && c < 32)
-                return change_state(4);
-            if (32 <= c && c < 34)
-                return change_state(4);
-            if (34 <= c && c < 35)
-                return change_state(4);
-            if (35 <= c && c < 92)
-                return change_state(4);
-            if (92 <= c && c < 93)
-                return change_state(4);
-            if (93 <= c && c < 127)
-                return change_state(4);
-            if (127 <= c && c < 4294967295)
-                return change_state(4);
-            return change_state(error);
-        case 3:
-            if (0 <= c && c < 32)
-                return change_state(4);
-            if (32 <= c && c < 34)
-                return change_state(2);
-            if (34 <= c && c < 35)
-                return change_state(2);
-            if (35 <= c && c < 92)
-                return change_state(2);
-            if (92 <= c && c < 93)
-                return change_state(2);
-            if (93 <= c && c < 127)
-                return change_state(2);
-            if (127 <= c && c < 4294967295)
-                return change_state(4);
-            return change_state(error);
-        default:
-            return change_state(error);
-        }
-    }
-};
-
-struct DotScanner: public Scanner {
-    DotScanner() : Scanner(Token::dot)
-    {
-        error = 2;
-    }
-
-    bool next(uint32_t c)
-    {
-        switch (state()) {
-        case 0:
-            if (0 <= c && c < 46)
-                return change_state(2);
-            if (46 <= c && c < 47)
-                return change_state(1, true);
-            if (47 <= c && c < 4294967295)
-                return change_state(2);
-            return change_state(error);
-        case 2:
-            if (0 <= c && c < 46)
-                return change_state(2);
-            if (46 <= c && c < 47)
-                return change_state(2);
-            if (47 <= c && c < 4294967295)
-                return change_state(2);
-            return change_state(error);
-        case 1:
-            if (0 <= c && c < 46)
-                return change_state(2);
-            if (46 <= c && c < 47)
-                return change_state(2);
-            if (47 <= c && c < 4294967295)
-                return change_state(2);
-            return change_state(error);
-        default:
-            return change_state(error);
-        }
-    }
-};
-
-struct LparenScanner: public Scanner {
-    LparenScanner() : Scanner(Token::lparen)
-    {
-        error = 2;
-    }
-
-    bool next(uint32_t c)
-    {
-        switch (state()) {
-        case 0:
-            if (0 <= c && c < 40)
-                return change_state(2);
-            if (40 <= c && c < 41)
-                return change_state(1, true);
-            if (41 <= c && c < 4294967295)
-                return change_state(2);
-            return change_state(error);
-        case 2:
-            if (0 <= c && c < 40)
-                return change_state(2);
-            if (40 <= c && c < 41)
-                return change_state(2);
-            if (41 <= c && c < 4294967295)
-                return change_state(2);
-            return change_state(error);
-        case 1:
-            if (0 <= c && c < 40)
-                return change_state(2);
-            if (40 <= c && c < 41)
-                return change_state(2);
-            if (41 <= c && c < 4294967295)
-                return change_state(2);
-            return change_state(error);
-        default:
-            return change_state(error);
-        }
-    }
-};
-
-struct RparenScanner: public Scanner {
-    RparenScanner() : Scanner(Token::rparen)
-    {
-        error = 2;
-    }
-
-    bool next(uint32_t c)
-    {
-        switch (state()) {
-        case 0:
-            if (0 <= c && c < 41)
-                return change_state(2);
-            if (41 <= c && c < 42)
-                return change_state(1, true);
-            if (42 <= c && c < 4294967295)
-                return change_state(2);
-            return change_state(error);
-        case 2:
-            if (0 <= c && c < 41)
-                return change_state(2);
-            if (41 <= c && c < 42)
-                return change_state(2);
-            if (42 <= c && c < 4294967295)
-                return change_state(2);
-            return change_state(error);
-        case 1:
-            if (0 <= c && c < 41)
-                return change_state(2);
-            if (41 <= c && c < 42)
-                return change_state(2);
-            if (42 <= c && c < 4294967295)
-                return change_state(2);
-            return change_state(error);
-        default:
-            return change_state(error);
-        }
-    }
-};
-
-struct CommaScanner: public Scanner {
-    CommaScanner() : Scanner(Token::comma)
-    {
-        error = 2;
-    }
-
-    bool next(uint32_t c)
-    {
-        switch (state()) {
-        case 0:
-            if (0 <= c && c < 44)
-                return change_state(2);
-            if (44 <= c && c < 45)
-                return change_state(1, true);
-            if (45 <= c && c < 4294967295)
-                return change_state(2);
-            return change_state(error);
-        case 2:
-            if (0 <= c && c < 44)
-                return change_state(2);
-            if (44 <= c && c < 45)
-                return change_state(2);
-            if (45 <= c && c < 4294967295)
-                return change_state(2);
-            return change_state(error);
-        case 1:
-            if (0 <= c && c < 44)
-                return change_state(2);
-            if (44 <= c && c < 45)
-                return change_state(2);
-            if (45 <= c && c < 4294967295)
-                return change_state(2);
-            return change_state(error);
-        default:
-            return change_state(error);
-        }
-    }
-};
-
-struct StarScanner: public Scanner {
-    StarScanner() : Scanner(Token::star)
-    {
-        error = 2;
-    }
-
-    bool next(uint32_t c)
-    {
-        switch (state()) {
-        case 0:
-            if (0 <= c && c < 42)
-                return change_state(2);
-            if (42 <= c && c < 43)
-                return change_state(1, true);
-            if (43 <= c && c < 4294967295)
-                return change_state(2);
-            return change_state(error);
-        case 2:
-            if (0 <= c && c < 42)
-                return change_state(2);
-            if (42 <= c && c < 43)
-                return change_state(2);
-            if (43 <= c && c < 4294967295)
-                return change_state(2);
-            return change_state(error);
-        case 1:
-            if (0 <= c && c < 42)
-                return change_state(2);
-            if (42 <= c && c < 43)
-                return change_state(2);
-            if (43 <= c && c < 4294967295)
-                return change_state(2);
-            return change_state(error);
-        default:
-            return change_state(error);
-        }
-    }
-};
-
-struct EqualScanner: public Scanner {
-    EqualScanner() : Scanner(Token::equal)
-    {
-        error = 2;
-    }
-
-    bool next(uint32_t c)
-    {
-        switch (state()) {
-        case 0:
-            if (0 <= c && c < 61)
-                return change_state(2);
-            if (61 <= c && c < 62)
-                return change_state(1, true);
-            if (62 <= c && c < 4294967295)
-                return change_state(2);
-            return change_state(error);
-        case 2:
-            if (0 <= c && c < 61)
-                return change_state(2);
-            if (61 <= c && c < 62)
-                return change_state(2);
-            if (62 <= c && c < 4294967295)
-                return change_state(2);
-            return change_state(error);
-        case 1:
-            if (0 <= c && c < 61)
-                return change_state(2);
-            if (61 <= c && c < 62)
-                return change_state(2);
-            if (62 <= c && c < 4294967295)
-                return change_state(2);
-            return change_state(error);
-        default:
-            return change_state(error);
-        }
-    }
-};
-
-struct LbraceScanner: public Scanner {
-    LbraceScanner() : Scanner(Token::lbrace)
-    {
-        error = 2;
-    }
-
-    bool next(uint32_t c)
-    {
-        switch (state()) {
-        case 0:
-            if (0 <= c && c < 123)
-                return change_state(2);
-            if (123 <= c && c < 124)
-                return change_state(1, true);
-            if (124 <= c && c < 4294967295)
-                return change_state(2);
-            return change_state(error);
-        case 2:
-            if (0 <= c && c < 123)
-                return change_state(2);
-            if (123 <= c && c < 124)
-                return change_state(2);
-            if (124 <= c && c < 4294967295)
-                return change_state(2);
-            return change_state(error);
-        case 1:
-            if (0 <= c && c < 123)
-                return change_state(2);
-            if (123 <= c && c < 124)
-                return change_state(2);
-            if (124 <= c && c < 4294967295)
-                return change_state(2);
-            return change_state(error);
-        default:
-            return change_state(error);
-        }
-    }
-};
-
-struct RbraceScanner: public Scanner {
-    RbraceScanner() : Scanner(Token::rbrace)
-    {
-        error = 2;
-    }
-
-    bool next(uint32_t c)
-    {
-        switch (state()) {
-        case 0:
-            if (0 <= c && c < 125)
-                return change_state(2);
-            if (125 <= c && c < 126)
-                return change_state(1, true);
-            if (126 <= c && c < 4294967295)
-                return change_state(2);
-            return change_state(error);
-        case 2:
-            if (0 <= c && c < 125)
-                return change_state(2);
-            if (125 <= c && c < 126)
-                return change_state(2);
-            if (126 <= c && c < 4294967295)
-                return change_state(2);
-            return change_state(error);
-        case 1:
-            if (0 <= c && c < 125)
-                return change_state(2);
-            if (125 <= c && c < 126)
-                return change_state(2);
-            if (126 <= c && c < 4294967295)
-                return change_state(2);
-            return change_state(error);
-        default:
-            return change_state(error);
-        }
-    }
-};
-
-struct ColonScanner: public Scanner {
-    ColonScanner() : Scanner(Token::colon)
-    {
-        error = 2;
-    }
-
-    bool next(uint32_t c)
-    {
-        switch (state()) {
-        case 0:
-            if (0 <= c && c < 58)
-                return change_state(2);
-            if (58 <= c && c < 59)
-                return change_state(1, true);
-            if (59 <= c && c < 4294967295)
-                return change_state(2);
-            return change_state(error);
-        case 2:
-            if (0 <= c && c < 58)
-                return change_state(2);
-            if (58 <= c && c < 59)
-                return change_state(2);
-            if (59 <= c && c < 4294967295)
-                return change_state(2);
-            return change_state(error);
-        case 1:
-            if (0 <= c && c < 58)
-                return change_state(2);
-            if (58 <= c && c < 59)
-                return change_state(2);
-            if (59 <= c && c < 4294967295)
-                return change_state(2);
-            return change_state(error);
-        default:
-            return change_state(error);
-        }
-    }
-};
-
-struct LbracketScanner: public Scanner {
-    LbracketScanner() : Scanner(Token::lbracket)
-    {
-        error = 2;
-    }
-
-    bool next(uint32_t c)
-    {
-        switch (state()) {
-        case 0:
-            if (0 <= c && c < 91)
-                return change_state(2);
-            if (91 <= c && c < 92)
-                return change_state(1, true);
-            if (92 <= c && c < 4294967295)
-                return change_state(2);
-            return change_state(error);
-        case 2:
-            if (0 <= c && c < 91)
-                return change_state(2);
-            if (91 <= c && c < 92)
-                return change_state(2);
-            if (92 <= c && c < 4294967295)
-                return change_state(2);
-            return change_state(error);
-        case 1:
-            if (0 <= c && c < 91)
-                return change_state(2);
-            if (91 <= c && c < 92)
-                return change_state(2);
-            if (92 <= c && c < 4294967295)
-                return change_state(2);
-            return change_state(error);
-        default:
-            return change_state(error);
-        }
-    }
-};
-
-struct RbracketScanner: public Scanner {
-    RbracketScanner() : Scanner(Token::rbracket)
-    {
-        error = 2;
-    }
-
-    bool next(uint32_t c)
-    {
-        switch (state()) {
-        case 0:
-            if (0 <= c && c < 93)
-                return change_state(2);
-            if (93 <= c && c < 94)
-                return change_state(1, true);
-            if (94 <= c && c < 4294967295)
-                return change_state(2);
-            return change_state(error);
-        case 2:
-            if (0 <= c && c < 93)
-                return change_state(2);
-            if (93 <= c && c < 94)
-                return change_state(2);
-            if (94 <= c && c < 4294967295)
-                return change_state(2);
-            return change_state(error);
-        case 1:
-            if (0 <= c && c < 93)
-                return change_state(2);
-            if (93 <= c && c < 94)
-                return change_state(2);
-            if (94 <= c && c < 4294967295)
-                return change_state(2);
-            return change_state(error);
-        default:
-            return change_state(error);
-        }
-    }
-};
-
-struct PlusScanner: public Scanner {
-    PlusScanner() : Scanner(Token::plus)
-    {
-        error = 2;
-    }
-
-    bool next(uint32_t c)
-    {
-        switch (state()) {
-        case 0:
-            if (0 <= c && c < 43)
-                return change_state(2);
-            if (43 <= c && c < 44)
-                return change_state(1, true);
-            if (44 <= c && c < 4294967295)
-                return change_state(2);
-            return change_state(error);
-        case 2:
-            if (0 <= c && c < 43)
-                return change_state(2);
-            if (43 <= c && c < 44)
-                return change_state(2);
-            if (44 <= c && c < 4294967295)
-                return change_state(2);
-            return change_state(error);
-        case 1:
-            if (0 <= c && c < 43)
-                return change_state(2);
-            if (43 <= c && c < 44)
-                return change_state(2);
-            if (44 <= c && c < 4294967295)
-                return change_state(2);
-            return change_state(error);
-        default:
-            return change_state(error);
-        }
-    }
-};
-
-struct MinusScanner: public Scanner {
-    MinusScanner() : Scanner(Token::minus)
-    {
-        error = 2;
-    }
-
-    bool next(uint32_t c)
-    {
-        switch (state()) {
-        case 0:
-            if (0 <= c && c < 45)
-                return change_state(2);
-            if (45 <= c && c < 46)
-                return change_state(1, true);
-            if (46 <= c && c < 4294967295)
-                return change_state(2);
-            return change_state(error);
-        case 2:
-            if (0 <= c && c < 45)
-                return change_state(2);
-            if (45 <= c && c < 46)
-                return change_state(2);
-            if (46 <= c && c < 4294967295)
-                return change_state(2);
-            return change_state(error);
-        case 1:
-            if (0 <= c && c < 45)
-                return change_state(2);
-            if (45 <= c && c < 46)
-                return change_state(2);
-            if (46 <= c && c < 4294967295)
-                return change_state(2);
-            return change_state(error);
-        default:
-            return change_state(error);
-        }
-    }
-};
-
-struct SlashScanner: public Scanner {
-    SlashScanner() : Scanner(Token::slash)
-    {
-        error = 2;
-    }
-
-    bool next(uint32_t c)
-    {
-        switch (state()) {
-        case 0:
-            if (0 <= c && c < 47)
-                return change_state(2);
-            if (47 <= c && c < 48)
-                return change_state(1, true);
-            if (48 <= c && c < 4294967295)
-                return change_state(2);
-            return change_state(error);
-        case 2:
-            if (0 <= c && c < 47)
-                return change_state(2);
-            if (47 <= c && c < 48)
-                return change_state(2);
-            if (48 <= c && c < 4294967295)
-                return change_state(2);
-            return change_state(error);
-        case 1:
-            if (0 <= c && c < 47)
-                return change_state(2);
-            if (47 <= c && c < 48)
-                return change_state(2);
-            if (48 <= c && c < 4294967295)
-                return change_state(2);
-            return change_state(error);
-        default:
-            return change_state(error);
-        }
-    }
-};
-
-struct LessthanScanner: public Scanner {
-    LessthanScanner() : Scanner(Token::lessthan)
-    {
-        error = 2;
-    }
-
-    bool next(uint32_t c)
-    {
-        switch (state()) {
-        case 0:
-            if (0 <= c && c < 60)
-                return change_state(2);
-            if (60 <= c && c < 61)
-                return change_state(1, true);
-            if (61 <= c && c < 4294967295)
-                return change_state(2);
-            return change_state(error);
-        case 2:
-            if (0 <= c && c < 60)
-                return change_state(2);
-            if (60 <= c && c < 61)
-                return change_state(2);
-            if (61 <= c && c < 4294967295)
-                return change_state(2);
-            return change_state(error);
-        case 1:
-            if (0 <= c && c < 60)
-                return change_state(2);
-            if (60 <= c && c < 61)
-                return change_state(2);
-            if (61 <= c && c < 4294967295)
-                return change_state(2);
-            return change_state(error);
-        default:
-            return change_state(error);
-        }
-    }
-};
-
-struct GreaterthanScanner: public Scanner {
-    GreaterthanScanner() : Scanner(Token::greaterthan)
-    {
-        error = 2;
-    }
-
-    bool next(uint32_t c)
-    {
-        switch (state()) {
-        case 0:
-            if (0 <= c && c < 62)
-                return change_state(2);
-            if (62 <= c && c < 63)
-                return change_state(1, true);
-            if (63 <= c && c < 4294967295)
-                return change_state(2);
-            return change_state(error);
-        case 2:
-            if (0 <= c && c < 62)
-                return change_state(2);
-            if (62 <= c && c < 63)
-                return change_state(2);
-            if (63 <= c && c < 4294967295)
-                return change_state(2);
-            return change_state(error);
-        case 1:
-            if (0 <= c && c < 62)
-                return change_state(2);
-            if (62 <= c && c < 63)
-                return change_state(2);
-            if (63 <= c && c < 4294967295)
-                return change_state(2);
-            return change_state(error);
-        default:
-            return change_state(error);
-        }
-    }
-};
-
-
+    return {token, lexeme};
+}
