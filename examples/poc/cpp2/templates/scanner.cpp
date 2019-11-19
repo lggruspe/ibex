@@ -11,7 +11,13 @@ struct {{ scanner.token|title }}: public BaseRecognizer {
             {%- set start = transition[0].start %}
             {%- set end = transition[0].end %}
             {%- set next_state = transition[1] %}
+            {%- if start == 0 %}
+            if (a < {{ end }}) {
+            {%- elif start+1 == end %}
+            if (a == {{ start }}) {
+            {%- else %}
             if ({{ start }} <= a && a < {{ end }}) {
+            {%- endif %}
                 {%- if next_state in scanner.accepts %}
                 return {1, {{ next_state }}};
                 {%- elif next_state == scanner.error %}
