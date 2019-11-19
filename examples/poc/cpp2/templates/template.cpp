@@ -6,9 +6,7 @@
 #include <utility>
 #include <vector>
 
-#define SCAN_ALL \
-    Token, \
-    BaseRecognizer, \
+#define ALL_RECOGNIZERS \
     {%- for scanner in scanners %}
     {{ scanner.token|title }}{% if loop.index != loop.length %}, \{% endif -%}
     {% endfor %}
