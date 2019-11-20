@@ -108,6 +108,9 @@ std::pair<Token, std::string> match_longest(std::istream& in = std::cin)
             token = r->token;
             lexeme = s;
         }
+        for (auto it = s.rbegin(); it != s.rend(); ++it) {
+            in.putback(*it);
+        }
     }
     return {token, lexeme};
 }

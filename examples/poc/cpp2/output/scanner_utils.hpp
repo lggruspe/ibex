@@ -4,6 +4,8 @@ if (scanner_name == "identifier")\
     lexeme = match::single<IdentifierScanner>();\
 else if (scanner_name == "whitespace")\
     lexeme = match::single<WhitespaceScanner>();\
+else if (scanner_name == "integer")\
+    lexeme = match::single<IntegerScanner>();\
 else if (scanner_name == "number")\
     lexeme = match::single<NumberScanner>();\
 else if (scanner_name == "character")\
