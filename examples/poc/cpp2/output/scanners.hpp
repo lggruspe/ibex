@@ -803,5 +803,8 @@ std::pair<Token, std::string> match_longest(std::istream& in = std::cin)
             in.putback(*it);
         }
     }
+    for (const auto& a: lexeme) {
+        in.get();
+    }
     return {token, lexeme};
 }
