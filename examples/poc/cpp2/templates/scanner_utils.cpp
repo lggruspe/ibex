@@ -6,7 +6,7 @@ if (scanner_name == "{{ scanner.token }}")\
 ## else
 else if (scanner_name == "{{ scanner.token }}")\
 ## endif
-    lexeme = match::single<{{ scanner.token|title }}>();\
+    lexeme = {{ scanner.token|title }}().match();\
 ##endfor
 else\
     return;\

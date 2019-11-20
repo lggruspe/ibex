@@ -1,49 +1,49 @@
 #define pardir_output_scanner_utils_hpp() \
 std::string lexeme;\
 if (scanner_name == "identifier")\
-    lexeme = match::single<Identifier>();\
+    lexeme = Identifier().match();\
 else if (scanner_name == "whitespace")\
-    lexeme = match::single<Whitespace>();\
+    lexeme = Whitespace().match();\
 else if (scanner_name == "integer")\
-    lexeme = match::single<Integer>();\
+    lexeme = Integer().match();\
 else if (scanner_name == "number")\
-    lexeme = match::single<Number>();\
+    lexeme = Number().match();\
 else if (scanner_name == "character")\
-    lexeme = match::single<Character>();\
+    lexeme = Character().match();\
 else if (scanner_name == "string")\
-    lexeme = match::single<String>();\
+    lexeme = String().match();\
 else if (scanner_name == "dot")\
-    lexeme = match::single<Dot>();\
+    lexeme = Dot().match();\
 else if (scanner_name == "lparen")\
-    lexeme = match::single<Lparen>();\
+    lexeme = Lparen().match();\
 else if (scanner_name == "rparen")\
-    lexeme = match::single<Rparen>();\
+    lexeme = Rparen().match();\
 else if (scanner_name == "comma")\
-    lexeme = match::single<Comma>();\
+    lexeme = Comma().match();\
 else if (scanner_name == "star")\
-    lexeme = match::single<Star>();\
+    lexeme = Star().match();\
 else if (scanner_name == "equal")\
-    lexeme = match::single<Equal>();\
+    lexeme = Equal().match();\
 else if (scanner_name == "lbrace")\
-    lexeme = match::single<Lbrace>();\
+    lexeme = Lbrace().match();\
 else if (scanner_name == "rbrace")\
-    lexeme = match::single<Rbrace>();\
+    lexeme = Rbrace().match();\
 else if (scanner_name == "colon")\
-    lexeme = match::single<Colon>();\
+    lexeme = Colon().match();\
 else if (scanner_name == "lbracket")\
-    lexeme = match::single<Lbracket>();\
+    lexeme = Lbracket().match();\
 else if (scanner_name == "rbracket")\
-    lexeme = match::single<Rbracket>();\
+    lexeme = Rbracket().match();\
 else if (scanner_name == "plus")\
-    lexeme = match::single<Plus>();\
+    lexeme = Plus().match();\
 else if (scanner_name == "minus")\
-    lexeme = match::single<Minus>();\
+    lexeme = Minus().match();\
 else if (scanner_name == "slash")\
-    lexeme = match::single<Slash>();\
+    lexeme = Slash().match();\
 else if (scanner_name == "lessthan")\
-    lexeme = match::single<Lessthan>();\
+    lexeme = Lessthan().match();\
 else if (scanner_name == "greaterthan")\
-    lexeme = match::single<Greaterthan>();\
+    lexeme = Greaterthan().match();\
 else\
     return;\
 std::cout << lexeme << std::endl
