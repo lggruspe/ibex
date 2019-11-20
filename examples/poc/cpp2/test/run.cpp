@@ -1,15 +1,13 @@
 #include "../output/scanners.hpp"
 #include "../output/scanner_utils.hpp"
-#include "match.hpp"
 #include <iostream>
 #include <string>
 #include <tuple>
 
 void run_longest_match()
 {
-    auto [token, lexeme] = match::longest<SCAN_ALL>();
-    std::cout << token << std::endl;
-    std::cout << lexeme << std::endl;
+    auto [token, lexeme] = match_longest<ALL_RECOGNIZERS>();
+    std::cout << token << "\n" << lexeme << std::endl;
 }
 
 void run_single_match(const std::string& scanner_name)
@@ -19,10 +17,11 @@ void run_single_match(const std::string& scanner_name)
 
 void run_tokenizer()
 {
-    match::Tokenizer<SCAN_ALL> tokenizer;
-    for (auto [token, lexeme] = tokenizer.tokenize(); 
-            !tokenizer.done;
-            std::tie(token, lexeme) = tokenizer.tokenize()) {
+    for (;;) {
+        auto [token, lexeme] = match_longest<ALL_RECOGNIZERS>();
+        if (token == Token::EMPTY) {
+            break;
+        }
         std::cout << token << " " << lexeme << std::endl;
     }
 }
