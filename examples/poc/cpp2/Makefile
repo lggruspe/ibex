@@ -18,5 +18,5 @@ clean:
 .PHONY:	compile
 compile:	test/run_match
 
-test/run_match:	test/run.cpp test/match.hpp
+test/run_match:	test/run.cpp
 	$(CXX) $(CXXFLAGS) -o $@ $<
