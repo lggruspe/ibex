@@ -66,8 +66,9 @@ struct BaseRecognizer {
         for (auto i = checkpoint.size(); i > 1; --i) {
             // rollback to most recent accept state, if any
             // (if accept is true, checkpoint[0] is the most recent accept state)
-            in.unget();
+            uint32_t a = lexeme.back();
             lexeme.pop_back();
+            in.putback(a);
         }
         return { accept, std::string(lexeme.begin(), lexeme.end()) };
     }
@@ -112,7 +113,7 @@ std::pair<Token, std::string> match_longest(std::istream& in = std::cin)
             in.putback(*it);
         }
     }
-    for (const auto& a: lexeme) {
+    for (auto it = lexeme.begin(); it != lexeme.end(); ++it) {
         in.get();
     }
     return {token, lexeme};
