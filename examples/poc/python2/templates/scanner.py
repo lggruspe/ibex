@@ -12,11 +12,7 @@ class {{ scanner.token|title }}(BaseRecognizer):
             {%- set next_state = transition[1] %}
             {%- if next_state != scanner.error %}
             if {{ start }} <= a < {{ end }}:
-                {%- if next_state in scanner.accepts %}
-                return 1, {{ next_state }}
-                {%- else %}
-                return 0, {{ next_state }}
-                {%- endif -%}
+                return {{ 1 if next_state in scanner.accepts else 0 }}, {{ next_state }}
             {%- endif %}
             {%- endfor %}
             return -1, 2
