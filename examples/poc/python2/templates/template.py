@@ -1,51 +1,80 @@
-class Scanner:
-    """Base class for scangen-generated scanners."""
+import enum
+import sys
 
-    def __init__(self):
-        """
-        checkpoint: every state visited since the last accept state
-        accepts: True if an accept state is ever visited
-        """
-        self.checkpoint = [0]
-        self.token = ""
-        self.accepts = False
+class Token(enum.Enum):
+    EMPTY = 0
+    {%- for scanner in scanners %}
+    {{ scanner.token|upper }} = enum.auto()
+    {%- endfor %}
 
-    @property
-    def state(self):
-        return self.checkpoint[-1] if self.checkpoint else -1
+class InputStack:
+    def __init__(self, file=sys.stdin):
+        self.stack = []
+        self.file = file
 
-    def change_state(self, next_state, checkpoint=False):
-        """Transition and set checkpoint if visiting an accept state.
+    def get(self):
+        if self.stack:
+            return self.stack.pop()
+        return self.file.read(1)
 
-        Return True if next_state is not an error state.
-        """
-        if checkpoint:
-            self.checkpoint = []
-            self.accepts = True
-        self.checkpoint.append(next_state)
-        return next_state != -1
+    def unget(self, a):
+        if a:
+            self.stack.append(a)
 
-    def next(self, char: int):
-        """State transition on input char, returns True if successful."""
-        try:
-            getattr(self, f"s{self.state}")(char)
-            return self.state != -1
-        except:
-            return self.change_state(-1)
+class BaseRecognizer:
+    def __init__(self, token=Token.EMPTY, accept=False, error=-1,
+            io=InputStack()):
+        self.token = token
+        self.accept = accept
+        self.error = error
+        self.io = io
 
-    def backtrack_steps(self):
-        """Number of steps from most recent accept or initial state.."""
-        return len(self.checkpoint) - 1
+    def next(self, q, a):
+        raise NotImplementedError
 
-    def __repr__(self):
-        return f"<Scanner {self.token} state:{self.state} checkpoint:{self.checkpoint}>"
+    def match(self):
+        checkpoint = [0]
+        lexeme = []
+        while checkpoint[-1] != self.error:
+            a = self.io.get()
+            if not a:
+                break
+            status, r = self.next(checkpoint[-1], ord(a))
+            if status == 1:
+                self.accept = True
+                checkpoint.clear()
+            checkpoint.append(r)
+            lexeme.append(a)
+        for _ in checkpoint[-1:0:-1]:
+            self.io.unget(lexeme.pop())
+        return self.accept, "".join(lexeme)
 
-## for scanner in scanners
-## include "scanner.py"
-## endfor
+{% for scanner in scanners %}
+{% include "scanner.py" %}
+{% endfor %}
+def match_first(*recs, io=InputStack()):
+    for T in recs:
+        r = T(io)
+        ok, s = r.match()
+        if ok:
+            return r.token, s
+    return Token.EMPTY, ""
+
+def match_longest(*recs, io=InputStack()):
+    token = Token.EMPTY
+    lexeme = ""
+    for T in recs:
+        r = T(io)
+        ok, s = r.match()
+        if ok and len(s) > len(lexeme):
+            token = r.token
+            lexeme = s
+        for a in s[-1::-1]:
+            io.unget(a)
+    return token, lexeme
 
 SCANNERS = {
-## for scanner in scanners
-    "{{ scanner.token }}": {{ scanner.token|title }}Scanner,
-## endfor
+{%- for scanner in scanners %}
+    "{{ scanner.token }}": {{ scanner.token|title }},
+{%- endfor %}
 }
