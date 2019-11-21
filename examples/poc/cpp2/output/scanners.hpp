@@ -9,7 +9,6 @@
 #define ALL_RECOGNIZERS \
     Identifier, \
     Whitespace, \
-    Integer, \
     Number, \
     Character, \
     String, \
@@ -34,7 +33,6 @@ enum class Token {
     EMPTY = 0,
     IDENTIFIER,
     WHITESPACE,
-    INTEGER,
     NUMBER,
     CHARACTER,
     STRING,
@@ -65,8 +63,6 @@ std::ostream& operator<<(std::ostream& out, Token token)
         return out << "identifier";
     case Token::WHITESPACE:
         return out << "whitespace";
-    case Token::INTEGER:
-        return out << "integer";
     case Token::NUMBER:
         return out << "number";
     case Token::CHARACTER:
@@ -211,36 +207,6 @@ struct Whitespace: public BaseRecognizer {
             }
             return {-1, 2};
         case 1:
-            return {-1, 2};
-        default:
-            return {-1, 2};
-        }
-    }
-};
-
-struct Integer: public BaseRecognizer {
-    Integer() : BaseRecognizer(Token::INTEGER, false, 2) {}
-
-    std::pair<int, int> next(int q, uint32_t a) const
-    {
-        switch (q) {
-        case 0:
-            if (a == 48) {
-                return {1, 1};
-            }
-            if (49 <= a && a < 58) {
-                return {1, 3};
-            }
-            return {-1, 2};
-        case 1:
-            return {-1, 2};
-        case 3:
-            if (a == 48) {
-                return {1, 3};
-            }
-            if (49 <= a && a < 58) {
-                return {1, 3};
-            }
             return {-1, 2};
         default:
             return {-1, 2};

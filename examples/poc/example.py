@@ -13,13 +13,6 @@ def identifier():
 def whitespace():
     return sg.symbols(' ').union(sg.symbols('\t')).union(sg.symbols('\n'))
 
-@sg.token("integer")
-def integer():
-    zero = sg.symbols('0')
-    nonzero = sg.symbols('1', '9')
-    nonzero = nonzero.concatenation(zero.union(nonzero).closure())
-    return zero.union(nonzero)
-
 @sg.token("number")
 def number():
     def integer():

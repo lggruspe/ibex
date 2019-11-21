@@ -5,8 +5,6 @@ if (scanner_name == "identifier") \
     std::tie(ok, lexeme) = Identifier().match(); \
 else if (scanner_name == "whitespace") \
     std::tie(ok, lexeme) = Whitespace().match(); \
-else if (scanner_name == "integer") \
-    std::tie(ok, lexeme) = Integer().match(); \
 else if (scanner_name == "number") \
     std::tie(ok, lexeme) = Number().match(); \
 else if (scanner_name == "character") \
