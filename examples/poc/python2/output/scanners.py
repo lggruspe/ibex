@@ -76,7 +76,7 @@ class Identifier(BaseRecognizer):
         if q == 0:
             if 65 <= a < 91:
                 return 1, 1
-            if 95 <= a < 96:
+            if a == 95:
                 return 1, 1
             if 97 <= a < 123:
                 return 1, 1
@@ -86,7 +86,7 @@ class Identifier(BaseRecognizer):
                 return 1, 1
             if 65 <= a < 91:
                 return 1, 1
-            if 95 <= a < 96:
+            if a == 95:
                 return 1, 1
             if 97 <= a < 123:
                 return 1, 1
@@ -99,11 +99,11 @@ class Whitespace(BaseRecognizer):
 
     def next(self, q, a):
         if q == 0:
-            if 9 <= a < 10:
+            if a == 9:
                 return 1, 1
-            if 10 <= a < 11:
+            if a == 10:
                 return 1, 1
-            if 32 <= a < 33:
+            if a == 32:
                 return 1, 1
             return -1, 2
         if q == 1:
@@ -116,69 +116,69 @@ class Number(BaseRecognizer):
 
     def next(self, q, a):
         if q == 0:
-            if 48 <= a < 49:
+            if a == 48:
                 return 1, 3
             if 49 <= a < 58:
                 return 1, 8
             return -1, 2
         if q == 3:
-            if 46 <= a < 47:
+            if a == 46:
                 return 0, 7
-            if 69 <= a < 70:
+            if a == 69:
                 return 0, 5
-            if 101 <= a < 102:
+            if a == 101:
                 return 0, 5
             return -1, 2
         if q == 8:
-            if 46 <= a < 47:
+            if a == 46:
                 return 0, 7
-            if 48 <= a < 49:
+            if a == 48:
                 return 1, 8
             if 49 <= a < 58:
                 return 1, 8
-            if 69 <= a < 70:
+            if a == 69:
                 return 0, 5
-            if 101 <= a < 102:
+            if a == 101:
                 return 0, 5
             return -1, 2
         if q == 1:
             return -1, 2
         if q == 2:
-            if 48 <= a < 49:
+            if a == 48:
                 return 1, 1
             if 49 <= a < 58:
                 return 1, 4
             return -1, 2
         if q == 4:
-            if 48 <= a < 49:
+            if a == 48:
                 return 1, 4
             if 49 <= a < 58:
                 return 1, 4
             return -1, 2
         if q == 7:
-            if 48 <= a < 49:
+            if a == 48:
                 return 1, 9
             if 49 <= a < 58:
                 return 1, 9
             return -1, 2
         if q == 5:
-            if 43 <= a < 44:
+            if a == 43:
                 return 0, 2
-            if 45 <= a < 46:
+            if a == 45:
                 return 0, 2
-            if 48 <= a < 49:
+            if a == 48:
                 return 1, 1
             if 49 <= a < 58:
                 return 1, 4
             return -1, 2
         if q == 9:
-            if 48 <= a < 49:
+            if a == 48:
                 return 1, 9
             if 49 <= a < 58:
                 return 1, 9
-            if 69 <= a < 70:
+            if a == 69:
                 return 0, 5
-            if 101 <= a < 102:
+            if a == 101:
                 return 0, 5
             return -1, 2
         return -1, 2
@@ -189,7 +189,7 @@ class Character(BaseRecognizer):
 
     def next(self, q, a):
         if q == 0:
-            if 39 <= a < 40:
+            if a == 39:
                 return 0, 3
             return -1, 2
         if q == 3:
@@ -197,15 +197,15 @@ class Character(BaseRecognizer):
                 return 0, 2
             if 40 <= a < 92:
                 return 0, 2
-            if 92 <= a < 93:
+            if a == 92:
                 return 0, 4
             if 93 <= a < 110:
                 return 0, 2
-            if 110 <= a < 111:
+            if a == 110:
                 return 0, 2
             if 111 <= a < 116:
                 return 0, 2
-            if 116 <= a < 117:
+            if a == 116:
                 return 0, 2
             if 117 <= a < 127:
                 return 0, 2
@@ -213,17 +213,17 @@ class Character(BaseRecognizer):
         if q == 1:
             return -1, 2
         if q == 2:
-            if 39 <= a < 40:
+            if a == 39:
                 return 1, 1
             return -1, 2
         if q == 4:
-            if 39 <= a < 40:
+            if a == 39:
                 return 0, 2
-            if 92 <= a < 93:
+            if a == 92:
                 return 0, 2
-            if 110 <= a < 111:
+            if a == 110:
                 return 0, 2
-            if 116 <= a < 117:
+            if a == 116:
                 return 0, 2
             return -1, 2
         return -1, 2
@@ -234,17 +234,17 @@ class String(BaseRecognizer):
 
     def next(self, q, a):
         if q == 0:
-            if 34 <= a < 35:
+            if a == 34:
                 return 0, 2
             return -1, 2
         if q == 2:
             if 32 <= a < 34:
                 return 0, 2
-            if 34 <= a < 35:
+            if a == 34:
                 return 1, 1
             if 35 <= a < 92:
                 return 0, 2
-            if 92 <= a < 93:
+            if a == 92:
                 return 0, 3
             if 93 <= a < 127:
                 return 0, 2
@@ -254,11 +254,11 @@ class String(BaseRecognizer):
         if q == 3:
             if 32 <= a < 34:
                 return 0, 2
-            if 34 <= a < 35:
+            if a == 34:
                 return 0, 2
             if 35 <= a < 92:
                 return 0, 2
-            if 92 <= a < 93:
+            if a == 92:
                 return 0, 2
             if 93 <= a < 127:
                 return 0, 2
@@ -271,7 +271,7 @@ class Dot(BaseRecognizer):
 
     def next(self, q, a):
         if q == 0:
-            if 46 <= a < 47:
+            if a == 46:
                 return 1, 1
             return -1, 2
         if q == 1:
@@ -284,7 +284,7 @@ class Lparen(BaseRecognizer):
 
     def next(self, q, a):
         if q == 0:
-            if 40 <= a < 41:
+            if a == 40:
                 return 1, 1
             return -1, 2
         if q == 1:
@@ -297,7 +297,7 @@ class Rparen(BaseRecognizer):
 
     def next(self, q, a):
         if q == 0:
-            if 41 <= a < 42:
+            if a == 41:
                 return 1, 1
             return -1, 2
         if q == 1:
@@ -310,7 +310,7 @@ class Comma(BaseRecognizer):
 
     def next(self, q, a):
         if q == 0:
-            if 44 <= a < 45:
+            if a == 44:
                 return 1, 1
             return -1, 2
         if q == 1:
@@ -323,7 +323,7 @@ class Star(BaseRecognizer):
 
     def next(self, q, a):
         if q == 0:
-            if 42 <= a < 43:
+            if a == 42:
                 return 1, 1
             return -1, 2
         if q == 1:
@@ -336,7 +336,7 @@ class Equal(BaseRecognizer):
 
     def next(self, q, a):
         if q == 0:
-            if 61 <= a < 62:
+            if a == 61:
                 return 1, 1
             return -1, 2
         if q == 1:
@@ -349,7 +349,7 @@ class Lbrace(BaseRecognizer):
 
     def next(self, q, a):
         if q == 0:
-            if 123 <= a < 124:
+            if a == 123:
                 return 1, 1
             return -1, 2
         if q == 1:
@@ -362,7 +362,7 @@ class Rbrace(BaseRecognizer):
 
     def next(self, q, a):
         if q == 0:
-            if 125 <= a < 126:
+            if a == 125:
                 return 1, 1
             return -1, 2
         if q == 1:
@@ -375,7 +375,7 @@ class Colon(BaseRecognizer):
 
     def next(self, q, a):
         if q == 0:
-            if 58 <= a < 59:
+            if a == 58:
                 return 1, 1
             return -1, 2
         if q == 1:
@@ -388,7 +388,7 @@ class Lbracket(BaseRecognizer):
 
     def next(self, q, a):
         if q == 0:
-            if 91 <= a < 92:
+            if a == 91:
                 return 1, 1
             return -1, 2
         if q == 1:
@@ -401,7 +401,7 @@ class Rbracket(BaseRecognizer):
 
     def next(self, q, a):
         if q == 0:
-            if 93 <= a < 94:
+            if a == 93:
                 return 1, 1
             return -1, 2
         if q == 1:
@@ -414,7 +414,7 @@ class Plus(BaseRecognizer):
 
     def next(self, q, a):
         if q == 0:
-            if 43 <= a < 44:
+            if a == 43:
                 return 1, 1
             return -1, 2
         if q == 1:
@@ -427,7 +427,7 @@ class Minus(BaseRecognizer):
 
     def next(self, q, a):
         if q == 0:
-            if 45 <= a < 46:
+            if a == 45:
                 return 1, 1
             return -1, 2
         if q == 1:
@@ -440,7 +440,7 @@ class Slash(BaseRecognizer):
 
     def next(self, q, a):
         if q == 0:
-            if 47 <= a < 48:
+            if a == 47:
                 return 1, 1
             return -1, 2
         if q == 1:
@@ -453,7 +453,7 @@ class Lessthan(BaseRecognizer):
 
     def next(self, q, a):
         if q == 0:
-            if 60 <= a < 61:
+            if a == 60:
                 return 1, 1
             return -1, 2
         if q == 1:
@@ -466,7 +466,7 @@ class Greaterthan(BaseRecognizer):
 
     def next(self, q, a):
         if q == 0:
-            if 62 <= a < 63:
+            if a == 62:
                 return 1, 1
             return -1, 2
         if q == 1:
