@@ -74,43 +74,23 @@ class Identifier(BaseRecognizer):
 
     def next(self, q, a):
         if q == 0:
-            if 0 <= a < 48:
-                return -1, 2
-            if 48 <= a < 58:
-                return -1, 2
-            if 58 <= a < 65:
-                return -1, 2
             if 65 <= a < 91:
                 return 1, 1
-            if 91 <= a < 95:
-                return -1, 2
             if 95 <= a < 96:
                 return 1, 1
-            if 96 <= a < 97:
-                return -1, 2
             if 97 <= a < 123:
                 return 1, 1
-            if 123 <= a < 4294967295:
-                return -1, 2
+            return -1, 2
         if q == 1:
-            if 0 <= a < 48:
-                return -1, 2
             if 48 <= a < 58:
                 return 1, 1
-            if 58 <= a < 65:
-                return -1, 2
             if 65 <= a < 91:
                 return 1, 1
-            if 91 <= a < 95:
-                return -1, 2
             if 95 <= a < 96:
                 return 1, 1
-            if 96 <= a < 97:
-                return -1, 2
             if 97 <= a < 123:
                 return 1, 1
-            if 123 <= a < 4294967295:
-                return -1, 2
+            return -1, 2
         return -1, 2
 
 class Whitespace(BaseRecognizer):
@@ -119,31 +99,15 @@ class Whitespace(BaseRecognizer):
 
     def next(self, q, a):
         if q == 0:
-            if 0 <= a < 9:
-                return -1, 2
             if 9 <= a < 10:
                 return 1, 1
             if 10 <= a < 11:
                 return 1, 1
-            if 11 <= a < 32:
-                return -1, 2
             if 32 <= a < 33:
                 return 1, 1
-            if 33 <= a < 4294967295:
-                return -1, 2
+            return -1, 2
         if q == 1:
-            if 0 <= a < 9:
-                return -1, 2
-            if 9 <= a < 10:
-                return -1, 2
-            if 10 <= a < 11:
-                return -1, 2
-            if 11 <= a < 32:
-                return -1, 2
-            if 32 <= a < 33:
-                return -1, 2
-            if 33 <= a < 4294967295:
-                return -1, 2
+            return -1, 2
         return -1, 2
 
 class Number(BaseRecognizer):
@@ -152,248 +116,71 @@ class Number(BaseRecognizer):
 
     def next(self, q, a):
         if q == 0:
-            if 0 <= a < 43:
-                return -1, 6
-            if 43 <= a < 44:
-                return -1, 6
-            if 44 <= a < 45:
-                return -1, 6
-            if 45 <= a < 46:
-                return -1, 6
-            if 46 <= a < 47:
-                return -1, 6
-            if 47 <= a < 48:
-                return -1, 6
             if 48 <= a < 49:
                 return 1, 3
             if 49 <= a < 58:
                 return 1, 8
-            if 58 <= a < 69:
-                return -1, 6
-            if 69 <= a < 70:
-                return -1, 6
-            if 70 <= a < 101:
-                return -1, 6
-            if 101 <= a < 102:
-                return -1, 6
-            if 102 <= a < 4294967295:
-                return -1, 6
+            return -1, 2
         if q == 3:
-            if 0 <= a < 43:
-                return -1, 6
-            if 43 <= a < 44:
-                return -1, 6
-            if 44 <= a < 45:
-                return -1, 6
-            if 45 <= a < 46:
-                return -1, 6
             if 46 <= a < 47:
                 return 0, 7
-            if 47 <= a < 48:
-                return -1, 6
-            if 48 <= a < 49:
-                return -1, 6
-            if 49 <= a < 58:
-                return -1, 6
-            if 58 <= a < 69:
-                return -1, 6
             if 69 <= a < 70:
                 return 0, 5
-            if 70 <= a < 101:
-                return -1, 6
             if 101 <= a < 102:
                 return 0, 5
-            if 102 <= a < 4294967295:
-                return -1, 6
+            return -1, 2
         if q == 8:
-            if 0 <= a < 43:
-                return -1, 6
-            if 43 <= a < 44:
-                return -1, 6
-            if 44 <= a < 45:
-                return -1, 6
-            if 45 <= a < 46:
-                return -1, 6
             if 46 <= a < 47:
                 return 0, 7
-            if 47 <= a < 48:
-                return -1, 6
             if 48 <= a < 49:
                 return 1, 8
             if 49 <= a < 58:
                 return 1, 8
-            if 58 <= a < 69:
-                return -1, 6
             if 69 <= a < 70:
                 return 0, 5
-            if 70 <= a < 101:
-                return -1, 6
             if 101 <= a < 102:
                 return 0, 5
-            if 102 <= a < 4294967295:
-                return -1, 6
+            return -1, 2
         if q == 1:
-            if 0 <= a < 43:
-                return -1, 6
-            if 43 <= a < 44:
-                return -1, 6
-            if 44 <= a < 45:
-                return -1, 6
-            if 45 <= a < 46:
-                return -1, 6
-            if 46 <= a < 47:
-                return -1, 6
-            if 47 <= a < 48:
-                return -1, 6
-            if 48 <= a < 49:
-                return -1, 6
-            if 49 <= a < 58:
-                return -1, 6
-            if 58 <= a < 69:
-                return -1, 6
-            if 69 <= a < 70:
-                return -1, 6
-            if 70 <= a < 101:
-                return -1, 6
-            if 101 <= a < 102:
-                return -1, 6
-            if 102 <= a < 4294967295:
-                return -1, 6
+            return -1, 2
         if q == 2:
-            if 0 <= a < 43:
-                return -1, 6
-            if 43 <= a < 44:
-                return -1, 6
-            if 44 <= a < 45:
-                return -1, 6
-            if 45 <= a < 46:
-                return -1, 6
-            if 46 <= a < 47:
-                return -1, 6
-            if 47 <= a < 48:
-                return -1, 6
             if 48 <= a < 49:
                 return 1, 1
             if 49 <= a < 58:
                 return 1, 4
-            if 58 <= a < 69:
-                return -1, 6
-            if 69 <= a < 70:
-                return -1, 6
-            if 70 <= a < 101:
-                return -1, 6
-            if 101 <= a < 102:
-                return -1, 6
-            if 102 <= a < 4294967295:
-                return -1, 6
+            return -1, 2
         if q == 4:
-            if 0 <= a < 43:
-                return -1, 6
-            if 43 <= a < 44:
-                return -1, 6
-            if 44 <= a < 45:
-                return -1, 6
-            if 45 <= a < 46:
-                return -1, 6
-            if 46 <= a < 47:
-                return -1, 6
-            if 47 <= a < 48:
-                return -1, 6
             if 48 <= a < 49:
                 return 1, 4
             if 49 <= a < 58:
                 return 1, 4
-            if 58 <= a < 69:
-                return -1, 6
-            if 69 <= a < 70:
-                return -1, 6
-            if 70 <= a < 101:
-                return -1, 6
-            if 101 <= a < 102:
-                return -1, 6
-            if 102 <= a < 4294967295:
-                return -1, 6
+            return -1, 2
         if q == 7:
-            if 0 <= a < 43:
-                return -1, 6
-            if 43 <= a < 44:
-                return -1, 6
-            if 44 <= a < 45:
-                return -1, 6
-            if 45 <= a < 46:
-                return -1, 6
-            if 46 <= a < 47:
-                return -1, 6
-            if 47 <= a < 48:
-                return -1, 6
             if 48 <= a < 49:
                 return 1, 9
             if 49 <= a < 58:
                 return 1, 9
-            if 58 <= a < 69:
-                return -1, 6
-            if 69 <= a < 70:
-                return -1, 6
-            if 70 <= a < 101:
-                return -1, 6
-            if 101 <= a < 102:
-                return -1, 6
-            if 102 <= a < 4294967295:
-                return -1, 6
+            return -1, 2
         if q == 5:
-            if 0 <= a < 43:
-                return -1, 6
             if 43 <= a < 44:
                 return 0, 2
-            if 44 <= a < 45:
-                return -1, 6
             if 45 <= a < 46:
                 return 0, 2
-            if 46 <= a < 47:
-                return -1, 6
-            if 47 <= a < 48:
-                return -1, 6
             if 48 <= a < 49:
                 return 1, 1
             if 49 <= a < 58:
                 return 1, 4
-            if 58 <= a < 69:
-                return -1, 6
-            if 69 <= a < 70:
-                return -1, 6
-            if 70 <= a < 101:
-                return -1, 6
-            if 101 <= a < 102:
-                return -1, 6
-            if 102 <= a < 4294967295:
-                return -1, 6
+            return -1, 2
         if q == 9:
-            if 0 <= a < 43:
-                return -1, 6
-            if 43 <= a < 44:
-                return -1, 6
-            if 44 <= a < 45:
-                return -1, 6
-            if 45 <= a < 46:
-                return -1, 6
-            if 46 <= a < 47:
-                return -1, 6
-            if 47 <= a < 48:
-                return -1, 6
             if 48 <= a < 49:
                 return 1, 9
             if 49 <= a < 58:
                 return 1, 9
-            if 58 <= a < 69:
-                return -1, 6
             if 69 <= a < 70:
                 return 0, 5
-            if 70 <= a < 101:
-                return -1, 6
             if 101 <= a < 102:
                 return 0, 5
-            if 102 <= a < 4294967295:
-                return -1, 6
+            return -1, 2
         return -1, 2
 
 class Character(BaseRecognizer):
@@ -402,35 +189,12 @@ class Character(BaseRecognizer):
 
     def next(self, q, a):
         if q == 0:
-            if 0 <= a < 32:
-                return -1, 5
-            if 32 <= a < 39:
-                return -1, 5
             if 39 <= a < 40:
                 return 0, 3
-            if 40 <= a < 92:
-                return -1, 5
-            if 92 <= a < 93:
-                return -1, 5
-            if 93 <= a < 110:
-                return -1, 5
-            if 110 <= a < 111:
-                return -1, 5
-            if 111 <= a < 116:
-                return -1, 5
-            if 116 <= a < 117:
-                return -1, 5
-            if 117 <= a < 127:
-                return -1, 5
-            if 127 <= a < 4294967295:
-                return -1, 5
+            return -1, 2
         if q == 3:
-            if 0 <= a < 32:
-                return -1, 5
             if 32 <= a < 39:
                 return 0, 2
-            if 39 <= a < 40:
-                return -1, 5
             if 40 <= a < 92:
                 return 0, 2
             if 92 <= a < 93:
@@ -445,77 +209,23 @@ class Character(BaseRecognizer):
                 return 0, 2
             if 117 <= a < 127:
                 return 0, 2
-            if 127 <= a < 4294967295:
-                return -1, 5
+            return -1, 2
         if q == 1:
-            if 0 <= a < 32:
-                return -1, 5
-            if 32 <= a < 39:
-                return -1, 5
-            if 39 <= a < 40:
-                return -1, 5
-            if 40 <= a < 92:
-                return -1, 5
-            if 92 <= a < 93:
-                return -1, 5
-            if 93 <= a < 110:
-                return -1, 5
-            if 110 <= a < 111:
-                return -1, 5
-            if 111 <= a < 116:
-                return -1, 5
-            if 116 <= a < 117:
-                return -1, 5
-            if 117 <= a < 127:
-                return -1, 5
-            if 127 <= a < 4294967295:
-                return -1, 5
+            return -1, 2
         if q == 2:
-            if 0 <= a < 32:
-                return -1, 5
-            if 32 <= a < 39:
-                return -1, 5
             if 39 <= a < 40:
                 return 1, 1
-            if 40 <= a < 92:
-                return -1, 5
-            if 92 <= a < 93:
-                return -1, 5
-            if 93 <= a < 110:
-                return -1, 5
-            if 110 <= a < 111:
-                return -1, 5
-            if 111 <= a < 116:
-                return -1, 5
-            if 116 <= a < 117:
-                return -1, 5
-            if 117 <= a < 127:
-                return -1, 5
-            if 127 <= a < 4294967295:
-                return -1, 5
+            return -1, 2
         if q == 4:
-            if 0 <= a < 32:
-                return -1, 5
-            if 32 <= a < 39:
-                return -1, 5
             if 39 <= a < 40:
                 return 0, 2
-            if 40 <= a < 92:
-                return -1, 5
             if 92 <= a < 93:
                 return 0, 2
-            if 93 <= a < 110:
-                return -1, 5
             if 110 <= a < 111:
                 return 0, 2
-            if 111 <= a < 116:
-                return -1, 5
             if 116 <= a < 117:
                 return 0, 2
-            if 117 <= a < 127:
-                return -1, 5
-            if 127 <= a < 4294967295:
-                return -1, 5
+            return -1, 2
         return -1, 2
 
 class String(BaseRecognizer):
@@ -524,23 +234,10 @@ class String(BaseRecognizer):
 
     def next(self, q, a):
         if q == 0:
-            if 0 <= a < 32:
-                return -1, 4
-            if 32 <= a < 34:
-                return -1, 4
             if 34 <= a < 35:
                 return 0, 2
-            if 35 <= a < 92:
-                return -1, 4
-            if 92 <= a < 93:
-                return -1, 4
-            if 93 <= a < 127:
-                return -1, 4
-            if 127 <= a < 4294967295:
-                return -1, 4
+            return -1, 2
         if q == 2:
-            if 0 <= a < 32:
-                return -1, 4
             if 32 <= a < 34:
                 return 0, 2
             if 34 <= a < 35:
@@ -551,26 +248,10 @@ class String(BaseRecognizer):
                 return 0, 3
             if 93 <= a < 127:
                 return 0, 2
-            if 127 <= a < 4294967295:
-                return -1, 4
+            return -1, 2
         if q == 1:
-            if 0 <= a < 32:
-                return -1, 4
-            if 32 <= a < 34:
-                return -1, 4
-            if 34 <= a < 35:
-                return -1, 4
-            if 35 <= a < 92:
-                return -1, 4
-            if 92 <= a < 93:
-                return -1, 4
-            if 93 <= a < 127:
-                return -1, 4
-            if 127 <= a < 4294967295:
-                return -1, 4
+            return -1, 2
         if q == 3:
-            if 0 <= a < 32:
-                return -1, 4
             if 32 <= a < 34:
                 return 0, 2
             if 34 <= a < 35:
@@ -581,8 +262,7 @@ class String(BaseRecognizer):
                 return 0, 2
             if 93 <= a < 127:
                 return 0, 2
-            if 127 <= a < 4294967295:
-                return -1, 4
+            return -1, 2
         return -1, 2
 
 class Dot(BaseRecognizer):
@@ -591,19 +271,11 @@ class Dot(BaseRecognizer):
 
     def next(self, q, a):
         if q == 0:
-            if 0 <= a < 46:
-                return -1, 2
             if 46 <= a < 47:
                 return 1, 1
-            if 47 <= a < 4294967295:
-                return -1, 2
+            return -1, 2
         if q == 1:
-            if 0 <= a < 46:
-                return -1, 2
-            if 46 <= a < 47:
-                return -1, 2
-            if 47 <= a < 4294967295:
-                return -1, 2
+            return -1, 2
         return -1, 2
 
 class Lparen(BaseRecognizer):
@@ -612,19 +284,11 @@ class Lparen(BaseRecognizer):
 
     def next(self, q, a):
         if q == 0:
-            if 0 <= a < 40:
-                return -1, 2
             if 40 <= a < 41:
                 return 1, 1
-            if 41 <= a < 4294967295:
-                return -1, 2
+            return -1, 2
         if q == 1:
-            if 0 <= a < 40:
-                return -1, 2
-            if 40 <= a < 41:
-                return -1, 2
-            if 41 <= a < 4294967295:
-                return -1, 2
+            return -1, 2
         return -1, 2
 
 class Rparen(BaseRecognizer):
@@ -633,19 +297,11 @@ class Rparen(BaseRecognizer):
 
     def next(self, q, a):
         if q == 0:
-            if 0 <= a < 41:
-                return -1, 2
             if 41 <= a < 42:
                 return 1, 1
-            if 42 <= a < 4294967295:
-                return -1, 2
+            return -1, 2
         if q == 1:
-            if 0 <= a < 41:
-                return -1, 2
-            if 41 <= a < 42:
-                return -1, 2
-            if 42 <= a < 4294967295:
-                return -1, 2
+            return -1, 2
         return -1, 2
 
 class Comma(BaseRecognizer):
@@ -654,19 +310,11 @@ class Comma(BaseRecognizer):
 
     def next(self, q, a):
         if q == 0:
-            if 0 <= a < 44:
-                return -1, 2
             if 44 <= a < 45:
                 return 1, 1
-            if 45 <= a < 4294967295:
-                return -1, 2
+            return -1, 2
         if q == 1:
-            if 0 <= a < 44:
-                return -1, 2
-            if 44 <= a < 45:
-                return -1, 2
-            if 45 <= a < 4294967295:
-                return -1, 2
+            return -1, 2
         return -1, 2
 
 class Star(BaseRecognizer):
@@ -675,19 +323,11 @@ class Star(BaseRecognizer):
 
     def next(self, q, a):
         if q == 0:
-            if 0 <= a < 42:
-                return -1, 2
             if 42 <= a < 43:
                 return 1, 1
-            if 43 <= a < 4294967295:
-                return -1, 2
+            return -1, 2
         if q == 1:
-            if 0 <= a < 42:
-                return -1, 2
-            if 42 <= a < 43:
-                return -1, 2
-            if 43 <= a < 4294967295:
-                return -1, 2
+            return -1, 2
         return -1, 2
 
 class Equal(BaseRecognizer):
@@ -696,19 +336,11 @@ class Equal(BaseRecognizer):
 
     def next(self, q, a):
         if q == 0:
-            if 0 <= a < 61:
-                return -1, 2
             if 61 <= a < 62:
                 return 1, 1
-            if 62 <= a < 4294967295:
-                return -1, 2
+            return -1, 2
         if q == 1:
-            if 0 <= a < 61:
-                return -1, 2
-            if 61 <= a < 62:
-                return -1, 2
-            if 62 <= a < 4294967295:
-                return -1, 2
+            return -1, 2
         return -1, 2
 
 class Lbrace(BaseRecognizer):
@@ -717,19 +349,11 @@ class Lbrace(BaseRecognizer):
 
     def next(self, q, a):
         if q == 0:
-            if 0 <= a < 123:
-                return -1, 2
             if 123 <= a < 124:
                 return 1, 1
-            if 124 <= a < 4294967295:
-                return -1, 2
+            return -1, 2
         if q == 1:
-            if 0 <= a < 123:
-                return -1, 2
-            if 123 <= a < 124:
-                return -1, 2
-            if 124 <= a < 4294967295:
-                return -1, 2
+            return -1, 2
         return -1, 2
 
 class Rbrace(BaseRecognizer):
@@ -738,19 +362,11 @@ class Rbrace(BaseRecognizer):
 
     def next(self, q, a):
         if q == 0:
-            if 0 <= a < 125:
-                return -1, 2
             if 125 <= a < 126:
                 return 1, 1
-            if 126 <= a < 4294967295:
-                return -1, 2
+            return -1, 2
         if q == 1:
-            if 0 <= a < 125:
-                return -1, 2
-            if 125 <= a < 126:
-                return -1, 2
-            if 126 <= a < 4294967295:
-                return -1, 2
+            return -1, 2
         return -1, 2
 
 class Colon(BaseRecognizer):
@@ -759,19 +375,11 @@ class Colon(BaseRecognizer):
 
     def next(self, q, a):
         if q == 0:
-            if 0 <= a < 58:
-                return -1, 2
             if 58 <= a < 59:
                 return 1, 1
-            if 59 <= a < 4294967295:
-                return -1, 2
+            return -1, 2
         if q == 1:
-            if 0 <= a < 58:
-                return -1, 2
-            if 58 <= a < 59:
-                return -1, 2
-            if 59 <= a < 4294967295:
-                return -1, 2
+            return -1, 2
         return -1, 2
 
 class Lbracket(BaseRecognizer):
@@ -780,19 +388,11 @@ class Lbracket(BaseRecognizer):
 
     def next(self, q, a):
         if q == 0:
-            if 0 <= a < 91:
-                return -1, 2
             if 91 <= a < 92:
                 return 1, 1
-            if 92 <= a < 4294967295:
-                return -1, 2
+            return -1, 2
         if q == 1:
-            if 0 <= a < 91:
-                return -1, 2
-            if 91 <= a < 92:
-                return -1, 2
-            if 92 <= a < 4294967295:
-                return -1, 2
+            return -1, 2
         return -1, 2
 
 class Rbracket(BaseRecognizer):
@@ -801,19 +401,11 @@ class Rbracket(BaseRecognizer):
 
     def next(self, q, a):
         if q == 0:
-            if 0 <= a < 93:
-                return -1, 2
             if 93 <= a < 94:
                 return 1, 1
-            if 94 <= a < 4294967295:
-                return -1, 2
+            return -1, 2
         if q == 1:
-            if 0 <= a < 93:
-                return -1, 2
-            if 93 <= a < 94:
-                return -1, 2
-            if 94 <= a < 4294967295:
-                return -1, 2
+            return -1, 2
         return -1, 2
 
 class Plus(BaseRecognizer):
@@ -822,19 +414,11 @@ class Plus(BaseRecognizer):
 
     def next(self, q, a):
         if q == 0:
-            if 0 <= a < 43:
-                return -1, 2
             if 43 <= a < 44:
                 return 1, 1
-            if 44 <= a < 4294967295:
-                return -1, 2
+            return -1, 2
         if q == 1:
-            if 0 <= a < 43:
-                return -1, 2
-            if 43 <= a < 44:
-                return -1, 2
-            if 44 <= a < 4294967295:
-                return -1, 2
+            return -1, 2
         return -1, 2
 
 class Minus(BaseRecognizer):
@@ -843,19 +427,11 @@ class Minus(BaseRecognizer):
 
     def next(self, q, a):
         if q == 0:
-            if 0 <= a < 45:
-                return -1, 2
             if 45 <= a < 46:
                 return 1, 1
-            if 46 <= a < 4294967295:
-                return -1, 2
+            return -1, 2
         if q == 1:
-            if 0 <= a < 45:
-                return -1, 2
-            if 45 <= a < 46:
-                return -1, 2
-            if 46 <= a < 4294967295:
-                return -1, 2
+            return -1, 2
         return -1, 2
 
 class Slash(BaseRecognizer):
@@ -864,19 +440,11 @@ class Slash(BaseRecognizer):
 
     def next(self, q, a):
         if q == 0:
-            if 0 <= a < 47:
-                return -1, 2
             if 47 <= a < 48:
                 return 1, 1
-            if 48 <= a < 4294967295:
-                return -1, 2
+            return -1, 2
         if q == 1:
-            if 0 <= a < 47:
-                return -1, 2
-            if 47 <= a < 48:
-                return -1, 2
-            if 48 <= a < 4294967295:
-                return -1, 2
+            return -1, 2
         return -1, 2
 
 class Lessthan(BaseRecognizer):
@@ -885,19 +453,11 @@ class Lessthan(BaseRecognizer):
 
     def next(self, q, a):
         if q == 0:
-            if 0 <= a < 60:
-                return -1, 2
             if 60 <= a < 61:
                 return 1, 1
-            if 61 <= a < 4294967295:
-                return -1, 2
+            return -1, 2
         if q == 1:
-            if 0 <= a < 60:
-                return -1, 2
-            if 60 <= a < 61:
-                return -1, 2
-            if 61 <= a < 4294967295:
-                return -1, 2
+            return -1, 2
         return -1, 2
 
 class Greaterthan(BaseRecognizer):
@@ -906,19 +466,11 @@ class Greaterthan(BaseRecognizer):
 
     def next(self, q, a):
         if q == 0:
-            if 0 <= a < 62:
-                return -1, 2
             if 62 <= a < 63:
                 return 1, 1
-            if 63 <= a < 4294967295:
-                return -1, 2
+            return -1, 2
         if q == 1:
-            if 0 <= a < 62:
-                return -1, 2
-            if 62 <= a < 63:
-                return -1, 2
-            if 63 <= a < 4294967295:
-                return -1, 2
+            return -1, 2
         return -1, 2
 
 def match_first(*recs, io=InputStack()):
