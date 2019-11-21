@@ -2,24 +2,25 @@
 import argparse
 import os.path
 import sys
-import match
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 import output.scanners as scanners
 
 def test_longest_match():
-    token, lexeme = match.longest(*(scanners.SCANNERS.values()))
+    token, lexeme = scanners.match_longest(*(scanners.SCANNERS.values()))
     print(token)
     print(lexeme)
 
 def test_single_match(scanner):
-    lexeme = match.single(scanner)
+    _, lexeme = scanner().match()
     print(lexeme)
 
 def test_tokenizer():
-    tokenize = match.tokenizer(*(scanners.SCANNERS.values()))
-    for token, lexeme in tokenize:
+    while True:
+        token, lexeme = scanners.match_longest(*(scanners.SCANNERS.values()))
+        if token == scanners.Token.EMPTY:
+            break
         print(token, lexeme)
 
 def main():
