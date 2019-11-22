@@ -492,6 +492,8 @@ def match_longest(*recs, io=InputStack()):
             lexeme = s
         for a in s[-1::-1]:
             io.unget(a)
+    for _ in lexeme:
+        io.get()
     return token, lexeme
 
 SCANNERS = {
