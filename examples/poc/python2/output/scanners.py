@@ -1,29 +1,28 @@
-import enum
 import sys
 
-class Token(enum.Enum):
-    EMPTY = 0
-    IDENTIFIER = enum.auto()
-    WHITESPACE = enum.auto()
-    NUMBER = enum.auto()
-    CHARACTER = enum.auto()
-    STRING = enum.auto()
-    DOT = enum.auto()
-    LPAREN = enum.auto()
-    RPAREN = enum.auto()
-    COMMA = enum.auto()
-    STAR = enum.auto()
-    EQUAL = enum.auto()
-    LBRACE = enum.auto()
-    RBRACE = enum.auto()
-    COLON = enum.auto()
-    LBRACKET = enum.auto()
-    RBRACKET = enum.auto()
-    PLUS = enum.auto()
-    MINUS = enum.auto()
-    SLASH = enum.auto()
-    LESSTHAN = enum.auto()
-    GREATERTHAN = enum.auto()
+class Token:
+    EMPTY = "empty"
+    IDENTIFIER = "identifier"
+    WHITESPACE = "whitespace"
+    NUMBER = "number"
+    CHARACTER = "character"
+    STRING = "string"
+    DOT = "dot"
+    LPAREN = "lparen"
+    RPAREN = "rparen"
+    COMMA = "comma"
+    STAR = "star"
+    EQUAL = "equal"
+    LBRACE = "lbrace"
+    RBRACE = "rbrace"
+    COLON = "colon"
+    LBRACKET = "lbracket"
+    RBRACKET = "rbracket"
+    PLUS = "plus"
+    MINUS = "minus"
+    SLASH = "slash"
+    LESSTHAN = "lessthan"
+    GREATERTHAN = "greaterthan"
 
 class InputStack:
     def __init__(self, file=sys.stdin):
@@ -36,8 +35,9 @@ class InputStack:
         return self.file.read(1)
 
     def unget(self, a):
-        if a:
-            self.stack.append(a)
+        if not a:
+            raise Exception
+        self.stack.append(a)
 
 class BaseRecognizer:
     def __init__(self, token=Token.EMPTY, accept=False, error=-1,

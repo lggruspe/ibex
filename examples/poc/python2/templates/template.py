@@ -1,10 +1,9 @@
-import enum
 import sys
 
-class Token(enum.Enum):
-    EMPTY = 0
+class Token:
+    EMPTY = "empty"
     {%- for scanner in scanners %}
-    {{ scanner.token|upper }} = enum.auto()
+    {{ scanner.token|upper }} = "{{ scanner.token|lower }}"
     {%- endfor %}
 
 class InputStack:
@@ -18,8 +17,9 @@ class InputStack:
         return self.file.read(1)
 
     def unget(self, a):
-        if a:
-            self.stack.append(a)
+        if not a:
+            raise Exception
+        self.stack.append(a)
 
 class BaseRecognizer:
     def __init__(self, token=Token.EMPTY, accept=False, error=-1,
