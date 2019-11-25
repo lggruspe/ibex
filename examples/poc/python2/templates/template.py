@@ -7,14 +7,17 @@ class Token:
     {%- endfor %}
 
 class InputStack:
-    def __init__(self, file=sys.stdin):
+    def __init__(self):
         self.stack = []
-        self.file = file
+
+    def readfile(self, file=sys.stdin):
+        input_ = file.read()
+        self.stack = [a for a in input_[::-1]]
 
     def get(self):
         if self.stack:
             return self.stack.pop()
-        return self.file.read(1)
+        return ""
 
     def unget(self, a):
         if not a:

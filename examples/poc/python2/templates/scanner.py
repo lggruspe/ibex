@@ -1,5 +1,8 @@
 class {{ scanner.token|title }}(BaseRecognizer):
-    def __init__(self, io=InputStack()):
+    def __init__(self, io=None):
+        if not io:
+            io = InputStack()
+            io.readfile(sys.stdin)
         super().__init__(Token.{{ scanner.token|upper }}, {{ 0 in scanner.accepts }}, {{ scanner.error }}, io)
 
     def next(self, q, a):
