@@ -25,14 +25,17 @@ class Token:
     GREATERTHAN = "greaterthan"
 
 class InputStack:
-    def __init__(self, file=sys.stdin):
+    def __init__(self):
         self.stack = []
-        self.file = file
+
+    def readfile(self, file=sys.stdin):
+        input_ = file.read()
+        self.stack = [a for a in input_[::-1]]
 
     def get(self):
         if self.stack:
             return self.stack.pop()
-        return self.file.read(1)
+        return ""
 
     def unget(self, a):
         if not a:
@@ -69,7 +72,10 @@ class BaseRecognizer:
 
 
 class Identifier(BaseRecognizer):
-    def __init__(self, io=InputStack()):
+    def __init__(self, io=None):
+        if not io:
+            io = InputStack()
+            io.readfile(sys.stdin)
         super().__init__(Token.IDENTIFIER, False, 2, io)
 
     def next(self, q, a):
@@ -94,7 +100,10 @@ class Identifier(BaseRecognizer):
         return -1, 2
 
 class Whitespace(BaseRecognizer):
-    def __init__(self, io=InputStack()):
+    def __init__(self, io=None):
+        if not io:
+            io = InputStack()
+            io.readfile(sys.stdin)
         super().__init__(Token.WHITESPACE, False, 2, io)
 
     def next(self, q, a):
@@ -111,7 +120,10 @@ class Whitespace(BaseRecognizer):
         return -1, 2
 
 class Number(BaseRecognizer):
-    def __init__(self, io=InputStack()):
+    def __init__(self, io=None):
+        if not io:
+            io = InputStack()
+            io.readfile(sys.stdin)
         super().__init__(Token.NUMBER, False, 6, io)
 
     def next(self, q, a):
@@ -184,7 +196,10 @@ class Number(BaseRecognizer):
         return -1, 2
 
 class Character(BaseRecognizer):
-    def __init__(self, io=InputStack()):
+    def __init__(self, io=None):
+        if not io:
+            io = InputStack()
+            io.readfile(sys.stdin)
         super().__init__(Token.CHARACTER, False, 5, io)
 
     def next(self, q, a):
@@ -229,7 +244,10 @@ class Character(BaseRecognizer):
         return -1, 2
 
 class String(BaseRecognizer):
-    def __init__(self, io=InputStack()):
+    def __init__(self, io=None):
+        if not io:
+            io = InputStack()
+            io.readfile(sys.stdin)
         super().__init__(Token.STRING, False, 4, io)
 
     def next(self, q, a):
@@ -266,7 +284,10 @@ class String(BaseRecognizer):
         return -1, 2
 
 class Dot(BaseRecognizer):
-    def __init__(self, io=InputStack()):
+    def __init__(self, io=None):
+        if not io:
+            io = InputStack()
+            io.readfile(sys.stdin)
         super().__init__(Token.DOT, False, 2, io)
 
     def next(self, q, a):
@@ -279,7 +300,10 @@ class Dot(BaseRecognizer):
         return -1, 2
 
 class Lparen(BaseRecognizer):
-    def __init__(self, io=InputStack()):
+    def __init__(self, io=None):
+        if not io:
+            io = InputStack()
+            io.readfile(sys.stdin)
         super().__init__(Token.LPAREN, False, 2, io)
 
     def next(self, q, a):
@@ -292,7 +316,10 @@ class Lparen(BaseRecognizer):
         return -1, 2
 
 class Rparen(BaseRecognizer):
-    def __init__(self, io=InputStack()):
+    def __init__(self, io=None):
+        if not io:
+            io = InputStack()
+            io.readfile(sys.stdin)
         super().__init__(Token.RPAREN, False, 2, io)
 
     def next(self, q, a):
@@ -305,7 +332,10 @@ class Rparen(BaseRecognizer):
         return -1, 2
 
 class Comma(BaseRecognizer):
-    def __init__(self, io=InputStack()):
+    def __init__(self, io=None):
+        if not io:
+            io = InputStack()
+            io.readfile(sys.stdin)
         super().__init__(Token.COMMA, False, 2, io)
 
     def next(self, q, a):
@@ -318,7 +348,10 @@ class Comma(BaseRecognizer):
         return -1, 2
 
 class Star(BaseRecognizer):
-    def __init__(self, io=InputStack()):
+    def __init__(self, io=None):
+        if not io:
+            io = InputStack()
+            io.readfile(sys.stdin)
         super().__init__(Token.STAR, False, 2, io)
 
     def next(self, q, a):
@@ -331,7 +364,10 @@ class Star(BaseRecognizer):
         return -1, 2
 
 class Equal(BaseRecognizer):
-    def __init__(self, io=InputStack()):
+    def __init__(self, io=None):
+        if not io:
+            io = InputStack()
+            io.readfile(sys.stdin)
         super().__init__(Token.EQUAL, False, 2, io)
 
     def next(self, q, a):
@@ -344,7 +380,10 @@ class Equal(BaseRecognizer):
         return -1, 2
 
 class Lbrace(BaseRecognizer):
-    def __init__(self, io=InputStack()):
+    def __init__(self, io=None):
+        if not io:
+            io = InputStack()
+            io.readfile(sys.stdin)
         super().__init__(Token.LBRACE, False, 2, io)
 
     def next(self, q, a):
@@ -357,7 +396,10 @@ class Lbrace(BaseRecognizer):
         return -1, 2
 
 class Rbrace(BaseRecognizer):
-    def __init__(self, io=InputStack()):
+    def __init__(self, io=None):
+        if not io:
+            io = InputStack()
+            io.readfile(sys.stdin)
         super().__init__(Token.RBRACE, False, 2, io)
 
     def next(self, q, a):
@@ -370,7 +412,10 @@ class Rbrace(BaseRecognizer):
         return -1, 2
 
 class Colon(BaseRecognizer):
-    def __init__(self, io=InputStack()):
+    def __init__(self, io=None):
+        if not io:
+            io = InputStack()
+            io.readfile(sys.stdin)
         super().__init__(Token.COLON, False, 2, io)
 
     def next(self, q, a):
@@ -383,7 +428,10 @@ class Colon(BaseRecognizer):
         return -1, 2
 
 class Lbracket(BaseRecognizer):
-    def __init__(self, io=InputStack()):
+    def __init__(self, io=None):
+        if not io:
+            io = InputStack()
+            io.readfile(sys.stdin)
         super().__init__(Token.LBRACKET, False, 2, io)
 
     def next(self, q, a):
@@ -396,7 +444,10 @@ class Lbracket(BaseRecognizer):
         return -1, 2
 
 class Rbracket(BaseRecognizer):
-    def __init__(self, io=InputStack()):
+    def __init__(self, io=None):
+        if not io:
+            io = InputStack()
+            io.readfile(sys.stdin)
         super().__init__(Token.RBRACKET, False, 2, io)
 
     def next(self, q, a):
@@ -409,7 +460,10 @@ class Rbracket(BaseRecognizer):
         return -1, 2
 
 class Plus(BaseRecognizer):
-    def __init__(self, io=InputStack()):
+    def __init__(self, io=None):
+        if not io:
+            io = InputStack()
+            io.readfile(sys.stdin)
         super().__init__(Token.PLUS, False, 2, io)
 
     def next(self, q, a):
@@ -422,7 +476,10 @@ class Plus(BaseRecognizer):
         return -1, 2
 
 class Minus(BaseRecognizer):
-    def __init__(self, io=InputStack()):
+    def __init__(self, io=None):
+        if not io:
+            io = InputStack()
+            io.readfile(sys.stdin)
         super().__init__(Token.MINUS, False, 2, io)
 
     def next(self, q, a):
@@ -435,7 +492,10 @@ class Minus(BaseRecognizer):
         return -1, 2
 
 class Slash(BaseRecognizer):
-    def __init__(self, io=InputStack()):
+    def __init__(self, io=None):
+        if not io:
+            io = InputStack()
+            io.readfile(sys.stdin)
         super().__init__(Token.SLASH, False, 2, io)
 
     def next(self, q, a):
@@ -448,7 +508,10 @@ class Slash(BaseRecognizer):
         return -1, 2
 
 class Lessthan(BaseRecognizer):
-    def __init__(self, io=InputStack()):
+    def __init__(self, io=None):
+        if not io:
+            io = InputStack()
+            io.readfile(sys.stdin)
         super().__init__(Token.LESSTHAN, False, 2, io)
 
     def next(self, q, a):
@@ -461,7 +524,10 @@ class Lessthan(BaseRecognizer):
         return -1, 2
 
 class Greaterthan(BaseRecognizer):
-    def __init__(self, io=InputStack()):
+    def __init__(self, io=None):
+        if not io:
+            io = InputStack()
+            io.readfile(sys.stdin)
         super().__init__(Token.GREATERTHAN, False, 2, io)
 
     def next(self, q, a):
@@ -473,7 +539,10 @@ class Greaterthan(BaseRecognizer):
             return -1, 2
         return -1, 2
 
-def match_first(*recs, io=InputStack()):
+def match_first(*recs, io=None):
+    if not io:
+        io = InputStack()
+        io.readfile(sys.stdin)
     for T in recs:
         r = T(io)
         ok, s = r.match()
@@ -481,7 +550,10 @@ def match_first(*recs, io=InputStack()):
             return r.token, s
     return Token.EMPTY, ""
 
-def match_longest(*recs, io=InputStack()):
+def match_longest(*recs, io=None):
+    if not io:
+        io = InputStack()
+        io.readfile(sys.stdin)
     token = Token.EMPTY
     lexeme = ""
     for T in recs:
