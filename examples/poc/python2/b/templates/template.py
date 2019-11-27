@@ -7,14 +7,17 @@ class Token:
     {%- endfor %}
 
 class InputStack:
-    def __init__(self, file=sys.stdin):
+    def __init__(self):
         self.stack = []
-        self.file = file
+
+    def readfile(self, file=sys.stdin):
+        input_ = file.read()
+        self.stack = [a for a in input_[::-1]]
 
     def get(self):
         if self.stack:
             return self.stack.pop()
-        return self.file.read(1)
+        return ""
 
     def unget(self, a):
         if not a:
@@ -52,7 +55,10 @@ class BaseRecognizer:
 {% for scanner in scanners %}
 {% include "scanner.py" %}
 {% endfor %}
-def match_first(*recs, io=InputStack()):
+def match_first(*recs, io=None):
+    if not io:
+        io = InputStack()
+        io.readfile(sys.stdin)
     for T in recs:
         r = T(io)
         ok, s = r.match()
@@ -60,7 +66,10 @@ def match_first(*recs, io=InputStack()):
             return r.token, s
     return Token.EMPTY, ""
 
-def match_longest(*recs, io=InputStack()):
+def match_longest(*recs, io=None):
+    if not io:
+        io = InputStack()
+        io.readfile(sys.stdin)
     token = Token.EMPTY
     lexeme = ""
     for T in recs:
