@@ -5,9 +5,9 @@ import unittest
 import examples
 import lexeme as lex
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "python")))
+sys.path.append(os.path.abspath("../output"))
 
-import output.scanners as scanners
+import scanners
 
 TEST_DATA = {}
 
