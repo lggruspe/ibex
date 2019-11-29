@@ -23,12 +23,6 @@ struct NExpr {
         states[0][a].insert(1);
         symbols.insert(a);
     }
-
-    explicit operator bool() const
-    {
-        return symbols.points.size() == 1 && states.at(0).empty()
-            && states.at(1).empty();
-    }
 };
 
 void copy_transitions(NExpr& to, const NExpr& from, int offset)
