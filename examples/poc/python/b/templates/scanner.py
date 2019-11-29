@@ -1,6 +1,6 @@
 class {{ scanner.token|title }}(BaseRecognizer):
-    def __init__(self, io=InputStack()):
-        super().__init__(Token.{{ scanner.token|upper }}, {{ 0 in scanner.accepts }}, {{ scanner.error }}, io)
+    def __init__(self):
+        super().__init__(Token.{{ scanner.token|upper }}, {{ 0 in scanner.accepts }}, {{ scanner.error }})
 
     def next(self, q, a):
         {%- for state in scanner.transitions %}
