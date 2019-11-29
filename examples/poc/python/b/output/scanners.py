@@ -40,21 +40,19 @@ class InputStack:
         self.stack.append(a)
 
 class BaseRecognizer:
-    def __init__(self, token=Token.EMPTY, accept=False, error=-1,
-            io=InputStack()):
+    def __init__(self, token=Token.EMPTY, accept=False, error=-1):
         self.token = token
         self.accept = accept
         self.error = error
-        self.io = io
 
     def next(self, q, a):
         raise NotImplementedError
 
-    def match(self):
+    def match(self, io=InputStack()):
         checkpoint = [0]
         lexeme = []
         while checkpoint[-1] != self.error:
-            a = self.io.get()
+            a = io.get()
             if not a:
                 break
             status, r = self.next(checkpoint[-1], ord(a))
@@ -63,14 +61,14 @@ class BaseRecognizer:
                 checkpoint.clear()
             checkpoint.append(r)
             lexeme.append(a)
-        for _ in checkpoint[-1:0:-1]:
-            self.io.unget(lexeme.pop())
+        for _ in range(len(checkpoint), 1, -1):
+            io.unget(lexeme.pop())
         return self.accept, "".join(lexeme)
 
 
 class Identifier(BaseRecognizer):
-    def __init__(self, io=InputStack()):
-        super().__init__(Token.IDENTIFIER, False, 2, io)
+    def __init__(self):
+        super().__init__(Token.IDENTIFIER, False, 2)
 
     def next(self, q, a):
         if q == 0:
@@ -94,8 +92,8 @@ class Identifier(BaseRecognizer):
         return -1, 2
 
 class Whitespace(BaseRecognizer):
-    def __init__(self, io=InputStack()):
-        super().__init__(Token.WHITESPACE, False, 2, io)
+    def __init__(self):
+        super().__init__(Token.WHITESPACE, False, 2)
 
     def next(self, q, a):
         if q == 0:
@@ -111,8 +109,8 @@ class Whitespace(BaseRecognizer):
         return -1, 2
 
 class Number(BaseRecognizer):
-    def __init__(self, io=InputStack()):
-        super().__init__(Token.NUMBER, False, 6, io)
+    def __init__(self):
+        super().__init__(Token.NUMBER, False, 6)
 
     def next(self, q, a):
         if q == 0:
@@ -184,8 +182,8 @@ class Number(BaseRecognizer):
         return -1, 2
 
 class Character(BaseRecognizer):
-    def __init__(self, io=InputStack()):
-        super().__init__(Token.CHARACTER, False, 5, io)
+    def __init__(self):
+        super().__init__(Token.CHARACTER, False, 5)
 
     def next(self, q, a):
         if q == 0:
@@ -229,8 +227,8 @@ class Character(BaseRecognizer):
         return -1, 2
 
 class String(BaseRecognizer):
-    def __init__(self, io=InputStack()):
-        super().__init__(Token.STRING, False, 4, io)
+    def __init__(self):
+        super().__init__(Token.STRING, False, 4)
 
     def next(self, q, a):
         if q == 0:
@@ -266,8 +264,8 @@ class String(BaseRecognizer):
         return -1, 2
 
 class Dot(BaseRecognizer):
-    def __init__(self, io=InputStack()):
-        super().__init__(Token.DOT, False, 2, io)
+    def __init__(self):
+        super().__init__(Token.DOT, False, 2)
 
     def next(self, q, a):
         if q == 0:
@@ -279,8 +277,8 @@ class Dot(BaseRecognizer):
         return -1, 2
 
 class Lparen(BaseRecognizer):
-    def __init__(self, io=InputStack()):
-        super().__init__(Token.LPAREN, False, 2, io)
+    def __init__(self):
+        super().__init__(Token.LPAREN, False, 2)
 
     def next(self, q, a):
         if q == 0:
@@ -292,8 +290,8 @@ class Lparen(BaseRecognizer):
         return -1, 2
 
 class Rparen(BaseRecognizer):
-    def __init__(self, io=InputStack()):
-        super().__init__(Token.RPAREN, False, 2, io)
+    def __init__(self):
+        super().__init__(Token.RPAREN, False, 2)
 
     def next(self, q, a):
         if q == 0:
@@ -305,8 +303,8 @@ class Rparen(BaseRecognizer):
         return -1, 2
 
 class Comma(BaseRecognizer):
-    def __init__(self, io=InputStack()):
-        super().__init__(Token.COMMA, False, 2, io)
+    def __init__(self):
+        super().__init__(Token.COMMA, False, 2)
 
     def next(self, q, a):
         if q == 0:
@@ -318,8 +316,8 @@ class Comma(BaseRecognizer):
         return -1, 2
 
 class Star(BaseRecognizer):
-    def __init__(self, io=InputStack()):
-        super().__init__(Token.STAR, False, 2, io)
+    def __init__(self):
+        super().__init__(Token.STAR, False, 2)
 
     def next(self, q, a):
         if q == 0:
@@ -331,8 +329,8 @@ class Star(BaseRecognizer):
         return -1, 2
 
 class Equal(BaseRecognizer):
-    def __init__(self, io=InputStack()):
-        super().__init__(Token.EQUAL, False, 2, io)
+    def __init__(self):
+        super().__init__(Token.EQUAL, False, 2)
 
     def next(self, q, a):
         if q == 0:
@@ -344,8 +342,8 @@ class Equal(BaseRecognizer):
         return -1, 2
 
 class Lbrace(BaseRecognizer):
-    def __init__(self, io=InputStack()):
-        super().__init__(Token.LBRACE, False, 2, io)
+    def __init__(self):
+        super().__init__(Token.LBRACE, False, 2)
 
     def next(self, q, a):
         if q == 0:
@@ -357,8 +355,8 @@ class Lbrace(BaseRecognizer):
         return -1, 2
 
 class Rbrace(BaseRecognizer):
-    def __init__(self, io=InputStack()):
-        super().__init__(Token.RBRACE, False, 2, io)
+    def __init__(self):
+        super().__init__(Token.RBRACE, False, 2)
 
     def next(self, q, a):
         if q == 0:
@@ -370,8 +368,8 @@ class Rbrace(BaseRecognizer):
         return -1, 2
 
 class Colon(BaseRecognizer):
-    def __init__(self, io=InputStack()):
-        super().__init__(Token.COLON, False, 2, io)
+    def __init__(self):
+        super().__init__(Token.COLON, False, 2)
 
     def next(self, q, a):
         if q == 0:
@@ -383,8 +381,8 @@ class Colon(BaseRecognizer):
         return -1, 2
 
 class Lbracket(BaseRecognizer):
-    def __init__(self, io=InputStack()):
-        super().__init__(Token.LBRACKET, False, 2, io)
+    def __init__(self):
+        super().__init__(Token.LBRACKET, False, 2)
 
     def next(self, q, a):
         if q == 0:
@@ -396,8 +394,8 @@ class Lbracket(BaseRecognizer):
         return -1, 2
 
 class Rbracket(BaseRecognizer):
-    def __init__(self, io=InputStack()):
-        super().__init__(Token.RBRACKET, False, 2, io)
+    def __init__(self):
+        super().__init__(Token.RBRACKET, False, 2)
 
     def next(self, q, a):
         if q == 0:
@@ -409,8 +407,8 @@ class Rbracket(BaseRecognizer):
         return -1, 2
 
 class Plus(BaseRecognizer):
-    def __init__(self, io=InputStack()):
-        super().__init__(Token.PLUS, False, 2, io)
+    def __init__(self):
+        super().__init__(Token.PLUS, False, 2)
 
     def next(self, q, a):
         if q == 0:
@@ -422,8 +420,8 @@ class Plus(BaseRecognizer):
         return -1, 2
 
 class Minus(BaseRecognizer):
-    def __init__(self, io=InputStack()):
-        super().__init__(Token.MINUS, False, 2, io)
+    def __init__(self):
+        super().__init__(Token.MINUS, False, 2)
 
     def next(self, q, a):
         if q == 0:
@@ -435,8 +433,8 @@ class Minus(BaseRecognizer):
         return -1, 2
 
 class Slash(BaseRecognizer):
-    def __init__(self, io=InputStack()):
-        super().__init__(Token.SLASH, False, 2, io)
+    def __init__(self):
+        super().__init__(Token.SLASH, False, 2)
 
     def next(self, q, a):
         if q == 0:
@@ -448,8 +446,8 @@ class Slash(BaseRecognizer):
         return -1, 2
 
 class Lessthan(BaseRecognizer):
-    def __init__(self, io=InputStack()):
-        super().__init__(Token.LESSTHAN, False, 2, io)
+    def __init__(self):
+        super().__init__(Token.LESSTHAN, False, 2)
 
     def next(self, q, a):
         if q == 0:
@@ -461,8 +459,8 @@ class Lessthan(BaseRecognizer):
         return -1, 2
 
 class Greaterthan(BaseRecognizer):
-    def __init__(self, io=InputStack()):
-        super().__init__(Token.GREATERTHAN, False, 2, io)
+    def __init__(self):
+        super().__init__(Token.GREATERTHAN, False, 2)
 
     def next(self, q, a):
         if q == 0:
@@ -475,8 +473,8 @@ class Greaterthan(BaseRecognizer):
 
 def match_first(*recs, io=InputStack()):
     for T in recs:
-        r = T(io)
-        ok, s = r.match()
+        r = T()
+        ok, s = r.match(io)
         if ok:
             return r.token, s
     return Token.EMPTY, ""
@@ -485,8 +483,8 @@ def match_longest(*recs, io=InputStack()):
     token = Token.EMPTY
     lexeme = ""
     for T in recs:
-        r = T(io)
-        ok, s = r.match()
+        r = T()
+        ok, s = r.match(io)
         if ok and len(s) > len(lexeme):
             token = r.token
             lexeme = s
