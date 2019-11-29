@@ -19,7 +19,7 @@ class {{ scanner.token|title }}(BaseRecognizer):
                 return {{ 1 if next_state in scanner.accepts else 0 }}, {{ next_state }}
             {%- endif %}
             {%- endfor %}
-            return -1, 2
+            return -1, {{ scanner.error }}
         {%- endif %}
         {%- endfor %}
-        return -1, 2
+        return -1, {{ scanner.error }}

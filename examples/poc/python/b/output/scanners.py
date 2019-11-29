@@ -118,7 +118,7 @@ class Number(BaseRecognizer):
                 return 1, 3
             if 49 <= a < 58:
                 return 1, 8
-            return -1, 2
+            return -1, 6
         if q == 3:
             if a == 46:
                 return 0, 7
@@ -126,7 +126,7 @@ class Number(BaseRecognizer):
                 return 0, 5
             if a == 101:
                 return 0, 5
-            return -1, 2
+            return -1, 6
         if q == 8:
             if a == 46:
                 return 0, 7
@@ -138,27 +138,27 @@ class Number(BaseRecognizer):
                 return 0, 5
             if a == 101:
                 return 0, 5
-            return -1, 2
+            return -1, 6
         if q == 1:
-            return -1, 2
+            return -1, 6
         if q == 2:
             if a == 48:
                 return 1, 1
             if 49 <= a < 58:
                 return 1, 4
-            return -1, 2
+            return -1, 6
         if q == 4:
             if a == 48:
                 return 1, 4
             if 49 <= a < 58:
                 return 1, 4
-            return -1, 2
+            return -1, 6
         if q == 7:
             if a == 48:
                 return 1, 9
             if 49 <= a < 58:
                 return 1, 9
-            return -1, 2
+            return -1, 6
         if q == 5:
             if a == 43:
                 return 0, 2
@@ -168,7 +168,7 @@ class Number(BaseRecognizer):
                 return 1, 1
             if 49 <= a < 58:
                 return 1, 4
-            return -1, 2
+            return -1, 6
         if q == 9:
             if a == 48:
                 return 1, 9
@@ -178,8 +178,8 @@ class Number(BaseRecognizer):
                 return 0, 5
             if a == 101:
                 return 0, 5
-            return -1, 2
-        return -1, 2
+            return -1, 6
+        return -1, 6
 
 class Character(BaseRecognizer):
     def __init__(self):
@@ -189,7 +189,7 @@ class Character(BaseRecognizer):
         if q == 0:
             if a == 39:
                 return 0, 3
-            return -1, 2
+            return -1, 5
         if q == 3:
             if 32 <= a < 39:
                 return 0, 2
@@ -207,13 +207,13 @@ class Character(BaseRecognizer):
                 return 0, 2
             if 117 <= a < 127:
                 return 0, 2
-            return -1, 2
+            return -1, 5
         if q == 1:
-            return -1, 2
+            return -1, 5
         if q == 2:
             if a == 39:
                 return 1, 1
-            return -1, 2
+            return -1, 5
         if q == 4:
             if a == 39:
                 return 0, 2
@@ -223,8 +223,8 @@ class Character(BaseRecognizer):
                 return 0, 2
             if a == 116:
                 return 0, 2
-            return -1, 2
-        return -1, 2
+            return -1, 5
+        return -1, 5
 
 class String(BaseRecognizer):
     def __init__(self):
@@ -234,7 +234,7 @@ class String(BaseRecognizer):
         if q == 0:
             if a == 34:
                 return 0, 2
-            return -1, 2
+            return -1, 4
         if q == 2:
             if 32 <= a < 34:
                 return 0, 2
@@ -246,9 +246,9 @@ class String(BaseRecognizer):
                 return 0, 3
             if 93 <= a < 127:
                 return 0, 2
-            return -1, 2
+            return -1, 4
         if q == 1:
-            return -1, 2
+            return -1, 4
         if q == 3:
             if 32 <= a < 34:
                 return 0, 2
@@ -260,8 +260,8 @@ class String(BaseRecognizer):
                 return 0, 2
             if 93 <= a < 127:
                 return 0, 2
-            return -1, 2
-        return -1, 2
+            return -1, 4
+        return -1, 4
 
 class Dot(BaseRecognizer):
     def __init__(self):
