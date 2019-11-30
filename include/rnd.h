@@ -1,14 +1,16 @@
 #pragma once
 #ifdef __cplusplus
 #include <cstddef>
+#include <cstdint>
 #else
 #include <stdbool.h>
 #include <stddef.h>
+#include <stdint.h>
 #endif
 
 struct rnd_range {
-    int start;
-    int end;
+    uint32_t start;
+    uint32_t end;
 };
 
 enum rnd_type { 
@@ -40,10 +42,11 @@ struct rnd_state {
 // states:
 //      an array of states. indices serve as state ids
 //      invariant: states[0] is the start state
+// error: explicit error state (non-accept state that transitions to itself)
 struct rnd_dfa {
     int order;
     struct rnd_state *states;
-    const char *error;
+    int error;
 };
 
 #ifdef __cplusplus
@@ -59,7 +62,7 @@ void rnd_dfa_destroy(struct rnd_dfa*);
 #ifdef __cplusplus
 extern "C" 
 #endif
-struct rnd_expr *rnd_symbol(int, int);
+struct rnd_expr *rnd_symbol(uint32_t, uint32_t);
 
 #ifdef __cplusplus
 extern "C" 
