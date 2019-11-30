@@ -1,53 +1,48 @@
-lib_LTLIBRARIES = lib/libcrnd.la
-lib_libcrnd_la_SOURCES = \
-	src/rnd.cpp \
-    include/rnd.h \
-    src/rnd/regex/regex.cpp \
-    src/rnd/regex/regex.h \
-    src/rnd/alphabet/alphabet.hpp \
-    src/rnd/nfa/nfa.cpp \
-    src/rnd/nfa/nfa.h \
-    src/rnd/dfa/dfa.cpp \
-    src/rnd/dfa/dfa.h \
-	src/rnd/dfa/uhs.hpp \
-    src/rnd/dfa/partition.h \
-    src/distree/distree.cpp \
-    src/distree/distree.h \
-    src/redblack/tree.hpp
-lib_libcrnd_la_CPPFLAGS = -I$(top_srcdir)/src -I$(top_srcdir)/include
-lib_libcrnd_la_LDFLAGS = -version-info 0:0:0
+lib_LTLIBRARIES = lib/librnd.la
+lib_librnd_la_SOURCES = \
+	include/rnd.h \
+	src/automaton.hpp \
+	src/handles.hpp \
+	src/nexpr.hpp \
+	src/wrapper.cxx \
+	src/zsymbols.hpp
+lib_librnd_la_CPPFLAGS = -I$(top_srcdir)/src -I$(top_srcdir)/include
+lib_librnd_la_LDFLAGS = -version-info 0:0:0
 
 include_HEADERS = include/rnd.h
 
 ACLOCAL_AMFLAGS = -I m4
 
-check_PROGRAMS = bin/test_distree bin/test_redblack
+check_PROGRAMS = examples/example_c examples/example_cpp \
+	src/automaton.test src/nexpr.test src/zsymbols.test
 
-bin_test_distree_SOURCES = \
-	src/distree/test.cpp \
-    src/distree/distree.cpp \
-    src/distree/distree.h \
-    src/distree/utils.hpp \
-    src/test_runner.hpp
-bin_test_redblack_SOURCES = \
-	src/redblack/test.cpp \
-    src/redblack/tree.hpp \
-    src/test_runner.hpp
+src_automaton_test_SOURCES = src/automaton.hpp src/automaton.test.cpp
 
-bin_test_distree_CPPFLAGS = -I$(top_srcdir)/src -I$(top_srcdir)/include
-bin_test_redblack_CPPFLAGS = -I$(top_srcdir)/src -I$(top_srcdir)/include
+src_nexpr_test_SOURCES = src/nexpr.hpp src/nexpr.test.cpp
+
+src_zsymbols_test_SOURCES = src/zsymbols.hpp src/zsymbols.test.cpp
+
+examples_example_c_SOURCES = include/rnd.h examples/example.c src/wrapper.cxx \
+	src/automaton.hpp src/handles.hpp src/nexpr.hpp src/zsymbols.hpp
+
+examples_example_cpp_SOURCES = examples/example.cpp \
+	src/automaton.hpp src/handles.hpp src/nexpr.hpp src/zsymbols.hpp
+
+examples_example_c_CPPFLAGS = -I$(top_srcdir)/src -I$(top_srcdir)/include -I$(top_srcdir)/examples
+
+examples_example_cpp_CPPFLAGS = -I$(top_srcdir)/src -I$(top_srcdir)/include -I$(top_srcdir)/examples
 
 TESTS = $(check_PROGRAMS)
 
-.PHONY:	docker-build
-docker-build:
-	docker rmi -f rnd-dev
-	docker build -t rnd-dev $(top_srcdir)
-
-.PHONY:	docker-rund
-docker-rund:
-	docker run -d -it -v $(abs_top_srcdir):/home rnd-dev /bin/sh
-
-.PHONY:	docker-run
-docker-run:
-	docker run -it -v $(abs_top_srcdir):/home rnd-dev /bin/sh
+#.PHONY:	docker-build
+#docker-build:
+#	docker rmi -f rnd-dev
+#	docker build -t rnd-dev $(top_srcdir)
+#
+#.PHONY:	docker-rund
+#docker-rund:
+#	docker run -d -it -v $(abs_top_srcdir):/home rnd-dev /bin/sh
+#
+#.PHONY:	docker-run
+#docker-run:
+#	docker run -it -v $(abs_top_srcdir):/home rnd-dev /bin/sh
