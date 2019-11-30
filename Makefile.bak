@@ -14,6 +14,7 @@ bindir = $(prefix)/bin
 includedir = $(prefix)/include
 libdir = $(prefix)/lib
 TESTS = $(patsubst %.cpp,%,$(shell find src -name "*.test.cpp")) 
+EXAMPLES = examples/example_c examples/example_cpp
 
 vpath %.cpp src
 vpath %.cxx src
@@ -22,8 +23,7 @@ vpath %.h include src
 vpath %.hpp include src
 
 .PHONY:	all
-all:	$(TESTS) lib/librndpoc.a lib/librndpoc.so
-# example_c and example_cpp
+all:	$(TESTS) lib/librndpoc.a lib/librndpoc.so $(EXAMPLES)
 
 lib/librndpoc.a:	build/rndpoc.o
 	$(AR) rcs $@ $<
@@ -36,8 +36,7 @@ build/rndpoc.o:	wrapper.cxx rnd.h automaton.hpp handles.hpp nexpr.hpp zsymbols.h
 
 .PHONY:	clean
 clean:
-	-rm -f vgcore.* build/*.o $(TESTS)
-#example_c example_cpp
+	-rm -f vgcore.* build/*.o $(TESTS) $(EXAMPLES)
 
 .PHONY:	install
 install:	lib/librndpoc.so lib/librndpoc.a
@@ -69,8 +68,8 @@ $(TESTS):	%.test:	%.test.cpp %.hpp
 	$(CXX) $(CXXFLAGS) -o $@ $<
 
 .PHONY:	check
-check:	all $(TESTS)
-	@for test in $(TESTS); \
+check:	all $(TESTS) $(EXAMPLES)
+	@for test in $(TESTS) $(EXAMPLES); \
 	do \
 		./$$test; \
 	done
@@ -81,3 +80,9 @@ check:	all $(TESTS)
 # generating profile analysis:
 # ./bin/profile
 # gprof -p -b bin/profile gmon.out > analysis.txt
+
+examples/example_c:	examples/example.c lib/librndpoc.so
+	gcc -g -Wall -Wextra -Wpedantic -Werror -I./examples -L./lib $< -o $@ -lrndpoc
+
+examples/example_cpp:	examples/example.cpp automaton.hpp nexpr.hpp zsymbols.hpp
+	$(CXX) $(CXXFLAGS) -o $@ $<
