@@ -1,13 +1,13 @@
-lib_LTLIBRARIES = lib/librnd.la
-lib_librnd_la_SOURCES = \
+lib_LTLIBRARIES = lib/librndpoc.la
+lib_librndpoc_la_SOURCES = \
 	include/rnd.h \
 	src/automaton.hpp \
 	src/handles.hpp \
 	src/nexpr.hpp \
 	src/wrapper.cxx \
 	src/zsymbols.hpp
-lib_librnd_la_CPPFLAGS = -I$(top_srcdir)/src -I$(top_srcdir)/include
-lib_librnd_la_LDFLAGS = -version-info 0:0:0
+lib_librndpoc_la_CPPFLAGS = -I$(top_srcdir)/src -I$(top_srcdir)/include
+lib_librndpoc_la_LDFLAGS = -version-info 0:0:0
 
 include_HEADERS = include/rnd.h
 
