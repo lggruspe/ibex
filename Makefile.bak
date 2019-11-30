@@ -8,84 +8,68 @@ else
 	C++17=-std=c++17
 endif
 
-CXXFLAGS = -g -Wall -fpic $(C++17) -I./include -I./src
-OBJECTS = build/regex.o build/nfa.o build/dfa.o build/distree.o
+CXXFLAGS = -g -Wall -Wextra -Wpedantic -Werror -fpic $(C++17) -I./include -I./src
 prefix = /usr/local
 bindir = $(prefix)/bin
 includedir = $(prefix)/include
 libdir = $(prefix)/lib
-TESTS = bin/test_distree bin/test_redblack
+TESTS = $(patsubst %.cpp,%,$(shell find src -name "*.test.cpp")) 
 
 vpath %.cpp src
+vpath %.cxx src
 vpath %.o build
 vpath %.h include src
 vpath %.hpp include src
 
 .PHONY:	all
-all:	lib/librnd.a lib/librnd.so lib/libcrnd.so lib/libcrnd.a
+all:	$(TESTS) lib/librndpoc.a lib/librndpoc.so
+# example_c and example_cpp
 
-lib/libcrnd.a:	build/rnd.o $(OBJECTS)
-	$(AR) rcs $@ $^
+lib/librndpoc.a:	build/rndpoc.o
+	$(AR) rcs $@ $<
 
-lib/librnd.so:	$(OBJECTS)
-	$(CXX) -shared -o $@ $^
+lib/librndpoc.so:	build/rndpoc.o
+	$(CXX) -shared -o $@ $<
 
-lib/librnd.a:	$(OBJECTS)
-	$(AR) rcs $@ $^
-
-$(OBJECTS):	%:
+build/rndpoc.o:	wrapper.cxx rnd.h automaton.hpp handles.hpp nexpr.hpp zsymbols.hpp
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
-
-build/regex.o:	rnd/regex/regex.cpp rnd/regex/regex.h rnd/alphabet/alphabet.hpp
-
-build/nfa.o:	rnd/nfa/nfa.cpp rnd/nfa/nfa.h rnd/alphabet/alphabet.hpp
-
-build/dfa.o:	rnd/dfa/dfa.cpp rnd/dfa/dfa.h rnd/nfa/nfa.h rnd/dfa/uhs.hpp rnd/dfa/partition.h rnd/alphabet/alphabet.hpp
-
-build/distree.o:	distree/distree.cpp distree/distree.h redblack/tree.hpp
 
 .PHONY:	clean
 clean:
-	-rm -f $(OBJECTS) vgcore.* build/*.o $(TESTS)
+	-rm -f vgcore.* build/*.o $(TESTS)
+#example_c example_cpp
 
 .PHONY:	install
-install:	lib/libcrnd.so
+install:	lib/librndpoc.so lib/librndpoc.a
 	mkdir -p "$(prefix)"
 	mkdir -p "$(includedir)"
 	mkdir -p "$(libdir)"
-	cp $< "$(libdir)"
+	cp $^ "$(libdir)"
 	cp -r include/* "$(includedir)"
 
-build/rnd.o:	rnd.cpp rnd.h
-	$(CXX) $(CXXFLAGS) -c -o $@ $<
+.PHONY:	uninstall
+uninstall:
+	rm "$(includedir)/rnd.h"
+	rm "$(libdir)/librndpoc.so"
 
-lib/libcrnd.so:	build/rnd.o $(OBJECTS)
-	$(CXX) -shared -o $@ $^
+#.PHONY:	docker-build
+#docker-build:
+#	docker rmi -f rnd-dev
+#	docker build -t rnd-dev .
+#
+#.PHONY:	docker-rund
+#docker-rund:
+#	docker run -d -it -v $$(pwd):/home rnd-dev /bin/sh
+#
+#.PHONY:	docker-run
+#docker-run:
+#	docker run -it -v $$(pwd):/home rnd-dev /bin/sh
 
-.PHONY:	docker-build
-docker-build:
-	docker rmi -f rnd-dev
-	docker build -t rnd-dev .
+$(TESTS):	%.test:	%.test.cpp %.hpp
+	$(CXX) $(CXXFLAGS) -o $@ $<
 
-.PHONY:	docker-rund
-docker-rund:
-	docker run -d -it -v $$(pwd):/home rnd-dev /bin/sh
-
-.PHONY:	docker-run
-docker-run:
-	docker run -it -v $$(pwd):/home rnd-dev /bin/sh
-
-## Tests
-
-$(TESTS):	%:
-	$(CXX) $(CXXFLAGS) -o $@ $(filter-out %.hpp,$(filter-out %.h,$^))
-
-bin/test_distree:	distree/test.cpp distree/distree.cpp distree/distree.h test_runner.hpp
-
-bin/test_redblack:	redblack/test.cpp redblack/tree.hpp
-
-.PHONY:	test
-test:	all $(TESTS)
+.PHONY:	check
+check:	all $(TESTS)
 	@for test in $(TESTS); \
 	do \
 		./$$test; \
