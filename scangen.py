@@ -6,22 +6,25 @@ import rnd
 
 scanners = []
 
-def symbols(left: str, right: str = None) -> rnd.ExprSymbols:
+def symbols(left: str = None, right: str = None) -> rnd.ExprSymbols:
     """Create range of symbols from characters."""
-    if right is None:
-        right = left
-    left, right = ord(left), ord(right)
+    left = ord(left) if left is not None else 0xffffffff
+    if right:
+        right = ord(right)+1
+    else:
+        right = min(0xffffffff, left+1)
     return rnd.ExprSymbols(left, right)
 
-def isymbols(left: int, right: int = None) -> rnd.ExprSymbols:
+def isymbols(left: int = None, right: int = None) -> rnd.ExprSymbols:
     """Create range of symbols from integers."""
-    if right is None:
-        right = left
+    if left is None:
+        left = 0xffffffff
+    right = right+1 if right is not None else min(0xffffffff, left+1)
     return rnd.ExprSymbols(left, right)
 
 def optional(expr: rnd.ExprSymbols or rnd.Expr):
     """Return union of expr with empty symbol."""
-    return expr.union(symbols('\0'))
+    return expr.union(symbols())
 
 def token(name):
     """Register scanner."""
