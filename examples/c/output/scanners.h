@@ -54,1182 +54,429 @@ struct recognizer {
 };
 
 
-int transition_identifier(int state, int input)
+struct transition_output transition_identifier(int q, uint32_t a)
 {
-    fail_if_empty(input);
-    switch (state) {
+    switch (q) {
     case 0:
-        if (0 <= input && input <= 48)
-            return 2;
-        if (48 <= input && input <= 58)
-            return 2;
-        if (58 <= input && input <= 65)
-            return 2;
-        if (65 <= input && input <= 91)
-            return 1;
-        if (91 <= input && input <= 95)
-            return 2;
-        if (95 <= input && input <= 96)
-            return 1;
-        if (96 <= input && input <= 97)
-            return 2;
-        if (97 <= input && input <= 123)
-            return 1;
-        if (123 <= input && input <= 4294967295)
-            return 2;
-        return -1;
-    case 2:
-        if (0 <= input && input <= 48)
-            return 2;
-        if (48 <= input && input <= 58)
-            return 2;
-        if (58 <= input && input <= 65)
-            return 2;
-        if (65 <= input && input <= 91)
-            return 2;
-        if (91 <= input && input <= 95)
-            return 2;
-        if (95 <= input && input <= 96)
-            return 2;
-        if (96 <= input && input <= 97)
-            return 2;
-        if (97 <= input && input <= 123)
-            return 2;
-        if (123 <= input && input <= 4294967295)
-            return 2;
-        return -1;
+        if (65 <= a && a < 91)
+            return { .status = 1, .next_state = 1 };
+        if (95 <= a && a < 96)
+            return { .status = 1, .next_state = 1 };
+        if (97 <= a && a < 123)
+            return { .status = 1, .next_state = 1 };
+        return { .status = -1, .next_state = 2 };
     case 1:
-        if (0 <= input && input <= 48)
-            return 2;
-        if (48 <= input && input <= 58)
-            return 1;
-        if (58 <= input && input <= 65)
-            return 2;
-        if (65 <= input && input <= 91)
-            return 1;
-        if (91 <= input && input <= 95)
-            return 2;
-        if (95 <= input && input <= 96)
-            return 1;
-        if (96 <= input && input <= 97)
-            return 2;
-        if (97 <= input && input <= 123)
-            return 1;
-        if (123 <= input && input <= 4294967295)
-            return 2;
-        return -1;
+        if (48 <= a && a < 58)
+            return { .status = 1, .next_state = 1 };
+        if (65 <= a && a < 91)
+            return { .status = 1, .next_state = 1 };
+        if (95 <= a && a < 96)
+            return { .status = 1, .next_state = 1 };
+        if (97 <= a && a < 123)
+            return { .status = 1, .next_state = 1 };
+        return { .status = -1, .next_state = 2 };
     default:
-        return -1;
+        return { .status = -1, .next_state = 2 };
     }
 }
 
-int transition_whitespace(int state, int input)
+struct transition_output transition_whitespace(int q, uint32_t a)
 {
-    fail_if_empty(input);
-    switch (state) {
+    switch (q) {
     case 0:
-        if (0 <= input && input <= 9)
-            return 2;
-        if (9 <= input && input <= 10)
-            return 1;
-        if (10 <= input && input <= 11)
-            return 1;
-        if (11 <= input && input <= 32)
-            return 2;
-        if (32 <= input && input <= 33)
-            return 1;
-        if (33 <= input && input <= 4294967295)
-            return 2;
-        return -1;
-    case 2:
-        if (0 <= input && input <= 9)
-            return 2;
-        if (9 <= input && input <= 10)
-            return 2;
-        if (10 <= input && input <= 11)
-            return 2;
-        if (11 <= input && input <= 32)
-            return 2;
-        if (32 <= input && input <= 33)
-            return 2;
-        if (33 <= input && input <= 4294967295)
-            return 2;
-        return -1;
+        if (9 <= a && a < 10)
+            return { .status = 1, .next_state = 1 };
+        if (10 <= a && a < 11)
+            return { .status = 1, .next_state = 1 };
+        if (32 <= a && a < 33)
+            return { .status = 1, .next_state = 1 };
+        return { .status = -1, .next_state = 2 };
     case 1:
-        if (0 <= input && input <= 9)
-            return 2;
-        if (9 <= input && input <= 10)
-            return 2;
-        if (10 <= input && input <= 11)
-            return 2;
-        if (11 <= input && input <= 32)
-            return 2;
-        if (32 <= input && input <= 33)
-            return 2;
-        if (33 <= input && input <= 4294967295)
-            return 2;
-        return -1;
+        return { .status = -1, .next_state = 2 };
     default:
-        return -1;
+        return { .status = -1, .next_state = 2 };
     }
 }
 
-int transition_number(int state, int input)
+struct transition_output transition_number(int q, uint32_t a)
 {
-    fail_if_empty(input);
-    switch (state) {
+    switch (q) {
     case 0:
-        if (0 <= input && input <= 43)
-            return 6;
-        if (43 <= input && input <= 44)
-            return 6;
-        if (44 <= input && input <= 45)
-            return 6;
-        if (45 <= input && input <= 46)
-            return 6;
-        if (46 <= input && input <= 47)
-            return 6;
-        if (47 <= input && input <= 48)
-            return 6;
-        if (48 <= input && input <= 49)
-            return 3;
-        if (49 <= input && input <= 58)
-            return 8;
-        if (58 <= input && input <= 69)
-            return 6;
-        if (69 <= input && input <= 70)
-            return 6;
-        if (70 <= input && input <= 101)
-            return 6;
-        if (101 <= input && input <= 102)
-            return 6;
-        if (102 <= input && input <= 4294967295)
-            return 6;
-        return -1;
-    case 6:
-        if (0 <= input && input <= 43)
-            return 6;
-        if (43 <= input && input <= 44)
-            return 6;
-        if (44 <= input && input <= 45)
-            return 6;
-        if (45 <= input && input <= 46)
-            return 6;
-        if (46 <= input && input <= 47)
-            return 6;
-        if (47 <= input && input <= 48)
-            return 6;
-        if (48 <= input && input <= 49)
-            return 6;
-        if (49 <= input && input <= 58)
-            return 6;
-        if (58 <= input && input <= 69)
-            return 6;
-        if (69 <= input && input <= 70)
-            return 6;
-        if (70 <= input && input <= 101)
-            return 6;
-        if (101 <= input && input <= 102)
-            return 6;
-        if (102 <= input && input <= 4294967295)
-            return 6;
-        return -1;
+        if (48 <= a && a < 49)
+            return { .status = 1, .next_state = 3 };
+        if (49 <= a && a < 58)
+            return { .status = 1, .next_state = 8 };
+        return { .status = -1, .next_state = 6 };
     case 3:
-        if (0 <= input && input <= 43)
-            return 6;
-        if (43 <= input && input <= 44)
-            return 6;
-        if (44 <= input && input <= 45)
-            return 6;
-        if (45 <= input && input <= 46)
-            return 6;
-        if (46 <= input && input <= 47)
-            return 7;
-        if (47 <= input && input <= 48)
-            return 6;
-        if (48 <= input && input <= 49)
-            return 6;
-        if (49 <= input && input <= 58)
-            return 6;
-        if (58 <= input && input <= 69)
-            return 6;
-        if (69 <= input && input <= 70)
-            return 5;
-        if (70 <= input && input <= 101)
-            return 6;
-        if (101 <= input && input <= 102)
-            return 5;
-        if (102 <= input && input <= 4294967295)
-            return 6;
-        return -1;
+        if (46 <= a && a < 47)
+            return { .status = 0, .next_state = 7 };
+        if (69 <= a && a < 70)
+            return { .status = 0, .next_state = 5 };
+        if (101 <= a && a < 102)
+            return { .status = 0, .next_state = 5 };
+        return { .status = -1, .next_state = 6 };
     case 8:
-        if (0 <= input && input <= 43)
-            return 6;
-        if (43 <= input && input <= 44)
-            return 6;
-        if (44 <= input && input <= 45)
-            return 6;
-        if (45 <= input && input <= 46)
-            return 6;
-        if (46 <= input && input <= 47)
-            return 7;
-        if (47 <= input && input <= 48)
-            return 6;
-        if (48 <= input && input <= 49)
-            return 8;
-        if (49 <= input && input <= 58)
-            return 8;
-        if (58 <= input && input <= 69)
-            return 6;
-        if (69 <= input && input <= 70)
-            return 5;
-        if (70 <= input && input <= 101)
-            return 6;
-        if (101 <= input && input <= 102)
-            return 5;
-        if (102 <= input && input <= 4294967295)
-            return 6;
-        return -1;
+        if (46 <= a && a < 47)
+            return { .status = 0, .next_state = 7 };
+        if (48 <= a && a < 49)
+            return { .status = 1, .next_state = 8 };
+        if (49 <= a && a < 58)
+            return { .status = 1, .next_state = 8 };
+        if (69 <= a && a < 70)
+            return { .status = 0, .next_state = 5 };
+        if (101 <= a && a < 102)
+            return { .status = 0, .next_state = 5 };
+        return { .status = -1, .next_state = 6 };
     case 1:
-        if (0 <= input && input <= 43)
-            return 6;
-        if (43 <= input && input <= 44)
-            return 6;
-        if (44 <= input && input <= 45)
-            return 6;
-        if (45 <= input && input <= 46)
-            return 6;
-        if (46 <= input && input <= 47)
-            return 6;
-        if (47 <= input && input <= 48)
-            return 6;
-        if (48 <= input && input <= 49)
-            return 6;
-        if (49 <= input && input <= 58)
-            return 6;
-        if (58 <= input && input <= 69)
-            return 6;
-        if (69 <= input && input <= 70)
-            return 6;
-        if (70 <= input && input <= 101)
-            return 6;
-        if (101 <= input && input <= 102)
-            return 6;
-        if (102 <= input && input <= 4294967295)
-            return 6;
-        return -1;
+        return { .status = -1, .next_state = 6 };
     case 2:
-        if (0 <= input && input <= 43)
-            return 6;
-        if (43 <= input && input <= 44)
-            return 6;
-        if (44 <= input && input <= 45)
-            return 6;
-        if (45 <= input && input <= 46)
-            return 6;
-        if (46 <= input && input <= 47)
-            return 6;
-        if (47 <= input && input <= 48)
-            return 6;
-        if (48 <= input && input <= 49)
-            return 1;
-        if (49 <= input && input <= 58)
-            return 4;
-        if (58 <= input && input <= 69)
-            return 6;
-        if (69 <= input && input <= 70)
-            return 6;
-        if (70 <= input && input <= 101)
-            return 6;
-        if (101 <= input && input <= 102)
-            return 6;
-        if (102 <= input && input <= 4294967295)
-            return 6;
-        return -1;
+        if (48 <= a && a < 49)
+            return { .status = 1, .next_state = 1 };
+        if (49 <= a && a < 58)
+            return { .status = 1, .next_state = 4 };
+        return { .status = -1, .next_state = 6 };
     case 4:
-        if (0 <= input && input <= 43)
-            return 6;
-        if (43 <= input && input <= 44)
-            return 6;
-        if (44 <= input && input <= 45)
-            return 6;
-        if (45 <= input && input <= 46)
-            return 6;
-        if (46 <= input && input <= 47)
-            return 6;
-        if (47 <= input && input <= 48)
-            return 6;
-        if (48 <= input && input <= 49)
-            return 4;
-        if (49 <= input && input <= 58)
-            return 4;
-        if (58 <= input && input <= 69)
-            return 6;
-        if (69 <= input && input <= 70)
-            return 6;
-        if (70 <= input && input <= 101)
-            return 6;
-        if (101 <= input && input <= 102)
-            return 6;
-        if (102 <= input && input <= 4294967295)
-            return 6;
-        return -1;
+        if (48 <= a && a < 49)
+            return { .status = 1, .next_state = 4 };
+        if (49 <= a && a < 58)
+            return { .status = 1, .next_state = 4 };
+        return { .status = -1, .next_state = 6 };
     case 7:
-        if (0 <= input && input <= 43)
-            return 6;
-        if (43 <= input && input <= 44)
-            return 6;
-        if (44 <= input && input <= 45)
-            return 6;
-        if (45 <= input && input <= 46)
-            return 6;
-        if (46 <= input && input <= 47)
-            return 6;
-        if (47 <= input && input <= 48)
-            return 6;
-        if (48 <= input && input <= 49)
-            return 9;
-        if (49 <= input && input <= 58)
-            return 9;
-        if (58 <= input && input <= 69)
-            return 6;
-        if (69 <= input && input <= 70)
-            return 6;
-        if (70 <= input && input <= 101)
-            return 6;
-        if (101 <= input && input <= 102)
-            return 6;
-        if (102 <= input && input <= 4294967295)
-            return 6;
-        return -1;
+        if (48 <= a && a < 49)
+            return { .status = 1, .next_state = 9 };
+        if (49 <= a && a < 58)
+            return { .status = 1, .next_state = 9 };
+        return { .status = -1, .next_state = 6 };
     case 5:
-        if (0 <= input && input <= 43)
-            return 6;
-        if (43 <= input && input <= 44)
-            return 2;
-        if (44 <= input && input <= 45)
-            return 6;
-        if (45 <= input && input <= 46)
-            return 2;
-        if (46 <= input && input <= 47)
-            return 6;
-        if (47 <= input && input <= 48)
-            return 6;
-        if (48 <= input && input <= 49)
-            return 1;
-        if (49 <= input && input <= 58)
-            return 4;
-        if (58 <= input && input <= 69)
-            return 6;
-        if (69 <= input && input <= 70)
-            return 6;
-        if (70 <= input && input <= 101)
-            return 6;
-        if (101 <= input && input <= 102)
-            return 6;
-        if (102 <= input && input <= 4294967295)
-            return 6;
-        return -1;
+        if (43 <= a && a < 44)
+            return { .status = 0, .next_state = 2 };
+        if (45 <= a && a < 46)
+            return { .status = 0, .next_state = 2 };
+        if (48 <= a && a < 49)
+            return { .status = 1, .next_state = 1 };
+        if (49 <= a && a < 58)
+            return { .status = 1, .next_state = 4 };
+        return { .status = -1, .next_state = 6 };
     case 9:
-        if (0 <= input && input <= 43)
-            return 6;
-        if (43 <= input && input <= 44)
-            return 6;
-        if (44 <= input && input <= 45)
-            return 6;
-        if (45 <= input && input <= 46)
-            return 6;
-        if (46 <= input && input <= 47)
-            return 6;
-        if (47 <= input && input <= 48)
-            return 6;
-        if (48 <= input && input <= 49)
-            return 9;
-        if (49 <= input && input <= 58)
-            return 9;
-        if (58 <= input && input <= 69)
-            return 6;
-        if (69 <= input && input <= 70)
-            return 5;
-        if (70 <= input && input <= 101)
-            return 6;
-        if (101 <= input && input <= 102)
-            return 5;
-        if (102 <= input && input <= 4294967295)
-            return 6;
-        return -1;
+        if (48 <= a && a < 49)
+            return { .status = 1, .next_state = 9 };
+        if (49 <= a && a < 58)
+            return { .status = 1, .next_state = 9 };
+        if (69 <= a && a < 70)
+            return { .status = 0, .next_state = 5 };
+        if (101 <= a && a < 102)
+            return { .status = 0, .next_state = 5 };
+        return { .status = -1, .next_state = 6 };
     default:
-        return -1;
+        return { .status = -1, .next_state = 6 };
     }
 }
 
-int transition_character(int state, int input)
+struct transition_output transition_character(int q, uint32_t a)
 {
-    fail_if_empty(input);
-    switch (state) {
+    switch (q) {
     case 0:
-        if (0 <= input && input <= 32)
-            return 5;
-        if (32 <= input && input <= 39)
-            return 5;
-        if (39 <= input && input <= 40)
-            return 3;
-        if (40 <= input && input <= 92)
-            return 5;
-        if (92 <= input && input <= 93)
-            return 5;
-        if (93 <= input && input <= 110)
-            return 5;
-        if (110 <= input && input <= 111)
-            return 5;
-        if (111 <= input && input <= 116)
-            return 5;
-        if (116 <= input && input <= 117)
-            return 5;
-        if (117 <= input && input <= 127)
-            return 5;
-        if (127 <= input && input <= 4294967295)
-            return 5;
-        return -1;
-    case 5:
-        if (0 <= input && input <= 32)
-            return 5;
-        if (32 <= input && input <= 39)
-            return 5;
-        if (39 <= input && input <= 40)
-            return 5;
-        if (40 <= input && input <= 92)
-            return 5;
-        if (92 <= input && input <= 93)
-            return 5;
-        if (93 <= input && input <= 110)
-            return 5;
-        if (110 <= input && input <= 111)
-            return 5;
-        if (111 <= input && input <= 116)
-            return 5;
-        if (116 <= input && input <= 117)
-            return 5;
-        if (117 <= input && input <= 127)
-            return 5;
-        if (127 <= input && input <= 4294967295)
-            return 5;
-        return -1;
+        if (39 <= a && a < 40)
+            return { .status = 0, .next_state = 3 };
+        return { .status = -1, .next_state = 5 };
     case 3:
-        if (0 <= input && input <= 32)
-            return 5;
-        if (32 <= input && input <= 39)
-            return 2;
-        if (39 <= input && input <= 40)
-            return 5;
-        if (40 <= input && input <= 92)
-            return 2;
-        if (92 <= input && input <= 93)
-            return 4;
-        if (93 <= input && input <= 110)
-            return 2;
-        if (110 <= input && input <= 111)
-            return 2;
-        if (111 <= input && input <= 116)
-            return 2;
-        if (116 <= input && input <= 117)
-            return 2;
-        if (117 <= input && input <= 127)
-            return 2;
-        if (127 <= input && input <= 4294967295)
-            return 5;
-        return -1;
+        if (32 <= a && a < 39)
+            return { .status = 0, .next_state = 2 };
+        if (40 <= a && a < 92)
+            return { .status = 0, .next_state = 2 };
+        if (92 <= a && a < 93)
+            return { .status = 0, .next_state = 4 };
+        if (93 <= a && a < 110)
+            return { .status = 0, .next_state = 2 };
+        if (110 <= a && a < 111)
+            return { .status = 0, .next_state = 2 };
+        if (111 <= a && a < 116)
+            return { .status = 0, .next_state = 2 };
+        if (116 <= a && a < 117)
+            return { .status = 0, .next_state = 2 };
+        if (117 <= a && a < 127)
+            return { .status = 0, .next_state = 2 };
+        return { .status = -1, .next_state = 5 };
     case 1:
-        if (0 <= input && input <= 32)
-            return 5;
-        if (32 <= input && input <= 39)
-            return 5;
-        if (39 <= input && input <= 40)
-            return 5;
-        if (40 <= input && input <= 92)
-            return 5;
-        if (92 <= input && input <= 93)
-            return 5;
-        if (93 <= input && input <= 110)
-            return 5;
-        if (110 <= input && input <= 111)
-            return 5;
-        if (111 <= input && input <= 116)
-            return 5;
-        if (116 <= input && input <= 117)
-            return 5;
-        if (117 <= input && input <= 127)
-            return 5;
-        if (127 <= input && input <= 4294967295)
-            return 5;
-        return -1;
+        return { .status = -1, .next_state = 5 };
     case 2:
-        if (0 <= input && input <= 32)
-            return 5;
-        if (32 <= input && input <= 39)
-            return 5;
-        if (39 <= input && input <= 40)
-            return 1;
-        if (40 <= input && input <= 92)
-            return 5;
-        if (92 <= input && input <= 93)
-            return 5;
-        if (93 <= input && input <= 110)
-            return 5;
-        if (110 <= input && input <= 111)
-            return 5;
-        if (111 <= input && input <= 116)
-            return 5;
-        if (116 <= input && input <= 117)
-            return 5;
-        if (117 <= input && input <= 127)
-            return 5;
-        if (127 <= input && input <= 4294967295)
-            return 5;
-        return -1;
+        if (39 <= a && a < 40)
+            return { .status = 1, .next_state = 1 };
+        return { .status = -1, .next_state = 5 };
     case 4:
-        if (0 <= input && input <= 32)
-            return 5;
-        if (32 <= input && input <= 39)
-            return 5;
-        if (39 <= input && input <= 40)
-            return 2;
-        if (40 <= input && input <= 92)
-            return 5;
-        if (92 <= input && input <= 93)
-            return 2;
-        if (93 <= input && input <= 110)
-            return 5;
-        if (110 <= input && input <= 111)
-            return 2;
-        if (111 <= input && input <= 116)
-            return 5;
-        if (116 <= input && input <= 117)
-            return 2;
-        if (117 <= input && input <= 127)
-            return 5;
-        if (127 <= input && input <= 4294967295)
-            return 5;
-        return -1;
+        if (39 <= a && a < 40)
+            return { .status = 0, .next_state = 2 };
+        if (92 <= a && a < 93)
+            return { .status = 0, .next_state = 2 };
+        if (110 <= a && a < 111)
+            return { .status = 0, .next_state = 2 };
+        if (116 <= a && a < 117)
+            return { .status = 0, .next_state = 2 };
+        return { .status = -1, .next_state = 5 };
     default:
-        return -1;
+        return { .status = -1, .next_state = 5 };
     }
 }
 
-int transition_string(int state, int input)
+struct transition_output transition_string(int q, uint32_t a)
 {
-    fail_if_empty(input);
-    switch (state) {
+    switch (q) {
     case 0:
-        if (0 <= input && input <= 32)
-            return 4;
-        if (32 <= input && input <= 34)
-            return 4;
-        if (34 <= input && input <= 35)
-            return 2;
-        if (35 <= input && input <= 92)
-            return 4;
-        if (92 <= input && input <= 93)
-            return 4;
-        if (93 <= input && input <= 127)
-            return 4;
-        if (127 <= input && input <= 4294967295)
-            return 4;
-        return -1;
-    case 4:
-        if (0 <= input && input <= 32)
-            return 4;
-        if (32 <= input && input <= 34)
-            return 4;
-        if (34 <= input && input <= 35)
-            return 4;
-        if (35 <= input && input <= 92)
-            return 4;
-        if (92 <= input && input <= 93)
-            return 4;
-        if (93 <= input && input <= 127)
-            return 4;
-        if (127 <= input && input <= 4294967295)
-            return 4;
-        return -1;
+        if (34 <= a && a < 35)
+            return { .status = 0, .next_state = 2 };
+        return { .status = -1, .next_state = 4 };
     case 2:
-        if (0 <= input && input <= 32)
-            return 4;
-        if (32 <= input && input <= 34)
-            return 2;
-        if (34 <= input && input <= 35)
-            return 1;
-        if (35 <= input && input <= 92)
-            return 2;
-        if (92 <= input && input <= 93)
-            return 3;
-        if (93 <= input && input <= 127)
-            return 2;
-        if (127 <= input && input <= 4294967295)
-            return 4;
-        return -1;
+        if (32 <= a && a < 34)
+            return { .status = 0, .next_state = 2 };
+        if (34 <= a && a < 35)
+            return { .status = 1, .next_state = 1 };
+        if (35 <= a && a < 92)
+            return { .status = 0, .next_state = 2 };
+        if (92 <= a && a < 93)
+            return { .status = 0, .next_state = 3 };
+        if (93 <= a && a < 127)
+            return { .status = 0, .next_state = 2 };
+        return { .status = -1, .next_state = 4 };
     case 1:
-        if (0 <= input && input <= 32)
-            return 4;
-        if (32 <= input && input <= 34)
-            return 4;
-        if (34 <= input && input <= 35)
-            return 4;
-        if (35 <= input && input <= 92)
-            return 4;
-        if (92 <= input && input <= 93)
-            return 4;
-        if (93 <= input && input <= 127)
-            return 4;
-        if (127 <= input && input <= 4294967295)
-            return 4;
-        return -1;
+        return { .status = -1, .next_state = 4 };
     case 3:
-        if (0 <= input && input <= 32)
-            return 4;
-        if (32 <= input && input <= 34)
-            return 2;
-        if (34 <= input && input <= 35)
-            return 2;
-        if (35 <= input && input <= 92)
-            return 2;
-        if (92 <= input && input <= 93)
-            return 2;
-        if (93 <= input && input <= 127)
-            return 2;
-        if (127 <= input && input <= 4294967295)
-            return 4;
-        return -1;
+        if (32 <= a && a < 34)
+            return { .status = 0, .next_state = 2 };
+        if (34 <= a && a < 35)
+            return { .status = 0, .next_state = 2 };
+        if (35 <= a && a < 92)
+            return { .status = 0, .next_state = 2 };
+        if (92 <= a && a < 93)
+            return { .status = 0, .next_state = 2 };
+        if (93 <= a && a < 127)
+            return { .status = 0, .next_state = 2 };
+        return { .status = -1, .next_state = 4 };
     default:
-        return -1;
+        return { .status = -1, .next_state = 4 };
     }
 }
 
-int transition_dot(int state, int input)
+struct transition_output transition_dot(int q, uint32_t a)
 {
-    fail_if_empty(input);
-    switch (state) {
+    switch (q) {
     case 0:
-        if (0 <= input && input <= 46)
-            return 2;
-        if (46 <= input && input <= 47)
-            return 1;
-        if (47 <= input && input <= 4294967295)
-            return 2;
-        return -1;
-    case 2:
-        if (0 <= input && input <= 46)
-            return 2;
-        if (46 <= input && input <= 47)
-            return 2;
-        if (47 <= input && input <= 4294967295)
-            return 2;
-        return -1;
+        if (46 <= a && a < 47)
+            return { .status = 1, .next_state = 1 };
+        return { .status = -1, .next_state = 2 };
     case 1:
-        if (0 <= input && input <= 46)
-            return 2;
-        if (46 <= input && input <= 47)
-            return 2;
-        if (47 <= input && input <= 4294967295)
-            return 2;
-        return -1;
+        return { .status = -1, .next_state = 2 };
     default:
-        return -1;
+        return { .status = -1, .next_state = 2 };
     }
 }
 
-int transition_lparen(int state, int input)
+struct transition_output transition_lparen(int q, uint32_t a)
 {
-    fail_if_empty(input);
-    switch (state) {
+    switch (q) {
     case 0:
-        if (0 <= input && input <= 40)
-            return 2;
-        if (40 <= input && input <= 41)
-            return 1;
-        if (41 <= input && input <= 4294967295)
-            return 2;
-        return -1;
-    case 2:
-        if (0 <= input && input <= 40)
-            return 2;
-        if (40 <= input && input <= 41)
-            return 2;
-        if (41 <= input && input <= 4294967295)
-            return 2;
-        return -1;
+        if (40 <= a && a < 41)
+            return { .status = 1, .next_state = 1 };
+        return { .status = -1, .next_state = 2 };
     case 1:
-        if (0 <= input && input <= 40)
-            return 2;
-        if (40 <= input && input <= 41)
-            return 2;
-        if (41 <= input && input <= 4294967295)
-            return 2;
-        return -1;
+        return { .status = -1, .next_state = 2 };
     default:
-        return -1;
+        return { .status = -1, .next_state = 2 };
     }
 }
 
-int transition_rparen(int state, int input)
+struct transition_output transition_rparen(int q, uint32_t a)
 {
-    fail_if_empty(input);
-    switch (state) {
+    switch (q) {
     case 0:
-        if (0 <= input && input <= 41)
-            return 2;
-        if (41 <= input && input <= 42)
-            return 1;
-        if (42 <= input && input <= 4294967295)
-            return 2;
-        return -1;
-    case 2:
-        if (0 <= input && input <= 41)
-            return 2;
-        if (41 <= input && input <= 42)
-            return 2;
-        if (42 <= input && input <= 4294967295)
-            return 2;
-        return -1;
+        if (41 <= a && a < 42)
+            return { .status = 1, .next_state = 1 };
+        return { .status = -1, .next_state = 2 };
     case 1:
-        if (0 <= input && input <= 41)
-            return 2;
-        if (41 <= input && input <= 42)
-            return 2;
-        if (42 <= input && input <= 4294967295)
-            return 2;
-        return -1;
+        return { .status = -1, .next_state = 2 };
     default:
-        return -1;
+        return { .status = -1, .next_state = 2 };
     }
 }
 
-int transition_comma(int state, int input)
+struct transition_output transition_comma(int q, uint32_t a)
 {
-    fail_if_empty(input);
-    switch (state) {
+    switch (q) {
     case 0:
-        if (0 <= input && input <= 44)
-            return 2;
-        if (44 <= input && input <= 45)
-            return 1;
-        if (45 <= input && input <= 4294967295)
-            return 2;
-        return -1;
-    case 2:
-        if (0 <= input && input <= 44)
-            return 2;
-        if (44 <= input && input <= 45)
-            return 2;
-        if (45 <= input && input <= 4294967295)
-            return 2;
-        return -1;
+        if (44 <= a && a < 45)
+            return { .status = 1, .next_state = 1 };
+        return { .status = -1, .next_state = 2 };
     case 1:
-        if (0 <= input && input <= 44)
-            return 2;
-        if (44 <= input && input <= 45)
-            return 2;
-        if (45 <= input && input <= 4294967295)
-            return 2;
-        return -1;
+        return { .status = -1, .next_state = 2 };
     default:
-        return -1;
+        return { .status = -1, .next_state = 2 };
     }
 }
 
-int transition_star(int state, int input)
+struct transition_output transition_star(int q, uint32_t a)
 {
-    fail_if_empty(input);
-    switch (state) {
+    switch (q) {
     case 0:
-        if (0 <= input && input <= 42)
-            return 2;
-        if (42 <= input && input <= 43)
-            return 1;
-        if (43 <= input && input <= 4294967295)
-            return 2;
-        return -1;
-    case 2:
-        if (0 <= input && input <= 42)
-            return 2;
-        if (42 <= input && input <= 43)
-            return 2;
-        if (43 <= input && input <= 4294967295)
-            return 2;
-        return -1;
+        if (42 <= a && a < 43)
+            return { .status = 1, .next_state = 1 };
+        return { .status = -1, .next_state = 2 };
     case 1:
-        if (0 <= input && input <= 42)
-            return 2;
-        if (42 <= input && input <= 43)
-            return 2;
-        if (43 <= input && input <= 4294967295)
-            return 2;
-        return -1;
+        return { .status = -1, .next_state = 2 };
     default:
-        return -1;
+        return { .status = -1, .next_state = 2 };
     }
 }
 
-int transition_equal(int state, int input)
+struct transition_output transition_equal(int q, uint32_t a)
 {
-    fail_if_empty(input);
-    switch (state) {
+    switch (q) {
     case 0:
-        if (0 <= input && input <= 61)
-            return 2;
-        if (61 <= input && input <= 62)
-            return 1;
-        if (62 <= input && input <= 4294967295)
-            return 2;
-        return -1;
-    case 2:
-        if (0 <= input && input <= 61)
-            return 2;
-        if (61 <= input && input <= 62)
-            return 2;
-        if (62 <= input && input <= 4294967295)
-            return 2;
-        return -1;
+        if (61 <= a && a < 62)
+            return { .status = 1, .next_state = 1 };
+        return { .status = -1, .next_state = 2 };
     case 1:
-        if (0 <= input && input <= 61)
-            return 2;
-        if (61 <= input && input <= 62)
-            return 2;
-        if (62 <= input && input <= 4294967295)
-            return 2;
-        return -1;
+        return { .status = -1, .next_state = 2 };
     default:
-        return -1;
+        return { .status = -1, .next_state = 2 };
     }
 }
 
-int transition_lbrace(int state, int input)
+struct transition_output transition_lbrace(int q, uint32_t a)
 {
-    fail_if_empty(input);
-    switch (state) {
+    switch (q) {
     case 0:
-        if (0 <= input && input <= 123)
-            return 2;
-        if (123 <= input && input <= 124)
-            return 1;
-        if (124 <= input && input <= 4294967295)
-            return 2;
-        return -1;
-    case 2:
-        if (0 <= input && input <= 123)
-            return 2;
-        if (123 <= input && input <= 124)
-            return 2;
-        if (124 <= input && input <= 4294967295)
-            return 2;
-        return -1;
+        if (123 <= a && a < 124)
+            return { .status = 1, .next_state = 1 };
+        return { .status = -1, .next_state = 2 };
     case 1:
-        if (0 <= input && input <= 123)
-            return 2;
-        if (123 <= input && input <= 124)
-            return 2;
-        if (124 <= input && input <= 4294967295)
-            return 2;
-        return -1;
+        return { .status = -1, .next_state = 2 };
     default:
-        return -1;
+        return { .status = -1, .next_state = 2 };
     }
 }
 
-int transition_rbrace(int state, int input)
+struct transition_output transition_rbrace(int q, uint32_t a)
 {
-    fail_if_empty(input);
-    switch (state) {
+    switch (q) {
     case 0:
-        if (0 <= input && input <= 125)
-            return 2;
-        if (125 <= input && input <= 126)
-            return 1;
-        if (126 <= input && input <= 4294967295)
-            return 2;
-        return -1;
-    case 2:
-        if (0 <= input && input <= 125)
-            return 2;
-        if (125 <= input && input <= 126)
-            return 2;
-        if (126 <= input && input <= 4294967295)
-            return 2;
-        return -1;
+        if (125 <= a && a < 126)
+            return { .status = 1, .next_state = 1 };
+        return { .status = -1, .next_state = 2 };
     case 1:
-        if (0 <= input && input <= 125)
-            return 2;
-        if (125 <= input && input <= 126)
-            return 2;
-        if (126 <= input && input <= 4294967295)
-            return 2;
-        return -1;
+        return { .status = -1, .next_state = 2 };
     default:
-        return -1;
+        return { .status = -1, .next_state = 2 };
     }
 }
 
-int transition_colon(int state, int input)
+struct transition_output transition_colon(int q, uint32_t a)
 {
-    fail_if_empty(input);
-    switch (state) {
+    switch (q) {
     case 0:
-        if (0 <= input && input <= 58)
-            return 2;
-        if (58 <= input && input <= 59)
-            return 1;
-        if (59 <= input && input <= 4294967295)
-            return 2;
-        return -1;
-    case 2:
-        if (0 <= input && input <= 58)
-            return 2;
-        if (58 <= input && input <= 59)
-            return 2;
-        if (59 <= input && input <= 4294967295)
-            return 2;
-        return -1;
+        if (58 <= a && a < 59)
+            return { .status = 1, .next_state = 1 };
+        return { .status = -1, .next_state = 2 };
     case 1:
-        if (0 <= input && input <= 58)
-            return 2;
-        if (58 <= input && input <= 59)
-            return 2;
-        if (59 <= input && input <= 4294967295)
-            return 2;
-        return -1;
+        return { .status = -1, .next_state = 2 };
     default:
-        return -1;
+        return { .status = -1, .next_state = 2 };
     }
 }
 
-int transition_lbracket(int state, int input)
+struct transition_output transition_lbracket(int q, uint32_t a)
 {
-    fail_if_empty(input);
-    switch (state) {
+    switch (q) {
     case 0:
-        if (0 <= input && input <= 91)
-            return 2;
-        if (91 <= input && input <= 92)
-            return 1;
-        if (92 <= input && input <= 4294967295)
-            return 2;
-        return -1;
-    case 2:
-        if (0 <= input && input <= 91)
-            return 2;
-        if (91 <= input && input <= 92)
-            return 2;
-        if (92 <= input && input <= 4294967295)
-            return 2;
-        return -1;
+        if (91 <= a && a < 92)
+            return { .status = 1, .next_state = 1 };
+        return { .status = -1, .next_state = 2 };
     case 1:
-        if (0 <= input && input <= 91)
-            return 2;
-        if (91 <= input && input <= 92)
-            return 2;
-        if (92 <= input && input <= 4294967295)
-            return 2;
-        return -1;
+        return { .status = -1, .next_state = 2 };
     default:
-        return -1;
+        return { .status = -1, .next_state = 2 };
     }
 }
 
-int transition_rbracket(int state, int input)
+struct transition_output transition_rbracket(int q, uint32_t a)
 {
-    fail_if_empty(input);
-    switch (state) {
+    switch (q) {
     case 0:
-        if (0 <= input && input <= 93)
-            return 2;
-        if (93 <= input && input <= 94)
-            return 1;
-        if (94 <= input && input <= 4294967295)
-            return 2;
-        return -1;
-    case 2:
-        if (0 <= input && input <= 93)
-            return 2;
-        if (93 <= input && input <= 94)
-            return 2;
-        if (94 <= input && input <= 4294967295)
-            return 2;
-        return -1;
+        if (93 <= a && a < 94)
+            return { .status = 1, .next_state = 1 };
+        return { .status = -1, .next_state = 2 };
     case 1:
-        if (0 <= input && input <= 93)
-            return 2;
-        if (93 <= input && input <= 94)
-            return 2;
-        if (94 <= input && input <= 4294967295)
-            return 2;
-        return -1;
+        return { .status = -1, .next_state = 2 };
     default:
-        return -1;
+        return { .status = -1, .next_state = 2 };
     }
 }
 
-int transition_plus(int state, int input)
+struct transition_output transition_plus(int q, uint32_t a)
 {
-    fail_if_empty(input);
-    switch (state) {
+    switch (q) {
     case 0:
-        if (0 <= input && input <= 43)
-            return 2;
-        if (43 <= input && input <= 44)
-            return 1;
-        if (44 <= input && input <= 4294967295)
-            return 2;
-        return -1;
-    case 2:
-        if (0 <= input && input <= 43)
-            return 2;
-        if (43 <= input && input <= 44)
-            return 2;
-        if (44 <= input && input <= 4294967295)
-            return 2;
-        return -1;
+        if (43 <= a && a < 44)
+            return { .status = 1, .next_state = 1 };
+        return { .status = -1, .next_state = 2 };
     case 1:
-        if (0 <= input && input <= 43)
-            return 2;
-        if (43 <= input && input <= 44)
-            return 2;
-        if (44 <= input && input <= 4294967295)
-            return 2;
-        return -1;
+        return { .status = -1, .next_state = 2 };
     default:
-        return -1;
+        return { .status = -1, .next_state = 2 };
     }
 }
 
-int transition_minus(int state, int input)
+struct transition_output transition_minus(int q, uint32_t a)
 {
-    fail_if_empty(input);
-    switch (state) {
+    switch (q) {
     case 0:
-        if (0 <= input && input <= 45)
-            return 2;
-        if (45 <= input && input <= 46)
-            return 1;
-        if (46 <= input && input <= 4294967295)
-            return 2;
-        return -1;
-    case 2:
-        if (0 <= input && input <= 45)
-            return 2;
-        if (45 <= input && input <= 46)
-            return 2;
-        if (46 <= input && input <= 4294967295)
-            return 2;
-        return -1;
+        if (45 <= a && a < 46)
+            return { .status = 1, .next_state = 1 };
+        return { .status = -1, .next_state = 2 };
     case 1:
-        if (0 <= input && input <= 45)
-            return 2;
-        if (45 <= input && input <= 46)
-            return 2;
-        if (46 <= input && input <= 4294967295)
-            return 2;
-        return -1;
+        return { .status = -1, .next_state = 2 };
     default:
-        return -1;
+        return { .status = -1, .next_state = 2 };
     }
 }
 
-int transition_slash(int state, int input)
+struct transition_output transition_slash(int q, uint32_t a)
 {
-    fail_if_empty(input);
-    switch (state) {
+    switch (q) {
     case 0:
-        if (0 <= input && input <= 47)
-            return 2;
-        if (47 <= input && input <= 48)
-            return 1;
-        if (48 <= input && input <= 4294967295)
-            return 2;
-        return -1;
-    case 2:
-        if (0 <= input && input <= 47)
-            return 2;
-        if (47 <= input && input <= 48)
-            return 2;
-        if (48 <= input && input <= 4294967295)
-            return 2;
-        return -1;
+        if (47 <= a && a < 48)
+            return { .status = 1, .next_state = 1 };
+        return { .status = -1, .next_state = 2 };
     case 1:
-        if (0 <= input && input <= 47)
-            return 2;
-        if (47 <= input && input <= 48)
-            return 2;
-        if (48 <= input && input <= 4294967295)
-            return 2;
-        return -1;
+        return { .status = -1, .next_state = 2 };
     default:
-        return -1;
+        return { .status = -1, .next_state = 2 };
     }
 }
 
-int transition_lessthan(int state, int input)
+struct transition_output transition_lessthan(int q, uint32_t a)
 {
-    fail_if_empty(input);
-    switch (state) {
+    switch (q) {
     case 0:
-        if (0 <= input && input <= 60)
-            return 2;
-        if (60 <= input && input <= 61)
-            return 1;
-        if (61 <= input && input <= 4294967295)
-            return 2;
-        return -1;
-    case 2:
-        if (0 <= input && input <= 60)
-            return 2;
-        if (60 <= input && input <= 61)
-            return 2;
-        if (61 <= input && input <= 4294967295)
-            return 2;
-        return -1;
+        if (60 <= a && a < 61)
+            return { .status = 1, .next_state = 1 };
+        return { .status = -1, .next_state = 2 };
     case 1:
-        if (0 <= input && input <= 60)
-            return 2;
-        if (60 <= input && input <= 61)
-            return 2;
-        if (61 <= input && input <= 4294967295)
-            return 2;
-        return -1;
+        return { .status = -1, .next_state = 2 };
     default:
-        return -1;
+        return { .status = -1, .next_state = 2 };
     }
 }
 
-int transition_greaterthan(int state, int input)
+struct transition_output transition_greaterthan(int q, uint32_t a)
 {
-    fail_if_empty(input);
-    switch (state) {
+    switch (q) {
     case 0:
-        if (0 <= input && input <= 62)
-            return 2;
-        if (62 <= input && input <= 63)
-            return 1;
-        if (63 <= input && input <= 4294967295)
-            return 2;
-        return -1;
-    case 2:
-        if (0 <= input && input <= 62)
-            return 2;
-        if (62 <= input && input <= 63)
-            return 2;
-        if (63 <= input && input <= 4294967295)
-            return 2;
-        return -1;
+        if (62 <= a && a < 63)
+            return { .status = 1, .next_state = 1 };
+        return { .status = -1, .next_state = 2 };
     case 1:
-        if (0 <= input && input <= 62)
-            return 2;
-        if (62 <= input && input <= 63)
-            return 2;
-        if (63 <= input && input <= 4294967295)
-            return 2;
-        return -1;
+        return { .status = -1, .next_state = 2 };
     default:
-        return -1;
+        return { .status = -1, .next_state = 2 };
     }
 }
 

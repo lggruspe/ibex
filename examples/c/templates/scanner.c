@@ -1,23 +1,22 @@
-int transition_{{ scanner.token }}(int state, int input)
+struct transition_output transition_{{ scanner.token }}(int q, uint32_t a)
 {
-    fail_if_empty(input);
-    switch (state) {
-## for state in scanner.transitions
+    switch (q) {
+    {%- for state in scanner.transitions %}
+    {%- if state != scanner.error %}
     case {{ state }}:
-## for transition in scanner.transitions[state]
-## set start = transition[0].start
-## set end = transition[0].end
-## set next_state = transition[1]
-## if start == end
-        if (input == {{ start }})
-## else
-        if ({{ start }} <= input && input <= {{ end }})
-## endif
-            return {{ next_state }};
-## endfor
-        return -1;
-## endfor
+        {%- for transition in scanner.transitions[state] %}
+        {%- set start = transition[0].start %}
+        {%- set end = transition[0].end %}
+        {%- set next_state = transition[1] %}
+        {%- if next_state != scanner.error %}
+        if ({{ start }} <= a && a < {{ end }})
+            return { .status = {{ 1 if next_state in scanner.accepts else 0 }}, .next_state = {{ next_state }} }; 
+        {%- endif %}
+        {%- endfor %}
+        return { .status = -1, .next_state = {{ scanner.error }} };
+    {%- endif %}
+    {%- endfor %}
     default:
-        return -1;
+        return { .status = -1, .next_state = {{ scanner.error }} };
     }
 }
