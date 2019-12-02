@@ -3,11 +3,6 @@
 #include <stdint.h>
 #include <stdio.h>
 
-#define fail_if_empty(input) do {\
-    int c = (input);\
-    if (c == 0 || c == EOF) return -1;\
-} while (0)
-
 #define create_recognizer(...) (struct recognizer) { \
     .token = TOKEN_EMPTY, \
     .accept = false, \
@@ -35,6 +30,7 @@ struct recognizer {
     struct transition_output (*transition)(int, uint32_t);
 };
 
-{% for scanner in scanners %}
+{%- for scanner in scanners %}
+
 {% include "scanner.c" %}
-{% endfor %}
+{%- endfor %}

@@ -3,11 +3,6 @@
 #include <stdint.h>
 #include <stdio.h>
 
-#define fail_if_empty(input) do {\
-    int c = (input);\
-    if (c == 0 || c == EOF) return -1;\
-} while (0)
-
 #define create_recognizer(...) (struct recognizer) { \
     .token = TOKEN_EMPTY, \
     .accept = false, \
@@ -52,7 +47,6 @@ struct recognizer {
     int error;
     struct transition_output (*transition)(int, uint32_t);
 };
-
 
 struct transition_output transition_identifier(int q, uint32_t a)
 {
@@ -479,4 +473,3 @@ struct transition_output transition_greaterthan(int q, uint32_t a)
         return { .status = -1, .next_state = 2 };
     }
 }
-
