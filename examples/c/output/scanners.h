@@ -36,6 +36,58 @@ enum token {
     TOKEN_GREATERTHAN,
 };
 
+int print_token(FILE *fp, enum token token)
+{
+    switch (token) {
+    case TOKEN_EMPTY:
+        return fprintf(fp, "empty");
+    case TOKEN_IDENTIFIER:
+        return fprintf(fp, "identifier");
+    case TOKEN_WHITESPACE:
+        return fprintf(fp, "whitespace");
+    case TOKEN_NUMBER:
+        return fprintf(fp, "number");
+    case TOKEN_CHARACTER:
+        return fprintf(fp, "character");
+    case TOKEN_STRING:
+        return fprintf(fp, "string");
+    case TOKEN_DOT:
+        return fprintf(fp, "dot");
+    case TOKEN_LPAREN:
+        return fprintf(fp, "lparen");
+    case TOKEN_RPAREN:
+        return fprintf(fp, "rparen");
+    case TOKEN_COMMA:
+        return fprintf(fp, "comma");
+    case TOKEN_STAR:
+        return fprintf(fp, "star");
+    case TOKEN_EQUAL:
+        return fprintf(fp, "equal");
+    case TOKEN_LBRACE:
+        return fprintf(fp, "lbrace");
+    case TOKEN_RBRACE:
+        return fprintf(fp, "rbrace");
+    case TOKEN_COLON:
+        return fprintf(fp, "colon");
+    case TOKEN_LBRACKET:
+        return fprintf(fp, "lbracket");
+    case TOKEN_RBRACKET:
+        return fprintf(fp, "rbracket");
+    case TOKEN_PLUS:
+        return fprintf(fp, "plus");
+    case TOKEN_MINUS:
+        return fprintf(fp, "minus");
+    case TOKEN_SLASH:
+        return fprintf(fp, "slash");
+    case TOKEN_LESSTHAN:
+        return fprintf(fp, "lessthan");
+    case TOKEN_GREATERTHAN:
+        return fprintf(fp, "greaterthan");
+    default:
+        return -1;
+    }
+}
+
 struct transition_output {
     int status;
     int next_state;

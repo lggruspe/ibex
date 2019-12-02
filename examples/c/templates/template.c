@@ -18,6 +18,20 @@ enum token {
     {%- endfor %}
 };
 
+int print_token(FILE *fp, enum token token)
+{
+    switch (token) {
+    case TOKEN_EMPTY:
+        return fprintf(fp, "empty");
+    {%- for scanner in scanners %}
+    case TOKEN_{{ scanner.token|upper }}:
+        return fprintf(fp, "{{ scanner.token|lower }}");
+    {%- endfor %}
+    default:
+        return -1;
+    }
+}
+
 struct transition_output {
     int status;
     int next_state;
