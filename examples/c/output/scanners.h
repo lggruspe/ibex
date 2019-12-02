@@ -1,4 +1,5 @@
 #pragma once
+#include <stdbool.h>
 #include <stdio.h>
 
 #define fail_if_empty(input) do {\
@@ -6,46 +7,46 @@
     if (c == 0 || c == EOF) return -1;\
 } while (0)
 
+#define create_scanner(...) (struct scanner) { \
+    .token = TOKEN_EMPTY, \
+    .accept = false, \
+    .error = -1, \
+    .transition = NULL, \
+    __VA_ARGS__
+}
+
 enum token {
-    token_IDENTIFIER,
-    token_WHITESPACE,
-    token_NUMBER,
-    token_CHARACTER,
-    token_STRING,
-    token_DOT,
-    token_LPAREN,
-    token_RPAREN,
-    token_COMMA,
-    token_STAR,
-    token_EQUAL,
-    token_LBRACE,
-    token_RBRACE,
-    token_COLON,
-    token_LBRACKET,
-    token_RBRACKET,
-    token_PLUS,
-    token_MINUS,
-    token_SLASH,
-    token_LESSTHAN,
-    token_GREATERTHAN,
+    TOKEN_EMPTY = 0,
+    TOKEN_IDENTIFIER,
+    TOKEN_WHITESPACE,
+    TOKEN_NUMBER,
+    TOKEN_CHARACTER,
+    TOKEN_STRING,
+    TOKEN_DOT,
+    TOKEN_LPAREN,
+    TOKEN_RPAREN,
+    TOKEN_COMMA,
+    TOKEN_STAR,
+    TOKEN_EQUAL,
+    TOKEN_LBRACE,
+    TOKEN_RBRACE,
+    TOKEN_COLON,
+    TOKEN_LBRACKET,
+    TOKEN_RBRACKET,
+    TOKEN_PLUS,
+    TOKEN_MINUS,
+    TOKEN_SLASH,
+    TOKEN_LESSTHAN,
+    TOKEN_GREATERTHAN,
 };
 
 struct scanner {
     enum token token;
-    int state;
-    int start;
+    bool accept;
+    int error;
     int (*transition)(int, int);
 };
 
-struct scanner scanner_create(enum token token, int (*transition)(int, int))
-{
-    return (struct scanner) {
-        .token = token,
-        .state = -1,
-        .start = 0,
-        .transition = transition
-    };
-}
 
 int transition_identifier(int state, int input)
 {
@@ -1225,5 +1226,4 @@ int transition_greaterthan(int state, int input)
         return -1;
     }
 }
-
 

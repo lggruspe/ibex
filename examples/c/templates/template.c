@@ -1,4 +1,5 @@
 #pragma once
+#include <stdbool.h>
 #include <stdio.h>
 
 #define fail_if_empty(input) do {\
@@ -6,30 +7,28 @@
     if (c == 0 || c == EOF) return -1;\
 } while (0)
 
+#define create_recognizer(...) (struct recognizer) { \
+    .token = TOKEN_EMPTY, \
+    .accept = false, \
+    .error = -1, \
+    .transition = NULL, \
+    __VA_ARGS__
+}
+
 enum token {
-## for scanner in scanners
-    token_{{ scanner.token|upper }},
-## endfor
+    TOKEN_EMPTY = 0,
+    {%- for scanner in scanners %}
+    TOKEN_{{ scanner.token|upper }},
+    {%- endfor %}
 };
 
-struct scanner {
+struct recognizer {
     enum token token;
-    int state;
-    int start;
+    bool accept;
+    int error;
     int (*transition)(int, int);
 };
 
-struct scanner scanner_create(enum token token, int (*transition)(int, int))
-{
-    return (struct scanner) {
-        .token = token,
-        .state = -1,
-        .start = 0,
-        .transition = transition
-    };
-}
-
-## for scanner in scanners
+{% for scanner in scanners %}
 {% include "scanner.c" %}
-
-## endfor
+{% endfor %}
