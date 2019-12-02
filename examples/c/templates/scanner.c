@@ -9,7 +9,11 @@ struct transition_output transition_{{ scanner.token }}(int q, uint32_t a)
         {%- set end = transition[0].end %}
         {%- set next_state = transition[1] %}
         {%- if next_state != scanner.error %}
+        {%- if start+1 == end %}
+        if (a == {{ start }})
+        {%- else %}
         if ({{ start }} <= a && a < {{ end }})
+        {%- endif %}
             return { .status = {{ 1 if next_state in scanner.accepts else 0 }}, .next_state = {{ next_state }} }; 
         {%- endif %}
         {%- endfor %}
