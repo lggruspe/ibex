@@ -8,7 +8,7 @@
     .accept = false, \
     .error = -1, \
     .transition = NULL, \
-    __VA_ARGS__
+    __VA_ARGS__ \
 }
 
 enum token {

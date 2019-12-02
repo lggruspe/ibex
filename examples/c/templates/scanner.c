@@ -14,13 +14,13 @@ struct transition_output transition_{{ scanner.token }}(int q, uint32_t a)
         {%- else %}
         if ({{ start }} <= a && a < {{ end }})
         {%- endif %}
-            return { .status = {{ 1 if next_state in scanner.accepts else 0 }}, .next_state = {{ next_state }} }; 
+            return (struct transition_output){ .status = {{ 1 if next_state in scanner.accepts else 0 }}, .next_state = {{ next_state }} };
         {%- endif %}
         {%- endfor %}
-        return { .status = -1, .next_state = {{ scanner.error }} };
+        return (struct transition_output){ .status = -1, .next_state = {{ scanner.error }} };
     {%- endif %}
     {%- endfor %}
     default:
-        return { .status = -1, .next_state = {{ scanner.error }} };
+        return (struct transition_output){ .status = -1, .next_state = {{ scanner.error }} };
     }
 }
