@@ -1,5 +1,6 @@
 #pragma once
 #include <stdbool.h>
+#include <stdint.h>
 #include <stdio.h>
 
 #define fail_if_empty(input) do {\
@@ -22,11 +23,16 @@ enum token {
     {%- endfor %}
 };
 
+struct transition_output {
+    int status;
+    int next_state;
+};
+
 struct recognizer {
     enum token token;
     bool accept;
     int error;
-    int (*transition)(int, int);
+    struct transition_output (*transition)(int, uint32_t);
 };
 
 {% for scanner in scanners %}

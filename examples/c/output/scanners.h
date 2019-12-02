@@ -1,5 +1,6 @@
 #pragma once
 #include <stdbool.h>
+#include <stdint.h>
 #include <stdio.h>
 
 #define fail_if_empty(input) do {\
@@ -7,7 +8,7 @@
     if (c == 0 || c == EOF) return -1;\
 } while (0)
 
-#define create_scanner(...) (struct scanner) { \
+#define create_recognizer(...) (struct recognizer) { \
     .token = TOKEN_EMPTY, \
     .accept = false, \
     .error = -1, \
@@ -40,11 +41,16 @@ enum token {
     TOKEN_GREATERTHAN,
 };
 
-struct scanner {
+struct transition_output {
+    int status;
+    int next_state;
+};
+
+struct recognizer {
     enum token token;
     bool accept;
     int error;
-    int (*transition)(int, int);
+    struct transition_output (*transition)(int, uint32_t);
 };
 
 
