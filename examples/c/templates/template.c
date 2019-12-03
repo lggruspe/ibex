@@ -6,14 +6,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define create_recognizer(...) (struct recognizer) { \
-    .token = TOKEN_EMPTY, \
-    .accept = false, \
-    .error = -1, \
-    .transition = NULL, \
-    __VA_ARGS__ \
-}
-
 enum token {
     TOKEN_EMPTY = 0,
     {%- for scanner in scanners %}
