@@ -31,9 +31,9 @@
 
 #define CONSTRUCTORS(...) (recognizer_constructor[]){ __VA_ARGS__, NULL }
 
-#define match_first(Fp, ...) = _match_first((Fp), CONSTRUCTORS(__VA_ARGS__))
+#define match_first(Fp, ...) _match_first((Fp), CONSTRUCTORS(__VA_ARGS__))
 
-#define match_longest(Fp, ...) = _match_logest((Fp), CONSTRUCTORS(__VA_ARGS__))
+#define match_longest(Fp, ...) _match_longest((Fp), CONSTRUCTORS(__VA_ARGS__))
 
 enum token {
     TOKEN_EMPTY = 0,
