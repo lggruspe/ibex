@@ -6,6 +6,35 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define ALL_RECOGNIZERS \
+    Identifier, \
+    Whitespace, \
+    Number, \
+    Character, \
+    String, \
+    Dot, \
+    Lparen, \
+    Rparen, \
+    Comma, \
+    Star, \
+    Equal, \
+    Lbrace, \
+    Rbrace, \
+    Colon, \
+    Lbracket, \
+    Rbracket, \
+    Plus, \
+    Minus, \
+    Slash, \
+    Lessthan, \
+    Greaterthan
+
+#define CONSTRUCTORS(...) (recognizer_constructor[]){ __VA_ARGS__, NULL }
+
+#define match_first(Fp, ...) = _match_first((Fp), CONSTRUCTORS(__VA_ARGS__))
+
+#define match_longest(Fp, ...) = _match_logest((Fp), CONSTRUCTORS(__VA_ARGS__))
+
 enum token {
     TOKEN_EMPTY = 0,
     TOKEN_IDENTIFIER,

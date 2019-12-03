@@ -6,6 +6,17 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define ALL_RECOGNIZERS \
+    {%- for scanner in scanners %}
+    {{ scanner.token|title }}{% if loop.index != loop.length %}, \{% endif %}
+    {%- endfor %}
+
+#define CONSTRUCTORS(...) (recognizer_constructor[]){ __VA_ARGS__, NULL }
+
+#define match_first(Fp, ...) = _match_first((Fp), CONSTRUCTORS(__VA_ARGS__))
+
+#define match_longest(Fp, ...) = _match_logest((Fp), CONSTRUCTORS(__VA_ARGS__))
+
 enum token {
     TOKEN_EMPTY = 0,
     {%- for scanner in scanners %}
