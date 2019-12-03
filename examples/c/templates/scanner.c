@@ -24,3 +24,13 @@ struct transition_output transition_{{ scanner.token }}(int q, uint32_t a)
         return (struct transition_output){ .status = -1, .next_state = {{ scanner.error }} };
     }
 }
+
+struct recognizer {{ scanner.token|title }}()
+{
+    return (struct recognizer){
+        .token = TOKEN_{{ scanner.token|upper }},
+        .accept = {{ "true" if 0 in scanner.accepts else "false" }},
+        .error = {{ scanner.error }},
+        .transition = transition_{{ scanner.token|lower }},
+    };
+}

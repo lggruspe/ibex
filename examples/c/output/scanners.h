@@ -128,6 +128,16 @@ struct transition_output transition_identifier(int q, uint32_t a)
     }
 }
 
+struct recognizer Identifier()
+{
+    return (struct recognizer){
+        .token = TOKEN_IDENTIFIER,
+        .accept = false,
+        .error = 2,
+        .transition = transition_identifier,
+    };
+}
+
 struct transition_output transition_whitespace(int q, uint32_t a)
 {
     switch (q) {
@@ -144,6 +154,16 @@ struct transition_output transition_whitespace(int q, uint32_t a)
     default:
         return (struct transition_output){ .status = -1, .next_state = 2 };
     }
+}
+
+struct recognizer Whitespace()
+{
+    return (struct recognizer){
+        .token = TOKEN_WHITESPACE,
+        .accept = false,
+        .error = 2,
+        .transition = transition_whitespace,
+    };
 }
 
 struct transition_output transition_number(int q, uint32_t a)
@@ -220,6 +240,16 @@ struct transition_output transition_number(int q, uint32_t a)
     }
 }
 
+struct recognizer Number()
+{
+    return (struct recognizer){
+        .token = TOKEN_NUMBER,
+        .accept = false,
+        .error = 6,
+        .transition = transition_number,
+    };
+}
+
 struct transition_output transition_character(int q, uint32_t a)
 {
     switch (q) {
@@ -266,6 +296,16 @@ struct transition_output transition_character(int q, uint32_t a)
     }
 }
 
+struct recognizer Character()
+{
+    return (struct recognizer){
+        .token = TOKEN_CHARACTER,
+        .accept = false,
+        .error = 5,
+        .transition = transition_character,
+    };
+}
+
 struct transition_output transition_string(int q, uint32_t a)
 {
     switch (q) {
@@ -304,6 +344,16 @@ struct transition_output transition_string(int q, uint32_t a)
     }
 }
 
+struct recognizer String()
+{
+    return (struct recognizer){
+        .token = TOKEN_STRING,
+        .accept = false,
+        .error = 4,
+        .transition = transition_string,
+    };
+}
+
 struct transition_output transition_dot(int q, uint32_t a)
 {
     switch (q) {
@@ -316,6 +366,16 @@ struct transition_output transition_dot(int q, uint32_t a)
     default:
         return (struct transition_output){ .status = -1, .next_state = 2 };
     }
+}
+
+struct recognizer Dot()
+{
+    return (struct recognizer){
+        .token = TOKEN_DOT,
+        .accept = false,
+        .error = 2,
+        .transition = transition_dot,
+    };
 }
 
 struct transition_output transition_lparen(int q, uint32_t a)
@@ -332,6 +392,16 @@ struct transition_output transition_lparen(int q, uint32_t a)
     }
 }
 
+struct recognizer Lparen()
+{
+    return (struct recognizer){
+        .token = TOKEN_LPAREN,
+        .accept = false,
+        .error = 2,
+        .transition = transition_lparen,
+    };
+}
+
 struct transition_output transition_rparen(int q, uint32_t a)
 {
     switch (q) {
@@ -344,6 +414,16 @@ struct transition_output transition_rparen(int q, uint32_t a)
     default:
         return (struct transition_output){ .status = -1, .next_state = 2 };
     }
+}
+
+struct recognizer Rparen()
+{
+    return (struct recognizer){
+        .token = TOKEN_RPAREN,
+        .accept = false,
+        .error = 2,
+        .transition = transition_rparen,
+    };
 }
 
 struct transition_output transition_comma(int q, uint32_t a)
@@ -360,6 +440,16 @@ struct transition_output transition_comma(int q, uint32_t a)
     }
 }
 
+struct recognizer Comma()
+{
+    return (struct recognizer){
+        .token = TOKEN_COMMA,
+        .accept = false,
+        .error = 2,
+        .transition = transition_comma,
+    };
+}
+
 struct transition_output transition_star(int q, uint32_t a)
 {
     switch (q) {
@@ -372,6 +462,16 @@ struct transition_output transition_star(int q, uint32_t a)
     default:
         return (struct transition_output){ .status = -1, .next_state = 2 };
     }
+}
+
+struct recognizer Star()
+{
+    return (struct recognizer){
+        .token = TOKEN_STAR,
+        .accept = false,
+        .error = 2,
+        .transition = transition_star,
+    };
 }
 
 struct transition_output transition_equal(int q, uint32_t a)
@@ -388,6 +488,16 @@ struct transition_output transition_equal(int q, uint32_t a)
     }
 }
 
+struct recognizer Equal()
+{
+    return (struct recognizer){
+        .token = TOKEN_EQUAL,
+        .accept = false,
+        .error = 2,
+        .transition = transition_equal,
+    };
+}
+
 struct transition_output transition_lbrace(int q, uint32_t a)
 {
     switch (q) {
@@ -400,6 +510,16 @@ struct transition_output transition_lbrace(int q, uint32_t a)
     default:
         return (struct transition_output){ .status = -1, .next_state = 2 };
     }
+}
+
+struct recognizer Lbrace()
+{
+    return (struct recognizer){
+        .token = TOKEN_LBRACE,
+        .accept = false,
+        .error = 2,
+        .transition = transition_lbrace,
+    };
 }
 
 struct transition_output transition_rbrace(int q, uint32_t a)
@@ -416,6 +536,16 @@ struct transition_output transition_rbrace(int q, uint32_t a)
     }
 }
 
+struct recognizer Rbrace()
+{
+    return (struct recognizer){
+        .token = TOKEN_RBRACE,
+        .accept = false,
+        .error = 2,
+        .transition = transition_rbrace,
+    };
+}
+
 struct transition_output transition_colon(int q, uint32_t a)
 {
     switch (q) {
@@ -428,6 +558,16 @@ struct transition_output transition_colon(int q, uint32_t a)
     default:
         return (struct transition_output){ .status = -1, .next_state = 2 };
     }
+}
+
+struct recognizer Colon()
+{
+    return (struct recognizer){
+        .token = TOKEN_COLON,
+        .accept = false,
+        .error = 2,
+        .transition = transition_colon,
+    };
 }
 
 struct transition_output transition_lbracket(int q, uint32_t a)
@@ -444,6 +584,16 @@ struct transition_output transition_lbracket(int q, uint32_t a)
     }
 }
 
+struct recognizer Lbracket()
+{
+    return (struct recognizer){
+        .token = TOKEN_LBRACKET,
+        .accept = false,
+        .error = 2,
+        .transition = transition_lbracket,
+    };
+}
+
 struct transition_output transition_rbracket(int q, uint32_t a)
 {
     switch (q) {
@@ -456,6 +606,16 @@ struct transition_output transition_rbracket(int q, uint32_t a)
     default:
         return (struct transition_output){ .status = -1, .next_state = 2 };
     }
+}
+
+struct recognizer Rbracket()
+{
+    return (struct recognizer){
+        .token = TOKEN_RBRACKET,
+        .accept = false,
+        .error = 2,
+        .transition = transition_rbracket,
+    };
 }
 
 struct transition_output transition_plus(int q, uint32_t a)
@@ -472,6 +632,16 @@ struct transition_output transition_plus(int q, uint32_t a)
     }
 }
 
+struct recognizer Plus()
+{
+    return (struct recognizer){
+        .token = TOKEN_PLUS,
+        .accept = false,
+        .error = 2,
+        .transition = transition_plus,
+    };
+}
+
 struct transition_output transition_minus(int q, uint32_t a)
 {
     switch (q) {
@@ -484,6 +654,16 @@ struct transition_output transition_minus(int q, uint32_t a)
     default:
         return (struct transition_output){ .status = -1, .next_state = 2 };
     }
+}
+
+struct recognizer Minus()
+{
+    return (struct recognizer){
+        .token = TOKEN_MINUS,
+        .accept = false,
+        .error = 2,
+        .transition = transition_minus,
+    };
 }
 
 struct transition_output transition_slash(int q, uint32_t a)
@@ -500,6 +680,16 @@ struct transition_output transition_slash(int q, uint32_t a)
     }
 }
 
+struct recognizer Slash()
+{
+    return (struct recognizer){
+        .token = TOKEN_SLASH,
+        .accept = false,
+        .error = 2,
+        .transition = transition_slash,
+    };
+}
+
 struct transition_output transition_lessthan(int q, uint32_t a)
 {
     switch (q) {
@@ -514,6 +704,16 @@ struct transition_output transition_lessthan(int q, uint32_t a)
     }
 }
 
+struct recognizer Lessthan()
+{
+    return (struct recognizer){
+        .token = TOKEN_LESSTHAN,
+        .accept = false,
+        .error = 2,
+        .transition = transition_lessthan,
+    };
+}
+
 struct transition_output transition_greaterthan(int q, uint32_t a)
 {
     switch (q) {
@@ -526,6 +726,16 @@ struct transition_output transition_greaterthan(int q, uint32_t a)
     default:
         return (struct transition_output){ .status = -1, .next_state = 2 };
     }
+}
+
+struct recognizer Greaterthan()
+{
+    return (struct recognizer){
+        .token = TOKEN_GREATERTHAN,
+        .accept = false,
+        .error = 2,
+        .transition = transition_greaterthan,
+    };
 }
 
 struct match_output {
