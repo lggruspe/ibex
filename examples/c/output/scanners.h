@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #define create_recognizer(...) (struct recognizer) { \
     .token = TOKEN_EMPTY, \
@@ -740,7 +741,8 @@ struct recognizer Greaterthan()
 
 struct match_output {
     bool ok;
-    char *lexeme;   // must be freed by match caller
+    char *lexeme;
+    int length;
 };
 
 vector_register(vint, int)
@@ -772,10 +774,49 @@ struct match_output match(FILE *fp, struct recognizer *rec)
     for (int i = 0; i < lexeme.size; ++i) {
         s[i] = (char)(vector_get(vuint32_t, lexeme, i));
     }
+    int length = lexeme.size;
     vector_destroy(vint, checkpoint);
     vector_destroy(vuint32_t, lexeme);
     return (struct match_output){
         .ok = rec->accept,
-        .lexeme = s
+        .lexeme = s,        // must be freed by caller
+        .length = length,
+    };
+}
+
+struct scan_output {
+    enum token token;
+    char *lexeme;
+    int length;
+};
+
+typedef struct recognizer (*recognizer_constructor)();
+
+struct scan_output _match_first(FILE *fp, recognizer_constructor recs[])
+{
+    // recs is a null terminated array of function pointers
+    enum token token = TOKEN_EMPTY;
+    char *lexeme = NULL;
+    int length = 0;
+    for (int i = 0; recs[i]; ++i) {
+        struct recognizer rec = recs[i]();
+        struct match_output m = match(fp, &rec);
+        if (m.ok && m.length > length) {
+            token = rec.token;
+            lexeme = strdup(m.lexeme);
+            length = m.length;
+        }
+        for (int i = m.length-1; i >= 0; --i) {
+            fputc(m.lexeme[i], fp);
+        }
+        free(m.lexeme);
+    }
+    for (int i = 0; i < length; ++i) {
+        fgetc(fp);
+    }
+    return (struct scan_output){
+        .token = token,
+        .lexeme = lexeme,   // must be freed by caller
+        .length = length,
     };
 }
