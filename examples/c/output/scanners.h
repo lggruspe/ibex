@@ -792,6 +792,27 @@ struct scan_output {
 
 typedef struct recognizer (*recognizer_constructor)();
 
+struct scan_output _match_first(FILE *fp, recognizer_constructor recs[])
+{
+    for (int i = 0; recs[i]; ++i) {
+        struct recognizer rec = recs[i]();
+        struct match_output m = match(fp, &rec);
+        if (m.ok) {
+            return (struct scan_output){
+                .token = rec.token,
+                .lexeme = m.lexeme ? m.lexeme : strdup(""),
+                .length = m.length,
+            };
+        }
+        free(m.lexeme);
+    }
+    return (struct scan_output){
+        .token = TOKEN_EMPTY,
+        .lexeme = strdup(""),   // must be freed by caller
+        .length = 0,
+    };
+}
+
 struct scan_output _match_longest(FILE *fp, recognizer_constructor recs[])
 {
     // recs is a null terminated array of function pointers
