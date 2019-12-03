@@ -771,8 +771,8 @@ vector_register(vuint32_t, uint32_t)
 
 struct match_output match(FILE *fp, struct recognizer *rec)
 {
-    vector(vint) checkpoint;
-    vector(vuint32_t) lexeme;
+    vector(vint) checkpoint = vector_create(vint);
+    vector(vuint32_t) lexeme = vector_create(vuint32_t);
     checkpoint = vector_push(vint, checkpoint, 0);
     uint32_t a = -1;
     uint32_t eof = EOF;
