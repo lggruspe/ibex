@@ -105,7 +105,7 @@ struct scan_output {
 
 typedef struct recognizer (*recognizer_constructor)();
 
-struct scan_output _match_first(FILE *fp, recognizer_constructor recs[])
+struct scan_output _match_longest(FILE *fp, recognizer_constructor recs[])
 {
     // recs is a null terminated array of function pointers
     enum token token = TOKEN_EMPTY;
@@ -129,7 +129,7 @@ struct scan_output _match_first(FILE *fp, recognizer_constructor recs[])
     }
     return (struct scan_output){
         .token = token,
-        .lexeme = lexeme,   // must be freed by caller
+        .lexeme = lexeme,   // must be freed by caller if not null
         .length = length,
     };
 }
