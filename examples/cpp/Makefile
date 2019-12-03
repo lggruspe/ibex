@@ -1,6 +1,5 @@
 CXX = g++
 CXXFLAGS = -g -std=gnu++17 -Wall -Wextra -Wpedantic
-CPPFLAGS = -I../extra
 
 .PHONY:	all
 all:	output/scanners.hpp output/scanner_utils.hpp compile output/scanners.py
