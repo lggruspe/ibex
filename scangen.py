@@ -51,7 +51,7 @@ def generate(entrypoint="", directory=""):
 
     def generate_code():
         loader = jinja2.FileSystemLoader(directory)
-        env = jinja2.Environment(loader=loader, line_statement_prefix="##")
+        env = jinja2.Environment(loader=loader)
         template = env.get_template(entrypoint)
         return template.render(scanners=scanners)
 
