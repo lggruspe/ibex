@@ -83,7 +83,7 @@ struct match_output match(FILE *fp, struct recognizer *rec)
     for (int i = checkpoint.size; i > 1; --i) {
         uint32_t a = vector_peek(vuint32_t, lexeme);
         lexeme = vector_pop(vuint32_t, lexeme);
-        fputc(a, fp);
+        ungetc(a, fp);
     }
     char *s = malloc(sizeof(char) * (lexeme.size+1));
     s[lexeme.size] = '\0';

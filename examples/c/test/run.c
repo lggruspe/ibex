@@ -9,7 +9,7 @@ void run_longest_match()
 {
     struct scan_output s = match_longest(stdin, ALL_RECOGNIZERS);
     print_token(stdout, s.token);
-    printf(" \n%s\n", s.lexeme);
+    printf("\n%s\n", s.lexeme);
     free(s.lexeme);
 }
 
