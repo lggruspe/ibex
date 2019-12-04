@@ -2,11 +2,12 @@ import os.path
 import subprocess
 import sys
 import unittest
-import examples
-import lexeme as lex
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+sys.path.append(os.path.abspath("../../tools"))
 
+import examples
+import lexeme as lex
 import output.scanners as scanners
 
 TEST_DATA = {}
@@ -78,6 +79,6 @@ class MatchTest(unittest.TestCase):
 
 if __name__ == "__main__":
     for scanner_type in scanners.SCANNERS:
-        with open(f"data/{scanner_type}.csv", "r") as file:
+        with open(f"../../data/{scanner_type}.csv", "r") as file:
             TEST_DATA[scanner_type] = examples.read(file)
     unittest.main()
