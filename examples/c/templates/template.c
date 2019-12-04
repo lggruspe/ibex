@@ -133,18 +133,19 @@ struct scan_output _match_longest(FILE *fp, recognizer_constructor recs[])
 {
     // recs is a null terminated array of function pointers
     enum token token = TOKEN_EMPTY;
-    char *lexeme = NULL;
+    char *lexeme = strdup("");
     int length = 0;
     for (int i = 0; recs[i]; ++i) {
         struct recognizer rec = recs[i]();
         struct match_output m = match(fp, &rec);
         if (m.ok && m.length > length) {
             token = rec.token;
+            free(lexeme);
             lexeme = strdup(m.lexeme);
             length = m.length;
         }
         for (int i = m.length-1; i >= 0; --i) {
-            fputc(m.lexeme[i], fp);
+            ungetc(m.lexeme[i], fp);
         }
         free(m.lexeme);
     }
@@ -153,7 +154,7 @@ struct scan_output _match_longest(FILE *fp, recognizer_constructor recs[])
     }
     return (struct scan_output){
         .token = token,
-        .lexeme = lexeme,   // must be freed by caller if not null
+        .lexeme = lexeme,   // must be freed by caller
         .length = length,
     };
 }
