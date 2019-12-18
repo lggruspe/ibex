@@ -10,11 +10,17 @@ class InputStack:
     def __init__(self, file=sys.stdin):
         self.stack = []
         self.file = file
+        self.done = False
 
     def get(self):
         if self.stack:
             return self.stack.pop()
-        return self.file.read(1)
+        if self.done:
+            return ""
+        a = self.file.read(1)
+        if not a:
+            self.done = True
+        return a
 
     def unget(self, a):
         if not a:
