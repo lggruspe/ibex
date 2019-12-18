@@ -106,6 +106,44 @@ std::ostream& operator<<(std::ostream& out, Token token)
     }
 }
 
+struct InputStack {
+    std::istream* in;
+    std::vector<uint32_t> stack;
+    bool done;
+
+    InputStack(std::istream& in = std::cin)
+        : in(&in)
+        , done(false)
+    {}
+
+    uint32_t get()
+    {
+        if (!stack.empty()) {
+            uint32_t a = stack.back();
+            stack.pop_back();
+            return a;
+        }
+        uint32_t eof = std::char_traits<char>::eof();
+        if (done) {
+            return eof;
+        }
+        uint32_t a = in->get();
+        if (a == eof) {
+            done = true;
+        }
+        return a;
+    }
+
+    void unget(uint32_t a)
+    {
+        uint32_t eof = std::char_traits<char>::eof();
+        if (a == eof) {
+            throw 0;
+        }
+        stack.push_back(a);
+    }
+};
+
 struct BaseRecognizer {
     Token token;
 
