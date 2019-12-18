@@ -8,7 +8,7 @@ if (strcmp(name, "{{ scanner.token|lower }}") == 0) { \
 } else if (strcmp(name, "{{ scanner.token|lower }}") == 0) { \
 {%- endif %}
     rec = {{ scanner.token|title }}(); \
-    m = match(stdin, &rec); \
+    m = match(&is, &rec); \
 {%- endfor %}
 } else \
     return; \

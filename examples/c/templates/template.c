@@ -116,14 +116,14 @@ struct match_output {
 
 vector_register(vint, int)
 
-struct match_output match(FILE *fp, struct recognizer *rec)
+struct match_output match(struct input_stack *is, struct recognizer *rec)
 {
     vector(vint) checkpoint = vector_create(vint);
     vector(vuint32_t) lexeme = vector_create(vuint32_t);
     checkpoint = vector_push(vint, checkpoint, 0);
     uint32_t a = -1;
     uint32_t eof = EOF;
-    while (vector_peek(vint, checkpoint) != rec->error && (a = fgetc(fp)) != eof) {
+    while (vector_peek(vint, checkpoint) != rec->error && (a = is_get(is)) != eof) {
         struct transition_output t = rec->transition(vector_peek(vint, checkpoint), a);
         if (t.status == 1) {
             rec->accept = true;
@@ -135,7 +135,7 @@ struct match_output match(FILE *fp, struct recognizer *rec)
     for (int i = checkpoint.size; i > 1; --i) {
         uint32_t a = vector_peek(vuint32_t, lexeme);
         lexeme = vector_pop(vuint32_t, lexeme);
-        ungetc(a, fp);
+        is_unget(is, a);
     }
     char *s = malloc(sizeof(char) * (lexeme.size+1));
     s[lexeme.size] = '\0';
@@ -160,11 +160,11 @@ struct scan_output {
 
 typedef struct recognizer (*recognizer_constructor)();
 
-struct scan_output _match_first(FILE *fp, recognizer_constructor recs[])
+struct scan_output _match_first(struct input_stack *is, recognizer_constructor recs[])
 {
     for (int i = 0; recs[i]; ++i) {
         struct recognizer rec = recs[i]();
-        struct match_output m = match(fp, &rec);
+        struct match_output m = match(is, &rec);
         if (m.ok) {
             return (struct scan_output){
                 .token = rec.token,
@@ -181,7 +181,7 @@ struct scan_output _match_first(FILE *fp, recognizer_constructor recs[])
     };
 }
 
-struct scan_output _match_longest(FILE *fp, recognizer_constructor recs[])
+struct scan_output _match_longest(struct input_stack *is, recognizer_constructor recs[])
 {
     // recs is a null terminated array of function pointers
     enum token token = TOKEN_ERROR;
@@ -189,7 +189,7 @@ struct scan_output _match_longest(FILE *fp, recognizer_constructor recs[])
     int length = 0;
     for (int i = 0; recs[i]; ++i) {
         struct recognizer rec = recs[i]();
-        struct match_output m = match(fp, &rec);
+        struct match_output m = match(is, &rec);
         if (m.ok && m.length > length) {
             token = rec.token;
             free(lexeme);
@@ -197,14 +197,16 @@ struct scan_output _match_longest(FILE *fp, recognizer_constructor recs[])
             length = m.length;
         }
         for (int i = m.length-1; i >= 0; --i) {
-            ungetc(m.lexeme[i], fp);
+            is_unget(is, m.lexeme[i]);
         }
         free(m.lexeme);
     }
     for (int i = 0; i < length; ++i) {
-        fgetc(fp);
+        is_get(is);
     }
-    // TODO set token to TOKEN_EMPTY if length is 0 and eof was encountered
+    if (token == TOKEN_ERROR && is->done) {
+        token = TOKEN_EMPTY;
+    }
     return (struct scan_output){
         .token = token,
         .lexeme = lexeme,   // must be freed by caller

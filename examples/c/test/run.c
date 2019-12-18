@@ -7,21 +7,26 @@
 
 void run_longest_match()
 {
-    struct scan_output s = match_longest(stdin, ALL_RECOGNIZERS);
+    struct input_stack is = is_create(stdin);
+    struct scan_output s = match_longest(&is, ALL_RECOGNIZERS);
     print_token(stdout, s.token);
     printf("\n%s\n", s.lexeme);
     free(s.lexeme);
+    is_destroy(&is);
 }
 
 void run_single_match(char *name)
 {
+    struct input_stack is = is_create(stdin);
     pardir_output_scanner_utils_h();
+    is_destroy(&is);
 }
 
 void run_tokenizer()
 {
+    struct input_stack is = is_create(stdin);
     for (;;) {
-        struct scan_output s = match_longest(stdin, ALL_RECOGNIZERS);
+        struct scan_output s = match_longest(&is, ALL_RECOGNIZERS);
         if (s.token == TOKEN_EMPTY || s.token == TOKEN_ERROR) {
             free(s.lexeme);
             break;
@@ -30,6 +35,7 @@ void run_tokenizer()
         printf(" %s\n", s.lexeme);
         free(s.lexeme);
     }
+    is_destroy(&is);
 }
 
 int main(int argc, char **argv)
