@@ -132,11 +132,37 @@ struct input_stack is_create(FILE *fp)
     };
 }
 
-struct input_stack is_destroy(struct input_stack is)
+void is_destroy(struct input_stack *is)
 {
-    is.stack = vector_destroy(vuint32_t, is.stack);
-    is.done = true;
-    return is;
+    is->stack = vector_destroy(vuint32_t, is->stack);
+    is->done = true;
+}
+
+uint32_t is_get(struct input_stack *is)
+{
+    if (!vector_is_empty(vuint32_t, is->stack)) {
+        uint32_t a = vector_peek(vuint32_t, is->stack);
+        is->stack = vector_pop(vuint32_t, is->stack);
+        return a;
+    }
+    uint32_t eof = EOF;
+    if (is->done) {
+        return eof;
+    }
+    uint32_t a = fgetc(is->fp);
+    if (a == eof) {
+        is->done = true;
+    }
+    return a;
+}
+
+void is_unget(struct input_stack *is, uint32_t a)
+{
+    uint32_t eof = EOF;
+    if (a == eof) {
+        exit(EXIT_FAILURE);
+    }
+    is->stack = vector_push(vuint32_t, is->stack, a);
 }
 
 struct transition_output {
