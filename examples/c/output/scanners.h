@@ -115,6 +115,30 @@ int print_token(FILE *fp, enum token token)
     }
 }
 
+vector_register(vuint32_t, uint32_t)
+
+struct input_stack {
+    FILE *fp;
+    vector(vuint32_t) stack;
+    bool done;
+};
+
+struct input_stack is_create(FILE *fp)
+{
+    return (struct input_stack){
+        .fp = fp,
+        .stack = vector_create(vuint32_t),
+        .done = false,
+    };
+}
+
+struct input_stack is_destroy(struct input_stack is)
+{
+    is.stack = vector_destroy(vuint32_t, is.stack);
+    is.done = true;
+    return is;
+}
+
 struct transition_output {
     int status;
     int next_state;
@@ -770,7 +794,6 @@ struct match_output {
 };
 
 vector_register(vint, int)
-vector_register(vuint32_t, uint32_t)
 
 struct match_output match(FILE *fp, struct recognizer *rec)
 {
