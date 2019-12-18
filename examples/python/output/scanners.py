@@ -58,10 +58,7 @@ class BaseRecognizer:
     def match(self, io=InputStack()):
         checkpoint = [0]
         lexeme = []
-        while checkpoint[-1] != self.error:
-            a = io.get()
-            if not a:
-                break
+        while checkpoint[-1] != self.error and (a := io.get()):
             status, r = self.next(checkpoint[-1], ord(a))
             if status == 1:
                 self.accept = True
