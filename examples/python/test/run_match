@@ -19,7 +19,7 @@ def test_single_match(scanner):
 def test_tokenizer():
     while True:
         token, lexeme = scanners.match_longest(*(scanners.SCANNERS.values()))
-        if token == scanners.Token.EMPTY:
+        if token == scanners.Token.EMPTY or token == scanners.Token.ERROR:
             break
         print(token, lexeme)
 

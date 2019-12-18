@@ -1,6 +1,7 @@
 import sys
 
 class Token:
+    ERROR = "error"
     EMPTY = "empty"
     {%- for scanner in scanners %}
     {{ scanner.token|upper }} = "{{ scanner.token|lower }}"
@@ -65,7 +66,7 @@ def match_first(*recs, io=InputStack()):
     return Token.EMPTY, ""
 
 def match_longest(*recs, io=InputStack()):
-    token = Token.EMPTY
+    token = Token.ERROR
     lexeme = ""
     for T in recs:
         r = T()
@@ -77,6 +78,8 @@ def match_longest(*recs, io=InputStack()):
             io.unget(a)
     for _ in lexeme:
         io.get()
+    if token == Token.ERROR and io.done:
+        token = Token.EMPTY
     return token, lexeme
 
 SCANNERS = {
