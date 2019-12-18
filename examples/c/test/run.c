@@ -22,7 +22,7 @@ void run_tokenizer()
 {
     for (;;) {
         struct scan_output s = match_longest(stdin, ALL_RECOGNIZERS);
-        if (s.token == TOKEN_EMPTY) {
+        if (s.token == TOKEN_EMPTY || s.token == TOKEN_ERROR) {
             free(s.lexeme);
             break;
         }
