@@ -30,7 +30,8 @@
     Greaterthan
 
 enum class Token {
-    EMPTY = 0,
+    ERROR = 0,
+    EMPTY = 1,
     IDENTIFIER,
     WHITESPACE,
     NUMBER,
@@ -57,6 +58,8 @@ enum class Token {
 std::ostream& operator<<(std::ostream& out, Token token)
 {
     switch (token) {
+    case Token::ERROR:
+        return out << "error";
     case Token::EMPTY:
         return out << "empty";
     case Token::IDENTIFIER:
@@ -148,7 +151,7 @@ struct BaseRecognizer {
     Token token;
 
     BaseRecognizer(
-        Token token = Token::EMPTY,
+        Token token = Token::ERROR,
         bool accept = false, // should be true if 0 is an accept state
         int error = -1)
         : token(token)
@@ -727,7 +730,7 @@ std::pair<Token, std::string> match_longest(InputStack& in)
     std::vector<std::shared_ptr<BaseRecognizer>> recs = {
         std::make_shared<Recognizers>() ...
     };
-    Token token = Token::EMPTY;
+    Token token = Token::ERROR;
     std::string lexeme;
     for (auto r: recs) {
         auto [ok, s] = r->match(in);
@@ -741,6 +744,9 @@ std::pair<Token, std::string> match_longest(InputStack& in)
     }
     for (auto it = lexeme.begin(); it != lexeme.end(); ++it) {
         in.get();
+    }
+    if (token == Token::ERROR && in.done) {
+        token = Token::EMPTY;
     }
     return {token, lexeme};
 }
