@@ -86,7 +86,7 @@ struct BaseRecognizer {
 
     virtual std::pair<int, int> next(int q, uint32_t a) const = 0;
 
-    std::pair<bool, std::string> match(std::istream& in = std::cin)
+    std::pair<bool, std::string> match(InputStack& in)
     {
         std::vector<int> checkpoint = {0};
         std::vector<uint32_t> lexeme;
@@ -106,9 +106,15 @@ struct BaseRecognizer {
             // (if accept is true, checkpoint[0] is the most recent accept state)
             uint32_t a = lexeme.back();
             lexeme.pop_back();
-            in.putback(a);
+            in.unget(a);
         }
         return { accept, std::string(lexeme.begin(), lexeme.end()) };
+    }
+
+    std::pair<bool, std::string> match(std::istream& file = std::cin)
+    {
+        InputStack in(file);
+        return match(in);
     }
 
 protected:
@@ -119,7 +125,7 @@ protected:
 {% include "scanner.cpp" %}
 {% endfor %}
 template <class... Recognizers>
-std::pair<Token, std::string> match_first(std::istream& in = std::cin)
+std::pair<Token, std::string> match_first(InputStack& in)
 {
     std::vector<std::shared_ptr<BaseRecognizer>> recs = {
         std::make_shared<Recognizers>() ...
@@ -134,7 +140,7 @@ std::pair<Token, std::string> match_first(std::istream& in = std::cin)
 }
 
 template <class... Recognizers>
-std::pair<Token, std::string> match_longest(std::istream& in = std::cin)
+std::pair<Token, std::string> match_longest(InputStack& in)
 {
     std::vector<std::shared_ptr<BaseRecognizer>> recs = {
         std::make_shared<Recognizers>() ...
@@ -148,11 +154,25 @@ std::pair<Token, std::string> match_longest(std::istream& in = std::cin)
             lexeme = s;
         }
         for (auto it = s.rbegin(); it != s.rend(); ++it) {
-            in.putback(*it);
+            in.unget(*it);
         }
     }
     for (auto it = lexeme.begin(); it != lexeme.end(); ++it) {
         in.get();
     }
     return {token, lexeme};
+}
+
+template <class... Recognizers>
+std::pair<Token, std::string> match_first(std::istream& file = std::cin)
+{
+    InputStack in(file);
+    return match_first<Recognizers...>(in);
+}
+
+template <class... Recognizers>
+std::pair<Token, std::string> match_longest(std::istream& file = std::cin)
+{
+    InputStack in(file);
+    return match_longest<Recognizers...>(in);
 }

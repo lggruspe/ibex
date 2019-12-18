@@ -17,8 +17,9 @@ void run_single_match(const std::string& scanner_name)
 
 void run_tokenizer()
 {
+    InputStack in;
     for (;;) {
-        auto [token, lexeme] = match_longest<ALL_RECOGNIZERS>();
+        auto [token, lexeme] = match_longest<ALL_RECOGNIZERS>(in);
         if (token == Token::EMPTY) {
             break;
         }
