@@ -475,14 +475,6 @@ class Greaterthan(BaseRecognizer):
             return -1, 2
         return -1, 2
 
-def match_first(*recs, io=InputStack()):
-    for T in recs:
-        r = T()
-        ok, s = r.match(io)
-        if ok:
-            return r.token, s
-    return Token.EMPTY, ""
-
 def match_longest(*recs, io=InputStack()):
     token = Token.ERROR
     lexeme = ""

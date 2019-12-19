@@ -54,14 +54,6 @@ class BaseRecognizer:
 {% for scanner in scanners %}
 {% include "scanner.py" %}
 {% endfor %}
-def match_first(*recs, io=InputStack()):
-    for T in recs:
-        r = T()
-        ok, s = r.match(io)
-        if ok:
-            return r.token, s
-    return Token.EMPTY, ""
-
 def match_longest(*recs, io=InputStack()):
     token = Token.ERROR
     lexeme = ""

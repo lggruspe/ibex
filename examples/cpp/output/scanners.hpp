@@ -710,21 +710,6 @@ struct Greaterthan: public BaseRecognizer {
 };
 
 template <class... Recognizers>
-std::pair<Token, std::string> match_first(InputStack& in)
-{
-    std::vector<std::shared_ptr<BaseRecognizer>> recs = {
-        std::make_shared<Recognizers>() ...
-    };
-    for (auto r: recs) {
-        auto [ok, s] = r->match(in);
-        if (ok) {
-            return {r->token, s};
-        }
-    }
-    return {Token::EMPTY, ""};
-}
-
-template <class... Recognizers>
 std::pair<Token, std::string> match_longest(InputStack& in)
 {
     std::vector<std::shared_ptr<BaseRecognizer>> recs = {
@@ -749,13 +734,6 @@ std::pair<Token, std::string> match_longest(InputStack& in)
         token = Token::EMPTY;
     }
     return {token, lexeme};
-}
-
-template <class... Recognizers>
-std::pair<Token, std::string> match_first(std::istream& file = std::cin)
-{
-    InputStack in(file);
-    return match_first<Recognizers...>(in);
 }
 
 template <class... Recognizers>

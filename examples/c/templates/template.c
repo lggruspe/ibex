@@ -13,8 +13,6 @@
 
 #define CONSTRUCTORS(...) (recognizer_constructor[]){ __VA_ARGS__, NULL }
 
-#define match_first(Fp, ...) _match_first((Fp), CONSTRUCTORS(__VA_ARGS__))
-
 #define match_longest(Fp, ...) _match_longest((Fp), CONSTRUCTORS(__VA_ARGS__))
 
 enum token {
@@ -159,27 +157,6 @@ struct scan_output {
 };
 
 typedef struct recognizer (*recognizer_constructor)();
-
-struct scan_output _match_first(struct input_stack *is, recognizer_constructor recs[])
-{
-    for (int i = 0; recs[i]; ++i) {
-        struct recognizer rec = recs[i]();
-        struct match_output m = match(is, &rec);
-        if (m.ok) {
-            return (struct scan_output){
-                .token = rec.token,
-                .lexeme = m.lexeme ? m.lexeme : strdup(""),
-                .length = m.length,
-            };
-        }
-        free(m.lexeme);
-    }
-    return (struct scan_output){
-        .token = TOKEN_EMPTY,
-        .lexeme = strdup(""),   // must be freed by caller
-        .length = 0,
-    };
-}
 
 struct scan_output _match_longest(struct input_stack *is, recognizer_constructor recs[])
 {
