@@ -91,4 +91,5 @@ int main()
 
     Automaton m(g);
     std::cout << m << std::endl;
+    Table table(g);
 }
