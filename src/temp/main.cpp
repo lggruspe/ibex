@@ -1,8 +1,8 @@
 #include "helper.hpp"
+#include "scanners.hpp"
 #include <iostream>
 
 enum class Variable { S, A };
-enum class Terminal { A, B, EMPTY };
 
 std::ostream& operator<<(std::ostream& out, const Variable& v)
 {
@@ -16,21 +16,7 @@ std::ostream& operator<<(std::ostream& out, const Variable& v)
     }
 }
 
-std::ostream& operator<<(std::ostream& out, const Terminal& t)
-{
-    switch (t) {
-    case Terminal::A:
-        return out << "a";
-    case Terminal::B:
-        return out << "b";
-    case Terminal::EMPTY:
-        return out << "EMPTY";
-    default:
-        throw 0;
-    }
-}
-
-std::ostream& operator<<(std::ostream& out, const typename Grammar<Variable, Terminal>::Symbol& a)
+std::ostream& operator<<(std::ostream& out, const typename Grammar<Variable, Token>::Symbol& a)
 {
     switch (a.index()) {
     case 0:
@@ -42,7 +28,7 @@ std::ostream& operator<<(std::ostream& out, const typename Grammar<Variable, Ter
     }
 }
 
-std::ostream& operator<<(std::ostream& os, Item<Grammar<Variable, Terminal>::Symbol> item)
+std::ostream& operator<<(std::ostream& os, Item<Grammar<Variable, Token>::Symbol> item)
 {
     os << "{" << item.rule.first << " ->";
     for (int i = 0; i < (int)(item.rule.second.size()); ++i) {
@@ -59,7 +45,7 @@ std::ostream& operator<<(std::ostream& os, Item<Grammar<Variable, Terminal>::Sym
 
 std::ostream& operator<<(
     std::ostream& os,
-    const Automaton<Grammar<Variable, Terminal>>::State& state)
+    const Automaton<Grammar<Variable, Token>>::State& state)
 {
     for (const auto& item: state) {
         os << item << std::endl;
@@ -69,7 +55,7 @@ std::ostream& operator<<(
 
 std::ostream& operator<<(
     std::ostream& os,
-    const Automaton<Grammar<Variable, Terminal>>& m)
+    const Automaton<Grammar<Variable, Token>>& m)
 {
     for (const auto& [state, id]: m) {
         os << "CC" << id << ":" << std::endl;
@@ -83,9 +69,9 @@ std::ostream& operator<<(
 
 int main()
 {
-    Grammar<Variable, Terminal> g({
+    Grammar<Variable, Token> g({
         {Variable::S, {Variable::A}},
-        {Variable::A, {Terminal::A, Variable::A, Terminal::B}},
+        {Variable::A, {Token::A, Variable::A, Token::B}},
         {Variable::A, {}},
     });
 
