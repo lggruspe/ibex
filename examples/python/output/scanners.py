@@ -1,7 +1,6 @@
 import sys
 
 class Token:
-    ERROR = "error"
     EMPTY = "empty"
     IDENTIFIER = "identifier"
     WHITESPACE = "whitespace"
@@ -476,7 +475,7 @@ class Greaterthan(BaseRecognizer):
         return -1, 2
 
 def match_longest(*recs, io=InputStack()):
-    token = Token.ERROR
+    token = Token.EMPTY
     lexeme = ""
     for T in recs:
         r = T()
@@ -488,8 +487,6 @@ def match_longest(*recs, io=InputStack()):
             io.unget(a)
     for _ in lexeme:
         io.get()
-    if token == Token.ERROR and io.done:
-        token = Token.EMPTY
     return token, lexeme
 
 SCANNERS = {
