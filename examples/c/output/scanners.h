@@ -34,8 +34,7 @@
 #define match_longest(Fp, ...) _match_longest((Fp), CONSTRUCTORS(__VA_ARGS__))
 
 enum token {
-    TOKEN_ERROR = 0,
-    TOKEN_EMPTY = 1,
+    TOKEN_EMPTY = 0,
     TOKEN_IDENTIFIER,
     TOKEN_WHITESPACE,
     TOKEN_NUMBER,
@@ -62,8 +61,6 @@ enum token {
 int print_token(FILE *fp, enum token token)
 {
     switch (token) {
-    case TOKEN_ERROR:
-        return fprintf(fp, "error");
     case TOKEN_EMPTY:
         return fprintf(fp, "empty");
     case TOKEN_IDENTIFIER:
@@ -866,7 +863,7 @@ typedef struct recognizer (*recognizer_constructor)();
 struct scan_output _match_longest(struct input_stack *is, recognizer_constructor recs[])
 {
     // recs is a null terminated array of function pointers
-    enum token token = TOKEN_ERROR;
+    enum token token = TOKEN_EMPTY;
     char *lexeme = strdup("");
     int length = 0;
     for (int i = 0; recs[i]; ++i) {
@@ -885,9 +882,6 @@ struct scan_output _match_longest(struct input_stack *is, recognizer_constructor
     }
     for (int i = 0; i < length; ++i) {
         is_get(is);
-    }
-    if (token == TOKEN_ERROR && is->done) {
-        token = TOKEN_EMPTY;
     }
     return (struct scan_output){
         .token = token,

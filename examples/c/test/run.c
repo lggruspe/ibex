@@ -27,7 +27,7 @@ void run_tokenizer()
     struct input_stack is = is_create(stdin);
     for (;;) {
         struct scan_output s = match_longest(&is, ALL_RECOGNIZERS);
-        if (s.token == TOKEN_EMPTY || s.token == TOKEN_ERROR) {
+        if (s.token == TOKEN_EMPTY) {
             free(s.lexeme);
             break;
         }
