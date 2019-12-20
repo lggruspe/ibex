@@ -11,8 +11,7 @@
     B
 
 enum class Token {
-    ERROR = 0,
-    EMPTY = 1,
+    EMPTY = 0,
     A,
     B,
 };
@@ -20,8 +19,6 @@ enum class Token {
 std::ostream& operator<<(std::ostream& out, Token token)
 {
     switch (token) {
-    case Token::ERROR:
-        return out << "error";
     case Token::EMPTY:
         return out << "empty";
     case Token::A:
@@ -75,7 +72,7 @@ struct BaseRecognizer {
     Token token;
 
     BaseRecognizer(
-        Token token = Token::ERROR,
+        Token token = Token::EMPTY,
         bool accept = false, // should be true if 0 is an accept state
         int error = -1)
         : token(token)
@@ -165,7 +162,7 @@ std::pair<Token, std::string> match_longest(InputStack& in)
     std::vector<std::shared_ptr<BaseRecognizer>> recs = {
         std::make_shared<Recognizers>() ...
     };
-    Token token = Token::ERROR;
+    Token token = Token::EMPTY;
     std::string lexeme;
     for (auto r: recs) {
         auto [ok, s] = r->match(in);
@@ -179,9 +176,6 @@ std::pair<Token, std::string> match_longest(InputStack& in)
     }
     for (auto it = lexeme.begin(); it != lexeme.end(); ++it) {
         in.get();
-    }
-    if (token == Token::ERROR && in.done) {
-        token = Token::EMPTY;
     }
     return {token, lexeme};
 }
