@@ -10,17 +10,19 @@
 
 template <class Grammar>
 struct Parser {
+    using Symbol = typename Grammar::Symbol;
     Table<Grammar> table;
+    const Grammar& grammar;
 
-    Parser(const Grammar& grammar) : table(grammar)
+    Parser(const Grammar& grammar) : table(grammar), grammar(grammar)
     {}
 
     bool parse()
     {
         InputStack in;
         std::vector<int> states = {0};
-        std::vector<typename Grammar::Symbol> words;
-        auto [lookahead, debug] = match_longest<ALL_RECOGNIZERS>(in);
+        std::vector<Symbol> words;
+        auto [lookahead, _] = scan(in);
         for (;;) {
             auto action = table.table[states.back()][lookahead];
             switch (action.first) {
@@ -39,12 +41,27 @@ struct Parser {
             case Action::SHIFT:
                 states.push_back(action.second);
                 words.push_back(lookahead);
-                std::tie(lookahead, debug) = match_longest<ALL_RECOGNIZERS>(in);
+                std::tie(lookahead, _) = scan(in);
                 break;
             default:
                 return false;
             }
         }
         return false;
+    }
+
+private:
+    auto scan(InputStack& in)
+    {
+        auto [token, lexeme] = match_longest<ALL_RECOGNIZERS>(in);
+        if (Symbol(token) == grammar.empty) {
+            uint32_t a = in.get();
+            uint32_t eof = std::char_traits<char>::eof();
+            if (a != eof) {
+                in.unget(a);
+                return std::make_pair(Symbol(Variable::ERROR), lexeme);
+            }
+        }
+        return std::make_pair(Symbol(token), lexeme);
     }
 };

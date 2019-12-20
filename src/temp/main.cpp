@@ -2,7 +2,7 @@
 #include "scanners.hpp"
 #include <iostream>
 
-enum class Variable { S, A };
+enum class Variable { S, A, ERROR };
 
 std::ostream& operator<<(std::ostream& out, const Variable& v)
 {
