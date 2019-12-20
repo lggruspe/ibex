@@ -67,6 +67,8 @@ std::ostream& operator<<(
     return os;
 }
 
+#include "parser.hpp"
+
 int main()
 {
     Grammar<Variable, Token> g({
@@ -74,8 +76,6 @@ int main()
         {Variable::A, {Token::A, Variable::A, Token::B}},
         {Variable::A, {}},
     });
-
-    Automaton m(g);
-    std::cout << m << std::endl;
-    Table table(g);
+    Parser p(g);
+    std::cout << p.parse() << std::endl;
 }
