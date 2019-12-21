@@ -51,10 +51,12 @@ struct Parser {
     }
 
 private:
-    auto scan(InputStack& in)
+    std::pair<Symbol, std::string> scan(InputStack& in)
     {
         auto [token, lexeme] = match_longest<ALL_RECOGNIZERS>(in);
-        if (Symbol(token) == grammar.empty) {
+        if (token == Token::WHITESPACE) {
+            return scan(in);
+        } else if (Symbol(token) == grammar.empty) {
             uint32_t a = in.get();
             uint32_t eof = std::char_traits<char>::eof();
             if (a != eof) {
