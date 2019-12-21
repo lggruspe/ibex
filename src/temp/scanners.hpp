@@ -8,12 +8,14 @@
 
 #define ALL_RECOGNIZERS \
     A, \
-    B
+    B, \
+    Whitespace
 
 enum class Token {
     EMPTY = 0,
     A,
     B,
+    WHITESPACE,
 };
 
 std::ostream& operator<<(std::ostream& out, Token token)
@@ -25,6 +27,8 @@ std::ostream& operator<<(std::ostream& out, Token token)
         return out << "a";
     case Token::B:
         return out << "b";
+    case Token::WHITESPACE:
+        return out << "whitespace";
     default:
         return out;
     }
@@ -146,6 +150,28 @@ struct B: public BaseRecognizer {
         switch (q) {
         case 0:
             if (a == 98)
+                return {1, 1};
+            return {-1, 2};
+        case 1:
+            return {-1, 2};
+        default:
+            return {-1, 2};
+        }
+    }
+};
+
+struct Whitespace: public BaseRecognizer {
+    Whitespace() : BaseRecognizer(Token::WHITESPACE, false, 2) {}
+
+    std::pair<int, int> next(int q, uint32_t a) const
+    {
+        switch (q) {
+        case 0:
+            if (a == 9)
+                return {1, 1};
+            if (a == 10)
+                return {1, 1};
+            if (a == 32)
                 return {1, 1};
             return {-1, 2};
         case 1:
