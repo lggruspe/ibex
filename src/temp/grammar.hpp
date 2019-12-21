@@ -19,9 +19,9 @@ struct Grammar {
     Symbol empty;
 
     Grammar(const std::vector<Rule>& rules)
+        : start(rules.front().first)
+        , empty(Terminal::EMPTY)
     {
-        start = rules.front().first;
-        empty = Terminal::EMPTY;
         symbols.insert(empty);
         for (const auto& p: rules) {
             this->rules.insert(p);

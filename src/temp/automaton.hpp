@@ -123,7 +123,7 @@ private:
 
         std::set<Symbol> first_set;
         for (const auto& a: sentence) {
-            auto& f = first_sets.at(a);
+            const auto& f = first_sets.at(a);
             first_set.insert(f.begin(), f.end());
             if (!f.count(grammar.empty)) {
                 break;

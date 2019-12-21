@@ -20,6 +20,7 @@ struct Item {
     Symbol next() const
     {
         // must not be complete
+        // returns symbol after the dot
         return rule.second[position];
     }
 
