@@ -71,8 +71,3 @@ def generate(entrypoint="", directory=""):
         print(output)
     except jinja2.exceptions.TemplateNotFound:
         print("scangen: Template not found:", entrypoint)
-
-name = "scangen"
-
-if __name__ == "__main__":
-    generate()
