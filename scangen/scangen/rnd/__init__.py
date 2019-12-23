@@ -5,7 +5,7 @@ import enum
 import os
 import sys
 from redblack import containers
-from rnd.internals import crnd
+from .internals import crnd
 
 class ExprType(enum.Enum):
     """Same as enum rnd_type { RND_SYMBOL, RND_UNION, ... }."""
