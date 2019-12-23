@@ -4,7 +4,9 @@ import sys
 import unittest
 import examples
 
-sys.path.append(os.path.abspath(os.path.pardir))
+PATH = os.path.abspath(os.path.dirname(__file__))
+sys.path.append(os.path.join(PATH, os.path.pardir, "scangen"))
+
 from rnd import ExprSymbols, convert, Dfa, DfaSymbols
 from rnd.internals import crnd
 
@@ -104,6 +106,6 @@ class RndConversionTest(unittest.TestCase):
 
 if __name__ == "__main__":
     for expr_type in EXPR_FN:
-        with open(f"data/{expr_type}.csv", "r") as file:
+        with open(f"{PATH}/data/{expr_type}.csv", "r") as file:
             TEST_DATA[expr_type] = examples.read(file)
     unittest.main()
