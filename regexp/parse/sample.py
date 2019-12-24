@@ -1,4 +1,5 @@
 grammar = """
+start -> expr
 expr -> expr pipe term
 expr -> term
 term -> term factor
