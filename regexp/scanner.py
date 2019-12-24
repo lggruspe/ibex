@@ -150,184 +150,172 @@ class Plus(BaseRecognizer):
 
 class Interval(BaseRecognizer):
     def __init__(self):
-        super().__init__(Token.INTERVAL, False, 6)
+        super().__init__(Token.INTERVAL, False, 10)
 
     def next(self, q, a):
         if q == 0:
             if a == 91:
+                return 0, 6
+            return -1, 10
+        if q == 6:
+            if 0 <= a < 40:
                 return 0, 5
-            return -1, 6
-        if q == 5:
-            if 0 <= a < 45:
-                return 0, 4
+            if a == 40:
+                return 0, 5
+            if a == 41:
+                return 0, 5
+            if a == 42:
+                return 0, 5
+            if a == 43:
+                return 0, 5
+            if a == 44:
+                return 0, 5
             if a == 45:
-                return 0, 4
-            if 46 <= a < 48:
-                return 0, 4
+                return 0, 5
+            if a == 46:
+                return 0, 5
+            if a == 47:
+                return 0, 5
             if 48 <= a < 58:
-                return 0, 4
-            if 58 <= a < 91:
-                return 0, 4
-            if a == 91:
-                return 0, 4
+                return 0, 5
+            if 58 <= a < 63:
+                return 0, 5
+            if a == 63:
+                return 0, 5
+            if 64 <= a < 91:
+                return 0, 5
             if a == 92:
-                return 0, 11
-            if a == 93:
-                return 0, 4
+                return 0, 7
             if 94 <= a < 120:
-                return 0, 4
+                return 0, 5
             if a == 120:
-                return 0, 4
-            if 121 <= a < 4294967294:
-                return 0, 4
-            return -1, 6
+                return 0, 5
+            if 121 <= a < 124:
+                return 0, 5
+            if a == 124:
+                return 0, 5
+            if 125 <= a < 4294967295:
+                return 0, 5
+            return -1, 10
         if q == 1:
-            return -1, 6
+            return -1, 10
         if q == 2:
             if a == 93:
                 return 1, 1
-            return -1, 6
+            return -1, 10
         if q == 3:
-            if 0 <= a < 45:
+            if 0 <= a < 40:
+                return 0, 2
+            if a == 40:
+                return 0, 2
+            if a == 41:
+                return 0, 2
+            if a == 42:
+                return 0, 2
+            if a == 43:
+                return 0, 2
+            if a == 44:
                 return 0, 2
             if a == 45:
                 return 0, 2
-            if 46 <= a < 48:
+            if a == 46:
+                return 0, 2
+            if a == 47:
                 return 0, 2
             if 48 <= a < 58:
                 return 0, 2
-            if 58 <= a < 91:
+            if 58 <= a < 63:
                 return 0, 2
-            if a == 91:
+            if a == 63:
+                return 0, 2
+            if 64 <= a < 91:
                 return 0, 2
             if a == 92:
-                return 0, 8
-            if a == 93:
-                return 0, 2
+                return 0, 4
             if 94 <= a < 120:
                 return 0, 2
             if a == 120:
                 return 0, 2
-            if 121 <= a < 4294967294:
+            if 121 <= a < 124:
                 return 0, 2
-            return -1, 6
-        if q == 8:
-            if 0 <= a < 45:
+            if a == 124:
                 return 0, 2
-            if a == 45:
+            if 125 <= a < 4294967295:
                 return 0, 2
-            if 46 <= a < 48:
-                return 0, 2
-            if 48 <= a < 58:
-                return 0, 2
-            if 58 <= a < 91:
-                return 0, 2
-            if a == 91:
-                return 0, 2
-            if a == 92:
-                return 0, 2
-            if a == 93:
-                return 1, 7
-            if 94 <= a < 120:
-                return 0, 2
-            if a == 120:
-                return 0, 9
-            if 121 <= a < 4294967294:
-                return 0, 2
-            return -1, 6
+            return -1, 10
         if q == 4:
+            if a == 40:
+                return 0, 2
+            if a == 41:
+                return 0, 2
+            if a == 42:
+                return 0, 2
+            if a == 43:
+                return 0, 2
+            if a == 46:
+                return 0, 2
+            if a == 63:
+                return 0, 2
+            if a == 91:
+                return 0, 2
+            if a == 92:
+                return 0, 2
+            if a == 93:
+                return 0, 2
+            if a == 120:
+                return 0, 8
+            if a == 124:
+                return 0, 2
+            return -1, 10
+        if q == 8:
+            if 48 <= a < 58:
+                return 0, 11
+            return -1, 10
+        if q == 5:
             if a == 45:
                 return 0, 3
-            return -1, 6
-        if q == 11:
-            if 0 <= a < 45:
-                return 0, 4
-            if a == 45:
-                return 0, 10
-            if 46 <= a < 48:
-                return 0, 4
-            if 48 <= a < 58:
-                return 0, 4
-            if 58 <= a < 91:
-                return 0, 4
-            if a == 91:
-                return 0, 4
-            if a == 92:
-                return 0, 4
-            if a == 93:
-                return 0, 4
-            if 94 <= a < 120:
-                return 0, 4
-            if a == 120:
-                return 0, 12
-            if 121 <= a < 4294967294:
-                return 0, 4
-            return -1, 6
+            return -1, 10
         if q == 7:
+            if a == 40:
+                return 0, 5
+            if a == 41:
+                return 0, 5
+            if a == 42:
+                return 0, 5
+            if a == 43:
+                return 0, 5
+            if a == 46:
+                return 0, 5
+            if a == 63:
+                return 0, 5
+            if a == 91:
+                return 0, 5
+            if a == 92:
+                return 0, 5
             if a == 93:
-                return 1, 1
-            return -1, 6
+                return 0, 5
+            if a == 120:
+                return 0, 9
+            if a == 124:
+                return 0, 5
+            return -1, 10
         if q == 9:
             if 48 <= a < 58:
-                return 0, 9
+                return 0, 12
+            return -1, 10
+        if q == 11:
+            if 48 <= a < 58:
+                return 0, 11
             if a == 93:
                 return 1, 1
-            return -1, 6
-        if q == 10:
-            if 0 <= a < 45:
-                return 0, 2
-            if a == 45:
-                return 0, 13
-            if 46 <= a < 48:
-                return 0, 2
-            if 48 <= a < 58:
-                return 0, 2
-            if 58 <= a < 91:
-                return 0, 2
-            if a == 91:
-                return 0, 2
-            if a == 92:
-                return 0, 8
-            if a == 93:
-                return 0, 2
-            if 94 <= a < 120:
-                return 0, 2
-            if a == 120:
-                return 0, 2
-            if 121 <= a < 4294967294:
-                return 0, 2
-            return -1, 6
-        if q == 13:
-            if 0 <= a < 45:
-                return 0, 2
-            if a == 45:
-                return 0, 2
-            if 46 <= a < 48:
-                return 0, 2
-            if 48 <= a < 58:
-                return 0, 2
-            if 58 <= a < 91:
-                return 0, 2
-            if a == 91:
-                return 0, 2
-            if a == 92:
-                return 0, 8
-            if a == 93:
-                return 1, 7
-            if 94 <= a < 120:
-                return 0, 2
-            if a == 120:
-                return 0, 2
-            if 121 <= a < 4294967294:
-                return 0, 2
-            return -1, 6
+            return -1, 10
         if q == 12:
             if a == 45:
                 return 0, 3
             if 48 <= a < 58:
                 return 0, 12
-            return -1, 6
-        return -1, 6
+            return -1, 10
+        return -1, 10
 
 class Symbol(BaseRecognizer):
     def __init__(self):
@@ -335,42 +323,76 @@ class Symbol(BaseRecognizer):
 
     def next(self, q, a):
         if q == 0:
-            if 0 <= a < 48:
+            if 0 <= a < 40:
+                return 1, 1
+            if a == 40:
+                return 1, 1
+            if a == 41:
+                return 1, 1
+            if a == 42:
+                return 1, 1
+            if a == 43:
+                return 1, 1
+            if 44 <= a < 46:
+                return 1, 1
+            if a == 46:
+                return 1, 1
+            if a == 47:
                 return 1, 1
             if 48 <= a < 58:
                 return 1, 1
-            if 58 <= a < 92:
+            if 58 <= a < 63:
+                return 1, 1
+            if a == 63:
+                return 1, 1
+            if 64 <= a < 91:
                 return 1, 1
             if a == 92:
-                return 1, 3
-            if 93 <= a < 120:
+                return 0, 3
+            if 94 <= a < 120:
                 return 1, 1
             if a == 120:
                 return 1, 1
-            if 121 <= a < 4294967294:
+            if 121 <= a < 124:
+                return 1, 1
+            if a == 124:
+                return 1, 1
+            if 125 <= a < 4294967295:
                 return 1, 1
             return -1, 2
         if q == 1:
             return -1, 2
         if q == 3:
-            if 0 <= a < 48:
+            if a == 40:
                 return 1, 1
-            if 48 <= a < 58:
+            if a == 41:
                 return 1, 1
-            if 58 <= a < 92:
+            if a == 42:
+                return 1, 1
+            if a == 43:
+                return 1, 1
+            if a == 46:
+                return 1, 1
+            if a == 63:
+                return 1, 1
+            if a == 91:
                 return 1, 1
             if a == 92:
                 return 1, 1
-            if 93 <= a < 120:
+            if a == 93:
                 return 1, 1
             if a == 120:
-                return 1, 4
-            if 121 <= a < 4294967294:
+                return 0, 4
+            if a == 124:
                 return 1, 1
             return -1, 2
         if q == 4:
             if 48 <= a < 58:
-                return 1, 4
+                return 1, 5
+            return -1, 2
+        if q == 5:
+            if 48 <= a < 58:
+                return 1, 5
             return -1, 2
         return -1, 2
 
