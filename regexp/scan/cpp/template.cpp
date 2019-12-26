@@ -82,7 +82,7 @@ struct BaseRecognizer {
         , error(error)
     {}
 
-    //virtual ~BaseRecognizer() {}    // TODO is this needed?
+    virtual ~BaseRecognizer() {}
 
     virtual std::pair<int, int> next(int q, uint32_t a) const = 0;
 
@@ -127,12 +127,12 @@ protected:
 template <class... Recognizers>
 std::pair<Token, std::string> match_longest(InputStack& in)
 {
-    std::vector<std::shared_ptr<BaseRecognizer>> recs = {
-        std::make_shared<Recognizers>() ...
+    std::unique_ptr<BaseRecognizer> recs[] = {
+        std::make_unique<Recognizers>() ...
     };
     Token token = Token::EMPTY;
     std::string lexeme;
-    for (auto r: recs) {
+    for (auto& r: recs) {
         auto [ok, s] = r->match(in);
         if (ok && s.size() > lexeme.size()) {
             token = r->token;
