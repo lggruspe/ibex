@@ -3,19 +3,20 @@ import subprocess
 import sys
 import unittest
 
-sys.path.append(os.path.abspath("../output"))
-sys.path.append(os.path.abspath("../../tools"))
+sys.path.append(os.path.join(os.path.dirname(__file__), "../output"))
+sys.path.append(os.path.join(os.path.dirname(__file__), "../../tools"))
 
 import examples
 import lexeme as lex
 import scanners
 
 TEST_DATA = {}
+RUN_MATCH_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), "run_match"))
 
 def run_longest(pinput):
     """Wrapper for running run_match longest."""
     out = subprocess.check_output(
-        ["./run_match", "longest"],
+        [RUN_MATCH_PATH, "longest"],
         input=f"{pinput}\n".encode())
     token, lexeme = out.decode()[:-1].split('\n', maxsplit=1)
     return token, lexeme
@@ -23,14 +24,14 @@ def run_longest(pinput):
 def run_single(scanner_type, pinput):
     """Wrapper for running run_match single."""
     out = subprocess.check_output(
-        ["./run_match", "single", "-s", scanner_type],
+        [RUN_MATCH_PATH, "single", "-s", scanner_type],
         input=f"{pinput}\n".encode())
     return out.decode()[:-1]
 
 def run_tokenizer(pinput):
     """Wrapper for running run_match tokenizer."""
     out = subprocess.check_output(
-        ["./run_match", "tokenizer"],
+        [RUN_MATCH_PATH, "tokenizer"],
         input=f"{pinput}\n".encode())
     return out.decode()
 
@@ -79,6 +80,6 @@ class MatchTest(unittest.TestCase):
 
 if __name__ == "__main__":
     for scanner_type in scanners.SCANNERS:
-        with open(f"../../data/{scanner_type}.csv", "r") as file:
+        with open(os.path.join(os.path.dirname(__file__), f"../../data/{scanner_type}.csv"), "r") as file:
             TEST_DATA[scanner_type] = examples.read(file)
     unittest.main()
