@@ -1,5 +1,5 @@
-#include "../output/scanners.h"
-#include "../output/scanner_utils.h"
+#include "output/scanners.h"
+#include "output/scanner_utils.h"
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
