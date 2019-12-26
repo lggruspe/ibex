@@ -93,5 +93,5 @@ int main()
         {Variable::VALUE,   {Token::INTERVAL}},
     });
     Parser p(g);
-    //std::cout << p.parse() << std::endl;
+    std::cout << p.parse() << std::endl;
 }

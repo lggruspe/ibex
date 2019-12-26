@@ -11,7 +11,7 @@
 
 template <class Grammar>
 struct Parser {
-    using Symbol = typename Grammar::Symbol;
+    using GSymbol = typename Grammar::Symbol;
     Table<Grammar> table;
     const Grammar& grammar;
 
@@ -22,7 +22,7 @@ struct Parser {
     {
         InputStack in;
         std::vector<int> states = {0};
-        std::vector<Symbol> words;
+        std::vector<GSymbol> words;
         auto [lookahead, _] = scan(in);
         for (;;) {
             auto action = table.table[states.back()][lookahead];
@@ -52,17 +52,17 @@ struct Parser {
     }
 
 private:
-    std::pair<Symbol, std::string> scan(InputStack& in)
+    std::pair<GSymbol, std::string> scan(InputStack& in)
     {
         auto [token, lexeme] = match_longest<ALL_RECOGNIZERS>(in);
-        if (Symbol(token) == grammar.empty) {
+        if (GSymbol(token) == grammar.empty) {
             uint32_t a = in.get();
             uint32_t eof = std::char_traits<char>::eof();
             if (a != eof) {
                 in.unget(a);
-                return std::make_pair(Symbol(Variable::ERROR), lexeme);
+                return std::make_pair(GSymbol(Variable::ERROR), lexeme);
             }
         }
-        return std::make_pair(Symbol(token), lexeme);
+        return std::make_pair(GSymbol(token), lexeme);
     }
 };
