@@ -1,5 +1,5 @@
-#include "../output/scanners.hpp"
-#include "../output/scanner_utils.hpp"
+#include "output/scanners.hpp"
+#include "output/scanner_utils.hpp"
 #include <iostream>
 #include <string>
 #include <tuple>

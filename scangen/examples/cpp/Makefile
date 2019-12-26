@@ -15,10 +15,10 @@ output/scanners.py:	templates/scanners.py
 
 .PHONY:	clean
 clean:
-	-rm -rf test/run_match
+	-rm -rf run_match
 
 .PHONY:	compile
-compile:	test/run_match
+compile:	run_match
 
-test/run_match:	test/run.cpp
+run_match:	run.cpp
 	$(CXX) $(CXXFLAGS) -o $@ $<
