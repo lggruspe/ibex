@@ -10,7 +10,6 @@ import examples
 import lexeme as lex
 import scanners
 
-TEST_DATA = {}
 RUN_MATCH_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), "run_match"))
 
 def run_longest(pinput):
@@ -36,7 +35,7 @@ def run_tokenizer(pinput):
     return out.decode()
 
 def parametrize_longest_match_test(test_case, scanner_type):
-    for word, label in TEST_DATA[scanner_type]:
+    for word, label in test_case.test_data[scanner_type]:
         token, lexeme = run_longest(word)
         if label:
             test_case.assertEqual(token, scanner_type)
@@ -45,11 +44,17 @@ def parametrize_longest_match_test(test_case, scanner_type):
             test_case.assertNotEqual(token, scanner_type)
 
 def parametrize_single_match_test(test_case, scanner_type):
-    for word, label in TEST_DATA[scanner_type]:
+    for word, label in test_case.test_data[scanner_type]:
         lexeme = run_single(scanner_type, word)
         test_case.assertEqual(lexeme, word if label else "")
 
 class MatchTest(unittest.TestCase):
+    def setUp(self):
+        self.test_data = {}
+        for scanner_type in scanners.SCANNERS:
+            with open(os.path.join(os.path.dirname(__file__), f"../../data/{scanner_type}.csv"), "r") as file:
+                self.test_data[scanner_type] = examples.read(file)
+
     def test_longest(self):
         for scanner_type in scanners.SCANNERS:
             with self.subTest(scanner_type=scanner_type):
@@ -79,7 +84,4 @@ class MatchTest(unittest.TestCase):
         self.assertEqual(actual, expected)
 
 if __name__ == "__main__":
-    for scanner_type in scanners.SCANNERS:
-        with open(os.path.join(os.path.dirname(__file__), f"../../data/{scanner_type}.csv"), "r") as file:
-            TEST_DATA[scanner_type] = examples.read(file)
     unittest.main()
