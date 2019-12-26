@@ -3,12 +3,12 @@ import subprocess
 import sys
 import unittest
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+sys.path.append(os.path.abspath("../output"))
 sys.path.append(os.path.abspath("../../tools"))
 
 import examples
 import lexeme as lex
-import output.scanners as scanners
+import scanners
 
 TEST_DATA = {}
 
