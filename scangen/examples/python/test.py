@@ -3,21 +3,21 @@ import subprocess
 import sys
 import unittest
 
-sys.path.append(os.path.join(os.path.dirname(__file__), "../output"))
-sys.path.append(os.path.join(os.path.dirname(__file__), "../../tools"))
+sys.path.append(os.path.join(os.path.dirname(__file__), "output"))
+sys.path.append(os.path.join(os.path.dirname(__file__), "../tools"))
 
 import examples
 import lexeme as lex
 import scanners
 
 class Scanner:
-    def __init__(self):
-        self.run_match_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "run_match"))
+    def __init__(self, dirname=os.path.dirname(__file__)):
+        self.path = os.path.abspath(os.path.join(dirname, "run_match"))
 
     def longest(self, pinput):
         """Wrapper for running run_match longest."""
         out = subprocess.check_output(
-            [self.run_match_path, "longest"],
+            [self.path, "longest"],
             input=f"{pinput}\n".encode())
         token, lexeme = out.decode()[:-1].split('\n', maxsplit=1)
         return token, lexeme
@@ -25,14 +25,14 @@ class Scanner:
     def single(self, scanner_type, pinput):
         """Wrapper for running run_match single."""
         out = subprocess.check_output(
-            [self.run_match_path, "single", "-s", scanner_type],
+            [self.path, "single", "-s", scanner_type],
             input=f"{pinput}\n".encode())
         return out.decode()[:-1]
 
     def tokenize(self, pinput):
         """Wrapper for running run_match tokenizer."""
         out = subprocess.check_output(
-            [self.run_match_path, "tokenizer"],
+            [self.path, "tokenizer"],
             input=f"{pinput}\n".encode())
         return out.decode()
 
@@ -54,7 +54,8 @@ class MatchTest(unittest.TestCase):
     def setUp(self):
         self.test_data = {}
         for scanner_type in scanners.SCANNERS:
-            with open(os.path.join(os.path.dirname(__file__), f"../../data/{scanner_type}.csv"), "r") as file:
+            path = os.path.join(os.path.dirname(__file__), f"../data/{scanner_type}.csv")
+            with open(path, "r") as file:
                 self.test_data[scanner_type] = examples.read(file)
         self.scanner = Scanner()
 
