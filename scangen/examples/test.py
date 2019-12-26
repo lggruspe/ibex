@@ -3,15 +3,21 @@ import subprocess
 import sys
 import unittest
 
-sys.path.append(os.path.join(os.path.dirname(__file__), "output"))
-sys.path.append(os.path.join(os.path.dirname(__file__), "../tools"))
+if "TEST_DIR" not in os.environ:
+    print("Warning: TEST_DIR environment variable not set.", file=sys.stderr)
+    print("Using c test data.", file=sys.stderr)
+
+sys.path.append(os.path.join(os.path.dirname(__file__), os.environ.get("TEST_DIR", "c"), "output"))
+sys.path.append(os.path.join(os.path.dirname(__file__), "tools"))
 
 import examples
 import lexeme as lex
 import scanners
 
 class Scanner:
-    def __init__(self, dirname=os.path.dirname(__file__)):
+    def __init__(self, dirname=None):
+        if dirname is None:
+            dirname = os.path.join(os.path.dirname(__file__), os.environ.get("TEST_DIR", "c"))
         self.path = os.path.abspath(os.path.join(dirname, "run_match"))
 
     def longest(self, pinput):
@@ -54,7 +60,7 @@ class MatchTest(unittest.TestCase):
     def setUp(self):
         self.test_data = {}
         for scanner_type in scanners.SCANNERS:
-            path = os.path.join(os.path.dirname(__file__), f"../data/{scanner_type}.csv")
+            path = os.path.join(os.path.dirname(__file__), f"data/{scanner_type}.csv")
             with open(path, "r") as file:
                 self.test_data[scanner_type] = examples.read(file)
         self.scanner = Scanner()
