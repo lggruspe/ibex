@@ -10,33 +10,35 @@ import examples
 import lexeme as lex
 import scanners
 
-RUN_MATCH_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), "run_match"))
+class Scanner:
+    def __init__(self):
+        self.run_match_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "run_match"))
 
-def run_longest(pinput):
-    """Wrapper for running run_match longest."""
-    out = subprocess.check_output(
-        [RUN_MATCH_PATH, "longest"],
-        input=f"{pinput}\n".encode())
-    token, lexeme = out.decode()[:-1].split('\n', maxsplit=1)
-    return token, lexeme
+    def longest(self, pinput):
+        """Wrapper for running run_match longest."""
+        out = subprocess.check_output(
+            [self.run_match_path, "longest"],
+            input=f"{pinput}\n".encode())
+        token, lexeme = out.decode()[:-1].split('\n', maxsplit=1)
+        return token, lexeme
 
-def run_single(scanner_type, pinput):
-    """Wrapper for running run_match single."""
-    out = subprocess.check_output(
-        [RUN_MATCH_PATH, "single", "-s", scanner_type],
-        input=f"{pinput}\n".encode())
-    return out.decode()[:-1]
+    def single(self, scanner_type, pinput):
+        """Wrapper for running run_match single."""
+        out = subprocess.check_output(
+            [self.run_match_path, "single", "-s", scanner_type],
+            input=f"{pinput}\n".encode())
+        return out.decode()[:-1]
 
-def run_tokenizer(pinput):
-    """Wrapper for running run_match tokenizer."""
-    out = subprocess.check_output(
-        [RUN_MATCH_PATH, "tokenizer"],
-        input=f"{pinput}\n".encode())
-    return out.decode()
+    def tokenize(self, pinput):
+        """Wrapper for running run_match tokenizer."""
+        out = subprocess.check_output(
+            [self.run_match_path, "tokenizer"],
+            input=f"{pinput}\n".encode())
+        return out.decode()
 
 def parametrize_longest_match_test(test_case, scanner_type):
     for word, label in test_case.test_data[scanner_type]:
-        token, lexeme = run_longest(word)
+        token, lexeme = test_case.scanner.longest(word)
         if label:
             test_case.assertEqual(token, scanner_type)
             test_case.assertEqual(lexeme, word)
@@ -45,7 +47,7 @@ def parametrize_longest_match_test(test_case, scanner_type):
 
 def parametrize_single_match_test(test_case, scanner_type):
     for word, label in test_case.test_data[scanner_type]:
-        lexeme = run_single(scanner_type, word)
+        lexeme = test_case.scanner.single(scanner_type, word)
         test_case.assertEqual(lexeme, word if label else "")
 
 class MatchTest(unittest.TestCase):
@@ -54,6 +56,7 @@ class MatchTest(unittest.TestCase):
         for scanner_type in scanners.SCANNERS:
             with open(os.path.join(os.path.dirname(__file__), f"../../data/{scanner_type}.csv"), "r") as file:
                 self.test_data[scanner_type] = examples.read(file)
+        self.scanner = Scanner()
 
     def test_longest(self):
         for scanner_type in scanners.SCANNERS:
@@ -80,7 +83,7 @@ class MatchTest(unittest.TestCase):
             f"string {string}\n",
             f"whitespace \n\n"
         ])
-        actual = run_tokenizer(f"{identifier} {number}\t{character}\n{string}")
+        actual = self.scanner.tokenize(f"{identifier} {number}\t{character}\n{string}")
         self.assertEqual(actual, expected)
 
 if __name__ == "__main__":
