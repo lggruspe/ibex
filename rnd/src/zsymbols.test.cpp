@@ -3,21 +3,23 @@
 
 int main()
 {
-    ZPartition p;
-    p.insert(ZRange(1, 5));
-    p.insert(ZRange(2, 4));
-    p.insert(ZRange(1, 3));
-    p.insert(ZRange(10, 11));
-    p.insert(ZRange(1, 11));
-    p.insert(ZRange(17, 17));
+    ZPartition p = {
+        ZRange(1, 5),
+        ZRange(2, 4),
+        ZRange(1, 3),
+        ZRange(10, 11),
+        ZRange(1, 11),
+        ZRange(17, 17),
+    };
 
-    ZPartition q;
-    q.insert(ZRange(1, 5));
-    q.insert(ZRange(2, 4));
-    q.insert(ZRange(1, 3));
-    q.insert(ZRange(4, 9));
-    q.insert(ZRange(5, 18));
-    q.insert(ZRange(17, 1230));
+    ZPartition q = {
+        ZRange(1, 5),
+        ZRange(2, 4),
+        ZRange(1, 3),
+        ZRange(4, 9),
+        ZRange(5, 18),
+        ZRange(17, 1230),
+    };
 
     auto r = p.combined(q);
     for (const auto& [a, b]: r) {

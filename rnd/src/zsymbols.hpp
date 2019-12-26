@@ -9,7 +9,10 @@
 struct ZRange {
     uint32_t start, end;
 
-    ZRange(uint32_t start, uint32_t end) : start(start), end(end) {}
+    ZRange(uint32_t start, uint32_t end) : start(start), end(end)
+    {
+        assert(start <= end);
+    }
 
     ZRange()
         : ZRange(
@@ -26,7 +29,6 @@ struct ZRange {
     {
         // used to store ZRanges in a set/map
         // all the ZRanges must be disjoint
-        assert(start <= end && other.start <= other.end);
         assert(end <= other.start || other.end <= start || 
             std::tie(start, end) == std::tie(other.start, other.end));
         return std::tie(start, end) < std::tie(other.start, other.end);
@@ -37,6 +39,13 @@ struct ZPartition {
     std::set<uint32_t> points;
 
     ZPartition() : points({0}) {}
+
+    ZPartition(const std::initializer_list<ZRange>& ranges) : ZPartition()
+    {
+        for (const auto& ran: ranges) {
+            insert(ran);
+        }
+    }
 
     void insert(const ZRange& ran)
     {
