@@ -6,41 +6,40 @@
 #include <set>
 #include <tuple>
 
+// Represents a half-open interval [start, end) with integer endpoints.
 struct ZRange {
-    uint32_t start, end;
+    uint32_t start = std::numeric_limits<uint32_t>::max();
+    uint32_t end = std::numeric_limits<uint32_t>::max();
+
+    ZRange() {}
 
     ZRange(uint32_t start, uint32_t end) : start(start), end(end)
     {
         assert(start <= end);
     }
 
-    ZRange()
-        : ZRange(
-            std::numeric_limits<uint32_t>::max(),
-            std::numeric_limits<uint32_t>::max())
-    {}
-
     explicit operator bool() const
     {
         return start < end;
     }
 
+    // Comparator for storing ZRanges in a set/map.
+    // Asserts that the two ZRanges are either disjoint or are equal.
     bool operator<(const ZRange& other) const
     {
-        // used to store ZRanges in a set/map
-        // all the ZRanges must be disjoint
         assert(end <= other.start || other.end <= start || 
             std::tie(start, end) == std::tie(other.start, other.end));
         return std::tie(start, end) < std::tie(other.start, other.end);
     }
 };
 
+// Represents a partition of the set of integers containing half-open intervals.
 struct ZPartition {
-    std::set<uint32_t> points;
+    std::set<uint32_t> points = {0};
 
-    ZPartition() : points({0}) {}
+    ZPartition() {}
 
-    ZPartition(const std::initializer_list<ZRange>& ranges) : ZPartition()
+    ZPartition(const std::initializer_list<ZRange>& ranges)
     {
         for (const auto& ran: ranges) {
             insert(ran);

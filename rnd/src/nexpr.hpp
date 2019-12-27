@@ -6,13 +6,15 @@
 // NOTE no need to handle emptyset as special cases to concatenate, closure and
 // alternate, because subset construction and minimization handles all cases
 
+// Represents a regular expression/NFA.
+// The start state is always 0 and the accept state is always 1.
 struct NExpr {
-    // start state = 0
-    // accept state = 1
     ZPartition symbols;
     std::map<int, std::map<ZRange, std::set<int>>> states;
 
-    NExpr() // empty set (note: use other constructor for epsilon)
+    // Constructs an NFA for the empty set.
+    // Note: use the other constructor for epsilon.
+    NExpr()
     {
         states[0];
         states[1];
