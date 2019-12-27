@@ -1,9 +1,4 @@
 import functools
-import os
-import sys
-
-sys.path.append(os.path.abspath("../../scangen"))
-
 import scangen as sg
 
 @sg.token("pipe")
