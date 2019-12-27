@@ -18,7 +18,7 @@ struct Parser {
     Parser(const Grammar& grammar) : table(grammar), grammar(grammar)
     {}
 
-    bool parse()
+    bool is_valid()
     {
         InputStack in;
         std::vector<int> states = {0};
