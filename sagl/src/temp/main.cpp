@@ -68,6 +68,7 @@ std::ostream& operator<<(
 }
 
 #include "parser.hpp"
+#include "parsetree.hpp"
 
 int main()
 {
@@ -77,5 +78,10 @@ int main()
         {Variable::A, {}},
     });
     Parser p(g);
-    std::cout << p.parse() << std::endl;
+    ParseTreeCallback<decltype(g)::Symbol> callback;
+    try {
+        std::move(p.parse(callback));
+    } catch (SyntaxError e) {
+        std::cout << e.what() << std::endl;
+    }
 }
