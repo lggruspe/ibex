@@ -34,6 +34,7 @@ struct LR1Callback {
         for (const auto& child: children) {
             node.add_child(child);
         }
+        symbols.push_back(rule.first);
         state.push_back(node);
     }
 };
@@ -46,7 +47,7 @@ int main()
         {Variable::A, {}},
     };
     sagl::Parser p(g);
-    p.parse<LR1Callback>(g);
+    p.parse<LR1Callback>();
     /*
     sagl::Parser p(R"VOGON(
         S -> A
