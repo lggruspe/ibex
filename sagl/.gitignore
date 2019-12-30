@@ -16,5 +16,4 @@ test-driver
 *.cache
 bin
 build
-Makefile
 env

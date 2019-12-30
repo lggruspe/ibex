@@ -1,5 +1,5 @@
 #include "sagl.hpp"
-#include "scanners.hpp"
+#include "scanner.hpp"
 #include <iostream>
 
 enum class Variable { S, A, ERROR };

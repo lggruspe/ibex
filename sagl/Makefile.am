@@ -3,7 +3,7 @@ bin_main_SOURCES = \
 	src/main.cpp \
 	src/parser.hpp \
 	src/parsetree.hpp \
-	src/scanners.hpp \
+	src/scanner.hpp \
 	include/sagl.hpp
 
 bin_main_CXXFLAGS = -g -Wall -Wextra -Wpedantic
