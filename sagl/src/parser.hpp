@@ -1,6 +1,6 @@
 #pragma once
+#include "sagl/tabulate.hpp"
 #include "scanners.hpp"
-#include "tabulate.hpp"
 #include <string>
 #include <tuple>
 #include <utility>
