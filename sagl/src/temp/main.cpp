@@ -77,6 +77,15 @@ int main()
         {Variable::A, {Token::A, Variable::A, Token::B}},
         {Variable::A, {}},
     });
+    /*
+    sagl::Parser p(R"VOGON(
+        S -> A
+        A -> a A b
+        A ->
+        a = a
+        b = b 
+    )VOGON");
+    */
     Parser p(g);
     ParseTreeCallback<decltype(g)::Symbol> callback;
     try {
