@@ -30,8 +30,9 @@ struct ParseTreeCallback {
         return std::move(state.back());
     }
 
-    void shift(Symbol a)
+    void shift(const std::pair<Symbol, std::string>& lookahead)
     {
+        auto a = lookahead.first;
         symbols.push_back(a);
         state.push_back(std::make_unique<ParseTree<Symbol>>(a));
     }

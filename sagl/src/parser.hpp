@@ -2,7 +2,6 @@
 #include "sagl/tabulate.hpp"
 #include "scanners.hpp"
 #include <string>
-#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -12,7 +11,7 @@ struct DefaultLR1Callback {
 
     using Rule = std::pair<Symbol, std::vector<Symbol>>;
 
-    void shift(Symbol a) {} // TODO get token-lexeme pair
+    void shift(const std::pair<Symbol, std::string>& lookahead) {}
 
     void reduce(const Rule& rule) {}
 };
@@ -31,9 +30,9 @@ struct Parser {
     {
         InputStack in;
         std::vector<int> states = {0};
-        auto [lookahead, _] = scan(in);
+        auto lookahead = scan(in);
         for (;;) {
-            auto action = table.table[states.back()][lookahead];
+            auto action = table.table[states.back()][lookahead.first];
             switch (action.first) {
             case Action::ACCEPT:
                 return handler.accept(true);
@@ -49,7 +48,7 @@ struct Parser {
             case Action::SHIFT:
                 states.push_back(action.second);
                 handler.shift(lookahead);
-                std::tie(lookahead, _) = scan(in);
+                lookahead = scan(in);
                 break;
             default:
                 return handler.accept(false);
