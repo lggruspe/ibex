@@ -63,7 +63,7 @@ private:
         }
     }
 
-    bool compute_transitions (const State& state, int id)
+    bool compute_transitions(const State& state, int id)
     {
         // assume state has been 'closed'
         std::map<Symbol, State> neighbors;
@@ -120,7 +120,6 @@ private:
 
     std::set<Symbol> first(const Sentence& sentence) const
     {
-
         std::set<Symbol> first_set;
         for (const auto& a: sentence) {
             const auto& f = first_sets.at(a);
