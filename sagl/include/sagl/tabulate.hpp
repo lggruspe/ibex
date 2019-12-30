@@ -7,6 +7,10 @@
 
 enum class Action { ERROR = 0, ACCEPT, GOTO, REDUCE, SHIFT };
 
+class ShiftReduceConflict {};
+
+class ReduceReduceConflict {};
+
 template <class Grammar>
 struct Table {
     // NOTE empty entry means error
@@ -47,8 +51,10 @@ private:
     {
         auto& entry = table[q][c];
         if (entry != std::make_pair(Action::ERROR, 0)) {
-            // TODO throw s/r and r/r errors
-            throw 0;
+            if (entry.first == a) {
+                throw ReduceReduceConflict();
+            }
+            throw ShiftReduceConflict();
         }
         entry = std::make_pair(a, v);
     }
