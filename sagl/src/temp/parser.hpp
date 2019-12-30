@@ -1,6 +1,4 @@
 #pragma once
-#include "automaton.hpp"
-#include "grammar.hpp"
 #include "scanners.hpp"
 #include "tabulate.hpp"
 #include <string>
@@ -14,7 +12,7 @@ struct DefaultLR1Callback {
 
     using Rule = std::pair<Symbol, std::vector<Symbol>>;
 
-    void shift(Symbol a) {}
+    void shift(Symbol a) {} // TODO get token-lexeme pair
 
     void reduce(const Rule& rule) {}
 };
