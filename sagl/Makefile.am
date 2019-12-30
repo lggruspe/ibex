@@ -1,20 +1,16 @@
-bin_PROGRAMS = bin/sagl
-bin_sagl_SOURCES = \
+bin_PROGRAMS = bin/main
+bin_main_SOURCES = \
 	src/main.cpp \
-	src/match.hpp \
+	src/parser.hpp \
+	src/parsetree.hpp \
 	src/scanners.hpp \
-	src/sagl/automaton.hpp \
-	src/sagl/enumeration.hpp \
-	include/sagl/grammar.hpp \
-	include/sagl/parser.hpp \
-	include/sagl/parsetable.hpp
+	include/sagl.hpp
 
-bin_sagl_CXXFLAGS = -g -Wall -Wextra -Wpedantic
-bin_sagl_CPPFLAGS = \
+bin_main_CXXFLAGS = -g -Wall -Wextra -Wpedantic
+
+bin_main_CPPFLAGS = \
 	-I$(top_srcdir)/include \
-	-I$(top_srcdir)/include/sagl \
-	-I$(top_srcdir)/src \
-	-I$(top_srcdir)/src/sagl
+	-I$(top_srcdir)/src
 
 ACLOCAL_AMFLAGS = -I m4
 
