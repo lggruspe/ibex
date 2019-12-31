@@ -75,13 +75,6 @@ int main()
     value -> dot
     value -> symbol
     value -> interval
-
-    tokens with attributes:
-    - dot
-    - symbol
-    - interval
-
-    (see ast.hpp for attribution rules)
     */
     Grammar<Variable, Token> g({
         {Variable::START,   {Variable::EXPR}},
@@ -98,6 +91,7 @@ int main()
         {Variable::VALUE,   {Token::SYMBOL}},
         {Variable::VALUE,   {Token::INTERVAL}},
     });
+    ast::Callback<decltype(g)::Symbol> cb;
     Parser p(g);
-    std::cout << p.parse() << std::endl;
+    p.parse(cb);
 }
