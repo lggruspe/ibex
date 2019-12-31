@@ -98,7 +98,7 @@ struct ValueNode : public Node<Symbol> {
 };
 
 template <class Symbol>
-auto deepcopy(std::unique_ptr<Node<Symbol>>& node)
+std::unique_ptr<Node<Symbol>> deepcopy(std::unique_ptr<Node<Symbol>>& node)
 {
 
     std::unique_ptr<Node<Symbol>> copy = nullptr;
@@ -110,10 +110,10 @@ auto deepcopy(std::unique_ptr<Node<Symbol>>& node)
         p->value = val->value;
         copy = std::unique_ptr<Node<Symbol>>(p);
     } else if (auto op = dynamic_cast<OperatorNode<Symbol>*>(node.get())) {
-        auto left = deepcopy(node->left);
+        auto left = deepcopy(op->left);
         OperatorNode<Symbol>* p = nullptr;
-        if (node->right) {
-            auto right = deepcopy(node->right);
+        if (op->right) {
+            auto right = deepcopy(op->right);
             p = new OperatorNode<Symbol>(op->type, left, right);
         } else {
             p = new OperatorNode<Symbol>(op->type, left);
@@ -209,16 +209,10 @@ public:
                     OperatorType::Closure,
                     rhs.front()));
             } else if (op->token == Symbol(scanner::Token::PLUS)) {
-                Pointer right = nullptr;
-                if (auto val = dynamic_cast<ValueNode<Symbol>*>(rhs.front().get())) {
-                    auto *p = new ValueNode<Symbol>();
-                    p->value = val->value;
-                    right = Pointer(p);
-                } else if (auto val = dynamic_cast<OperatorNode<Symbol>*>(rhs.front().get())) {
-                    throw std::logic_error("TODO deep copy to right if $0 is an OperatorNode");
-                } else {
+                if (auto temp = dynamic_cast<TemporaryNode<Symbol>*>(rhs.front().get())) {
                     throw InvalidReduce();
                 }
+                Pointer right = deepcopy(rhs.front());
                 return Pointer(new OperatorNode<Symbol>(
                     OperatorType::Concatenation,
                     rhs.front(),
