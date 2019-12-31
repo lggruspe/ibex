@@ -53,7 +53,12 @@ struct OperatorNode : public Node<Symbol> {
     Pointer left = nullptr;
     Pointer right = nullptr;
 
-    OperatorNode(Type type, Pointer& left, Pointer& right = nullptr)
+    OperatorNode(Type type, Pointer& left)
+        : type(type)
+        , left(std::move(left))
+    {}
+
+    OperatorNode(Type type, Pointer& left, Pointer& right)
         : type(type)
         , left(std::move(left))
         , right(std::move(right))
@@ -171,31 +176,35 @@ public:
         if (auto size = rhs.size(); size == 1) {
             return std::move(rhs.front());
         } else if (size == 2) {
-            /*
-            Pointer node = nullptr;
-            switch (rhs.back()->token) {
-            case Symbol(scanner::Token::STAR):
-                node = Pointer(new OperatorNode<Symbol>(
+            auto op = dynamic_cast<TemporaryNode<Symbol>*>(rhs.back().get());
+            if (!op) {
+                throw InvalidReduce();
+            } else if (op->token == Symbol(scanner::Token::STAR)) {
+                return Pointer(new OperatorNode<Symbol>(
                     OperatorType::Closure,
-                    std::move(rhs.front())));
-                break;
-            case Symbol(scanner::Token::PLUS): {
-                throw std::logic_error("TODO");
-                break;
-            }
-            case Symbol(scanner::Token::QUESTION): {
-                node = Pointer(new OperatorNode<Symbol>(
+                    rhs.front()));
+            } else if (op->token == Symbol(scanner::Token::PLUS)) {
+                Pointer right = nullptr;
+                if (auto val = dynamic_cast<ValueNode<Symbol>*>(rhs.front().get())) {
+                    auto *p = new ValueNode<Symbol>();
+                    p->value = val->value;
+                    right = Pointer(p);
+                } else {
+                    throw std::logic_error("TODO deep copy to right if $0 is an OperatorNode");
+                }
+                return Pointer(new OperatorNode<Symbol>(
+                    OperatorType::Concatenation,
+                    rhs.front(),
+                    right));
+            } else if (op->token == Symbol(scanner::Token::QUESTION)) {
+                auto empty = Pointer(new ValueNode<Symbol>());
+                return Pointer(new OperatorNode<Symbol>(
                     OperatorType::Union,
                     rhs.front(),
-                    Pointer(new ValueNode<Symbol>()))
-                break;
-            }
-            default:
+                    empty));
+            } else {
                 throw InvalidReduce();
             }
-            return node;
-            */
-            throw std::logic_error("TODO");
         } else {
             throw InvalidReduce();
         }
