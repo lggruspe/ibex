@@ -31,8 +31,7 @@ template <class Symbol>
 struct TemporaryNode : public Node<Symbol> {
     Symbol token;
 
-    TemporaryNode(const std::pair<Symbol, std::string>& lookahead)
-        : token(lookahead.first)
+    TemporaryNode(Symbol token) : token(token)
     {
         if (token != Symbol(scanner::Token::PIPE)
                 && token != Symbol(scanner::Token::STAR)
@@ -150,7 +149,7 @@ public:
                 || token == Symbol(scanner::Token::RPAREN)
                 || token == Symbol(scanner::Token::QUESTION)
                 || token == Symbol(scanner::Token::PLUS)) {
-            node = Pointer(new TemporaryNode(lookahead));
+            node = Pointer(new TemporaryNode(token));
         } else if (token == Symbol(scanner::Token::DOT)
                 || token == Symbol(scanner::Token::INTERVAL)
                 || token == Symbol(scanner::Token::SYMBOL)) {
