@@ -22,7 +22,7 @@ std::ostream& operator<<(std::ostream& out, const Variable& v)
     }
 }
 
-std::ostream& operator<<(std::ostream& out, const typename Grammar<Variable, Token>::Symbol& a)
+std::ostream& operator<<(std::ostream& out, const typename Grammar<Variable, scanner::Token>::Symbol& a)
 {
     switch (a.index()) {
     case 0:
@@ -34,7 +34,7 @@ std::ostream& operator<<(std::ostream& out, const typename Grammar<Variable, Tok
     }
 }
 
-std::ostream& operator<<(std::ostream& os, Item<Grammar<Variable, Token>::Symbol> item)
+std::ostream& operator<<(std::ostream& os, Item<Grammar<Variable, scanner::Token>::Symbol> item)
 {
     os << "{" << item.rule.first << " ->";
     for (int i = 0; i < (int)(item.rule.second.size()); ++i) {
@@ -51,7 +51,7 @@ std::ostream& operator<<(std::ostream& os, Item<Grammar<Variable, Token>::Symbol
 
 std::ostream& operator<<(
     std::ostream& os,
-    const Automaton<Grammar<Variable, Token>>::State& state)
+    const Automaton<Grammar<Variable, scanner::Token>>::State& state)
 {
     for (const auto& item: state) {
         os << item << std::endl;
@@ -61,7 +61,7 @@ std::ostream& operator<<(
 
 std::ostream& operator<<(
     std::ostream& os,
-    const Automaton<Grammar<Variable, Token>>& m)
+    const Automaton<Grammar<Variable, scanner::Token>>& m)
 {
     for (const auto& [state, id]: m) {
         os << "CC" << id << ":" << std::endl;
@@ -74,6 +74,8 @@ std::ostream& operator<<(
 }
 
 #include "regexparser.hpp"
+
+using namespace scanner;
 
 int main()
 {
