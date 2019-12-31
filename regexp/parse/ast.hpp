@@ -135,7 +135,14 @@ public:
         if (auto size = rhs.size(); size == 1) {
             return std::move(rhs.front());
         } else if (size == 3) {
-            // TODO check if middle element is a PIPE
+            auto& mid = *std::next(rhs.begin());
+            if (auto temp = dynamic_cast<TemporaryNode<Symbol>*>(mid.get())) {
+                if (temp->token != Symbol(scanner::Token::PIPE)) {
+                    throw InvalidReduce();
+                }
+            } else {
+                throw InvalidReduce();
+            }
             return Pointer(new OperatorNode<Symbol>(
                 OperatorType::Union,
                 rhs.front(),
