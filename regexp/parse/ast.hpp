@@ -189,8 +189,10 @@ public:
                     auto *p = new ValueNode<Symbol>();
                     p->value = val->value;
                     right = Pointer(p);
-                } else {
+                } else if (auto val = dynamic_cast<OperatorNode<Symbol>*>(rhs.front().get())) {
                     throw std::logic_error("TODO deep copy to right if $0 is an OperatorNode");
+                } else {
+                    throw InvalidReduce();
                 }
                 return Pointer(new OperatorNode<Symbol>(
                     OperatorType::Concatenation,
