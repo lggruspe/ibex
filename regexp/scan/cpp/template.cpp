@@ -11,6 +11,8 @@
     {{ scanner.token|title }}{% if loop.index != loop.length %}, \{% endif -%}
     {% endfor %}
 
+namespace scanner {
+
 enum class Token {
     EMPTY = 0,
     {%- for scanner in scanners %}
@@ -153,4 +155,6 @@ std::pair<Token, std::string> match_longest(std::istream& file = std::cin)
 {
     InputStack in(file);
     return match_longest<Recognizers...>(in);
+}
+
 }
