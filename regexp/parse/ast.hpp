@@ -99,6 +99,32 @@ struct ValueNode : public Node<Symbol> {
 };
 
 template <class Symbol>
+auto deepcopy(std::unique_ptr<Node<Symbol>>& node)
+{
+
+    std::unique_ptr<Node<Symbol>> copy = nullptr;
+    if (auto temp = dynamic_cast<TemporaryNode<Symbol>*>(node.get())) {
+        auto *p = new TemporaryNode<Symbol>(temp->token);
+        copy = std::unique_ptr<Node<Symbol>>(p);
+    } else if (auto val = dynamic_cast<ValueNode<Symbol>*>(node.get())) {
+        auto *p = new ValueNode<Symbol>();
+        p->value = val->value;
+        copy = std::unique_ptr<Node<Symbol>>(p);
+    } else if (auto op = dynamic_cast<OperatorNode<Symbol>*>(node.get())) {
+        auto left = deepcopy(node->left);
+        OperatorNode<Symbol>* p = nullptr;
+        if (node->right) {
+            auto right = deepcopy(node->right);
+            p = new OperatorNode<Symbol>(op->type, left, right);
+        } else {
+            p = new OperatorNode<Symbol>(op->type, left);
+        }
+        copy = std::unique_ptr<Node<Symbol>>(p);
+    }
+    return copy;
+}
+
+template <class Symbol>
 class Callback {
     using OperatorType = typename OperatorNode<Symbol>::Type;
 public:
