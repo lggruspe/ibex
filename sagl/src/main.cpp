@@ -89,7 +89,8 @@ int main()
     Parser p(g);
     ParseTreeCallback<decltype(g)::Symbol> callback;
     try {
-        std::move(p.parse(callback));
+        auto root = std::move(p.parse(callback));
+        std::cout << root << std::endl;
     } catch (SyntaxError e) {
         std::cout << e.what() << std::endl;
     }

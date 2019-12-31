@@ -1,4 +1,5 @@
 #pragma once
+#include <iostream>
 #include <memory>
 #include <utility>
 #include <vector>
@@ -15,6 +16,27 @@ struct ParseTree {
 struct SyntaxError {
     char const* what() const { return "syntax error"; }
 };
+
+template <class Symbol>
+std::ostream& operator<<(
+    std::ostream& out,
+    std::unique_ptr<ParseTree<Symbol>>& node)
+{
+    if (node == nullptr) {
+        return out << "nil";
+    }
+    if (!node->children.empty()) {
+        out << "(";
+    }
+    out << node->value;
+    for (auto& child: node->children) {
+        out << " " << child;
+    }
+    if (!node->children.empty()) {
+        out << ")";
+    }
+    return out;
+}
 
 template <class Symbol>
 struct ParseTreeCallback {
@@ -43,13 +65,12 @@ struct ParseTreeCallback {
         std::vector<decltype(node)> children;
         for (int i = 0; i < (int)(rule.second.size()); ++i) {
             symbols.pop_back();
-            auto child = std::move(state.back());
+            children.push_back(std::move(state.back()));
             state.pop_back();
         }
         while (!children.empty()) {
-            auto child = std::move(state.back());
-            state.pop_back();
-            node->children.push_back(std::move(child));
+            node->children.push_back(std::move(children.back()));
+            children.pop_back();
         }
         symbols.push_back(rule.first);
         state.push_back(std::move(node));
