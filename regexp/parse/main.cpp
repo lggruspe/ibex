@@ -1,26 +1,7 @@
 #include "../scan/scanner.hpp"
 #include "sagl.hpp"
+#include "variable.hpp"
 #include <iostream>
-
-enum class Variable { START, EXPR, TERM, FACTOR, VALUE, ERROR };
-
-std::ostream& operator<<(std::ostream& out, const Variable& v)
-{
-    switch (v) {
-    case Variable::START:
-        return out << "start";
-    case Variable::EXPR:
-        return out << "expr";
-    case Variable::TERM:
-        return out << "term";
-    case Variable::FACTOR:
-        return out << "factor";
-    case Variable::VALUE:
-        return out << "value";
-    default:
-        throw 0;
-    }
-}
 
 std::ostream& operator<<(std::ostream& out, const typename Grammar<Variable, scanner::Token>::Symbol& a)
 {
@@ -74,6 +55,7 @@ std::ostream& operator<<(
 }
 
 #include "parser.hpp"
+#include "ast.hpp"
 
 using namespace scanner;
 
@@ -93,6 +75,13 @@ int main()
     value -> dot
     value -> symbol
     value -> interval
+
+    tokens with attributes:
+    - dot
+    - symbol
+    - interval
+
+    (see ast.hpp for attribution rules)
     */
     Grammar<Variable, Token> g({
         {Variable::START,   {Variable::EXPR}},
