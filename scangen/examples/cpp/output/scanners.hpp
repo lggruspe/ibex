@@ -7,27 +7,27 @@
 #include <vector>
 
 #define ALL_RECOGNIZERS \
-    Identifier, \
-    Whitespace, \
-    Number, \
-    Character, \
-    String, \
-    Dot, \
-    Lparen, \
-    Rparen, \
-    Comma, \
-    Star, \
-    Equal, \
-    Lbrace, \
-    Rbrace, \
-    Colon, \
-    Lbracket, \
-    Rbracket, \
-    Plus, \
-    Minus, \
-    Slash, \
-    Lessthan, \
-    Greaterthan
+    scanner::Identifier, \
+    scanner::Whitespace, \
+    scanner::Number, \
+    scanner::Character, \
+    scanner::String, \
+    scanner::Dot, \
+    scanner::Lparen, \
+    scanner::Rparen, \
+    scanner::Comma, \
+    scanner::Star, \
+    scanner::Equal, \
+    scanner::Lbrace, \
+    scanner::Rbrace, \
+    scanner::Colon, \
+    scanner::Lbracket, \
+    scanner::Rbracket, \
+    scanner::Plus, \
+    scanner::Minus, \
+    scanner::Slash, \
+    scanner::Lessthan, \
+    scanner::Greaterthan
 
 namespace scanner {
 
