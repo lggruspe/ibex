@@ -7,15 +7,15 @@
 #include <vector>
 
 #define ALL_RECOGNIZERS \
-    Pipe, \
-    Star, \
-    Lparen, \
-    Rparen, \
-    Dot, \
-    Question, \
-    Plus, \
-    Interval, \
-    Symbol
+    scanner::Pipe, \
+    scanner::Star, \
+    scanner::Lparen, \
+    scanner::Rparen, \
+    scanner::Dot, \
+    scanner::Question, \
+    scanner::Plus, \
+    scanner::Interval, \
+    scanner::Symbol
 
 namespace scanner {
 

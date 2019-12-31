@@ -8,7 +8,7 @@
 
 #define ALL_RECOGNIZERS \
     {%- for scanner in scanners %}
-    {{ scanner.token|title }}{% if loop.index != loop.length %}, \{% endif -%}
+    scanner::{{ scanner.token|title }}{% if loop.index != loop.length %}, \{% endif -%}
     {% endfor %}
 
 namespace scanner {
