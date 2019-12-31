@@ -4,6 +4,8 @@
 #include <string>
 #include <tuple>
 
+using namespace scanner;
+
 void run_longest_match()
 {
     auto [token, lexeme] = match_longest<ALL_RECOGNIZERS>();
