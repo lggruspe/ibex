@@ -1,11 +1,26 @@
 #pragma once
 #include "sagl/tabulate.hpp"
+#include "../scan/scanner.hpp"
 #include <string>
-#include <tuple>
 #include <utility>
 #include <vector>
 
-#include "../scan/scanner.hpp"
+template <class Symbol>
+struct DefaultLR1Callback {
+    bool accept(bool acc) { return acc; }
+
+    using Rule = std::pair<Symbol, std::vector<Symbol>>;
+
+    void shift(const std::pair<Symbol, std::string>& lookahead)
+    {
+        (void)lookahead;
+    }
+
+    void reduce(const Rule& rule)
+    {
+        (void)rule;
+    }
+};
 
 template <class Grammar>
 struct Parser {
@@ -16,37 +31,42 @@ struct Parser {
     Parser(const Grammar& grammar) : table(grammar), grammar(grammar)
     {}
 
-    bool is_valid()
+    template <class Handler>
+    auto parse(Handler& handler)
     {
         scanner::InputStack in;
         std::vector<int> states = {0};
-        std::vector<Symbol> words;
-        auto [lookahead, _] = scan(in);
+        auto lookahead = scan(in);
         for (;;) {
-            auto action = table.table[states.back()][lookahead];
+            auto action = table.table[states.back()][lookahead.first];
             switch (action.first) {
             case Action::ACCEPT:
-                return true;
+                return handler.accept(true);
             case Action::REDUCE: {
                 const auto& rule = table.rules.value(action.second);
+                handler.reduce(rule);
                 for (auto it = rule.second.begin(); it != rule.second.end(); ++it) {
                     states.pop_back();
-                    words.pop_back();
                 }
-                words.push_back(rule.first);
                 states.push_back(table.table[states.back()][rule.first].second);
                 break;
              }
             case Action::SHIFT:
                 states.push_back(action.second);
-                words.push_back(lookahead);
-                std::tie(lookahead, _) = scan(in);
+                handler.shift(lookahead);
+                lookahead = scan(in);
                 break;
             default:
-                return false;
+                return handler.accept(false);
             }
         }
-        return false;
+        return handler.accept(false);
+    }
+
+    bool parse()
+    {
+        DefaultLR1Callback<Symbol> handler;
+        return parse(handler);
     }
 
 private:

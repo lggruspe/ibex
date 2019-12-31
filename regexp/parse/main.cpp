@@ -73,7 +73,7 @@ std::ostream& operator<<(
     return os;
 }
 
-#include "regexparser.hpp"
+#include "parser.hpp"
 
 using namespace scanner;
 
@@ -95,5 +95,5 @@ int main()
         {Variable::VALUE,   {Token::INTERVAL}},
     });
     Parser p(g);
-    std::cout << p.is_valid() << std::endl;
+    std::cout << p.parse() << std::endl;
 }
