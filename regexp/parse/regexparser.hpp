@@ -1,7 +1,5 @@
 #pragma once
-#include "automaton.hpp"
-#include "grammar.hpp"
-#include "tabulate.hpp"
+#include "sagl/tabulate.hpp"
 #include <string>
 #include <tuple>
 #include <utility>
