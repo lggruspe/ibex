@@ -54,6 +54,23 @@ std::ostream& operator<<(
     return os;
 }
 
+#include "../../rnd/src/nexpr.hpp"
+
+std::ostream& operator<<(std::ostream& os, const NExpr& expr)
+{
+    for (const auto& [q, dq]: expr.states) {
+        os << "q = " << q << std::endl;
+        for (const auto& [a, R]: dq) {
+            os << "[" << a.start << ", " << a.end << "): ";
+            for (const auto& r: R) {
+                os << r << " ";
+            }
+            os << std::endl;
+        }
+    }
+    return os;
+}
+
 #include "parser.hpp"
 #include "ast.hpp"
 
@@ -93,5 +110,5 @@ int main()
     });
     ast::Callback<decltype(g)::Symbol> cb;
     Parser p(g);
-    p.parse(cb);
+    std::cout << p.parse(cb) << std::endl;
 }

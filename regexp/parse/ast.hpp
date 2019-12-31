@@ -1,5 +1,6 @@
 #pragma once
 #include "../../rnd/src/zsymbols.hpp"
+#include "../../rnd/src/nexpr.hpp"
 #include "../scan/scanner.hpp"
 #include "variable.hpp"
 #include <cstdint>
@@ -124,6 +125,28 @@ std::unique_ptr<Node<Symbol>> deepcopy(std::unique_ptr<Node<Symbol>>& node)
 }
 
 template <class Symbol>
+NExpr evaluate(std::unique_ptr<Node<Symbol>>& node)
+{
+    if (auto val = dynamic_cast<ValueNode<Symbol>*>(node.get())) {
+        return NExpr(val->value);
+    } else if (auto op = dynamic_cast<OperatorNode<Symbol>*>(node.get())) {
+        using Type = typename OperatorNode<Symbol>::Type;
+        switch (op->type) {
+        case Type::Union:
+            return alternate(evaluate(op->left), evaluate(op->right));
+        case Type::Concatenation:
+            return concatenate(evaluate(op->left), evaluate(op->right));
+        case Type::Closure:
+            return closure(evaluate(op->left));
+        default:
+            throw std::logic_error("malformed input");
+        }
+    } else {
+        throw std::logic_error("malformed input");
+    }
+}
+
+template <class Symbol>
 class Callback {
     using OperatorType = typename OperatorNode<Symbol>::Type;
 public:
@@ -137,7 +160,7 @@ public:
         if (!acc) {
             throw std::logic_error("syntax error");
         }
-        return std::move(stack.back());
+        return evaluate(stack.back());
     }
 
     void shift(const std::pair<Symbol, std::string>& lookahead)
