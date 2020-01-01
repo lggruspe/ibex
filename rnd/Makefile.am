@@ -2,11 +2,11 @@ lib_LTLIBRARIES = lib/librndpoc.la
 lib_librndpoc_la_SOURCES = \
 	include/rnd.h \
 	src/automaton.hpp \
-	src/handles.hpp \
 	src/nexpr.hpp \
 	src/wrapper.cxx \
-	src/zsymbols.hpp
-lib_librndpoc_la_CPPFLAGS = -I$(top_srcdir)/src -I$(top_srcdir)/include
+	src/zsymbols.hpp \
+	../tools/handles.hpp \
+lib_librndpoc_la_CPPFLAGS = -I$(top_srcdir)/src -I$(top_srcdir)/include -I$(top_srcdir)/../tools
 lib_librndpoc_la_LDFLAGS = -version-info 0:0:0
 
 include_HEADERS = include/rnd.h
@@ -23,14 +23,14 @@ src_nexpr_test_SOURCES = src/nexpr.hpp src/nexpr.test.cpp
 src_zsymbols_test_SOURCES = src/zsymbols.hpp src/zsymbols.test.cpp
 
 examples_example_c_SOURCES = include/rnd.h examples/example.c src/wrapper.cxx \
-	src/automaton.hpp src/handles.hpp src/nexpr.hpp src/zsymbols.hpp
+	src/automaton.hpp ../tools/handles.hpp src/nexpr.hpp src/zsymbols.hpp
 
 examples_example_cpp_SOURCES = examples/example.cpp \
-	src/automaton.hpp src/handles.hpp src/nexpr.hpp src/zsymbols.hpp
+	src/automaton.hpp ../tools/handles.hpp src/nexpr.hpp src/zsymbols.hpp
 
-examples_example_c_CPPFLAGS = -I$(top_srcdir)/src -I$(top_srcdir)/include -I$(top_srcdir)/examples
+examples_example_c_CPPFLAGS = -I$(top_srcdir)/src -I$(top_srcdir)/include -I$(top_srcdir)/examples -I$(top_srcdir)/../tools
 
-examples_example_cpp_CPPFLAGS = -I$(top_srcdir)/src -I$(top_srcdir)/include -I$(top_srcdir)/examples
+examples_example_cpp_CPPFLAGS = -I$(top_srcdir)/src -I$(top_srcdir)/include -I$(top_srcdir)/examples -I$(top_srcdir)/../tools
 
 TESTS = $(check_PROGRAMS)
 
