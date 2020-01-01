@@ -71,6 +71,23 @@ std::ostream& operator<<(std::ostream& os, const rnd::NExpr& expr)
     return os;
 }
 
+#include "../../rnd/src/automaton.hpp"
+
+std::ostream& operator<<(std::ostream& os, const rnd::Automaton& fsm)
+{
+    for (const auto& [q, dq]: fsm.states) {
+        for (const auto& [a, r]: dq) {
+            os << "d(" << q << ", [" << a.start << ", " << a.end << ")) = " << r << std::endl;
+        }
+    }
+    os << "accepts: ";
+    for (const auto& f: fsm.accepts) {
+        os << f << " ";
+    }
+    os << "\nerror: " << fsm.error;
+    return os;
+}
+
 #include "parser.hpp"
 #include "ast.hpp"
 
@@ -110,5 +127,6 @@ int main()
     });
     ast::Callback<decltype(g)::Symbol> cb;
     Parser p(g);
-    std::cout << p.parse(cb) << std::endl;
+    auto m = p.parse(cb);
+    std::cout << m << std::endl;
 }
