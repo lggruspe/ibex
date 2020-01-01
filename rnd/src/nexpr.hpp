@@ -3,6 +3,8 @@
 #include <map>
 #include <set>
 
+namespace rnd {
+
 // NOTE no need to handle emptyset as special cases to concatenate, closure and
 // alternate, because subset construction and minimization handles all cases
 
@@ -106,4 +108,6 @@ NExpr alternate(const NExpr& A, const NExpr& B)
     expr.states[af][eps].insert(1);
     expr.states[bf][eps].insert(1);
     return expr;
+}
+
 }

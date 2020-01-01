@@ -1,6 +1,8 @@
 #include "zsymbols.hpp"
 #include <iostream>
 
+using namespace rnd;
+
 int main()
 {
     ZPartition p = {

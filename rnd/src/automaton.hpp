@@ -7,6 +7,8 @@
 #include <map>
 #include <set>
 
+namespace rnd {
+
 struct Automaton {
     // start state = 0
     // error state = -1 by default
@@ -235,4 +237,6 @@ Automaton::Automaton(const NExpr& expr)
     subset_construction(this, expr);
     minimize(this);
     set_error_state(this);
+}
+
 }

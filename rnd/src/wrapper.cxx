@@ -6,6 +6,8 @@
 #include <unordered_set>
 #include <vector>
 
+using namespace rnd;
+
 NExpr ir_to_expr(rnd_expr* c_expr)
 {
     // c_expr must not be null

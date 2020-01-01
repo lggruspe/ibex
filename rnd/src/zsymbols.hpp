@@ -6,6 +6,8 @@
 #include <set>
 #include <tuple>
 
+namespace rnd {
+
 // Represents a half-open interval [start, end) with integer endpoints.
 struct ZRange {
     uint32_t start = std::numeric_limits<uint32_t>::max();
@@ -155,3 +157,5 @@ public:
         return std::make_pair(lower_bound(ran), upper_bound(ran));
     }
 };
+
+}
