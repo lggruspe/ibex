@@ -5,7 +5,7 @@ lib_librndpoc_la_SOURCES = \
 	src/nexpr.hpp \
 	src/wrapper.cxx \
 	src/zsymbols.hpp \
-	../tools/handles.hpp \
+	../tools/handles.hpp
 lib_librndpoc_la_CPPFLAGS = -I$(top_srcdir)/src -I$(top_srcdir)/include -I$(top_srcdir)/../tools
 lib_librndpoc_la_LDFLAGS = -version-info 0:0:0
 
@@ -16,7 +16,9 @@ ACLOCAL_AMFLAGS = -I m4
 check_PROGRAMS = examples/example_c examples/example_cpp \
 	src/automaton.test src/nexpr.test src/zsymbols.test
 
-src_automaton_test_SOURCES = src/automaton.hpp src/automaton.test.cpp
+src_automaton_test_SOURCES = src/automaton.hpp src/automaton.test.cpp ../tools/handles.hpp
+
+src_automaton_test_CPPFLAGS = -I$(top_srcdir)/../tools
 
 src_nexpr_test_SOURCES = src/nexpr.hpp src/nexpr.test.cpp
 
