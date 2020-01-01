@@ -56,7 +56,7 @@ std::ostream& operator<<(
 
 #include "../../rnd/src/nexpr.hpp"
 
-std::ostream& operator<<(std::ostream& os, const NExpr& expr)
+std::ostream& operator<<(std::ostream& os, const rnd::NExpr& expr)
 {
     for (const auto& [q, dq]: expr.states) {
         os << "q = " << q << std::endl;

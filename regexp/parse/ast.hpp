@@ -67,14 +67,14 @@ struct OperatorNode : public Node<Symbol> {
 
 template <class Symbol>
 struct ValueNode : public Node<Symbol> {
-    ZRange value;
+    rnd::ZRange value;
 
     ValueNode() {}
 
     ValueNode(const std::pair<Symbol, std::string>& lookahead)
     {
         if (auto token = lookahead.first; token == Symbol(scanner::Token::DOT)) {
-            value = ZRange(0, std::numeric_limits<uint32_t>::max());
+            value = rnd::ZRange(0, std::numeric_limits<uint32_t>::max());
         } else if (token == Symbol(scanner::Token::INTERVAL)) {
             if (lookahead.second.size() != 5) {
                 throw std::logic_error("TODO");
@@ -85,13 +85,13 @@ struct ValueNode : public Node<Symbol> {
                 --b;
             }
             ++b;
-            value = ZRange(a, b);
+            value = rnd::ZRange(a, b);
         } else if (token == Symbol(scanner::Token::SYMBOL)) {
             if (lookahead.second.size() != 1) {
                 throw std::logic_error("TODO");
             }
             uint32_t a = lookahead.second[1];
-            value = ZRange(a, a+1);
+            value = rnd::ZRange(a, a+1);
         } else {
             throw std::logic_error("incorrect use of ValueNode");
         }
@@ -125,10 +125,10 @@ std::unique_ptr<Node<Symbol>> deepcopy(std::unique_ptr<Node<Symbol>>& node)
 }
 
 template <class Symbol>
-NExpr evaluate(std::unique_ptr<Node<Symbol>>& node)
+rnd::NExpr evaluate(std::unique_ptr<Node<Symbol>>& node)
 {
     if (auto val = dynamic_cast<ValueNode<Symbol>*>(node.get())) {
-        return NExpr(val->value);
+        return rnd::NExpr(val->value);
     } else if (auto op = dynamic_cast<OperatorNode<Symbol>*>(node.get())) {
         using Type = typename OperatorNode<Symbol>::Type;
         switch (op->type) {
