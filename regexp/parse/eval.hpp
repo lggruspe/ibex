@@ -13,6 +13,35 @@
 
 namespace eval {
 
+uint32_t to_symbol(const std::string& lexeme)
+{
+    if (auto size = lexeme.size(); size == 1) {
+        return lexeme[0];
+    } else if (size >= 2 && lexeme[0] == '\\') {
+        if (auto a = lexeme[1]; a != 'x' && a != 'X') {
+            return a;
+        }
+        uint32_t x = 0;
+        for (int i = 2; i < (int)(lexeme.size()); ++i) {
+            auto a = lexeme[i];
+            x *= 16;
+            if ('0' <= a && a <= '9') {
+                x += (a - '0');
+            } else if ('a' <= a && a <= 'f') {
+                x += (a - 'a' + 10);
+            } else if ('A' <= a && a <= 'F') {
+                x += (a - 'A' + 10);
+            } else {
+                throw std::logic_error("invalid shift");
+            }
+        }
+        // TODO raise error if x overflows
+        return x;
+    } else {
+        throw std::logic_error("invalid shift");
+    }
+}
+
 template <class Symbol>
 struct Callback {
     std::vector<rnd::NExpr> state;
@@ -47,10 +76,7 @@ struct Callback {
             }
             state.push_back(rnd::NExpr(rnd::ZRange(a, b)));
         } else if (token == Symbol(scanner::Token::SYMBOL)) {
-            if (lexeme.size() != 1) {
-                throw std::logic_error("TODO");
-            }
-            uint32_t a = lexeme[0];
+            auto a = to_symbol(lexeme);
             state.push_back(rnd::NExpr(rnd::ZRange(a, a+1)));
         } else {
             throw std::logic_error("invalid shift");
