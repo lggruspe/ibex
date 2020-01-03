@@ -84,7 +84,7 @@ struct Callback {
         if (auto size = rhs.size(); size == 1) {
             state.push_back(rhs[0]);
         } else if (size == 2) {
-            auto a = *(rhs[1].symbols.begin());
+            auto a = rhs[1].states.at(0).begin()->first;
             switch (a.start) {
             case '*':
                 state.push_back(rnd::closure(rhs[0]));
