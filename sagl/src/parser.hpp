@@ -11,9 +11,15 @@ struct DefaultLR1Callback {
 
     using Rule = std::pair<Symbol, std::vector<Symbol>>;
 
-    void shift(const std::pair<Symbol, std::string>& lookahead) {}
+    void shift(const std::pair<Symbol, std::string>& lookahead)
+    {
+        (void)lookahead;
+    }
 
-    void reduce(const Rule& rule) {}
+    void reduce(const Rule& rule)
+    {
+        (void)rule;
+    }
 };
 
 template <class Grammar>
