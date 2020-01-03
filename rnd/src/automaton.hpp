@@ -154,7 +154,7 @@ private:
             int r = m_->states.at(q).at(a);
             destinations[rep[r]].insert(q);
         }
-        if (destinations.size() == 1) {
+        if (destinations.size() <= 1) {
             return false;
         }
         auto it = std::next(destinations.begin());
