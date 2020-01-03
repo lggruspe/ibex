@@ -1,7 +1,6 @@
 #pragma once
 #include "../../rnd/src/zsymbols.hpp"
 #include "../../rnd/src/nexpr.hpp"
-#include "../../rnd/src/automaton.hpp"
 #include "../scan/scanner.hpp"
 #include "variable.hpp"
 #include <cstdint>
@@ -161,7 +160,7 @@ public:
         if (!acc) {
             throw std::logic_error("syntax error");
         }
-        return rnd::Automaton(evaluate(stack.back()));
+        return evaluate(stack.back());
     }
 
     void shift(const std::pair<Symbol, std::string>& lookahead)
