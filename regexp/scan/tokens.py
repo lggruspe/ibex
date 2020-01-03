@@ -50,7 +50,8 @@ def _symbol():
     AF = sg.symbols('A', 'F')
     hexdigit = digit.union(af).union(AF)
     hexdigits = hexdigit.concatenation(hexdigit.closure())
-    hex_ = backslash.concatenation(sg.symbols('x').concatenation(hexdigits))
+    x = sg.symbols('x').union(sg.symbols('X'))
+    hex_ = backslash.concatenation(x.concatenation(hexdigits))
 
     # not_escaped excludes [, \\ and ]
     not_escaped = sg.isymbols(0, 90).union(sg.isymbols(94, 0xfffffffe))

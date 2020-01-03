@@ -186,7 +186,11 @@ class Interval(BaseRecognizer):
                 return 0, 5
             if 65 <= a < 71:
                 return 0, 5
-            if 71 <= a < 91:
+            if 71 <= a < 88:
+                return 0, 5
+            if a == 88:
+                return 0, 5
+            if 89 <= a < 91:
                 return 0, 5
             if a == 92:
                 return 0, 7
@@ -240,7 +244,11 @@ class Interval(BaseRecognizer):
                 return 0, 2
             if 65 <= a < 71:
                 return 0, 2
-            if 71 <= a < 91:
+            if 71 <= a < 88:
+                return 0, 2
+            if a == 88:
+                return 0, 2
+            if 89 <= a < 91:
                 return 0, 2
             if a == 92:
                 return 0, 4
@@ -272,6 +280,8 @@ class Interval(BaseRecognizer):
                 return 0, 2
             if a == 63:
                 return 0, 2
+            if a == 88:
+                return 0, 8
             if a == 91:
                 return 0, 2
             if a == 92:
@@ -308,6 +318,8 @@ class Interval(BaseRecognizer):
                 return 0, 5
             if a == 63:
                 return 0, 5
+            if a == 88:
+                return 0, 9
             if a == 91:
                 return 0, 5
             if a == 92:
@@ -381,7 +393,11 @@ class Symbol(BaseRecognizer):
                 return 1, 1
             if 65 <= a < 71:
                 return 1, 1
-            if 71 <= a < 91:
+            if 71 <= a < 88:
+                return 1, 1
+            if a == 88:
+                return 1, 1
+            if 89 <= a < 91:
                 return 1, 1
             if a == 92:
                 return 0, 3
@@ -415,6 +431,8 @@ class Symbol(BaseRecognizer):
                 return 1, 1
             if a == 63:
                 return 1, 1
+            if a == 88:
+                return 0, 4
             if a == 91:
                 return 1, 1
             if a == 92:

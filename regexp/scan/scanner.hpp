@@ -315,7 +315,11 @@ struct Interval: public BaseRecognizer {
                 return {0, 5};
             if (65 <= a && a < 71)
                 return {0, 5};
-            if (71 <= a && a < 91)
+            if (71 <= a && a < 88)
+                return {0, 5};
+            if (a == 88)
+                return {0, 5};
+            if (89 <= a && a < 91)
                 return {0, 5};
             if (a == 92)
                 return {0, 7};
@@ -369,7 +373,11 @@ struct Interval: public BaseRecognizer {
                 return {0, 2};
             if (65 <= a && a < 71)
                 return {0, 2};
-            if (71 <= a && a < 91)
+            if (71 <= a && a < 88)
+                return {0, 2};
+            if (a == 88)
+                return {0, 2};
+            if (89 <= a && a < 91)
                 return {0, 2};
             if (a == 92)
                 return {0, 4};
@@ -401,6 +409,8 @@ struct Interval: public BaseRecognizer {
                 return {0, 2};
             if (a == 63)
                 return {0, 2};
+            if (a == 88)
+                return {0, 8};
             if (a == 91)
                 return {0, 2};
             if (a == 92)
@@ -437,6 +447,8 @@ struct Interval: public BaseRecognizer {
                 return {0, 5};
             if (a == 63)
                 return {0, 5};
+            if (a == 88)
+                return {0, 9};
             if (a == 91)
                 return {0, 5};
             if (a == 92)
@@ -515,7 +527,11 @@ struct Symbol: public BaseRecognizer {
                 return {1, 1};
             if (65 <= a && a < 71)
                 return {1, 1};
-            if (71 <= a && a < 91)
+            if (71 <= a && a < 88)
+                return {1, 1};
+            if (a == 88)
+                return {1, 1};
+            if (89 <= a && a < 91)
                 return {1, 1};
             if (a == 92)
                 return {0, 3};
@@ -549,6 +565,8 @@ struct Symbol: public BaseRecognizer {
                 return {1, 1};
             if (a == 63)
                 return {1, 1};
+            if (a == 88)
+                return {0, 4};
             if (a == 91)
                 return {1, 1};
             if (a == 92)
