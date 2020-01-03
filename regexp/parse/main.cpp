@@ -110,10 +110,11 @@ int main()
         {Variable::VALUE,   {Token::INTERVAL}},
     });
     eval::Callback<decltype(g)::Symbol> cb;
+    Parser p(g);
+
     std::string s;
     std::cin >> s;
     std::istringstream is(s);
-    Parser p(g, is);
-    auto m = p.parse(cb);
+    auto m = p.parse(cb, is);
     std::cout << m << std::endl;
 }
