@@ -2,6 +2,7 @@
 #include "sagl.hpp"
 #include "variable.hpp"
 #include <iostream>
+#include <sstream>
 
 std::ostream& operator<<(std::ostream& out, const typename Grammar<Variable, scanner::Token>::Symbol& a)
 {
@@ -126,7 +127,10 @@ int main()
         {Variable::VALUE,   {Token::INTERVAL}},
     });
     eval::Callback<decltype(g)::Symbol> cb;
-    Parser p(g);
+    std::string s;
+    std::cin >> s;
+    std::istringstream is(s);
+    Parser p(g, is);
     auto n = p.parse(cb);
     auto m = rnd::Automaton(n);
     std::cout << n << std::endl;
