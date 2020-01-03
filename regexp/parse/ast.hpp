@@ -1,290 +1,143 @@
 #pragma once
-#include "../../rnd/src/zsymbols.hpp"
-#include "../../rnd/src/nexpr.hpp"
-#include "../scan/scanner.hpp"
 #include "variable.hpp"
+#include "../scan/scanner.hpp"
+#include "../../rnd/src/nexpr.hpp"
+#include "../../rnd/src/zsymbols.hpp"
 #include <cstdint>
 #include <exception>
-#include <iterator>
 #include <limits>
-#include <list>
-#include <memory>
+#include <set>
 #include <string>
 #include <utility>
 #include <vector>
 
 namespace ast {
 
-struct InvalidReduce : public std::logic_error {
-    InvalidReduce() : std::logic_error("invalid reduce") {}
-};
-
 template <class Symbol>
-struct Node {
-    virtual ~Node() = 0;
-};
-
-template <class Symbol>
-Node<Symbol>::~Node()
-{}
-
-template <class Symbol>
-struct TemporaryNode : public Node<Symbol> {
-    Symbol token;
-
-    TemporaryNode(Symbol token) : token(token)
-    {
-        if (token != Symbol(scanner::Token::PIPE)
-                && token != Symbol(scanner::Token::STAR)
-                && token != Symbol(scanner::Token::LPAREN)
-                && token != Symbol(scanner::Token::RPAREN)
-                && token != Symbol(scanner::Token::QUESTION)
-                && token != Symbol(scanner::Token::PLUS)) {
-            throw std::logic_error("incorrect use of TemporaryNode");
-        }
-    }
-};
-
-template <class Symbol>
-struct OperatorNode : public Node<Symbol> {
-    using Pointer = std::unique_ptr<Node<Symbol>>;
-    enum class Type { Union, Concatenation, Closure };
-    Type type;
-    Pointer left = nullptr;
-    Pointer right = nullptr;
-
-    OperatorNode(Type type, Pointer& left)
-        : type(type)
-        , left(std::move(left))
-    {}
-
-    OperatorNode(Type type, Pointer& left, Pointer& right)
-        : type(type)
-        , left(std::move(left))
-        , right(std::move(right))
-    {}
-};
-
-template <class Symbol>
-struct ValueNode : public Node<Symbol> {
-    rnd::ZRange value;
-
-    ValueNode() {}
-
-    ValueNode(const std::pair<Symbol, std::string>& lookahead)
-    {
-        if (auto token = lookahead.first; token == Symbol(scanner::Token::DOT)) {
-            value = rnd::ZRange(0, std::numeric_limits<uint32_t>::max());
-        } else if (token == Symbol(scanner::Token::INTERVAL)) {
-            if (lookahead.second.size() != 5) {
-                throw std::logic_error("TODO");
-            }
-            uint32_t a = lookahead.second[1];
-            uint32_t b = lookahead.second[3];
-            if (b == std::numeric_limits<uint32_t>::max()) {
-                --b;
-            }
-            ++b;
-            value = rnd::ZRange(a, b);
-        } else if (token == Symbol(scanner::Token::SYMBOL)) {
-            if (lookahead.second.size() != 1) {
-                throw std::logic_error("TODO");
-            }
-            uint32_t a = lookahead.second[1];
-            value = rnd::ZRange(a, a+1);
-        } else {
-            throw std::logic_error("incorrect use of ValueNode");
-        }
-    }
-};
-
-template <class Symbol>
-std::unique_ptr<Node<Symbol>> deepcopy(std::unique_ptr<Node<Symbol>>& node)
-{
-
-    std::unique_ptr<Node<Symbol>> copy = nullptr;
-    if (auto temp = dynamic_cast<TemporaryNode<Symbol>*>(node.get())) {
-        auto *p = new TemporaryNode<Symbol>(temp->token);
-        copy = std::unique_ptr<Node<Symbol>>(p);
-    } else if (auto val = dynamic_cast<ValueNode<Symbol>*>(node.get())) {
-        auto *p = new ValueNode<Symbol>();
-        p->value = val->value;
-        copy = std::unique_ptr<Node<Symbol>>(p);
-    } else if (auto op = dynamic_cast<OperatorNode<Symbol>*>(node.get())) {
-        auto left = deepcopy(op->left);
-        OperatorNode<Symbol>* p = nullptr;
-        if (op->right) {
-            auto right = deepcopy(op->right);
-            p = new OperatorNode<Symbol>(op->type, left, right);
-        } else {
-            p = new OperatorNode<Symbol>(op->type, left);
-        }
-        copy = std::unique_ptr<Node<Symbol>>(p);
-    }
-    return copy;
-}
-
-template <class Symbol>
-rnd::NExpr evaluate(std::unique_ptr<Node<Symbol>>& node)
-{
-    if (auto val = dynamic_cast<ValueNode<Symbol>*>(node.get())) {
-        return rnd::NExpr(val->value);
-    } else if (auto op = dynamic_cast<OperatorNode<Symbol>*>(node.get())) {
-        using Type = typename OperatorNode<Symbol>::Type;
-        switch (op->type) {
-        case Type::Union:
-            return alternate(evaluate(op->left), evaluate(op->right));
-        case Type::Concatenation:
-            return concatenate(evaluate(op->left), evaluate(op->right));
-        case Type::Closure:
-            return closure(evaluate(op->left));
-        default:
-            throw std::logic_error("malformed input");
-        }
-    } else {
-        throw std::logic_error("malformed input");
-    }
-}
-
-template <class Symbol>
-class Callback {
-    using OperatorType = typename OperatorNode<Symbol>::Type;
-public:
-
-    using Pointer = std::unique_ptr<Node<Symbol>>;
-    using Rule = std::pair<Symbol, std::vector<Symbol>>;
-    std::vector<Pointer> stack;
+struct Callback {
+    std::vector<rnd::NExpr> state;
 
     auto accept(bool acc)
     {
         if (!acc) {
             throw std::logic_error("syntax error");
         }
-        return evaluate(stack.back());
+        return state.back();
     }
 
     void shift(const std::pair<Symbol, std::string>& lookahead)
     {
-        Pointer node = nullptr;
-        if (auto token = lookahead.first; token == Symbol(scanner::Token::PIPE)
-                || token == Symbol(scanner::Token::STAR)
-                || token == Symbol(scanner::Token::LPAREN)
-                || token == Symbol(scanner::Token::RPAREN)
-                || token == Symbol(scanner::Token::QUESTION)
-                || token == Symbol(scanner::Token::PLUS)) {
-            node = Pointer(new TemporaryNode(token));
-        } else if (token == Symbol(scanner::Token::DOT)
-                || token == Symbol(scanner::Token::INTERVAL)
-                || token == Symbol(scanner::Token::SYMBOL)) {
-            node = Pointer(new ValueNode(lookahead));
+        auto [token, lexeme] = lookahead;
+        std::set<Symbol> nulls{scanner::Token::PIPE, scanner::Token::STAR,
+            scanner::Token::LPAREN, scanner::Token::RPAREN,
+            scanner::Token::QUESTION, scanner::Token::PLUS};
+        if (nulls.count(token)) {
+            state.push_back(rnd::NExpr(rnd::ZRange(lexeme[0], lexeme[0]+1)));
+        } else if (token == Symbol(scanner::Token::DOT)) {
+            auto limit = std::numeric_limits<uint32_t>::max();
+            state.push_back(rnd::NExpr(rnd::ZRange(0, limit)));
+        } else if (token == Symbol(scanner::Token::INTERVAL)) {
+            if (lexeme.size() != 5) {
+                throw std::logic_error("TODO");
+            }
+            uint32_t a = lexeme[1];
+            uint32_t b = lexeme[3];
+            if (b < std::numeric_limits<uint32_t>::max()) {
+                ++b;
+            }
+            state.push_back(rnd::NExpr(rnd::ZRange(a, b)));
+        } else if (token == Symbol(scanner::Token::SYMBOL)) {
+            if (lexeme.size() != 1) {
+                throw std::logic_error("TODO");
+            }
+            uint32_t a = lexeme[0];
+            state.push_back(rnd::NExpr(rnd::ZRange(a, a+1)));
         } else {
             throw std::logic_error("invalid shift");
         }
-        stack.push_back(std::move(node));
     }
 
-    auto reduce_expr(std::list<Pointer>& rhs) const
+    void reduce_expr(std::vector<rnd::NExpr>& rhs)
     {
         if (auto size = rhs.size(); size == 1) {
-            return std::move(rhs.front());
+            state.push_back(rhs[0]);
         } else if (size == 3) {
-            auto& mid = *std::next(rhs.begin());
-            if (auto temp = dynamic_cast<TemporaryNode<Symbol>*>(mid.get())) {
-                if (temp->token != Symbol(scanner::Token::PIPE)) {
-                    throw InvalidReduce();
-                }
-            } else {
-                throw InvalidReduce();
-            }
-            return Pointer(new OperatorNode<Symbol>(
-                OperatorType::Union,
-                rhs.front(),
-                rhs.back()));
+            state.push_back(rnd::alternate(rhs[0], rhs[2]));
         } else {
-            throw InvalidReduce();
+            throw std::logic_error("invalid reduce");
         }
     }
 
-    auto reduce_term(std::list<Pointer>& rhs) const
+    void reduce_term(std::vector<rnd::NExpr>& rhs)
     {
         if (auto size = rhs.size(); size == 1) {
-            return std::move(rhs.front());
+            state.push_back(rhs[0]);
         } else if (size == 2) {
-            return Pointer(new OperatorNode<Symbol>(
-                OperatorType::Concatenation,
-                rhs.front(),
-                rhs.back()));
+            state.push_back(rnd::concatenate(rhs[0], rhs[1]));
         } else {
-            throw InvalidReduce();
+            throw std::logic_error("invalid reduce");
         }
     }
 
-    auto reduce_factor(std::list<Pointer>& rhs) const
+    void reduce_factor(std::vector<rnd::NExpr>& rhs)
     {
         if (auto size = rhs.size(); size == 1) {
-            return std::move(rhs.front());
+            state.push_back(rhs[0]);
         } else if (size == 2) {
-            auto op = dynamic_cast<TemporaryNode<Symbol>*>(rhs.back().get());
-            if (!op) {
-                throw InvalidReduce();
-            } else if (op->token == Symbol(scanner::Token::STAR)) {
-                return Pointer(new OperatorNode<Symbol>(
-                    OperatorType::Closure,
-                    rhs.front()));
-            } else if (op->token == Symbol(scanner::Token::PLUS)) {
-                if (auto temp = dynamic_cast<TemporaryNode<Symbol>*>(rhs.front().get())) {
-                    throw InvalidReduce();
-                }
-                Pointer right = deepcopy(rhs.front());
-                return Pointer(new OperatorNode<Symbol>(
-                    OperatorType::Concatenation,
-                    rhs.front(),
-                    right));
-            } else if (op->token == Symbol(scanner::Token::QUESTION)) {
-                auto empty = Pointer(new ValueNode<Symbol>());
-                return Pointer(new OperatorNode<Symbol>(
-                    OperatorType::Union,
-                    rhs.front(),
-                    empty));
-            } else {
-                throw InvalidReduce();
+            auto a = rhs[1].states.at(0).begin()->first;
+            switch (a.start) {
+            case '*':
+                state.push_back(rnd::closure(rhs[0]));
+                break;
+            case '?':
+                state.push_back(rnd::alternate(rhs[0], rnd::NExpr()));
+                break;
+            case '+':
+                state.push_back(rnd::concatenate(rhs[0], rnd::closure(rhs[0])));
+                break;
+            default:
+                throw std::logic_error("invalid reduce");
             }
         } else {
-            throw InvalidReduce();
+            throw std::logic_error("invalid reduce");
         }
     }
 
-    auto reduce_value(std::list<Pointer>& rhs) const
+    void reduce_value(std::vector<rnd::NExpr>& rhs)
     {
         if (auto size = rhs.size(); size == 1) {
-            return std::move(rhs.front());
+            state.push_back(rhs[0]);
         } else if (size == 3) {
-            return std::move(*std::next(rhs.begin()));
+            state.push_back(rhs[1]);
         } else {
-            throw InvalidReduce();
+            throw std::logic_error("invalid reduce");
         }
     }
 
+    using Rule = std::pair<Symbol, std::vector<Symbol>>;
     void reduce(const Rule& rule)
     {
-        std::list<Pointer> rhs;
+        if (rule.second.size() > state.size()) {
+            throw std::logic_error("invalid reduce");
+        }
+        std::vector<rnd::NExpr> rhs(
+            state.begin() + (state.size() - rule.second.size()),
+            state.end());
         for (int i = 0; i < (int)(rule.second.size()); ++i) {
-            rhs.push_front(std::move(stack.back()));
-            stack.pop_back();
+            state.pop_back();
         }
-        Pointer node = nullptr;
-        if (auto lhs = rule.first; lhs == Symbol(Variable::EXPR)) {
-            node = std::move(reduce_expr(rhs));
+        auto lhs = rule.first;
+        if (lhs == Symbol(Variable::EXPR)) {
+            reduce_expr(rhs);
         } else if (lhs == Symbol(Variable::TERM)) {
-            node = std::move(reduce_term(rhs));
+            reduce_term(rhs);
         } else if (lhs == Symbol(Variable::FACTOR)) {
-            node = std::move(reduce_factor(rhs));
+            reduce_factor(rhs);
         } else if (lhs == Symbol(Variable::VALUE)) {
-            node = std::move(reduce_value(rhs));
+            reduce_value(rhs);
         } else {
-            throw InvalidReduce();
+            throw std::logic_error("invalid reduce");
         }
-        stack.push_back(std::move(node));
     }
 };
 

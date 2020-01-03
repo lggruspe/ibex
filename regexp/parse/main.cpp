@@ -89,7 +89,7 @@ std::ostream& operator<<(std::ostream& os, const rnd::Automaton& fsm)
 }
 
 #include "parser.hpp"
-#include "ast2.hpp"
+#include "ast.hpp"
 
 using namespace scanner;
 
