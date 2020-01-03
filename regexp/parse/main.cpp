@@ -89,7 +89,7 @@ std::ostream& operator<<(std::ostream& os, const rnd::Automaton& fsm)
 }
 
 #include "parser.hpp"
-#include "ast.hpp"
+#include "eval.hpp"
 
 using namespace scanner;
 
@@ -125,7 +125,7 @@ int main()
         {Variable::VALUE,   {Token::SYMBOL}},
         {Variable::VALUE,   {Token::INTERVAL}},
     });
-    ast::Callback<decltype(g)::Symbol> cb;
+    eval::Callback<decltype(g)::Symbol> cb;
     Parser p(g);
     auto n = p.parse(cb);
     auto m = rnd::Automaton(n);
