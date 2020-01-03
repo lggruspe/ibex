@@ -55,23 +55,6 @@ std::ostream& operator<<(
     return os;
 }
 
-#include "../../rnd/src/nexpr.hpp"
-
-std::ostream& operator<<(std::ostream& os, const rnd::NExpr& expr)
-{
-    for (const auto& [q, dq]: expr.states) {
-        os << "q = " << q << std::endl;
-        for (const auto& [a, R]: dq) {
-            os << "[" << a.start << ", " << a.end << "): ";
-            for (const auto& r: R) {
-                os << r << " ";
-            }
-            os << std::endl;
-        }
-    }
-    return os;
-}
-
 #include "../../rnd/src/automaton.hpp"
 
 std::ostream& operator<<(std::ostream& os, const rnd::Automaton& fsm)
@@ -131,9 +114,6 @@ int main()
     std::cin >> s;
     std::istringstream is(s);
     Parser p(g, is);
-    auto n = p.parse(cb);
-    auto m = rnd::Automaton(n);
-    std::cout << n << std::endl;
-    std::cout << std::endl;
+    auto m = p.parse(cb);
     std::cout << m << std::endl;
 }

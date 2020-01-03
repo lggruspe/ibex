@@ -1,6 +1,7 @@
 #pragma once
 #include "variable.hpp"
 #include "../scan/scanner.hpp"
+#include "../../rnd/src/automaton.hpp"
 #include "../../rnd/src/nexpr.hpp"
 #include "../../rnd/src/zsymbols.hpp"
 #include <cstdint>
@@ -51,7 +52,7 @@ struct Callback {
         if (!acc) {
             throw std::logic_error("syntax error");
         }
-        return state.back();
+        return rnd::Automaton(state.back());
     }
 
     void shift(const std::pair<Symbol, std::string>& lookahead)
