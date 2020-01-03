@@ -46,8 +46,11 @@ def _symbol():
     escaped = backslash.concatenation(escaped)
 
     digit = sg.symbols('0', '9')
-    digits = digit.concatenation(digit.closure())
-    hex_ = backslash.concatenation(sg.symbols('x').concatenation(digits))
+    af = sg.symbols('a', 'f')
+    AF = sg.symbols('A', 'F')
+    hexdigit = digit.union(af).union(AF)
+    hexdigits = hexdigit.concatenation(hexdigit.closure())
+    hex_ = backslash.concatenation(sg.symbols('x').concatenation(hexdigits))
 
     # not_escaped excludes [, \\ and ]
     not_escaped = sg.isymbols(0, 90).union(sg.isymbols(94, 0xfffffffe))

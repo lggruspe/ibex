@@ -311,11 +311,19 @@ struct Interval: public BaseRecognizer {
                 return {0, 5};
             if (a == 63)
                 return {0, 5};
-            if (64 <= a && a < 91)
+            if (a == 64)
+                return {0, 5};
+            if (65 <= a && a < 71)
+                return {0, 5};
+            if (71 <= a && a < 91)
                 return {0, 5};
             if (a == 92)
                 return {0, 7};
-            if (94 <= a && a < 120)
+            if (94 <= a && a < 97)
+                return {0, 5};
+            if (97 <= a && a < 103)
+                return {0, 5};
+            if (103 <= a && a < 120)
                 return {0, 5};
             if (a == 120)
                 return {0, 5};
@@ -357,11 +365,19 @@ struct Interval: public BaseRecognizer {
                 return {0, 2};
             if (a == 63)
                 return {0, 2};
-            if (64 <= a && a < 91)
+            if (a == 64)
+                return {0, 2};
+            if (65 <= a && a < 71)
+                return {0, 2};
+            if (71 <= a && a < 91)
                 return {0, 2};
             if (a == 92)
                 return {0, 4};
-            if (94 <= a && a < 120)
+            if (94 <= a && a < 97)
+                return {0, 2};
+            if (97 <= a && a < 103)
+                return {0, 2};
+            if (103 <= a && a < 120)
                 return {0, 2};
             if (a == 120)
                 return {0, 2};
@@ -399,6 +415,10 @@ struct Interval: public BaseRecognizer {
         case 8:
             if (48 <= a && a < 58)
                 return {0, 11};
+            if (65 <= a && a < 71)
+                return {0, 11};
+            if (97 <= a && a < 103)
+                return {0, 11};
             return {-1, 10};
         case 5:
             if (a == 45)
@@ -431,17 +451,29 @@ struct Interval: public BaseRecognizer {
         case 9:
             if (48 <= a && a < 58)
                 return {0, 12};
+            if (65 <= a && a < 71)
+                return {0, 12};
+            if (97 <= a && a < 103)
+                return {0, 12};
             return {-1, 10};
         case 11:
             if (48 <= a && a < 58)
                 return {0, 11};
+            if (65 <= a && a < 71)
+                return {0, 11};
             if (a == 93)
                 return {1, 1};
+            if (97 <= a && a < 103)
+                return {0, 11};
             return {-1, 10};
         case 12:
             if (a == 45)
                 return {0, 3};
             if (48 <= a && a < 58)
+                return {0, 12};
+            if (65 <= a && a < 71)
+                return {0, 12};
+            if (97 <= a && a < 103)
                 return {0, 12};
             return {-1, 10};
         default:
@@ -479,11 +511,19 @@ struct Symbol: public BaseRecognizer {
                 return {1, 1};
             if (a == 63)
                 return {1, 1};
-            if (64 <= a && a < 91)
+            if (a == 64)
+                return {1, 1};
+            if (65 <= a && a < 71)
+                return {1, 1};
+            if (71 <= a && a < 91)
                 return {1, 1};
             if (a == 92)
                 return {0, 3};
-            if (94 <= a && a < 120)
+            if (94 <= a && a < 97)
+                return {1, 1};
+            if (97 <= a && a < 103)
+                return {1, 1};
+            if (103 <= a && a < 120)
                 return {1, 1};
             if (a == 120)
                 return {1, 1};
@@ -523,9 +563,17 @@ struct Symbol: public BaseRecognizer {
         case 4:
             if (48 <= a && a < 58)
                 return {1, 5};
+            if (65 <= a && a < 71)
+                return {1, 5};
+            if (97 <= a && a < 103)
+                return {1, 5};
             return {-1, 2};
         case 5:
             if (48 <= a && a < 58)
+                return {1, 5};
+            if (65 <= a && a < 71)
+                return {1, 5};
+            if (97 <= a && a < 103)
                 return {1, 5};
             return {-1, 2};
         default:
