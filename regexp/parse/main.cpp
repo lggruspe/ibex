@@ -95,9 +95,10 @@ int main()
     simple -> symbol
     compound -> lparen expr rparen
     compound -> lbracket list rbracket
-    list -> list simple
-    list -> simple
-    list -> simple dash simple
+    list -> list element
+    list -> element
+    element -> symbol
+    element -> symbol dash symbol
     */
     Grammar<Variable, Token> g({
         {Variable::START,       {Variable::EXPR}},
@@ -115,9 +116,10 @@ int main()
         {Variable::SIMPLE,      {Token::SYMBOL}},
         {Variable::COMPOUND,    {Token::LPAREN, Variable::EXPR, Token::RPAREN}},
         {Variable::COMPOUND,    {Token::LBRACKET, Variable::LIST, Token::RBRACKET}},
-        {Variable::LIST,        {Variable::LIST, Variable::SIMPLE}},
-        {Variable::LIST,        {Variable::SIMPLE}},
-        {Variable::LIST,        {Variable::SIMPLE, Token::DASH, Variable::SIMPLE}},
+        {Variable::LIST,        {Variable::LIST, Variable::ELEMENT}},
+        {Variable::LIST,        {Variable::ELEMENT}},
+        {Variable::ELEMENT,     {Token::SYMBOL}},
+        {Variable::ELEMENT,     {Token::SYMBOL, Token::DASH, Token::SYMBOL}},
     });
 
     eval::Callback<decltype(g)::Symbol> cb;
