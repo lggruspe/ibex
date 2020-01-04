@@ -1,2 +1,2 @@
-output.hpp:
-	python example.py template.cpp -d templates > output.hpp
+output.hpp:	example.py
+	python $< template.cpp -d templates > $@

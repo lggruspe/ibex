@@ -13,7 +13,8 @@
     scanner::Rparen, \
     scanner::Dot, \
     scanner::Question, \
-    scanner::Plus
+    scanner::Plus, \
+    scanner::Symbol
 
 namespace scanner {
 
@@ -26,6 +27,7 @@ enum class Token {
     DOT,
     QUESTION,
     PLUS,
+    SYMBOL,
 };
 
 std::ostream& operator<<(std::ostream& out, Token token)
@@ -47,6 +49,8 @@ std::ostream& operator<<(std::ostream& out, Token token)
         return out << "question";
     case Token::PLUS:
         return out << "plus";
+    case Token::SYMBOL:
+        return out << "symbol";
     default:
         return out;
     }
@@ -261,6 +265,112 @@ struct Plus: public BaseRecognizer {
                 return {1, 1};
             return {-1, 2};
         case 1:
+            return {-1, 2};
+        default:
+            return {-1, 2};
+        }
+    }
+};
+
+struct Symbol: public BaseRecognizer {
+    Symbol() : BaseRecognizer(Token::SYMBOL, false, 2) {}
+
+    std::pair<int, int> next(int q, uint32_t a) const
+    {
+        switch (q) {
+        case 0:
+            if (a < 40)
+                return {1, 1};
+            if (a == 40)
+                return {1, 1};
+            if (a == 41)
+                return {1, 1};
+            if (a == 42)
+                return {1, 1};
+            if (a == 43)
+                return {1, 1};
+            if (44 <= a && a < 46)
+                return {1, 1};
+            if (a == 46)
+                return {1, 1};
+            if (a == 47)
+                return {1, 1};
+            if (48 <= a && a < 58)
+                return {1, 1};
+            if (58 <= a && a < 63)
+                return {1, 1};
+            if (a == 63)
+                return {1, 1};
+            if (a == 64)
+                return {1, 1};
+            if (65 <= a && a < 71)
+                return {1, 1};
+            if (71 <= a && a < 88)
+                return {1, 1};
+            if (a == 88)
+                return {1, 1};
+            if (89 <= a && a < 91)
+                return {1, 1};
+            if (a == 92)
+                return {0, 3};
+            if (94 <= a && a < 97)
+                return {1, 1};
+            if (97 <= a && a < 103)
+                return {1, 1};
+            if (103 <= a && a < 120)
+                return {1, 1};
+            if (a == 120)
+                return {1, 1};
+            if (121 <= a && a < 124)
+                return {1, 1};
+            if (a == 124)
+                return {1, 1};
+            if (125 <= a && a < 4294967295)
+                return {1, 1};
+            return {-1, 2};
+        case 1:
+            return {-1, 2};
+        case 3:
+            if (a == 40)
+                return {1, 1};
+            if (a == 41)
+                return {1, 1};
+            if (a == 42)
+                return {1, 1};
+            if (a == 43)
+                return {1, 1};
+            if (a == 46)
+                return {1, 1};
+            if (a == 63)
+                return {1, 1};
+            if (a == 88)
+                return {0, 4};
+            if (a == 91)
+                return {1, 1};
+            if (a == 92)
+                return {1, 1};
+            if (a == 93)
+                return {1, 1};
+            if (a == 120)
+                return {0, 4};
+            if (a == 124)
+                return {1, 1};
+            return {-1, 2};
+        case 4:
+            if (48 <= a && a < 58)
+                return {1, 5};
+            if (65 <= a && a < 71)
+                return {1, 5};
+            if (97 <= a && a < 103)
+                return {1, 5};
+            return {-1, 2};
+        case 5:
+            if (48 <= a && a < 58)
+                return {1, 5};
+            if (65 <= a && a < 71)
+                return {1, 5};
+            if (97 <= a && a < 103)
+                return {1, 5};
             return {-1, 2};
         default:
             return {-1, 2};
