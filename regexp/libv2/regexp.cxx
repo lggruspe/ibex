@@ -50,13 +50,18 @@ char const* serialize(const rnd::Automaton& fsm)
     json << R"VOGON(    "transitions": [)VOGON" << std::endl;
     for (int q = 0; q < (int)(fsm.states.size()); ++q) {
         json << R"VOGON(        [)VOGON" << std::endl;
+        bool first = true;
         for (auto it = fsm.states.at(q).begin(); it != fsm.states.at(q).end(); ++it) {
             const auto& [a, r] = *it;
+            if (first) {
+                first = false;
+            } else {
+                json << "," << std::endl;
+            }
             json << R"VOGON(            [{"start": )VOGON";
             json << a.start << ", \"end\": " << a.end << "}, " << r << "]";
-            json << std::endl;
         }
-        json << R"VOGON(        ])VOGON";
+        json << "]";
         if (q != (int)(fsm.states.size()) - 1) {
             json << ",";
         }
