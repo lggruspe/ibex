@@ -134,6 +134,41 @@ struct Callback {
         }
     }
 
+    void reduce_simple(std::vector<rnd::NExpr>& rhs)
+    {
+        state.push_back(rhs[0]);
+    }
+
+    void reduce_compound(std::vector<rnd::NExpr>& rhs)
+    {
+        if (rhs.size() == 3) {
+            auto a = rhs[0].states.at(0).begin()->first.start;
+            auto b = rhs[2].states.at(0).begin()->first.start;
+            if ((a == '(' && b == ')') || (a == '[' && b == ']')) {
+                state.push_back(rhs[1]);
+            } else {
+                throw std::logic_error("invalid reduce");
+            }
+        } else {
+            throw std::logic_error("invalid reduce");
+        }
+    }
+
+    void reduce_list(std::vector<rnd::NExpr>& rhs)
+    {
+        if (auto size = rhs.size(); size == 1) {
+            state.push_back(rhs[0]);
+        } else if (size == 2) {
+            state.push_back(rnd::alternate(rhs[0], rhs[1]));
+        } else if (size == 3) {
+            auto a = rhs[0].states.at(0).begin()->first.start;
+            auto b = rhs[2].states.at(0).begin()->first.end;
+            state.push_back(rnd::ZRange(a, b));
+        } else {
+            throw std::logic_error("invalid reduce");
+        }
+    }
+
     using Rule = std::pair<Symbol, std::vector<Symbol>>;
     void reduce(const Rule& rule)
     {
@@ -155,6 +190,12 @@ struct Callback {
             reduce_factor(rhs);
         } else if (lhs == Symbol(Variable::VALUE)) {
             reduce_value(rhs);
+        } else if (lhs == Symbol(Variable::SIMPLE)) {
+            reduce_simple(rhs);
+        } else if (lhs == Symbol(Variable::COMPOUND)) {
+            reduce_compound(rhs);
+        } else if (lhs == Symbol(Variable::LIST)) {
+            reduce_list(rhs);
         } else {
             throw std::logic_error("invalid reduce");
         }
