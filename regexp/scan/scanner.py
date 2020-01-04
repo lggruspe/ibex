@@ -205,7 +205,9 @@ class Symbol(BaseRecognizer):
                 return 1, 1
             if a == 43:
                 return 1, 1
-            if 44 <= a < 46:
+            if a == 44:
+                return 1, 1
+            if a == 45:
                 return 1, 1
             if a == 46:
                 return 1, 1
@@ -254,6 +256,8 @@ class Symbol(BaseRecognizer):
             if a == 42:
                 return 1, 1
             if a == 43:
+                return 1, 1
+            if a == 45:
                 return 1, 1
             if a == 46:
                 return 1, 1

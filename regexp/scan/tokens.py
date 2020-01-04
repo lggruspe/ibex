@@ -53,9 +53,10 @@ def symbol():
     plus = sg.symbols('+')
     lbracket = sg.symbols('[')
     rbracket = sg.symbols(']')
+    dash = sg.symbols('-')
     escaped = functools.reduce(lambda a, b: a.union(b),
         [backslash, pipe, star, lparen, rparen, dot, question, plus, lbracket,
-            rbracket])
+            rbracket, dash])
     escaped = backslash.concatenation(escaped)
 
     digit = sg.symbols('0', '9')

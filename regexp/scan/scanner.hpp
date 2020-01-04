@@ -355,7 +355,9 @@ struct Symbol: public BaseRecognizer {
                 return {1, 1};
             if (a == 43)
                 return {1, 1};
-            if (44 <= a && a < 46)
+            if (a == 44)
+                return {1, 1};
+            if (a == 45)
                 return {1, 1};
             if (a == 46)
                 return {1, 1};
@@ -404,6 +406,8 @@ struct Symbol: public BaseRecognizer {
             if (a == 42)
                 return {1, 1};
             if (a == 43)
+                return {1, 1};
+            if (a == 45)
                 return {1, 1};
             if (a == 46)
                 return {1, 1};
