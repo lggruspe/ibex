@@ -14,6 +14,9 @@
     scanner::Dot, \
     scanner::Question, \
     scanner::Plus, \
+    scanner::Lbracket, \
+    scanner::Rbracket, \
+    scanner::Dash, \
     scanner::Symbol
 
 namespace scanner {
@@ -27,6 +30,9 @@ enum class Token {
     DOT,
     QUESTION,
     PLUS,
+    LBRACKET,
+    RBRACKET,
+    DASH,
     SYMBOL,
 };
 
@@ -49,6 +55,12 @@ std::ostream& operator<<(std::ostream& out, Token token)
         return out << "question";
     case Token::PLUS:
         return out << "plus";
+    case Token::LBRACKET:
+        return out << "lbracket";
+    case Token::RBRACKET:
+        return out << "rbracket";
+    case Token::DASH:
+        return out << "dash";
     case Token::SYMBOL:
         return out << "symbol";
     default:
@@ -272,6 +284,60 @@ struct Plus: public BaseRecognizer {
     }
 };
 
+struct Lbracket: public BaseRecognizer {
+    Lbracket() : BaseRecognizer(Token::LBRACKET, false, 2) {}
+
+    std::pair<int, int> next(int q, uint32_t a) const
+    {
+        switch (q) {
+        case 0:
+            if (a == 91)
+                return {1, 1};
+            return {-1, 2};
+        case 1:
+            return {-1, 2};
+        default:
+            return {-1, 2};
+        }
+    }
+};
+
+struct Rbracket: public BaseRecognizer {
+    Rbracket() : BaseRecognizer(Token::RBRACKET, false, 2) {}
+
+    std::pair<int, int> next(int q, uint32_t a) const
+    {
+        switch (q) {
+        case 0:
+            if (a == 93)
+                return {1, 1};
+            return {-1, 2};
+        case 1:
+            return {-1, 2};
+        default:
+            return {-1, 2};
+        }
+    }
+};
+
+struct Dash: public BaseRecognizer {
+    Dash() : BaseRecognizer(Token::DASH, false, 2) {}
+
+    std::pair<int, int> next(int q, uint32_t a) const
+    {
+        switch (q) {
+        case 0:
+            if (a == 45)
+                return {1, 1};
+            return {-1, 2};
+        case 1:
+            return {-1, 2};
+        default:
+            return {-1, 2};
+        }
+    }
+};
+
 struct Symbol: public BaseRecognizer {
     Symbol() : BaseRecognizer(Token::SYMBOL, false, 2) {}
 
@@ -289,7 +355,9 @@ struct Symbol: public BaseRecognizer {
                 return {1, 1};
             if (a == 43)
                 return {1, 1};
-            if (44 <= a && a < 46)
+            if (a == 44)
+                return {1, 1};
+            if (a == 45)
                 return {1, 1};
             if (a == 46)
                 return {1, 1};
@@ -338,6 +406,8 @@ struct Symbol: public BaseRecognizer {
             if (a == 42)
                 return {1, 1};
             if (a == 43)
+                return {1, 1};
+            if (a == 45)
                 return {1, 1};
             if (a == 46)
                 return {1, 1};
