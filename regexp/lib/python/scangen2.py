@@ -5,8 +5,8 @@ import jinja2
 import regexp
 
 def from_class(cls):
-    """Does not include token names that start with __."""
-    keys = [k for k in cls.__dict__.keys() if k[0:2] != "__"]
+    """Does not include token names that start with _."""
+    keys = [k for k in cls.__dict__.keys() if k[0] != '_']
     return {k:cls.__dict__[k] for k in keys}
 
 def convert(tokens):
