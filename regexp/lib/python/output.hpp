@@ -7,13 +7,25 @@
 #include <vector>
 
 #define ALL_RECOGNIZERS \
-    scanner::Integer
+    scanner::Pipe, \
+    scanner::Star, \
+    scanner::Lparen, \
+    scanner::Rparen, \
+    scanner::Dot, \
+    scanner::Question, \
+    scanner::Plus
 
 namespace scanner {
 
 enum class Token {
     EMPTY = 0,
-    INTEGER,
+    PIPE,
+    STAR,
+    LPAREN,
+    RPAREN,
+    DOT,
+    QUESTION,
+    PLUS,
 };
 
 std::ostream& operator<<(std::ostream& out, Token token)
@@ -21,8 +33,20 @@ std::ostream& operator<<(std::ostream& out, Token token)
     switch (token) {
     case Token::EMPTY:
         return out << "empty";
-    case Token::INTEGER:
-        return out << "integer";
+    case Token::PIPE:
+        return out << "pipe";
+    case Token::STAR:
+        return out << "star";
+    case Token::LPAREN:
+        return out << "lparen";
+    case Token::RPAREN:
+        return out << "rparen";
+    case Token::DOT:
+        return out << "dot";
+    case Token::QUESTION:
+        return out << "question";
+    case Token::PLUS:
+        return out << "plus";
     default:
         return out;
     }
@@ -118,25 +142,125 @@ protected:
     int const error;
 };
 
-struct Integer: public BaseRecognizer {
-    Integer() : BaseRecognizer(Token::INTEGER, false, 2) {}
+struct Pipe: public BaseRecognizer {
+    Pipe() : BaseRecognizer(Token::PIPE, false, 2) {}
 
     std::pair<int, int> next(int q, uint32_t a) const
     {
         switch (q) {
         case 0:
-            if (a == 48)
+            if (a == 124)
                 return {1, 1};
-            if (49 <= a && a < 58)
-                return {1, 3};
             return {-1, 2};
         case 1:
             return {-1, 2};
-        case 3:
-            if (a == 48)
-                return {1, 3};
-            if (49 <= a && a < 58)
-                return {1, 3};
+        default:
+            return {-1, 2};
+        }
+    }
+};
+
+struct Star: public BaseRecognizer {
+    Star() : BaseRecognizer(Token::STAR, false, 2) {}
+
+    std::pair<int, int> next(int q, uint32_t a) const
+    {
+        switch (q) {
+        case 0:
+            if (a == 42)
+                return {1, 1};
+            return {-1, 2};
+        case 1:
+            return {-1, 2};
+        default:
+            return {-1, 2};
+        }
+    }
+};
+
+struct Lparen: public BaseRecognizer {
+    Lparen() : BaseRecognizer(Token::LPAREN, false, 2) {}
+
+    std::pair<int, int> next(int q, uint32_t a) const
+    {
+        switch (q) {
+        case 0:
+            if (a == 40)
+                return {1, 1};
+            return {-1, 2};
+        case 1:
+            return {-1, 2};
+        default:
+            return {-1, 2};
+        }
+    }
+};
+
+struct Rparen: public BaseRecognizer {
+    Rparen() : BaseRecognizer(Token::RPAREN, false, 2) {}
+
+    std::pair<int, int> next(int q, uint32_t a) const
+    {
+        switch (q) {
+        case 0:
+            if (a == 41)
+                return {1, 1};
+            return {-1, 2};
+        case 1:
+            return {-1, 2};
+        default:
+            return {-1, 2};
+        }
+    }
+};
+
+struct Dot: public BaseRecognizer {
+    Dot() : BaseRecognizer(Token::DOT, false, 2) {}
+
+    std::pair<int, int> next(int q, uint32_t a) const
+    {
+        switch (q) {
+        case 0:
+            if (a == 46)
+                return {1, 1};
+            return {-1, 2};
+        case 1:
+            return {-1, 2};
+        default:
+            return {-1, 2};
+        }
+    }
+};
+
+struct Question: public BaseRecognizer {
+    Question() : BaseRecognizer(Token::QUESTION, false, 2) {}
+
+    std::pair<int, int> next(int q, uint32_t a) const
+    {
+        switch (q) {
+        case 0:
+            if (a == 63)
+                return {1, 1};
+            return {-1, 2};
+        case 1:
+            return {-1, 2};
+        default:
+            return {-1, 2};
+        }
+    }
+};
+
+struct Plus: public BaseRecognizer {
+    Plus() : BaseRecognizer(Token::PLUS, false, 2) {}
+
+    std::pair<int, int> next(int q, uint32_t a) const
+    {
+        switch (q) {
+        case 0:
+            if (a == 43)
+                return {1, 1};
+            return {-1, 2};
+        case 1:
             return {-1, 2};
         default:
             return {-1, 2};
