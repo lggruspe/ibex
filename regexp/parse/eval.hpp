@@ -60,22 +60,15 @@ struct Callback {
         auto [token, lexeme] = lookahead;
         std::set<Symbol> nulls{scanner::Token::PIPE, scanner::Token::STAR,
             scanner::Token::LPAREN, scanner::Token::RPAREN,
-            scanner::Token::QUESTION, scanner::Token::PLUS};
+            scanner::Token::QUESTION, scanner::Token::PLUS,
+            scanner::Token::LBRACKET, scanner::Token::RBRACKET,
+            scanner::Token::DASH,
+        };
         if (nulls.count(token)) {
             state.push_back(rnd::NExpr(rnd::ZRange(lexeme[0], lexeme[0]+1)));
         } else if (token == Symbol(scanner::Token::DOT)) {
             auto limit = std::numeric_limits<uint32_t>::max();
             state.push_back(rnd::NExpr(rnd::ZRange(0, limit)));
-        } else if (token == Symbol(scanner::Token::INTERVAL)) {
-            if (lexeme.size() != 5) {
-                throw std::logic_error("TODO");
-            }
-            uint32_t a = lexeme[1];
-            uint32_t b = lexeme[3];
-            if (b < std::numeric_limits<uint32_t>::max()) {
-                ++b;
-            }
-            state.push_back(rnd::NExpr(rnd::ZRange(a, b)));
         } else if (token == Symbol(scanner::Token::SYMBOL)) {
             auto a = to_symbol(lexeme);
             state.push_back(rnd::NExpr(rnd::ZRange(a, a+1)));

@@ -73,7 +73,7 @@ std::ostream& operator<<(std::ostream& os, const rnd::Automaton& fsm)
 }
 
 #include "parser.hpp"
-//#include "eval.hpp"
+#include "eval.hpp"
 
 using namespace scanner;
 
@@ -120,15 +120,11 @@ int main()
         {Variable::LIST,        {Variable::SIMPLE, Token::DASH, Variable::SIMPLE}},
     });
 
-    //eval::Callback<decltype(g)::Symbol> cb;
+    eval::Callback<decltype(g)::Symbol> cb;
     Parser p(g);
-
-    /*
     std::string s;
     std::cin >> s;
     std::istringstream is(s);
     auto m = p.parse(cb, is);
-    */
-    auto m = p.parse();
     std::cout << m << std::endl;
 }
