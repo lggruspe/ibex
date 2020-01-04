@@ -81,7 +81,7 @@ char const* regexp_open(char const* re)
     return serialize(m);
 }
 
-void regexp_close(char const* re)
+void regexp_close(void* re)
 {
-    free((void*)re);
+    free(re);
 }

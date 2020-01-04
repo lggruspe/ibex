@@ -8,4 +8,4 @@ char const *regexp_open(char const *s);
 #ifdef __cplusplus
 extern "C"
 #endif
-void regexp_close(char const *re);
+void regexp_close(void *re);
