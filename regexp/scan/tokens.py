@@ -29,7 +29,20 @@ def question():
 def plus():
     return sg.symbols('+')
 
-def _symbol():
+@sg.token("lbracket")
+def lbracket():
+    return sg.symbols('[')
+
+@sg.token("rbracket")
+def rbracket():
+    return sg.symbols(']')
+
+@sg.token("dash")
+def dash():
+    return sg.symbols('-')
+
+@sg.token("symbol")
+def symbol():
     backslash = sg.symbols('\\')
     pipe = sg.symbols('|')
     star = sg.symbols('*')
@@ -56,17 +69,6 @@ def _symbol():
     # not_escaped excludes [, \\ and ]
     not_escaped = sg.isymbols(0, 90).union(sg.isymbols(94, 0xfffffffe))
     return escaped.union(hex_).union(not_escaped)
-
-@sg.token("interval")
-def interval():
-    left = sg.symbols('[')
-    right = sg.symbols(']')
-    mid = sg.symbols('-')
-    return left.concatenation(_symbol()).concatenation(mid.concatenation(_symbol())).concatenation(right)
-
-@sg.token("symbol")
-def symbol():
-    return _symbol()
 
 if __name__ == "__main__":
     sg.generate()

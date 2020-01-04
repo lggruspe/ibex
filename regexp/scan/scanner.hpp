@@ -14,7 +14,9 @@
     scanner::Dot, \
     scanner::Question, \
     scanner::Plus, \
-    scanner::Interval, \
+    scanner::Lbracket, \
+    scanner::Rbracket, \
+    scanner::Dash, \
     scanner::Symbol
 
 namespace scanner {
@@ -28,7 +30,9 @@ enum class Token {
     DOT,
     QUESTION,
     PLUS,
-    INTERVAL,
+    LBRACKET,
+    RBRACKET,
+    DASH,
     SYMBOL,
 };
 
@@ -51,8 +55,12 @@ std::ostream& operator<<(std::ostream& out, Token token)
         return out << "question";
     case Token::PLUS:
         return out << "plus";
-    case Token::INTERVAL:
-        return out << "interval";
+    case Token::LBRACKET:
+        return out << "lbracket";
+    case Token::RBRACKET:
+        return out << "rbracket";
+    case Token::DASH:
+        return out << "dash";
     case Token::SYMBOL:
         return out << "symbol";
     default:
@@ -276,220 +284,56 @@ struct Plus: public BaseRecognizer {
     }
 };
 
-struct Interval: public BaseRecognizer {
-    Interval() : BaseRecognizer(Token::INTERVAL, false, 10) {}
+struct Lbracket: public BaseRecognizer {
+    Lbracket() : BaseRecognizer(Token::LBRACKET, false, 2) {}
 
     std::pair<int, int> next(int q, uint32_t a) const
     {
         switch (q) {
         case 0:
             if (a == 91)
-                return {0, 6};
-            return {-1, 10};
-        case 6:
-            if (a < 40)
-                return {0, 5};
-            if (a == 40)
-                return {0, 5};
-            if (a == 41)
-                return {0, 5};
-            if (a == 42)
-                return {0, 5};
-            if (a == 43)
-                return {0, 5};
-            if (a == 44)
-                return {0, 5};
-            if (a == 45)
-                return {0, 5};
-            if (a == 46)
-                return {0, 5};
-            if (a == 47)
-                return {0, 5};
-            if (48 <= a && a < 58)
-                return {0, 5};
-            if (58 <= a && a < 63)
-                return {0, 5};
-            if (a == 63)
-                return {0, 5};
-            if (a == 64)
-                return {0, 5};
-            if (65 <= a && a < 71)
-                return {0, 5};
-            if (71 <= a && a < 88)
-                return {0, 5};
-            if (a == 88)
-                return {0, 5};
-            if (89 <= a && a < 91)
-                return {0, 5};
-            if (a == 92)
-                return {0, 7};
-            if (94 <= a && a < 97)
-                return {0, 5};
-            if (97 <= a && a < 103)
-                return {0, 5};
-            if (103 <= a && a < 120)
-                return {0, 5};
-            if (a == 120)
-                return {0, 5};
-            if (121 <= a && a < 124)
-                return {0, 5};
-            if (a == 124)
-                return {0, 5};
-            if (125 <= a && a < 4294967295)
-                return {0, 5};
-            return {-1, 10};
+                return {1, 1};
+            return {-1, 2};
         case 1:
-            return {-1, 10};
-        case 2:
-            if (a == 93)
-                return {1, 1};
-            return {-1, 10};
-        case 3:
-            if (a < 40)
-                return {0, 2};
-            if (a == 40)
-                return {0, 2};
-            if (a == 41)
-                return {0, 2};
-            if (a == 42)
-                return {0, 2};
-            if (a == 43)
-                return {0, 2};
-            if (a == 44)
-                return {0, 2};
-            if (a == 45)
-                return {0, 2};
-            if (a == 46)
-                return {0, 2};
-            if (a == 47)
-                return {0, 2};
-            if (48 <= a && a < 58)
-                return {0, 2};
-            if (58 <= a && a < 63)
-                return {0, 2};
-            if (a == 63)
-                return {0, 2};
-            if (a == 64)
-                return {0, 2};
-            if (65 <= a && a < 71)
-                return {0, 2};
-            if (71 <= a && a < 88)
-                return {0, 2};
-            if (a == 88)
-                return {0, 2};
-            if (89 <= a && a < 91)
-                return {0, 2};
-            if (a == 92)
-                return {0, 4};
-            if (94 <= a && a < 97)
-                return {0, 2};
-            if (97 <= a && a < 103)
-                return {0, 2};
-            if (103 <= a && a < 120)
-                return {0, 2};
-            if (a == 120)
-                return {0, 2};
-            if (121 <= a && a < 124)
-                return {0, 2};
-            if (a == 124)
-                return {0, 2};
-            if (125 <= a && a < 4294967295)
-                return {0, 2};
-            return {-1, 10};
-        case 4:
-            if (a == 40)
-                return {0, 2};
-            if (a == 41)
-                return {0, 2};
-            if (a == 42)
-                return {0, 2};
-            if (a == 43)
-                return {0, 2};
-            if (a == 46)
-                return {0, 2};
-            if (a == 63)
-                return {0, 2};
-            if (a == 88)
-                return {0, 8};
-            if (a == 91)
-                return {0, 2};
-            if (a == 92)
-                return {0, 2};
-            if (a == 93)
-                return {0, 2};
-            if (a == 120)
-                return {0, 8};
-            if (a == 124)
-                return {0, 2};
-            return {-1, 10};
-        case 8:
-            if (48 <= a && a < 58)
-                return {0, 11};
-            if (65 <= a && a < 71)
-                return {0, 11};
-            if (97 <= a && a < 103)
-                return {0, 11};
-            return {-1, 10};
-        case 5:
-            if (a == 45)
-                return {0, 3};
-            return {-1, 10};
-        case 7:
-            if (a == 40)
-                return {0, 5};
-            if (a == 41)
-                return {0, 5};
-            if (a == 42)
-                return {0, 5};
-            if (a == 43)
-                return {0, 5};
-            if (a == 46)
-                return {0, 5};
-            if (a == 63)
-                return {0, 5};
-            if (a == 88)
-                return {0, 9};
-            if (a == 91)
-                return {0, 5};
-            if (a == 92)
-                return {0, 5};
-            if (a == 93)
-                return {0, 5};
-            if (a == 120)
-                return {0, 9};
-            if (a == 124)
-                return {0, 5};
-            return {-1, 10};
-        case 9:
-            if (48 <= a && a < 58)
-                return {0, 12};
-            if (65 <= a && a < 71)
-                return {0, 12};
-            if (97 <= a && a < 103)
-                return {0, 12};
-            return {-1, 10};
-        case 11:
-            if (48 <= a && a < 58)
-                return {0, 11};
-            if (65 <= a && a < 71)
-                return {0, 11};
-            if (a == 93)
-                return {1, 1};
-            if (97 <= a && a < 103)
-                return {0, 11};
-            return {-1, 10};
-        case 12:
-            if (a == 45)
-                return {0, 3};
-            if (48 <= a && a < 58)
-                return {0, 12};
-            if (65 <= a && a < 71)
-                return {0, 12};
-            if (97 <= a && a < 103)
-                return {0, 12};
-            return {-1, 10};
+            return {-1, 2};
         default:
-            return {-1, 10};
+            return {-1, 2};
+        }
+    }
+};
+
+struct Rbracket: public BaseRecognizer {
+    Rbracket() : BaseRecognizer(Token::RBRACKET, false, 2) {}
+
+    std::pair<int, int> next(int q, uint32_t a) const
+    {
+        switch (q) {
+        case 0:
+            if (a == 93)
+                return {1, 1};
+            return {-1, 2};
+        case 1:
+            return {-1, 2};
+        default:
+            return {-1, 2};
+        }
+    }
+};
+
+struct Dash: public BaseRecognizer {
+    Dash() : BaseRecognizer(Token::DASH, false, 2) {}
+
+    std::pair<int, int> next(int q, uint32_t a) const
+    {
+        switch (q) {
+        case 0:
+            if (a == 45)
+                return {1, 1};
+            return {-1, 2};
+        case 1:
+            return {-1, 2};
+        default:
+            return {-1, 2};
         }
     }
 };

@@ -9,7 +9,9 @@ class Token:
     DOT = "dot"
     QUESTION = "question"
     PLUS = "plus"
-    INTERVAL = "interval"
+    LBRACKET = "lbracket"
+    RBRACKET = "rbracket"
+    DASH = "dash"
     SYMBOL = "symbol"
 
 class InputStack:
@@ -148,218 +150,44 @@ class Plus(BaseRecognizer):
             return -1, 2
         return -1, 2
 
-class Interval(BaseRecognizer):
+class Lbracket(BaseRecognizer):
     def __init__(self):
-        super().__init__(Token.INTERVAL, False, 10)
+        super().__init__(Token.LBRACKET, False, 2)
 
     def next(self, q, a):
         if q == 0:
             if a == 91:
-                return 0, 6
-            return -1, 10
-        if q == 6:
-            if 0 <= a < 40:
-                return 0, 5
-            if a == 40:
-                return 0, 5
-            if a == 41:
-                return 0, 5
-            if a == 42:
-                return 0, 5
-            if a == 43:
-                return 0, 5
-            if a == 44:
-                return 0, 5
-            if a == 45:
-                return 0, 5
-            if a == 46:
-                return 0, 5
-            if a == 47:
-                return 0, 5
-            if 48 <= a < 58:
-                return 0, 5
-            if 58 <= a < 63:
-                return 0, 5
-            if a == 63:
-                return 0, 5
-            if a == 64:
-                return 0, 5
-            if 65 <= a < 71:
-                return 0, 5
-            if 71 <= a < 88:
-                return 0, 5
-            if a == 88:
-                return 0, 5
-            if 89 <= a < 91:
-                return 0, 5
-            if a == 92:
-                return 0, 7
-            if 94 <= a < 97:
-                return 0, 5
-            if 97 <= a < 103:
-                return 0, 5
-            if 103 <= a < 120:
-                return 0, 5
-            if a == 120:
-                return 0, 5
-            if 121 <= a < 124:
-                return 0, 5
-            if a == 124:
-                return 0, 5
-            if 125 <= a < 4294967295:
-                return 0, 5
-            return -1, 10
+                return 1, 1
+            return -1, 2
         if q == 1:
-            return -1, 10
-        if q == 2:
+            return -1, 2
+        return -1, 2
+
+class Rbracket(BaseRecognizer):
+    def __init__(self):
+        super().__init__(Token.RBRACKET, False, 2)
+
+    def next(self, q, a):
+        if q == 0:
             if a == 93:
                 return 1, 1
-            return -1, 10
-        if q == 3:
-            if 0 <= a < 40:
-                return 0, 2
-            if a == 40:
-                return 0, 2
-            if a == 41:
-                return 0, 2
-            if a == 42:
-                return 0, 2
-            if a == 43:
-                return 0, 2
-            if a == 44:
-                return 0, 2
+            return -1, 2
+        if q == 1:
+            return -1, 2
+        return -1, 2
+
+class Dash(BaseRecognizer):
+    def __init__(self):
+        super().__init__(Token.DASH, False, 2)
+
+    def next(self, q, a):
+        if q == 0:
             if a == 45:
-                return 0, 2
-            if a == 46:
-                return 0, 2
-            if a == 47:
-                return 0, 2
-            if 48 <= a < 58:
-                return 0, 2
-            if 58 <= a < 63:
-                return 0, 2
-            if a == 63:
-                return 0, 2
-            if a == 64:
-                return 0, 2
-            if 65 <= a < 71:
-                return 0, 2
-            if 71 <= a < 88:
-                return 0, 2
-            if a == 88:
-                return 0, 2
-            if 89 <= a < 91:
-                return 0, 2
-            if a == 92:
-                return 0, 4
-            if 94 <= a < 97:
-                return 0, 2
-            if 97 <= a < 103:
-                return 0, 2
-            if 103 <= a < 120:
-                return 0, 2
-            if a == 120:
-                return 0, 2
-            if 121 <= a < 124:
-                return 0, 2
-            if a == 124:
-                return 0, 2
-            if 125 <= a < 4294967295:
-                return 0, 2
-            return -1, 10
-        if q == 4:
-            if a == 40:
-                return 0, 2
-            if a == 41:
-                return 0, 2
-            if a == 42:
-                return 0, 2
-            if a == 43:
-                return 0, 2
-            if a == 46:
-                return 0, 2
-            if a == 63:
-                return 0, 2
-            if a == 88:
-                return 0, 8
-            if a == 91:
-                return 0, 2
-            if a == 92:
-                return 0, 2
-            if a == 93:
-                return 0, 2
-            if a == 120:
-                return 0, 8
-            if a == 124:
-                return 0, 2
-            return -1, 10
-        if q == 8:
-            if 48 <= a < 58:
-                return 0, 11
-            if 65 <= a < 71:
-                return 0, 11
-            if 97 <= a < 103:
-                return 0, 11
-            return -1, 10
-        if q == 5:
-            if a == 45:
-                return 0, 3
-            return -1, 10
-        if q == 7:
-            if a == 40:
-                return 0, 5
-            if a == 41:
-                return 0, 5
-            if a == 42:
-                return 0, 5
-            if a == 43:
-                return 0, 5
-            if a == 46:
-                return 0, 5
-            if a == 63:
-                return 0, 5
-            if a == 88:
-                return 0, 9
-            if a == 91:
-                return 0, 5
-            if a == 92:
-                return 0, 5
-            if a == 93:
-                return 0, 5
-            if a == 120:
-                return 0, 9
-            if a == 124:
-                return 0, 5
-            return -1, 10
-        if q == 9:
-            if 48 <= a < 58:
-                return 0, 12
-            if 65 <= a < 71:
-                return 0, 12
-            if 97 <= a < 103:
-                return 0, 12
-            return -1, 10
-        if q == 11:
-            if 48 <= a < 58:
-                return 0, 11
-            if 65 <= a < 71:
-                return 0, 11
-            if a == 93:
                 return 1, 1
-            if 97 <= a < 103:
-                return 0, 11
-            return -1, 10
-        if q == 12:
-            if a == 45:
-                return 0, 3
-            if 48 <= a < 58:
-                return 0, 12
-            if 65 <= a < 71:
-                return 0, 12
-            if 97 <= a < 103:
-                return 0, 12
-            return -1, 10
-        return -1, 10
+            return -1, 2
+        if q == 1:
+            return -1, 2
+        return -1, 2
 
 class Symbol(BaseRecognizer):
     def __init__(self):
@@ -485,6 +313,8 @@ SCANNERS = {
     "dot": Dot,
     "question": Question,
     "plus": Plus,
-    "interval": Interval,
+    "lbracket": Lbracket,
+    "rbracket": Rbracket,
+    "dash": Dash,
     "symbol": Symbol,
 }
