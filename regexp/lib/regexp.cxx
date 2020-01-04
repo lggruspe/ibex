@@ -10,19 +10,25 @@
 using namespace scanner;
 
 Grammar<Variable, Token> g({
-    {Variable::START,   {Variable::EXPR}},
-    {Variable::EXPR,    {Variable::EXPR, Token::PIPE, Variable::TERM}},
-    {Variable::EXPR,    {Variable::TERM}},
-    {Variable::TERM,    {Variable::TERM, Variable::FACTOR}},
-    {Variable::TERM,    {Variable::FACTOR}},
-    {Variable::FACTOR,  {Variable::VALUE, Token::STAR}},
-    {Variable::FACTOR,  {Variable::VALUE, Token::PLUS}},
-    {Variable::FACTOR,  {Variable::VALUE, Token::QUESTION}},
-    {Variable::FACTOR,  {Variable::VALUE}},
-    {Variable::VALUE,   {Token::LPAREN, Variable::EXPR, Token::RPAREN}},
-    {Variable::VALUE,   {Token::DOT}},
-    {Variable::VALUE,   {Token::SYMBOL}},
-    {Variable::VALUE,   {Token::INTERVAL}},
+    {Variable::START,       {Variable::EXPR}},
+    {Variable::EXPR,        {Variable::EXPR, Token::PIPE, Variable::TERM}},
+    {Variable::EXPR,        {Variable::TERM}},
+    {Variable::TERM,        {Variable::TERM, Variable::FACTOR}},
+    {Variable::TERM,        {Variable::FACTOR}},
+    {Variable::FACTOR,      {Variable::VALUE, Token::STAR}},
+    {Variable::FACTOR,      {Variable::VALUE, Token::PLUS}},
+    {Variable::FACTOR,      {Variable::VALUE, Token::QUESTION}},
+    {Variable::FACTOR,      {Variable::VALUE}},
+    {Variable::VALUE,       {Variable::SIMPLE}},
+    {Variable::VALUE,       {Variable::COMPOUND}},
+    {Variable::SIMPLE,      {Token::DOT}},
+    {Variable::SIMPLE,      {Token::SYMBOL}},
+    {Variable::COMPOUND,    {Token::LPAREN, Variable::EXPR, Token::RPAREN}},
+    {Variable::COMPOUND,    {Token::LBRACKET, Variable::LIST, Token::RBRACKET}},
+    {Variable::LIST,        {Variable::LIST, Variable::ELEMENT}},
+    {Variable::LIST,        {Variable::ELEMENT}},
+    {Variable::ELEMENT,     {Token::SYMBOL}},
+    {Variable::ELEMENT,     {Token::SYMBOL, Token::DASH, Token::SYMBOL}},
 });
 
 Parser parser(g);
