@@ -29,49 +29,42 @@ Parser parser(g);
 
 char const* serialize(const rnd::Automaton& fsm)
 {
-    std::string json = R"VOGON({
-    "start": 0,
-    "accepts": $ACCEPTS,
-    "transitions": $TRANSITIONS,
-    "error": $ERROR,
-})VOGON";
+    std::ostringstream json;
+    json << "{" << std::endl;
+    json << R"VOGON(    "start": 0,
+    "error": )VOGON";
+    json << fsm.error << "," << std::endl;
+    json << R"VOGON(    "accepts": [)VOGON";
 
-    std::ostringstream error;
-    error << fsm.error;
-    json.replace(json.find("$ERROR"), 6, error.str());
-
-    std::ostringstream accepts;
-    accepts << "[";
-    for (auto it = fsm.accepts.begin(); it != fsm.accepts.end(); ++it) {
-        if (it == fsm.accepts.begin()) {
-            accepts << *it;
+    bool first = true;
+    for (const auto& f: fsm.accepts) {
+        if (first) {
+            first = false;
         } else {
-            accepts << ", " << *it;
+            json << ", ";
         }
+        json << f;
     }
-    accepts << "]";
-    json.replace(json.find("$ACCEPTS"), 8, accepts.str());
+    json << "]," << std::endl;
 
-    std::ostringstream transitions;
-    transitions << "[";
+    json << R"VOGON(    "transitions": [)VOGON" << std::endl;
     for (int q = 0; q < (int)(fsm.states.size()); ++q) {
-        if (q != 0) {
-            transitions << ", ";
+        json << R"VOGON(        [)VOGON" << std::endl;
+        for (auto it = fsm.states.at(q).begin(); it != fsm.states.at(q).end(); ++it) {
+            const auto& [a, r] = *it;
+            json << R"VOGON(            [{"start": )VOGON";
+            json << a.start << ", \"end\": " << a.end << "}, " << r << "]";
+            json << std::endl;
         }
-        transitions << "[";
-        bool first = true;
-        for (const auto& [a, r]: fsm.states.at(q)) {
-            if (!first) {
-                transitions << ", ";
-            }
-            transitions << "[{\"start\": " << a.start << ", \"end\": " << a.end;
-            transitions << "}, " << r << "]";
+        json << R"VOGON(        ])VOGON";
+        if (q != (int)(fsm.states.size()) - 1) {
+            json << ",";
         }
-        transitions << "]";
+        json << std::endl;
     }
-    transitions << "]";
-    json.replace(json.find("$TRANSITIONS"), 12, transitions.str());
-    return strdup(json.c_str());
+    json << R"VOGON(    ])VOGON" << std::endl;
+    json << "}";
+    return strdup(json.str().c_str());
 }
 
 char const* regexp_open(char const* re)
