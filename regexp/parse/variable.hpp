@@ -1,7 +1,7 @@
 #pragma once
 #include <iostream>
 
-enum class Variable { START, EXPR, TERM, FACTOR, VALUE, ERROR };
+enum class Variable { START, EXPR, TERM, FACTOR, VALUE, SIMPLE, COMPOUND, LIST, ERROR };
 
 std::ostream& operator<<(std::ostream& out, const Variable& v)
 {
@@ -16,6 +16,12 @@ std::ostream& operator<<(std::ostream& out, const Variable& v)
         return out << "factor";
     case Variable::VALUE:
         return out << "value";
+    case Variable::SIMPLE:
+        return out << "simple";
+    case Variable::COMPOUND:
+        return out << "compound";
+    case Variable::LIST:
+        return out << "list";
     default:
         throw 0;
     }

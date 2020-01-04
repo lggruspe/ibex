@@ -73,28 +73,13 @@ std::ostream& operator<<(std::ostream& os, const rnd::Automaton& fsm)
 }
 
 #include "parser.hpp"
-#include "eval.hpp"
+//#include "eval.hpp"
 
 using namespace scanner;
 
 int main()
 {
     /*
-    start -> expr
-    expr -> expr pipe term
-    expr -> term
-    term -> term factor
-    term -> factor
-    factor -> value star
-    factor -> value plus
-    factor -> value question
-    factor -> value
-    value -> lparen expr rparen
-    value -> dot
-    value -> symbol
-    value -> interval
-
-    TODO use the ff. grammar
     start -> expr
     expr -> expr pipe term
     expr -> term
@@ -115,26 +100,35 @@ int main()
     list -> simple dash simple
     */
     Grammar<Variable, Token> g({
-        {Variable::START,   {Variable::EXPR}},
-        {Variable::EXPR,    {Variable::EXPR, Token::PIPE, Variable::TERM}},
-        {Variable::EXPR,    {Variable::TERM}},
-        {Variable::TERM,    {Variable::TERM, Variable::FACTOR}},
-        {Variable::TERM,    {Variable::FACTOR}},
-        {Variable::FACTOR,  {Variable::VALUE, Token::STAR}},
-        {Variable::FACTOR,  {Variable::VALUE, Token::PLUS}},
-        {Variable::FACTOR,  {Variable::VALUE, Token::QUESTION}},
-        {Variable::FACTOR,  {Variable::VALUE}},
-        {Variable::VALUE,   {Token::LPAREN, Variable::EXPR, Token::RPAREN}},
-        {Variable::VALUE,   {Token::DOT}},
-        {Variable::VALUE,   {Token::SYMBOL}},
-        {Variable::VALUE,   {Token::INTERVAL}},
+        {Variable::START,       {Variable::EXPR}},
+        {Variable::EXPR,        {Variable::EXPR, Token::PIPE, Variable::TERM}},
+        {Variable::EXPR,        {Variable::TERM}},
+        {Variable::TERM,        {Variable::TERM, Variable::FACTOR}},
+        {Variable::TERM,        {Variable::FACTOR}},
+        {Variable::FACTOR,      {Variable::VALUE, Token::STAR}},
+        {Variable::FACTOR,      {Variable::VALUE, Token::PLUS}},
+        {Variable::FACTOR,      {Variable::VALUE, Token::QUESTION}},
+        {Variable::FACTOR,      {Variable::VALUE}},
+        {Variable::VALUE,       {Variable::SIMPLE}},
+        {Variable::VALUE,       {Variable::COMPOUND}},
+        {Variable::SIMPLE,      {Token::DOT}},
+        {Variable::SIMPLE,      {Token::SYMBOL}},
+        {Variable::COMPOUND,    {Token::LPAREN, Variable::EXPR, Token::RPAREN}},
+        {Variable::COMPOUND,    {Token::LBRACKET, Variable::LIST, Token::RBRACKET}},
+        {Variable::LIST,        {Variable::LIST, Variable::SIMPLE}},
+        {Variable::LIST,        {Variable::SIMPLE}},
+        {Variable::LIST,        {Variable::SIMPLE, Token::DASH, Variable::SIMPLE}},
     });
-    eval::Callback<decltype(g)::Symbol> cb;
+
+    //eval::Callback<decltype(g)::Symbol> cb;
     Parser p(g);
 
+    /*
     std::string s;
     std::cin >> s;
     std::istringstream is(s);
     auto m = p.parse(cb, is);
+    */
+    auto m = p.parse();
     std::cout << m << std::endl;
 }
