@@ -93,6 +93,26 @@ int main()
     value -> dot
     value -> symbol
     value -> interval
+
+    TODO use the ff. grammar
+    start -> expr
+    expr -> expr pipe term
+    expr -> term
+    term -> term factor
+    term -> factor
+    factor -> value star
+    factor -> value plus
+    factor -> value question
+    factor -> value
+    value -> simple
+    value -> compound
+    simple -> dot
+    simple -> symbol
+    compound -> lparen expr rparen
+    compound -> lbracket list rbracket
+    list -> list simple
+    list -> simple
+    list -> simple dash simple
     */
     Grammar<Variable, Token> g({
         {Variable::START,   {Variable::EXPR}},
