@@ -160,6 +160,15 @@ struct Callback {
             state.push_back(rhs[0]);
         } else if (size == 2) {
             state.push_back(rnd::alternate(rhs[0], rhs[1]));
+        } else {
+            throw std::logic_error("invalid reduce");
+        }
+    }
+
+    void reduce_element(std::vector<rnd::NExpr>& rhs)
+    {
+        if (auto size = rhs.size(); size == 1) {
+            state.push_back(rhs[0]);
         } else if (size == 3) {
             auto a = rhs[0].states.at(0).begin()->first.start;
             auto b = rhs[2].states.at(0).begin()->first.end;
@@ -196,6 +205,8 @@ struct Callback {
             reduce_compound(rhs);
         } else if (lhs == Symbol(Variable::LIST)) {
             reduce_list(rhs);
+        } else if (lhs == Symbol(Variable::ELEMENT)) {
+            reduce_element(rhs);
         } else {
             throw std::logic_error("invalid reduce");
         }
