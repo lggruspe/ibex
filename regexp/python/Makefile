@@ -1,2 +1,2 @@
-output.hpp:	example.py
+../parse/scanner.hpp:	example.py
 	python $< template.cpp -d templates > $@

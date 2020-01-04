@@ -1,4 +1,4 @@
-#include "../scan/scanner.hpp"
+#include "scanner.hpp"
 #include "sagl.hpp"
 #include "variable.hpp"
 #include <iostream>
