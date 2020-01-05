@@ -3,6 +3,8 @@
 #include "zsymbols.hpp"
 #include <iostream>
 
+using namespace rnd;
+
 std::ostream& operator<<(std::ostream& os, const NExpr& expr)
 {
     for (const auto& [q, dq]: expr.states) {
