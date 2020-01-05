@@ -1,4 +1,5 @@
-main
+main_c
+main_cpp
 *.so
 *.o
 vgcore*

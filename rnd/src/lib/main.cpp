@@ -55,7 +55,7 @@ std::ostream& operator<<(
     return os;
 }
 
-#include "../../rnd/src/automaton.hpp"
+#include "../rnd/automaton.hpp"
 
 std::ostream& operator<<(std::ostream& os, const rnd::Automaton& fsm)
 {

@@ -1,7 +1,7 @@
 #include "regexp.h"
-#include "../parse/eval.hpp"
-#include "../parse/parser.hpp"
-#include "../../sagl/include/sagl.hpp"
+#include "eval.hpp"
+#include "parser.hpp"
+#include "../../../sagl/include/sagl.hpp"
 #include <cstdlib>
 #include <cstring>
 #include <sstream>
