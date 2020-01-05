@@ -1,4 +1,5 @@
-lib_LTLIBRARIES = lib/librndpoc.la
+lib_LTLIBRARIES = lib/librndpoc.la lib/libregexp.la
+
 lib_librndpoc_la_SOURCES = \
 	include/rnd.h \
 	src/rnd/automaton.hpp \
@@ -6,17 +7,33 @@ lib_librndpoc_la_SOURCES = \
 	src/rnd/wrapper.cxx \
 	src/rnd/zsymbols.hpp \
 	../tools/handles.hpp
+
 lib_librndpoc_la_CPPFLAGS = \
 	-I$(top_srcdir)/src \
 	-I$(top_srcdir)/include \
 	-I$(top_srcdir)/../tools \
-	-I$(top_srcdir)/src/rnd \
-	-I$(top_srcdir)/src/lib \
-	-I$(top_srcdir)/src/parse
+	-I$(top_srcdir)/src/rnd
 
 lib_librndpoc_la_LDFLAGS = -version-info 0:0:0
 
-include_HEADERS = include/rnd.h
+lib_libregexp_la_SOURCES = \
+	include/regexp.h \
+	src/regexp/regexp.cxx \
+	src/regexp/eval.hpp \
+	src/regexp/parser.hpp \
+	src/regexp/scanner.hpp \
+	../sagl/include/sagl.hpp
+
+lib_libregexp_la_CPPFLAGS = \
+	-I$(top_srcdir)/src \
+	-I$(top_srcdir)/include \
+	-I$(top_srcdir)/../tools \
+	-I$(top_srcdir)/src/regexp \
+	-I$(top_srcdir)/../sagl/include
+
+lib_libregexp_la_LDFLAGS = -version-info 0:0:0
+
+include_HEADERS = include/rnd.h include/regexp.h
 
 ACLOCAL_AMFLAGS = -I m4
 
