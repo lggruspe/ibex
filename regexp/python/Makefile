@@ -1,2 +1,2 @@
-../parse/scanner.hpp:	example.py
+../../rnd/src/regexp/scanner.hpp:	example.py
 	python $< template.cpp -d templates > $@
