@@ -1,6 +1,7 @@
 #include "regexp.h"
 #include "eval.hpp"
 #include "parser.hpp"
+#include "scanner.hpp"
 #include "../../../sagl/include/sagl.hpp"
 #include <cstdlib>
 #include <cstring>
@@ -8,6 +9,28 @@
 #include <string>
 
 using namespace scanner;
+
+/*
+start -> expr
+expr -> expr pipe term
+expr -> term
+term -> term factor
+term -> factor
+factor -> value star
+factor -> value plus
+factor -> value question
+factor -> value
+value -> simple
+value -> compound
+simple -> dot
+simple -> symbol
+compound -> lparen expr rparen
+compound -> lbracket list rbracket
+list -> list element
+list -> element
+element -> symbol
+element -> symbol dash symbol
+*/
 
 Grammar<Variable, Token> g({
     {Variable::START,       {Variable::EXPR}},
