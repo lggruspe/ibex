@@ -10,6 +10,8 @@
     Identifier, \
     Whitespace, \
     Number, \
+    Character, \
+    String, \
     Dot, \
     Lparen, \
     Rparen, \
@@ -36,6 +38,8 @@ enum token {
     TOKEN_IDENTIFIER,
     TOKEN_WHITESPACE,
     TOKEN_NUMBER,
+    TOKEN_CHARACTER,
+    TOKEN_STRING,
     TOKEN_DOT,
     TOKEN_LPAREN,
     TOKEN_RPAREN,
@@ -65,6 +69,10 @@ int print_token(FILE *fp, enum token token)
         return fprintf(fp, "whitespace");
     case TOKEN_NUMBER:
         return fprintf(fp, "number");
+    case TOKEN_CHARACTER:
+        return fprintf(fp, "character");
+    case TOKEN_STRING:
+        return fprintf(fp, "string");
     case TOKEN_DOT:
         return fprintf(fp, "dot");
     case TOKEN_LPAREN:
@@ -297,6 +305,134 @@ struct recognizer Number()
         .accept = false,
         .error = 7,
         .transition = transition_number,
+    };
+}
+
+struct transition_output transition_character(int q, uint32_t a)
+{
+    switch (q) {
+    case 0:
+        if (a == 39)
+            return (struct transition_output){ .status = 0, .next_state = 15 };
+        return (struct transition_output){ .status = -1, .next_state = 16 };
+    case 1:
+        return (struct transition_output){ .status = -1, .next_state = 16 };
+    case 2:
+        if (a == 39)
+            return (struct transition_output){ .status = 1, .next_state = 1 };
+        return (struct transition_output){ .status = -1, .next_state = 16 };
+    case 3:
+        if (a == 125)
+            return (struct transition_output){ .status = 0, .next_state = 2 };
+        return (struct transition_output){ .status = -1, .next_state = 16 };
+    case 4:
+        if (a == 114)
+            return (struct transition_output){ .status = 0, .next_state = 3 };
+        return (struct transition_output){ .status = -1, .next_state = 16 };
+    case 5:
+        if (a == 101)
+            return (struct transition_output){ .status = 0, .next_state = 4 };
+        return (struct transition_output){ .status = -1, .next_state = 16 };
+    case 6:
+        if (a == 116)
+            return (struct transition_output){ .status = 0, .next_state = 5 };
+        return (struct transition_output){ .status = -1, .next_state = 16 };
+    case 7:
+        if (a == 99)
+            return (struct transition_output){ .status = 0, .next_state = 6 };
+        return (struct transition_output){ .status = -1, .next_state = 16 };
+    case 8:
+        if (a == 97)
+            return (struct transition_output){ .status = 0, .next_state = 7 };
+        return (struct transition_output){ .status = -1, .next_state = 16 };
+    case 9:
+        if (a == 114)
+            return (struct transition_output){ .status = 0, .next_state = 8 };
+        return (struct transition_output){ .status = -1, .next_state = 16 };
+    case 10:
+        if (a == 97)
+            return (struct transition_output){ .status = 0, .next_state = 9 };
+        return (struct transition_output){ .status = -1, .next_state = 16 };
+    case 11:
+        if (a == 104)
+            return (struct transition_output){ .status = 0, .next_state = 10 };
+        return (struct transition_output){ .status = -1, .next_state = 16 };
+    case 12:
+        if (a == 99)
+            return (struct transition_output){ .status = 0, .next_state = 11 };
+        return (struct transition_output){ .status = -1, .next_state = 16 };
+    case 13:
+        if (a == 95)
+            return (struct transition_output){ .status = 0, .next_state = 12 };
+        return (struct transition_output){ .status = -1, .next_state = 16 };
+    case 14:
+        if (a == 95)
+            return (struct transition_output){ .status = 0, .next_state = 13 };
+        return (struct transition_output){ .status = -1, .next_state = 16 };
+    case 15:
+        if (a == 123)
+            return (struct transition_output){ .status = 0, .next_state = 14 };
+        return (struct transition_output){ .status = -1, .next_state = 16 };
+    default:
+        return (struct transition_output){ .status = -1, .next_state = 16 };
+    }
+}
+
+struct recognizer Character()
+{
+    return (struct recognizer){
+        .token = TOKEN_CHARACTER,
+        .accept = false,
+        .error = 16,
+        .transition = transition_character,
+    };
+}
+
+struct transition_output transition_string(int q, uint32_t a)
+{
+    switch (q) {
+    case 0:
+        if (a == 34)
+            return (struct transition_output){ .status = 0, .next_state = 2 };
+        return (struct transition_output){ .status = -1, .next_state = 4 };
+    case 1:
+        return (struct transition_output){ .status = -1, .next_state = 4 };
+    case 2:
+        if (32 <= a && a < 34)
+            return (struct transition_output){ .status = 0, .next_state = 2 };
+        if (a == 34)
+            return (struct transition_output){ .status = 1, .next_state = 1 };
+        if (35 <= a && a < 92)
+            return (struct transition_output){ .status = 0, .next_state = 2 };
+        if (a == 92)
+            return (struct transition_output){ .status = 0, .next_state = 3 };
+        if (93 <= a && a < 127)
+            return (struct transition_output){ .status = 0, .next_state = 2 };
+        return (struct transition_output){ .status = -1, .next_state = 4 };
+    case 3:
+        if (32 <= a && a < 34)
+            return (struct transition_output){ .status = 0, .next_state = 2 };
+        if (a == 34)
+            return (struct transition_output){ .status = 0, .next_state = 2 };
+        if (35 <= a && a < 92)
+            return (struct transition_output){ .status = 0, .next_state = 2 };
+        if (a == 92)
+            return (struct transition_output){ .status = 0, .next_state = 2 };
+        if (93 <= a && a < 127)
+            return (struct transition_output){ .status = 0, .next_state = 2 };
+        return (struct transition_output){ .status = -1, .next_state = 4 };
+    default:
+        return (struct transition_output){ .status = -1, .next_state = 4 };
+    }
+}
+
+struct recognizer String()
+{
+    return (struct recognizer){
+        .token = TOKEN_STRING,
+        .accept = false,
+        .error = 4,
+        .transition = transition_string,
     };
 }
 

@@ -5,6 +5,8 @@ class Token:
     IDENTIFIER = "identifier"
     WHITESPACE = "whitespace"
     NUMBER = "number"
+    CHARACTER = "character"
+    STRING = "string"
     DOT = "dot"
     LPAREN = "lparen"
     RPAREN = "rparen"
@@ -169,6 +171,112 @@ class Number(BaseRecognizer):
                 return 0, 9
             return -1, 7
         return -1, 7
+
+class Character(BaseRecognizer):
+    def __init__(self):
+        super().__init__(Token.CHARACTER, False, 16)
+
+    def next(self, q, a):
+        if q == 0:
+            if a == 39:
+                return 0, 15
+            return -1, 16
+        if q == 1:
+            return -1, 16
+        if q == 2:
+            if a == 39:
+                return 1, 1
+            return -1, 16
+        if q == 3:
+            if a == 125:
+                return 0, 2
+            return -1, 16
+        if q == 4:
+            if a == 114:
+                return 0, 3
+            return -1, 16
+        if q == 5:
+            if a == 101:
+                return 0, 4
+            return -1, 16
+        if q == 6:
+            if a == 116:
+                return 0, 5
+            return -1, 16
+        if q == 7:
+            if a == 99:
+                return 0, 6
+            return -1, 16
+        if q == 8:
+            if a == 97:
+                return 0, 7
+            return -1, 16
+        if q == 9:
+            if a == 114:
+                return 0, 8
+            return -1, 16
+        if q == 10:
+            if a == 97:
+                return 0, 9
+            return -1, 16
+        if q == 11:
+            if a == 104:
+                return 0, 10
+            return -1, 16
+        if q == 12:
+            if a == 99:
+                return 0, 11
+            return -1, 16
+        if q == 13:
+            if a == 95:
+                return 0, 12
+            return -1, 16
+        if q == 14:
+            if a == 95:
+                return 0, 13
+            return -1, 16
+        if q == 15:
+            if a == 123:
+                return 0, 14
+            return -1, 16
+        return -1, 16
+
+class String(BaseRecognizer):
+    def __init__(self):
+        super().__init__(Token.STRING, False, 4)
+
+    def next(self, q, a):
+        if q == 0:
+            if a == 34:
+                return 0, 2
+            return -1, 4
+        if q == 1:
+            return -1, 4
+        if q == 2:
+            if 32 <= a < 34:
+                return 0, 2
+            if a == 34:
+                return 1, 1
+            if 35 <= a < 92:
+                return 0, 2
+            if a == 92:
+                return 0, 3
+            if 93 <= a < 127:
+                return 0, 2
+            return -1, 4
+        if q == 3:
+            if 32 <= a < 34:
+                return 0, 2
+            if a == 34:
+                return 0, 2
+            if 35 <= a < 92:
+                return 0, 2
+            if a == 92:
+                return 0, 2
+            if 93 <= a < 127:
+                return 0, 2
+            return -1, 4
+        return -1, 4
 
 class Dot(BaseRecognizer):
     def __init__(self):
@@ -397,6 +505,8 @@ SCANNERS = {
     "identifier": Identifier,
     "whitespace": Whitespace,
     "number": Number,
+    "character": Character,
+    "string": String,
     "dot": Dot,
     "lparen": Lparen,
     "rparen": Rparen,
