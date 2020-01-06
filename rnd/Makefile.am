@@ -5,7 +5,7 @@ lib_libregexp_la_SOURCES = \
 	src/rnd/automaton.hpp \
 	src/rnd/nexpr.hpp \
 	src/rnd/zsymbols.hpp \
-	../tools/handles.hpp
+	../tools/handles.hpp \
 	src/regexp/regexp.cxx \
 	src/regexp/eval.hpp \
 	src/regexp/parser.hpp \
