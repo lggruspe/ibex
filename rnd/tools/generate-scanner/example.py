@@ -1,3 +1,8 @@
+import os
+import sys
+
+sys.path.append(os.path.abspath("../../../sgv2"))
+
 from scangen2 import generate, from_class
 
 class Scanner:
