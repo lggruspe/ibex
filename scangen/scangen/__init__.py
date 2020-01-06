@@ -2,7 +2,7 @@
 import argparse
 import sys
 import jinja2
-import regexp
+import scangen.internals as regexp
 
 def from_class(cls):
     """Does not include token names that start with _."""
@@ -49,3 +49,5 @@ def generate(tokens, entrypoint="", directory=""):
         print(output)
     except jinja2.exceptions.TemplateNotFound:
         print("scangen: Template not found:", entrypoint)
+
+name = "scangen"

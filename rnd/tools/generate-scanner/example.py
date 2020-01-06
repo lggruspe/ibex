@@ -1,9 +1,9 @@
 import os
 import sys
 
-sys.path.append(os.path.abspath("../../../sgv2"))
+sys.path.append(os.path.abspath("../../../scangen"))
 
-from scangen2 import generate, from_class
+from scangen import generate, from_class
 
 class Scanner:
     pipe = r"\|"

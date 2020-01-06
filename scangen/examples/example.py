@@ -4,7 +4,7 @@ import sys
 pardir = os.path.join(os.path.dirname(__file__), os.path.pardir)
 sys.path.append(os.path.abspath(pardir))
 
-from scangen2 import generate, from_class
+from scangen import generate, from_class
 
 class Scanner:
     identifier = "[_a-zA-Z][0-9a-zA-Z_]*"
