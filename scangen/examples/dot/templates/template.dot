@@ -1,0 +1,19 @@
+// for scanners[0]
+
+{% set scanner = scanners[0] %}
+digraph {
+    rankdir=LR;
+    start [shape=plain,label=start];
+    {%- for state in scanner.transitions %}
+    q{{ state }}[shape={% if state in scanner.accepts %}double{%endif%}circle,label={{ state }}];
+    {%- endfor %}
+    start -> q0;
+    {%- for state in scanner.transitions %}
+    {%- for transition in scanner.transitions[state] %}
+    {%- set start = transition[0].start %}
+    {%- set end = transition[0].end %}
+    {%- set next_state= transition[1] %}
+    q{{ state }} -> q{{ next_state }} [label="[{{ start }}, {{ end }})"];
+    {%- endfor %}
+    {%- endfor %}
+}
