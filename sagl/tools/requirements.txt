@@ -1,4 +1,3 @@
 Jinja2==2.10.3
 MarkupSafe==1.1.1
-redblack==0.1.0
-scangen==0.2a3
+scangen==0.3a0

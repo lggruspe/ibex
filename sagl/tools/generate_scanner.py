@@ -1,16 +1,9 @@
-import scangen as sg
+from scangen import generate, from_class
 
-@sg.token("a")
-def a():
-    return sg.symbols('a')
-
-@sg.token("b")
-def b():
-    return sg.symbols('b')
-
-@sg.token("whitespace")
-def whitespace():
-    return sg.symbols(' ').union(sg.symbols('\t')).union(sg.symbols('\n'))
+class Scanner:
+    a = 'a'
+    b = 'b'
+    whitespace = "[ \t\n]"
 
 if __name__ == "__main__":
-    sg.generate()
+    generate(from_class(Scanner))
