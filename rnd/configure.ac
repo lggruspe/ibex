@@ -17,7 +17,6 @@ AC_PROG_CPP
 AC_PROG_INSTALL
 AC_PROG_LN_S
 AC_PROG_MAKE_SET
-AC_PROG_RANLIB
 
 # Checks for libraries.
 
@@ -31,6 +30,8 @@ AC_TYPE_UINT32_T
 AX_CXX_COMPILE_STDCXX_17
 
 # Checks for library functions.
+AC_FUNC_ERROR_AT_LINE
+AC_CHECK_FUNCS([memset strdup])
 
 AC_CONFIG_FILES([Makefile])
 AC_OUTPUT
