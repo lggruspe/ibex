@@ -1,5 +1,6 @@
 #pragma once
 #include "zsymbols.hpp"
+#include <limits>
 #include <map>
 #include <set>
 
@@ -108,6 +109,12 @@ NExpr alternate(const NExpr& A, const NExpr& B)
     expr.states[af][eps].insert(1);
     expr.states[bf][eps].insert(1);
     return expr;
+}
+
+NExpr epsilon()
+{
+    constexpr auto limit = std::numeric_limits<uint32_t>::max();
+    return NExpr(ZRange(limit, limit));
 }
 
 }

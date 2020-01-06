@@ -10,7 +10,7 @@ class Scanner:
     identifier = "[_a-zA-Z][0-9a-zA-Z_]*"
     whitespace = " |\t|\n"
     __integer = "0|[1-9][0-9]*"
-    number = rf"({__integer})(\.[0-9]+)?([eE][\-\+]?({__integer}))?"    # TODO fix
+    number = rf"({__integer})(\.[0-9]+)?([eE][\-\+]?({__integer}))?"
     __cescaped = r"\\('|\\|t|n)"
     __character = rf"[\x20-\x26]|[\x28-\x5b]|[\x5d-\x7e]|({__cescaped})"
     character = "'({__character})'" # TODO fix

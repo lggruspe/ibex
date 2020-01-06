@@ -109,9 +109,10 @@ struct Callback {
             case '*':
                 state.push_back(rnd::closure(rhs[0]));
                 break;
-            case '?':
-                state.push_back(rnd::alternate(rhs[0], rnd::NExpr()));
+            case '?': {
+                state.push_back(rnd::alternate(rhs[0], rnd::epsilon()));
                 break;
+            }
             case '+':
                 state.push_back(rnd::concatenate(rhs[0], rnd::closure(rhs[0])));
                 break;

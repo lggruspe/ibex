@@ -113,64 +113,76 @@ class Whitespace(BaseRecognizer):
 
 class Number(BaseRecognizer):
     def __init__(self):
-        super().__init__(Token.NUMBER, False, 7)
+        super().__init__(Token.NUMBER, False, 6)
 
     def next(self, q, a):
         if q == 0:
             if a == 48:
-                return 0, 6
+                return 1, 3
             if 49 <= a < 58:
-                return 0, 9
-            return -1, 7
+                return 1, 8
+            return -1, 6
         if q == 1:
-            return -1, 7
+            return -1, 6
         if q == 2:
             if a == 48:
                 return 1, 1
             if 49 <= a < 58:
-                return 1, 8
-            return -1, 7
+                return 1, 4
+            return -1, 6
         if q == 3:
+            if a == 46:
+                return 0, 7
+            if a == 69:
+                return 0, 5
+            if a == 101:
+                return 0, 5
+            return -1, 6
+        if q == 4:
+            if a == 48:
+                return 1, 4
+            if 49 <= a < 58:
+                return 1, 4
+            return -1, 6
+        if q == 5:
             if a == 43:
                 return 0, 2
             if a == 45:
                 return 0, 2
-            return -1, 7
-        if q == 4:
             if a == 48:
-                return 0, 4
+                return 1, 1
             if 49 <= a < 58:
-                return 0, 4
-            if a == 69:
-                return 0, 3
-            if a == 101:
-                return 0, 3
-            return -1, 7
-        if q == 5:
+                return 1, 4
+            return -1, 6
+        if q == 7:
             if a == 48:
-                return 0, 4
+                return 1, 9
             if 49 <= a < 58:
-                return 0, 4
-            return -1, 7
-        if q == 6:
-            if a == 46:
-                return 0, 5
-            return -1, 7
+                return 1, 9
+            return -1, 6
         if q == 8:
-            if a == 48:
-                return 1, 8
-            if 49 <= a < 58:
-                return 1, 8
-            return -1, 7
-        if q == 9:
             if a == 46:
-                return 0, 5
+                return 0, 7
             if a == 48:
-                return 0, 9
+                return 1, 8
             if 49 <= a < 58:
-                return 0, 9
-            return -1, 7
-        return -1, 7
+                return 1, 8
+            if a == 69:
+                return 0, 5
+            if a == 101:
+                return 0, 5
+            return -1, 6
+        if q == 9:
+            if a == 48:
+                return 1, 9
+            if 49 <= a < 58:
+                return 1, 9
+            if a == 69:
+                return 0, 5
+            if a == 101:
+                return 0, 5
+            return -1, 6
+        return -1, 6
 
 class Character(BaseRecognizer):
     def __init__(self):

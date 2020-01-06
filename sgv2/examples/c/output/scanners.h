@@ -241,60 +241,72 @@ struct transition_output transition_number(int q, uint32_t a)
     switch (q) {
     case 0:
         if (a == 48)
-            return (struct transition_output){ .status = 0, .next_state = 6 };
+            return (struct transition_output){ .status = 1, .next_state = 3 };
         if (49 <= a && a < 58)
-            return (struct transition_output){ .status = 0, .next_state = 9 };
-        return (struct transition_output){ .status = -1, .next_state = 7 };
+            return (struct transition_output){ .status = 1, .next_state = 8 };
+        return (struct transition_output){ .status = -1, .next_state = 6 };
     case 1:
-        return (struct transition_output){ .status = -1, .next_state = 7 };
+        return (struct transition_output){ .status = -1, .next_state = 6 };
     case 2:
         if (a == 48)
             return (struct transition_output){ .status = 1, .next_state = 1 };
         if (49 <= a && a < 58)
-            return (struct transition_output){ .status = 1, .next_state = 8 };
-        return (struct transition_output){ .status = -1, .next_state = 7 };
+            return (struct transition_output){ .status = 1, .next_state = 4 };
+        return (struct transition_output){ .status = -1, .next_state = 6 };
     case 3:
+        if (a == 46)
+            return (struct transition_output){ .status = 0, .next_state = 7 };
+        if (a == 69)
+            return (struct transition_output){ .status = 0, .next_state = 5 };
+        if (a == 101)
+            return (struct transition_output){ .status = 0, .next_state = 5 };
+        return (struct transition_output){ .status = -1, .next_state = 6 };
+    case 4:
+        if (a == 48)
+            return (struct transition_output){ .status = 1, .next_state = 4 };
+        if (49 <= a && a < 58)
+            return (struct transition_output){ .status = 1, .next_state = 4 };
+        return (struct transition_output){ .status = -1, .next_state = 6 };
+    case 5:
         if (a == 43)
             return (struct transition_output){ .status = 0, .next_state = 2 };
         if (a == 45)
             return (struct transition_output){ .status = 0, .next_state = 2 };
-        return (struct transition_output){ .status = -1, .next_state = 7 };
-    case 4:
         if (a == 48)
-            return (struct transition_output){ .status = 0, .next_state = 4 };
+            return (struct transition_output){ .status = 1, .next_state = 1 };
         if (49 <= a && a < 58)
-            return (struct transition_output){ .status = 0, .next_state = 4 };
-        if (a == 69)
-            return (struct transition_output){ .status = 0, .next_state = 3 };
-        if (a == 101)
-            return (struct transition_output){ .status = 0, .next_state = 3 };
-        return (struct transition_output){ .status = -1, .next_state = 7 };
-    case 5:
+            return (struct transition_output){ .status = 1, .next_state = 4 };
+        return (struct transition_output){ .status = -1, .next_state = 6 };
+    case 7:
         if (a == 48)
-            return (struct transition_output){ .status = 0, .next_state = 4 };
+            return (struct transition_output){ .status = 1, .next_state = 9 };
         if (49 <= a && a < 58)
-            return (struct transition_output){ .status = 0, .next_state = 4 };
-        return (struct transition_output){ .status = -1, .next_state = 7 };
-    case 6:
-        if (a == 46)
-            return (struct transition_output){ .status = 0, .next_state = 5 };
-        return (struct transition_output){ .status = -1, .next_state = 7 };
+            return (struct transition_output){ .status = 1, .next_state = 9 };
+        return (struct transition_output){ .status = -1, .next_state = 6 };
     case 8:
-        if (a == 48)
-            return (struct transition_output){ .status = 1, .next_state = 8 };
-        if (49 <= a && a < 58)
-            return (struct transition_output){ .status = 1, .next_state = 8 };
-        return (struct transition_output){ .status = -1, .next_state = 7 };
-    case 9:
         if (a == 46)
-            return (struct transition_output){ .status = 0, .next_state = 5 };
+            return (struct transition_output){ .status = 0, .next_state = 7 };
         if (a == 48)
-            return (struct transition_output){ .status = 0, .next_state = 9 };
+            return (struct transition_output){ .status = 1, .next_state = 8 };
         if (49 <= a && a < 58)
-            return (struct transition_output){ .status = 0, .next_state = 9 };
-        return (struct transition_output){ .status = -1, .next_state = 7 };
+            return (struct transition_output){ .status = 1, .next_state = 8 };
+        if (a == 69)
+            return (struct transition_output){ .status = 0, .next_state = 5 };
+        if (a == 101)
+            return (struct transition_output){ .status = 0, .next_state = 5 };
+        return (struct transition_output){ .status = -1, .next_state = 6 };
+    case 9:
+        if (a == 48)
+            return (struct transition_output){ .status = 1, .next_state = 9 };
+        if (49 <= a && a < 58)
+            return (struct transition_output){ .status = 1, .next_state = 9 };
+        if (a == 69)
+            return (struct transition_output){ .status = 0, .next_state = 5 };
+        if (a == 101)
+            return (struct transition_output){ .status = 0, .next_state = 5 };
+        return (struct transition_output){ .status = -1, .next_state = 6 };
     default:
-        return (struct transition_output){ .status = -1, .next_state = 7 };
+        return (struct transition_output){ .status = -1, .next_state = 6 };
     }
 }
 
@@ -303,7 +315,7 @@ struct recognizer Number()
     return (struct recognizer){
         .token = TOKEN_NUMBER,
         .accept = false,
-        .error = 7,
+        .error = 6,
         .transition = transition_number,
     };
 }
