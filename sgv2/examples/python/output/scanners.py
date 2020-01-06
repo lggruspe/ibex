@@ -186,72 +186,48 @@ class Number(BaseRecognizer):
 
 class Character(BaseRecognizer):
     def __init__(self):
-        super().__init__(Token.CHARACTER, False, 16)
+        super().__init__(Token.CHARACTER, False, 5)
 
     def next(self, q, a):
         if q == 0:
             if a == 39:
-                return 0, 15
-            return -1, 16
+                return 0, 3
+            return -1, 5
         if q == 1:
-            return -1, 16
+            return -1, 5
         if q == 2:
             if a == 39:
                 return 1, 1
-            return -1, 16
+            return -1, 5
         if q == 3:
-            if a == 125:
+            if 32 <= a < 39:
                 return 0, 2
-            return -1, 16
-        if q == 4:
-            if a == 114:
-                return 0, 3
-            return -1, 16
-        if q == 5:
-            if a == 101:
+            if 40 <= a < 92:
+                return 0, 2
+            if a == 92:
                 return 0, 4
-            return -1, 16
-        if q == 6:
+            if 93 <= a < 110:
+                return 0, 2
+            if a == 110:
+                return 0, 2
+            if 111 <= a < 116:
+                return 0, 2
             if a == 116:
-                return 0, 5
-            return -1, 16
-        if q == 7:
-            if a == 99:
-                return 0, 6
-            return -1, 16
-        if q == 8:
-            if a == 97:
-                return 0, 7
-            return -1, 16
-        if q == 9:
-            if a == 114:
-                return 0, 8
-            return -1, 16
-        if q == 10:
-            if a == 97:
-                return 0, 9
-            return -1, 16
-        if q == 11:
-            if a == 104:
-                return 0, 10
-            return -1, 16
-        if q == 12:
-            if a == 99:
-                return 0, 11
-            return -1, 16
-        if q == 13:
-            if a == 95:
-                return 0, 12
-            return -1, 16
-        if q == 14:
-            if a == 95:
-                return 0, 13
-            return -1, 16
-        if q == 15:
-            if a == 123:
-                return 0, 14
-            return -1, 16
-        return -1, 16
+                return 0, 2
+            if 117 <= a < 127:
+                return 0, 2
+            return -1, 5
+        if q == 4:
+            if a == 39:
+                return 0, 2
+            if a == 92:
+                return 0, 2
+            if a == 110:
+                return 0, 2
+            if a == 116:
+                return 0, 2
+            return -1, 5
+        return -1, 5
 
 class String(BaseRecognizer):
     def __init__(self):

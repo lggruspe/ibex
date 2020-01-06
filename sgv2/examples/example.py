@@ -13,7 +13,7 @@ class Scanner:
     number = rf"({__integer})(\.[0-9]+)?([eE][\-\+]?({__integer}))?"
     __cescaped = r"\\('|\\|t|n)"
     __character = rf"[\x20-\x26]|[\x28-\x5b]|[\x5d-\x7e]|({__cescaped})"
-    character = "'({__character})'" # TODO fix
+    character = f"'({__character})'"
     __sescaped = r"\\[\x20-\x7e]"
     __string = rf"[\x20-\x21]|[\x23-\x5b]|[\x5d-\x7e]|({__sescaped})"
     string = f'"({__string})*"'

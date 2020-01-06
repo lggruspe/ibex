@@ -329,75 +329,51 @@ struct Number: public BaseRecognizer {
 };
 
 struct Character: public BaseRecognizer {
-    Character() : BaseRecognizer(Token::CHARACTER, false, 16) {}
+    Character() : BaseRecognizer(Token::CHARACTER, false, 5) {}
 
     std::pair<int, int> next(int q, uint32_t a) const
     {
         switch (q) {
         case 0:
             if (a == 39)
-                return {0, 15};
-            return {-1, 16};
+                return {0, 3};
+            return {-1, 5};
         case 1:
-            return {-1, 16};
+            return {-1, 5};
         case 2:
             if (a == 39)
                 return {1, 1};
-            return {-1, 16};
+            return {-1, 5};
         case 3:
-            if (a == 125)
+            if (32 <= a && a < 39)
                 return {0, 2};
-            return {-1, 16};
-        case 4:
-            if (a == 114)
-                return {0, 3};
-            return {-1, 16};
-        case 5:
-            if (a == 101)
+            if (40 <= a && a < 92)
+                return {0, 2};
+            if (a == 92)
                 return {0, 4};
-            return {-1, 16};
-        case 6:
+            if (93 <= a && a < 110)
+                return {0, 2};
+            if (a == 110)
+                return {0, 2};
+            if (111 <= a && a < 116)
+                return {0, 2};
             if (a == 116)
-                return {0, 5};
-            return {-1, 16};
-        case 7:
-            if (a == 99)
-                return {0, 6};
-            return {-1, 16};
-        case 8:
-            if (a == 97)
-                return {0, 7};
-            return {-1, 16};
-        case 9:
-            if (a == 114)
-                return {0, 8};
-            return {-1, 16};
-        case 10:
-            if (a == 97)
-                return {0, 9};
-            return {-1, 16};
-        case 11:
-            if (a == 104)
-                return {0, 10};
-            return {-1, 16};
-        case 12:
-            if (a == 99)
-                return {0, 11};
-            return {-1, 16};
-        case 13:
-            if (a == 95)
-                return {0, 12};
-            return {-1, 16};
-        case 14:
-            if (a == 95)
-                return {0, 13};
-            return {-1, 16};
-        case 15:
-            if (a == 123)
-                return {0, 14};
-            return {-1, 16};
+                return {0, 2};
+            if (117 <= a && a < 127)
+                return {0, 2};
+            return {-1, 5};
+        case 4:
+            if (a == 39)
+                return {0, 2};
+            if (a == 92)
+                return {0, 2};
+            if (a == 110)
+                return {0, 2};
+            if (a == 116)
+                return {0, 2};
+            return {-1, 5};
         default:
-            return {-1, 16};
+            return {-1, 5};
         }
     }
 };
