@@ -1,23 +1,11 @@
-lib_LTLIBRARIES = lib/librndpoc.la lib/libregexp.la
-
-lib_librndpoc_la_SOURCES = \
-	include/rnd.h \
-	src/rnd/automaton.hpp \
-	src/rnd/nexpr.hpp \
-	src/rnd/wrapper.cxx \
-	src/rnd/zsymbols.hpp \
-	../tools/handles.hpp
-
-lib_librndpoc_la_CPPFLAGS = \
-	-I$(top_srcdir)/src \
-	-I$(top_srcdir)/include \
-	-I$(top_srcdir)/../tools \
-	-I$(top_srcdir)/src/rnd
-
-lib_librndpoc_la_LDFLAGS = -version-info 0:0:0
+lib_LTLIBRARIES = lib/libregexp.la
 
 lib_libregexp_la_SOURCES = \
 	include/regexp.h \
+	src/rnd/automaton.hpp \
+	src/rnd/nexpr.hpp \
+	src/rnd/zsymbols.hpp \
+	../tools/handles.hpp
 	src/regexp/regexp.cxx \
 	src/regexp/eval.hpp \
 	src/regexp/parser.hpp \
@@ -33,11 +21,11 @@ lib_libregexp_la_CPPFLAGS = \
 
 lib_libregexp_la_LDFLAGS = -version-info 0:0:0
 
-include_HEADERS = include/rnd.h include/regexp.h
+include_HEADERS = include/regexp.h
 
 ACLOCAL_AMFLAGS = -I m4
 
-check_PROGRAMS = examples/example_c examples/example_cpp \
+check_PROGRAMS = examples/example_cpp \
 	src/rnd/automaton.test src/rnd/nexpr.test src/rnd/zsymbols.test \
 	src/regexp/regexp.test
 
@@ -63,18 +51,8 @@ src_regexp_regexp_test_CPPFLAGS = \
 	-I$(top_srcdir)/src/regexp \
 	-I$(top_srcdir)/../sagl/include
 
-examples_example_c_SOURCES = include/rnd.h examples/example.c src/rnd/wrapper.cxx \
-	src/rnd/automaton.hpp ../tools/handles.hpp src/rnd/nexpr.hpp src/rnd/zsymbols.hpp
-
 examples_example_cpp_SOURCES = examples/example.cpp \
 	src/rnd/automaton.hpp ../tools/handles.hpp src/rnd/nexpr.hpp src/rnd/zsymbols.hpp
-
-examples_example_c_CPPFLAGS = \
-	-I$(top_srcdir)/src \
-	-I$(top_srcdir)/include \
-	-I$(top_srcdir)/examples \
-	-I$(top_srcdir)/../tools \
-	-I$(top_srcdir)/src/rnd
 
 examples_example_cpp_CPPFLAGS = \
 	-I$(top_srcdir)/src \
