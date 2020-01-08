@@ -1,4 +1,5 @@
-#include "nexpr.hpp"
+#include "rnd/nexpr.hpp"
+#include "rnd/zsymbols.hpp"
 #include <iostream>
 
 using namespace rnd;

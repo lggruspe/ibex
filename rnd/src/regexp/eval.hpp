@@ -1,9 +1,9 @@
 #pragma once
-#include "variable.hpp"
-#include "scanner.hpp"
-#include "../rnd/automaton.hpp"
-#include "../rnd/nexpr.hpp"
-#include "../rnd/zsymbols.hpp"
+#include "regexp/variable.hpp"
+#include "regexp/scanner.hpp"
+#include "rnd/automaton.hpp"
+#include "rnd/nexpr.hpp"
+#include "rnd/zsymbols.hpp"
 #include <cstdint>
 #include <exception>
 #include <limits>

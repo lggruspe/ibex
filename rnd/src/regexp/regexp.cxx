@@ -1,8 +1,8 @@
 #include "regexp.h"
-#include "eval.hpp"
-#include "parser.hpp"
-#include "scanner.hpp"
-#include "../../../sagl/include/sagl.hpp"
+#include "regexp/eval.hpp"
+#include "regexp/parser.hpp"
+#include "regexp/scanner.hpp"
+#include "sagl.hpp"
 #include <cstdlib>
 #include <cstring>
 #include <sstream>

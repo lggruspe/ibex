@@ -1,6 +1,6 @@
-#include "automaton.hpp"
-#include "nexpr.hpp"
-#include "zsymbols.hpp"
+#include "rnd/automaton.hpp"
+#include "rnd/nexpr.hpp"
+#include "rnd/zsymbols.hpp"
 #include <iostream>
 
 using namespace rnd;

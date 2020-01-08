@@ -3,7 +3,9 @@ lib_LTLIBRARIES = lib/libregexp.la
 lib_libregexp_la_SOURCES = \
 	include/regexp.h \
 	src/rnd/automaton.hpp \
+	src/rnd/automaton.cpp \
 	src/rnd/nexpr.hpp \
+	src/rnd/nexpr.cpp \
 	src/rnd/zsymbols.hpp \
 	../tools/handles.hpp \
 	src/regexp/regexp.cxx \
@@ -31,35 +33,46 @@ check_PROGRAMS = examples/example_cpp \
 
 src_rnd_automaton_test_SOURCES = \
 	src/rnd/automaton.hpp \
+	src/rnd/automaton.cpp \
 	src/rnd/automaton.test.cpp \
+	src/rnd/nexpr.hpp \
+	src/rnd/nexpr.cpp \
+	src/rnd/zsymbols.hpp \
 	../tools/handles.hpp
 
-src_rnd_automaton_test_CPPFLAGS = -I$(top_srcdir)/../tools -I$(top_srcdir)/src/rnd
+src_rnd_automaton_test_CPPFLAGS = -I$(top_srcdir)/../tools -I$(top_srcdir)/src
 
-src_rnd_nexpr_test_SOURCES = src/rnd/nexpr.hpp src/rnd/nexpr.test.cpp
+src_rnd_nexpr_test_SOURCES = \
+	src/rnd/nexpr.hpp \
+	src/rnd/nexpr.cpp \
+	src/rnd/nexpr.test.cpp \
+	src/rnd/zsymbols.hpp
+
+src_rnd_nexpr_test_CPPFLAGS = -I$(top_srcdir)/src
 
 src_rnd_zsymbols_test_SOURCES = src/rnd/zsymbols.hpp src/rnd/zsymbols.test.cpp
 
+src_rnd_zsymbols_test_CPPFLAGS = -I$(top_srcdir)/src
+
 src_regexp_regexp_test_SOURCES = src/regexp/regexp.test.c include/regexp.h \
 	src/regexp/regexp.cxx src/regexp/eval.hpp src/regexp/parser.hpp \
-	src/regexp/scanner.hpp ../sagl/include/sagl.hpp
+	src/regexp/scanner.hpp ../sagl/include/sagl.hpp \
+	src/rnd/automaton.cpp src/rnd/nexpr.cpp src/rnd/automaton.hpp src/rnd/nexpr.hpp \
+	src/rnd/zsymbols.hpp
 
 src_regexp_regexp_test_CPPFLAGS = \
 	-I$(top_srcdir)/src \
 	-I$(top_srcdir)/include \
 	-I$(top_srcdir)/../tools \
-	-I$(top_srcdir)/src/regexp \
 	-I$(top_srcdir)/../sagl/include
 
 examples_example_cpp_SOURCES = examples/example.cpp \
-	src/rnd/automaton.hpp ../tools/handles.hpp src/rnd/nexpr.hpp src/rnd/zsymbols.hpp
+	src/rnd/automaton.hpp src/rnd/automaton.cpp ../tools/handles.hpp \
+	src/rnd/nexpr.hpp src/rnd/nexpr.cpp src/rnd/zsymbols.hpp
 
 examples_example_cpp_CPPFLAGS = \
 	-I$(top_srcdir)/src \
-	-I$(top_srcdir)/include \
-	-I$(top_srcdir)/examples \
-	-I$(top_srcdir)/../tools \
-	-I$(top_srcdir)/src/rnd
+	-I$(top_srcdir)/../tools
 
 TESTS = $(check_PROGRAMS)
 
