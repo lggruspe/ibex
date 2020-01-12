@@ -67,7 +67,7 @@ void subset_construction(Automaton* m, const NExpr& expr)
         int qid = *(queue.begin());
         queue.erase(queue.begin());
         auto q = states.value(qid);
-        for (const auto& a: expr.symbols) {
+        for (const auto& a: expr.symbols.to_set()) {
             auto r = next_state(expr, q, a, closures);
             auto [rid, ok] = states.insert(r);
             m->states[qid][a] = rid;
@@ -159,7 +159,7 @@ private:
     bool split(int index)
     {
         bool changed = false;
-        for (const auto& a: m_->symbols) {
+        for (const auto& a: m_->symbols.to_set()) {
             changed = changed || split(index, a);
         }
         return changed;
@@ -186,7 +186,7 @@ void minimize(Automaton* m)
     PartitionRefiner p(m);
     std::map<int, std::map<ZRange, int>> states;
     for (const auto& [q, dq]: m->states) {
-        for (const auto& a: m->symbols) {
+        for (const auto& a: m->symbols.to_set()) {
             states[p.get(q)][a] = p.get(dq.at(a));
         }
     }

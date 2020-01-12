@@ -20,11 +20,10 @@ void copy_transitions(NExpr& to, const NExpr& from, int offset)
                 }
                 continue;
             }
-            auto [lb, ub] = to.symbols.overlap_range(a);
-            for (auto it = lb; it != ub; ++it) {
-                assert(!(*it).is_empty());
+            for (const auto& c: to.symbols.cover(a)) {
+                assert(!c.is_empty());
                 for (const auto& r: R) {
-                    to.states[q+offset][*it].insert(r+offset);
+                    to.states[q+offset][c].insert(r+offset);
                 }
             }
         }

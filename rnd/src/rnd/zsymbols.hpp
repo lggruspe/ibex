@@ -42,7 +42,7 @@ struct ZRange {
 
 // Represents a partition of the set of integers containing half-open intervals.
 struct ZPartition {
-    std::set<uint32_t> points = {0};
+    std::set<uint32_t> points = {0, std::numeric_limits<uint32_t>::max()};
 
     ZPartition() {}
 
@@ -70,96 +70,35 @@ struct ZPartition {
         return rv;
     }
 
-    class Iterator {
-        std::set<uint32_t>::const_iterator it;
-        std::set<uint32_t>::const_iterator jt;
-        std::set<uint32_t>::const_iterator end;
-
-    public:
-        Iterator(
-            const std::set<uint32_t>& points,
-            std::set<uint32_t>::const_iterator it)
-            : it(it)
-            , jt(it == points.end() ? it : std::next(it))
-            , end(points.end())
-        {}
-    
-        bool operator==(Iterator& other) const
-        {
-            return it == other.it && jt == other.jt;
-        }
-
-        bool operator!=(Iterator& other) const
-        {
-            return it != other.it || jt != other.jt;
-        }
-
-        ZRange operator*() const
-        {
-            uint32_t a = std::numeric_limits<uint32_t>::max();
-            uint32_t b = a;
-            if (it != end) {
-                a = *it;
-                assert(std::next(it) == jt);
+    template <class T = std::set<ZRange>::iterator>
+    std::set<ZRange> to_set(T lb, T ub) const
+    {
+        std::set<ZRange> ranges;
+        for (auto it = lb; it != ub; ++it) {
+            if (*it != std::numeric_limits<uint32_t>::max()) {
+                ranges.insert(ZRange(*it, *std::next(it)));
             }
-            if (jt != end) {
-                b = *jt;
-            }
-            return ZRange(a, b);
         }
-
-        Iterator& operator++()
-        {
-            it = jt;
-            jt = (jt == end ? end : std::next(jt));
-            return *this;
-        }
-
-        Iterator operator++(int)
-        {
-            Iterator rv = *this;
-            ++(*this);
-            return rv;
-        }
-    };
-
-    auto begin() const
-    {
-        return Iterator(points, points.cbegin());
+        return ranges;
     }
 
-    auto end() const
+    template <class T = std::set<ZRange>::iterator>
+    std::set<ZRange> to_set() const
     {
-        return Iterator(points, points.cend());
+        return to_set(points.begin(), std::prev(points.end()));
     }
 
-private:
-    Iterator lower_bound(const ZRange& ran) const
-    {
-        auto lb = points.lower_bound(ran.start);
-        return Iterator(points, lb == points.cend() || *lb != ran.start
-            ? std::prev(lb)
-            : lb);
-    }
-
-    Iterator upper_bound(const ZRange& ran) const
-    {
-        auto ub = points.upper_bound(ran.end);
-        assert(ub != points.cbegin()); 
-        // because upper_bound(0) = next interval after 0
-        auto prev = std::prev(ub);
-        return Iterator(points, *prev == ran.end ? prev : ub);
-    }
-
-public:
-    auto overlap_range(const ZRange& ran) const
+    auto cover(const ZRange& ran) const
     {
         if (ran.is_empty()) {
-            return std::make_pair(
-                Iterator(points, points.cend()),
-                Iterator(points, points.cend()));
+            return to_set(points.end(), points.end());
         }
-        return std::make_pair(lower_bound(ran), upper_bound(ran));
+        auto lb = points.lower_bound(ran.start);
+        if (lb != points.begin() && *lb != ran.start) {
+            --lb;
+        }
+        auto ub = points.upper_bound(ran.end-1);
+        return to_set(lb, ub);
     }
 };
 

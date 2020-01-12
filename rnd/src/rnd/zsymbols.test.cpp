@@ -24,19 +24,15 @@ int main()
     };
 
     auto r = p.combined(q);
-    for (const auto& [a, b]: r) {
+    for (const auto& [a, b]: r.to_set()) {
         std::cout << "[" << a << ", " << b << ")" << std::endl;
     }
     for (const auto& x: r.points) {
         std::cout << x << " ";
     }
     std::cout << std::endl;
-
-    auto [lb, ub] = r.overlap_range(ZRange(15, 15));
-    for (auto it = lb; it != ub; ++it) {
-        const auto& [a, b] = *it;
+    const auto& cover = r.cover(ZRange(15, 15));
+    for (const auto& [a, b]: cover) {
         std::cout << "[" << a << ", " << b << ")" << std::endl;
     }
-    std::cout << "lb = [" << (*lb).start << ", " << (*lb).end << ")" << std::endl;
-    std::cout << "ub = [" << (*ub).start << ", " << (*ub).end << ")" << std::endl;
 }
