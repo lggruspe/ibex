@@ -2,8 +2,6 @@
 #include "rnd/zsymbols.hpp"
 #include <catch2/catch.hpp>
 #include <cstdint>
-#include <sys/wait.h>
-#include <unistd.h>
 #include <limits>
 #include <vector>
 
