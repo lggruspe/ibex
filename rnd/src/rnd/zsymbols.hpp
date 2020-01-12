@@ -15,14 +15,19 @@ struct ZRange {
 
     ZRange() {}
 
+    ZRange(uint32_t start)
+        : start(start)
+        , end(start == std::numeric_limits<uint32_t>::max() ? start : start+1)
+    {}
+
     ZRange(uint32_t start, uint32_t end) : start(start), end(end)
     {
         assert(start <= end);
     }
 
-    explicit operator bool() const
+    bool is_empty() const
     {
-        return start < end;
+        return start == end;
     }
 
     // Comparator for storing ZRanges in a set/map.
@@ -50,7 +55,7 @@ struct ZPartition {
 
     void insert(const ZRange& ran)
     {
-        if (ran) {
+        if (!ran.is_empty()) {
             points.insert(ran.start);
             if (ran.end < std::numeric_limits<uint32_t>::max()) {
                 points.insert(ran.end);
@@ -149,7 +154,7 @@ private:
 public:
     auto overlap_range(const ZRange& ran) const
     {
-        if (!ran) {
+        if (ran.is_empty()) {
             return std::make_pair(
                 Iterator(points, points.cend()),
                 Iterator(points, points.cend()));
