@@ -1,5 +1,6 @@
 #include "rnd/nexpr.hpp"
 #include "rnd/zsymbols.hpp"
+#include <cassert>
 
 namespace rnd {
 

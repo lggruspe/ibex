@@ -7,6 +7,7 @@ lib_libregexp_la_SOURCES = \
 	src/rnd/nexpr.hpp \
 	src/rnd/nexpr.cpp \
 	src/rnd/zsymbols.hpp \
+	src/rnd/zsymbols.cpp \
 	../tools/handles.hpp \
 	src/regexp/regexp.cxx \
 	src/regexp/eval.hpp \
@@ -38,6 +39,7 @@ src_rnd_automaton_test_SOURCES = \
 	src/rnd/nexpr.hpp \
 	src/rnd/nexpr.cpp \
 	src/rnd/zsymbols.hpp \
+	src/rnd/zsymbols.cpp \
 	../tools/handles.hpp
 
 src_rnd_automaton_test_CPPFLAGS = -I$(top_srcdir)/../tools -I$(top_srcdir)/src
@@ -46,11 +48,15 @@ src_rnd_nexpr_test_SOURCES = \
 	src/rnd/nexpr.hpp \
 	src/rnd/nexpr.cpp \
 	src/rnd/nexpr.test.cpp \
-	src/rnd/zsymbols.hpp
+	src/rnd/zsymbols.hpp \
+	src/rnd/zsymbols.cpp
 
 src_rnd_nexpr_test_CPPFLAGS = -I$(top_srcdir)/src
 
-src_rnd_zsymbols_test_SOURCES = src/rnd/zsymbols.hpp src/rnd/zsymbols.test.cpp
+src_rnd_zsymbols_test_SOURCES = \
+	src/rnd/zsymbols.hpp \
+	src/rnd/zsymbols.cpp \
+	src/rnd/zsymbols.test.cpp
 
 src_rnd_zsymbols_test_CPPFLAGS = -I$(top_srcdir)/src
 
@@ -58,7 +64,7 @@ src_regexp_regexp_test_SOURCES = src/regexp/regexp.test.c include/regexp.h \
 	src/regexp/regexp.cxx src/regexp/eval.hpp src/regexp/parser.hpp \
 	src/regexp/scanner.hpp ../sagl/include/sagl.hpp \
 	src/rnd/automaton.cpp src/rnd/nexpr.cpp src/rnd/automaton.hpp src/rnd/nexpr.hpp \
-	src/rnd/zsymbols.hpp
+	src/rnd/zsymbols.hpp src/rnd/zsymbols.cpp
 
 src_regexp_regexp_test_CPPFLAGS = \
 	-I$(top_srcdir)/src \
@@ -68,7 +74,7 @@ src_regexp_regexp_test_CPPFLAGS = \
 
 examples_example_cpp_SOURCES = examples/example.cpp \
 	src/rnd/automaton.hpp src/rnd/automaton.cpp ../tools/handles.hpp \
-	src/rnd/nexpr.hpp src/rnd/nexpr.cpp src/rnd/zsymbols.hpp
+	src/rnd/nexpr.hpp src/rnd/nexpr.cpp src/rnd/zsymbols.hpp src/rnd/zsymbols.cpp
 
 examples_example_cpp_CPPFLAGS = \
 	-I$(top_srcdir)/src \
