@@ -1,6 +1,5 @@
 #pragma once
 #include "rnd/zsymbols.hpp"
-#include <limits>
 #include <map>
 #include <set>
 
@@ -35,8 +34,7 @@ NExpr alternate(const NExpr&, const NExpr&);
 
 inline NExpr epsilon()
 {
-    constexpr auto limit = std::numeric_limits<uint32_t>::max();
-    return NExpr(ZRange(limit, limit));
+    return NExpr(ZRange());
 }
 
 }
