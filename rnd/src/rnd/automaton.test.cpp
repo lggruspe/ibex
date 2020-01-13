@@ -1,75 +1,57 @@
+#define CATCH_CONFIG_MAIN
 #include "rnd/automaton.hpp"
 #include "rnd/nexpr.hpp"
 #include "rnd/zsymbols.hpp"
-#include <iostream>
+#include <catch2/catch.hpp>
+#include <tuple>
 
 using namespace rnd;
 
-std::ostream& operator<<(std::ostream& os, const NExpr& expr)
+bool is_equal(const Automaton& m, const Automaton& n)
 {
-    for (const auto& [q, dq]: expr.states) {
-        os << "q = " << q << std::endl;
-        for (const auto& [a, R]: dq) {
-            os << "[" << a.start << ", " << a.end << "): ";
-            for (const auto& r: R) {
-                os << r << " ";
+    if (std::tie(m.symbols.points, m.accepts, m.error)
+        != std::tie(n.symbols.points, n.accepts, n.error)) {
+        return false;
+    }
+    if (m.states.size() != n.states.size()) {
+        return false;
+    }
+    for (const auto& [q, dq]: m.states) {
+        if (dq.size() != n.states.at(q).size()) {
+            return false;
+        }
+        for (const auto& [a, r]: n.states.at(q)) {
+            if (r != dq.at(a)) {
+                return false;
             }
-            os << std::endl;
         }
     }
-    return os;
+    return true;
 }
 
-std::ostream& operator<<(std::ostream& os, const Automaton& fsm)
+TEST_CASE("identities involving epsilon the empty set", "[nexpr]")
 {
-    for (const auto& [q, dq]: fsm.states) {
-        for (const auto& [a, r]: dq) {
-            os << "d(" << q << ", [" << a.start << ", " << a.end << ")) = " << r << std::endl;
-        }
+    SECTION("result = identity") {
+        auto actual = Automaton(GENERATE(
+            alternate(NExpr(ZRange('a')), NExpr()),
+            alternate(NExpr(), NExpr(ZRange('a'))),
+            concatenate(NExpr(ZRange('a')), epsilon()),
+            concatenate(epsilon(), NExpr(ZRange('a')))));
+        Automaton expected(NExpr(ZRange('a')));
+        REQUIRE(is_equal(actual, expected));
     }
-    os << "accepts: ";
-    for (const auto& f: fsm.accepts) {
-        os << f << " ";
+
+    SECTION("result = epsilon") {
+        auto actual = GENERATE(closure(NExpr()), closure(epsilon()));
+        Automaton expected(epsilon());
+        REQUIRE(is_equal(actual, expected));
     }
-    os << "\nerror: " << fsm.error;
-    return os;
-}
 
-void test_closure()
-{
-    std::cout << "closure" << std::endl;
-    NExpr expr(ZRange('a', 'a'+1));
-    expr = closure(expr);
-    std::cout << expr << std::endl;
-    Automaton fsm(expr);
-    std::cout << fsm << std::endl;
-}
-
-void test_alternate()
-{
-    std::cout << "alternate" << std::endl;
-    NExpr expr(ZRange('a', 'a'+1));
-    NExpr other(ZRange('b', 'b'+1));
-    expr = alternate(expr, other);
-    std::cout << expr << std::endl;
-    Automaton fsm(expr);
-    std::cout << fsm << std::endl;
-}
-
-void test_concatenate()
-{
-    std::cout << "concatenate" << std::endl;
-    NExpr expr(ZRange('a', 'a'+1));
-    NExpr other(ZRange('b', 'b'+1));
-    expr = concatenate(expr, other);
-    std::cout << expr << std::endl;
-    Automaton fsm(expr);
-    std::cout << fsm << std::endl;
-}
-
-int main()
-{
-    test_closure();
-    test_alternate();
-    test_concatenate();
+    SECTION("result = NExpr()") {
+        auto actual = Automaton(GENERATE(
+            concatenate(NExpr(ZRange('a')), NExpr()),
+            concatenate(NExpr(), NExpr(ZRange('a')))));
+        auto expected = Automaton(NExpr());
+        CHECK(is_equal(actual, expected));
+    }
 }
