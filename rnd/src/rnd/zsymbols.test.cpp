@@ -12,7 +12,7 @@ constexpr auto max = std::numeric_limits<uint32_t>::max();
 TEST_CASE("ZRange() = [max, max)", "[zrange]")
 {
     ZRange empty;
-    REQUIRE(empty.start == std::numeric_limits<uint32_t>::max());
+    REQUIRE(empty.start == max);
     REQUIRE(empty.start == empty.end);
     REQUIRE(empty.is_empty());
 }
@@ -75,6 +75,55 @@ TEST_CASE("ZRange(a, b) where a > b", "[zrange]")
     REQUIRE_THROWS(ZRange(max-1, 1));
     REQUIRE_THROWS(ZRange(max, max-1));
     REQUIRE_THROWS(ZRange(max, max+1));
+}
+
+TEST_CASE("ZPartition() = {0, max}", "[zpartition]")
+{
+    ZPartition p;
+    REQUIRE(p.points.size() == 2);
+    REQUIRE(p.points.count(0));
+    REQUIRE(p.points.count(max));
+
+    SECTION("default partition contains one range") {
+        auto ranges = p.to_set();
+        REQUIRE(ranges.size() == 1);
+        const auto& ran = ranges.begin();
+        REQUIRE(ran->start == 0);
+        REQUIRE(ran->end == max);
+
+        std::vector<ZRange> cases;
+
+        SECTION("cover(ran) = [0, max) in the general case") {
+            cases.push_back(ZRange(0));
+            cases.push_back(ZRange(max-1, max));
+            cases.push_back(ZRange(0, max));
+            cases.push_back(ZRange(42, 44));
+            for (const auto& r: cases) {
+                REQUIRE(!r.is_empty());
+                const auto& cover = p.cover(r);
+                REQUIRE(cover.size() == 1);
+                REQUIRE(cover.begin()->start == 0);
+                REQUIRE(cover.begin()->end == max);
+            }
+        }
+
+        SECTION("cover(ran) = empty when ran is empty") {
+            cases.push_back(ZRange(0, 0));
+            cases.push_back(ZRange(max, max));
+            cases.push_back(ZRange(max));
+            cases.push_back(ZRange());
+            cases.push_back(ZRange(42, 42));
+            for (const auto& r: cases) {
+                REQUIRE(r.is_empty());
+                REQUIRE(p.cover(r).empty());
+            }
+        }
+    }
+}
+
+TEST_CASE("ZPartition({...})", "[zpartition]")
+{
+
 }
 
 /*
