@@ -100,7 +100,7 @@ TEST_CASE("ZPartition() = {0, max}", "[zpartition]")
             cases.push_back(ZRange(42, 44));
             for (const auto& r: cases) {
                 REQUIRE(!r.is_empty());
-                const auto& cover = p.cover(r);
+                auto cover = p.cover(r);
                 REQUIRE(cover.size() == 1);
                 REQUIRE(cover.begin()->start == 0);
                 REQUIRE(cover.begin()->end == max);
@@ -154,53 +154,111 @@ TEST_CASE("ZPartition({...})", "[zpartition]")
             REQUIRE(r.end == expected[i].end);
             ++i;
         }
+
+        SECTION("insert(ran)") {
+            REQUIRE(p.points.size() == 6);
+            SECTION("when ran is empty") {
+                p.insert(ZRange());
+                p.insert(ZRange(0,0));
+                p.insert(ZRange(42,42));
+                REQUIRE(p.points.size() == 6);
+            }
+            SECTION("when ran.start and ran.end are in p.points") {
+                p.insert(ZRange(42, 44));
+                REQUIRE(p.points.size() == 6);
+            }
+            SECTION("when only ran.start is in p.points") {
+                auto ran = GENERATE(ZRange(42, 43), ZRange(42, 45));
+                p.insert(ran);
+                REQUIRE(p.points.size() == 7);
+            }
+            SECTION("when only ran.end is in p.points") {
+                auto ran = GENERATE(ZRange(41,44), ZRange(43,44));
+                p.insert(ran);
+                REQUIRE(p.points.size() == 7);
+            }
+            SECTION("when ran.start and ran.end are not in p.points") {
+                p.insert(ZRange(41, 45));
+                REQUIRE(p.points.size() == 8);
+            }
+        }
+
+        SECTION("combined") {
+            ZPartition q = {
+                {0,10},
+                {1,9},
+                {2,8},
+                {3,7},
+                {4,6},
+                {5,5},
+            };
+            REQUIRE(q.points.size() == 11);
+            REQUIRE(q.to_set().size() == 10);
+            auto s = p.combined(q);
+            REQUIRE(s.points.size() == 14);
+            REQUIRE(s.to_set().size() == 13);
+        }
     }
 
     SECTION("cover") {
+        SECTION("cover(ran) is empty when ran is empty") {
+            ZRange cases[] = {
+                ZRange(0,0),
+                ZRange(1,1),
+                ZRange(42,42),
+                ZRange(max-1,max-1),
+                ZRange(max,max),
+                ZRange()
+            };
+            for (const auto& r: cases) {
+                REQUIRE(r.is_empty());
+                REQUIRE(p.cover(r).empty());
+            }
+        }
 
-    }
-
-    SECTION("insert") {
-
-    }
-
-    SECTION("combined") {
-
+        SECTION("cover(ran) general case") {
+            SECTION("example 1") {
+                auto cover = p.cover(ZRange(0,42));
+                REQUIRE(cover.size() == 2);
+                REQUIRE(cover.count(ZRange(0)));
+                REQUIRE(cover.count(ZRange(1,42)));
+            }
+            SECTION("example 2") {
+                auto cover = p.cover(ZRange(42,45));
+                REQUIRE(cover.size() == 2);
+                REQUIRE(cover.count(ZRange(42,44)));
+                REQUIRE(cover.count(ZRange(44,max-1)));
+            }
+            SECTION("example 3") {
+                auto cover = p.cover(ZRange(44,max-1));
+                REQUIRE(cover.size() == 1);
+                REQUIRE(cover.count(ZRange(44,max-1)));
+            }
+            SECTION("example 4") {
+                auto cover = p.cover(ZRange(max-1,max));
+                REQUIRE(cover.size() == 1);
+                REQUIRE(cover.count(ZRange(max-1)));
+            }
+            SECTION("example 5") {
+                auto cover = p.cover(ZRange(0,1));
+                REQUIRE(cover.size() == 1);
+                REQUIRE(cover.count(ZRange(0)));
+            }
+            SECTION("example 6") {
+                auto cover = p.cover(ZRange(1,42));
+                REQUIRE(cover.size() == 1);
+                REQUIRE(cover.count(ZRange(1,42)));
+            }
+            SECTION("example 7") {
+                auto cover = p.cover(ZRange(42,max));
+                REQUIRE(cover.size() == 3);
+                REQUIRE(cover.count(ZRange(42,44)));
+                REQUIRE(cover.count(ZRange(44,max-1)));
+                REQUIRE(cover.count(ZRange(max-1)));
+            }
+            SECTION("example 8") {
+                REQUIRE(p.cover(ZRange(0,max)).size() == p.points.size() - 1);
+            }
+        }
     }
 }
-
-/*
-int main()
-{
-    ZPartition p = {
-        ZRange(1, 5),
-        ZRange(2, 4),
-        ZRange(1, 3),
-        ZRange(10, 11),
-        ZRange(1, 11),
-        ZRange(17, 17),
-    };
-
-    ZPartition q = {
-        ZRange(1, 5),
-        ZRange(2, 4),
-        ZRange(1, 3),
-        ZRange(4, 9),
-        ZRange(5, 18),
-        ZRange(17, 1230),
-    };
-
-    auto r = p.combined(q);
-    for (const auto& [a, b]: r.to_set()) {
-        std::cout << "[" << a << ", " << b << ")" << std::endl;
-    }
-    for (const auto& x: r.points) {
-        std::cout << x << " ";
-    }
-    std::cout << std::endl;
-    const auto& cover = r.cover(ZRange(15, 15));
-    for (const auto& [a, b]: cover) {
-        std::cout << "[" << a << ", " << b << ")" << std::endl;
-    }
-}
-*/
