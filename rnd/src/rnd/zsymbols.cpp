@@ -17,7 +17,9 @@ ZRange::ZRange(uint32_t start)
 
 ZRange::ZRange(uint32_t start, uint32_t end) : start(start), end(end)
 {
-    assert(start <= end);
+    if (start > end) {
+        throw std::logic_error("invalid range");
+    }
 }
 
 bool ZRange::is_empty() const

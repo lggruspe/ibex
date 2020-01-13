@@ -68,16 +68,14 @@ TEST_CASE("ZRange(a, b) = [a, b)")
     }
 }
 
-/*
 TEST_CASE("ZRange(a, b) where a > b", "[zrange]")
 {
-    SECTION("input 1") { ZRange(-11, 0); }
-    SECTION("input 2") { ZRange(1, 0); }
-    SECTION("input 3") { ZRange(max-1, 1); }
-    SECTION("input 4") { ZRange(max, max-1); }
-    SECTION("input 5") { ZRange(max, max+1); }
+    REQUIRE_THROWS(ZRange(-11, 0));
+    REQUIRE_THROWS(ZRange(1, 0));
+    REQUIRE_THROWS(ZRange(max-1, 1));
+    REQUIRE_THROWS(ZRange(max, max-1));
+    REQUIRE_THROWS(ZRange(max, max+1));
 }
-*/
 
 /*
 int main()
