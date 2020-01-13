@@ -123,7 +123,50 @@ TEST_CASE("ZPartition() = {0, max}", "[zpartition]")
 
 TEST_CASE("ZPartition({...})", "[zpartition]")
 {
+    ZPartition p = {
+        ZRange(0, max),
+        ZRange(1, max),
+        ZRange(0, max-1),
+        ZRange(),
+        ZRange(42, 44)
+    };
 
+    SECTION("number of points - 1 = number of ranges") {
+        REQUIRE(p.points.size() == 6);
+        REQUIRE(p.points.count(0));
+        REQUIRE(p.points.count(1));
+        REQUIRE(p.points.count(42));
+        REQUIRE(p.points.count(44));
+        REQUIRE(p.points.count(max-1));
+        REQUIRE(p.points.count(max));
+        const auto& ranges = p.to_set();
+        REQUIRE(ranges.size() == 5);
+        ZRange expected[] = {
+            ZRange(0),
+            ZRange(1, 42),
+            ZRange(42, 44),
+            ZRange(44, max-1),
+            ZRange(max-1)
+        };
+        int i = 0;
+        for (const auto& r: ranges) {
+            REQUIRE(r.start == expected[i].start);
+            REQUIRE(r.end == expected[i].end);
+            ++i;
+        }
+    }
+
+    SECTION("cover") {
+
+    }
+
+    SECTION("insert") {
+
+    }
+
+    SECTION("combined") {
+
+    }
 }
 
 /*
