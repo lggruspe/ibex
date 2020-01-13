@@ -28,7 +28,7 @@ include_HEADERS = include/regexp.h
 
 ACLOCAL_AMFLAGS = -I m4
 
-check_PROGRAMS = examples/example_cpp \
+check_PROGRAMS = \
 	src/rnd/automaton.test src/rnd/nexpr.test src/rnd/zsymbols.test \
 	src/regexp/regexp.test
 
@@ -71,14 +71,6 @@ src_regexp_regexp_test_CPPFLAGS = \
 	-I$(top_srcdir)/include \
 	-I$(top_srcdir)/../tools \
 	-I$(top_srcdir)/../sagl/include
-
-examples_example_cpp_SOURCES = examples/example.cpp \
-	src/rnd/automaton.hpp src/rnd/automaton.cpp ../tools/handles.hpp \
-	src/rnd/nexpr.hpp src/rnd/nexpr.cpp src/rnd/zsymbols.hpp src/rnd/zsymbols.cpp
-
-examples_example_cpp_CPPFLAGS = \
-	-I$(top_srcdir)/src \
-	-I$(top_srcdir)/../tools
 
 TESTS = $(check_PROGRAMS)
 
