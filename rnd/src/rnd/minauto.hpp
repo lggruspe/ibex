@@ -6,13 +6,13 @@
 namespace rnd {
 
 
-struct MinimizedAutomaton {
+struct Minimized {
     HandleSet<std::set<ZRange>> symbols;
     std::map<int, std::map<int, int>> states;
     std::set<int> accepts;
     int error;
 
-    MinimizedAutomaton(const Automaton& m);
+    Minimized(const Automaton& m);
 };
 
 }

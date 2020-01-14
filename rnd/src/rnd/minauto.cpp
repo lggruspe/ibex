@@ -27,7 +27,7 @@ void categorize_symbol(
     categories[a] = R;
 }
 
-MinimizedAutomaton::MinimizedAutomaton(const Automaton& m)
+Minimized::Minimized(const Automaton& m)
     : accepts(m.accepts)
     , error(m.error)
 {
