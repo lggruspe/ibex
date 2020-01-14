@@ -5,7 +5,7 @@
 
 namespace rnd {
 
-
+// Only used for testing automaton.hpp
 struct Minimized {
     HandleSet<std::set<ZRange>> symbols;
     std::map<int, std::map<int, int>> states;

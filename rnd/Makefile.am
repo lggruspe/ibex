@@ -30,10 +30,10 @@ ACLOCAL_AMFLAGS = -I m4
 
 check_PROGRAMS = \
 	src/rnd/nexpr.test src/rnd/zsymbols.test \
-	src/regexp/regexp.test src/rnd/minauto.test
+	src/regexp/regexp.test src/rnd/automaton.test
 
-src_rnd_minauto_test_SOURCES = \
-	src/rnd/minauto.test.cpp \
+src_rnd_automaton_test_SOURCES = \
+	src/rnd/automaton.test.cpp \
 	src/rnd/automaton.hpp \
 	src/rnd/automaton.cpp \
 	src/rnd/minauto.hpp \
@@ -44,7 +44,7 @@ src_rnd_minauto_test_SOURCES = \
 	src/rnd/zsymbols.cpp \
 	../tools/handles.hpp
 
-src_rnd_minauto_test_CPPFLAGS = -I$(top_srcdir)/../tools -I$(top_srcdir)/src
+src_rnd_automaton_test_CPPFLAGS = -I$(top_srcdir)/../tools -I$(top_srcdir)/src
 
 src_rnd_nexpr_test_SOURCES = \
 	src/rnd/nexpr.hpp \
