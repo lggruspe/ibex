@@ -41,21 +41,17 @@ TEST_CASE("identities involving epsilon the empty set", "[nexpr]")
         REQUIRE(is_equal(actual, expected));
     }
 
-    /*
     SECTION("result = epsilon") {
         auto actual = MinimizedAutomaton(Automaton(GENERATE(closure(NExpr()), closure(epsilon()))));
-        MinimizedAutomaton expected(Automaton(epsilon()));
+        auto expected = MinimizedAutomaton(Automaton(epsilon()));
         REQUIRE(is_equal(actual, expected));
     }
-    */
 
-    /*
     SECTION("result = NExpr()") {
-        auto actual = Automaton(GENERATE(
+        auto actual = MinimizedAutomaton(Automaton(GENERATE(
             concatenate(NExpr(ZRange('a')), NExpr()),
-            concatenate(NExpr(), NExpr(ZRange('a')))));
-        auto expected = Automaton(NExpr());
+            concatenate(NExpr(), NExpr(ZRange('a'))))));
+        auto expected = MinimizedAutomaton(Automaton(NExpr()));
         CHECK(is_equal(actual, expected));
     }
-    */
 }
