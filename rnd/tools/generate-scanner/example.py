@@ -21,4 +21,6 @@ class Scanner:
     __not_escaped = r"[\x0-\x5a\x5e-\xfffffffe]"
     symbol = rf"({__escaped})|({__hex})|({__not_escaped})"
 
-generate(from_class(Scanner))
+config = {"cpp_namespace": "scanner"}
+
+generate(from_class(Scanner), config=config)
