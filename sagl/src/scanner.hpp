@@ -11,6 +11,7 @@
     B, \
     Whitespace
 
+
 enum class Token {
     EMPTY = 0,
     A,
@@ -212,3 +213,5 @@ std::pair<Token, std::string> match_longest(std::istream& file = std::cin)
     InputStack in(file);
     return match_longest<Recognizers...>(in);
 }
+
+

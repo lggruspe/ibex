@@ -7,14 +7,17 @@
 #include <vector>
 
 #define ALL_RECOGNIZERS \
-    {%- for scanner in scanners %}
-    {{ scanner.token|title }}{% if loop.index != loop.length %}, \{% endif -%}
+    {%- for recognizer in scanner %}
+    {% if config.cpp_namespace %}{{ config.cpp_namespace }}::{% endif %}{{ recognizer.token|title }}{% if loop.index != loop.length %}, \{% endif -%}
     {% endfor %}
+{% if config.cpp_namespace %}
+namespace {{ config.cpp_namespace }} {
+{%- endif %}
 
 enum class Token {
     EMPTY = 0,
-    {%- for scanner in scanners %}
-    {{ scanner.token|upper }},
+    {%- for recognizer in scanner %}
+    {{ recognizer.token|upper }},
     {%- endfor %}
 };
 
@@ -23,9 +26,9 @@ std::ostream& operator<<(std::ostream& out, Token token)
     switch (token) {
     case Token::EMPTY:
         return out << "empty";
-    {%- for scanner in scanners %}
-    case Token::{{ scanner.token|upper }}:
-        return out << "{{ scanner.token }}";
+    {%- for recognizer in scanner %}
+    case Token::{{ recognizer.token|upper }}:
+        return out << "{{ recognizer.token }}";
     {%- endfor %}
     default:
         return out;
@@ -121,8 +124,8 @@ protected:
     bool accept;
     int const error;
 };
-{% for scanner in scanners %}
-{% include "scanner.cpp" %}
+{% for recognizer in scanner %}
+{% include "recognizer.cpp" %}
 {% endfor %}
 template <class... Recognizers>
 std::pair<Token, std::string> match_longest(InputStack& in)
@@ -154,3 +157,5 @@ std::pair<Token, std::string> match_longest(std::istream& file = std::cin)
     InputStack in(file);
     return match_longest<Recognizers...>(in);
 }
+
+{% if config.cpp_namespace %}}{% endif %}
