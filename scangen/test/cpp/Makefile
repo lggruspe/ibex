@@ -2,16 +2,16 @@ CXX = g++
 CXXFLAGS = -g -std=gnu++17 -Wall -Wextra -Wpedantic
 
 .PHONY:	all
-all:	output/scanners.hpp output/scanner_utils.hpp compile output/scanners.py
+all:	output/scanner.hpp output/scanner_utils.hpp compile output/scanner.py
 
-output/scanners.hpp:	templates/template.cpp templates/recognizer.cpp
+output/scanner.hpp:	templates/template.cpp templates/recognizer.cpp
 	python ../example.py template.cpp -d templates > $@
 
 output/scanner_utils.hpp:	templates/scanner_utils.cpp
 	python ../example.py scanner_utils.cpp -d templates > $@
 
-output/scanners.py:	templates/scanners.py
-	python ../example.py scanners.py -d templates > $@
+output/scanner.py:	templates/scanner.py
+	python ../example.py scanner.py -d templates > $@
 
 .PHONY:	clean
 clean:

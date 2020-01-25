@@ -1,4 +1,4 @@
-#include "output/scanners.hpp"
+#include "output/scanner.hpp"
 #include "output/scanner_utils.hpp"
 #include <iostream>
 #include <string>

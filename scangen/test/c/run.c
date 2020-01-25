@@ -1,4 +1,4 @@
-#include "output/scanners.h"
+#include "output/scanner.h"
 #include "output/scanner_utils.h"
 #include <stdbool.h>
 #include <stdio.h>

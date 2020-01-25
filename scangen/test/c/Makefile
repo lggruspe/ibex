@@ -2,16 +2,16 @@ CC = gcc
 CFLAGS = -g -Wall -Wextra -Wpedantic
 
 .PHONY:	all
-all:	output/scanners.h output/scanner_utils.h output/scanners.py compile
+all:	output/scanner.h output/scanner_utils.h output/scanner.py compile
 
-output/scanners.h:	templates/template.c templates/recognizer.c
+output/scanner.h:	templates/template.c templates/recognizer.c
 	python ../example.py template.c -d templates > $@
 
 output/scanner_utils.h:	templates/scanner_utils.c
 	python ../example.py scanner_utils.c -d templates > $@
 
-output/scanners.py:	templates/scanners.py
-	python ../example.py scanners.py -d templates > $@
+output/scanner.py:	templates/scanner.py
+	python ../example.py scanner.py -d templates > $@
 
 .PHONY:	clean
 clean:
