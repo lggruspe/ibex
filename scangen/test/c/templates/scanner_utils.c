@@ -1,13 +1,13 @@
 #define pardir_output_scanner_utils_h() \
 struct match_output m; \
 struct recognizer rec; \
-{%- for scanner in scanners %}
+{%- for recognizer in scanner %}
 {%- if loop.index == 1 %}
-if (strcmp(name, "{{ scanner.token|lower }}") == 0) { \
+if (strcmp(name, "{{ recognizer.token|lower }}") == 0) { \
 {%- else %}
-} else if (strcmp(name, "{{ scanner.token|lower }}") == 0) { \
+} else if (strcmp(name, "{{ recognizer.token|lower }}") == 0) { \
 {%- endif %}
-    rec = {{ scanner.token|title }}(); \
+    rec = {{ recognizer.token|title }}(); \
     m = match(&is, &rec); \
 {%- endfor %}
 } else \

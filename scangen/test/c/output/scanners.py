@@ -1,4 +1,4 @@
-SCANNERS = [
+SCANNER = [
     "identifier",
     "whitespace",
     "number",

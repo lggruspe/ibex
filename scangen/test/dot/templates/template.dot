@@ -1,15 +1,15 @@
-// for scanners[0]
+// for scanner[0]
 
-{% set scanner = scanners[0] %}
+{% set recognizer = scanner[0] %}
 digraph {
     rankdir=LR;
     start [shape=plain,label=start];
-    {%- for state in scanner.transitions %}
-    q{{ state }}[shape={% if state in scanner.accepts %}double{%endif%}circle,label={{ state }}];
+    {%- for state in recognizer.transitions %}
+    q{{ state }}[shape={% if state in recognizer.accepts %}double{%endif%}circle,label={{ state }}];
     {%- endfor %}
     start -> q0;
-    {%- for state in scanner.transitions %}
-    {%- for transition in scanner.transitions[state] %}
+    {%- for state in recognizer.transitions %}
+    {%- for transition in recognizer.transitions[state] %}
     {%- set start = transition[0].start %}
     {%- set end = transition[0].end %}
     {%- set next_state= transition[1] %}

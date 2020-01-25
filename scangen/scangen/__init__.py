@@ -17,8 +17,11 @@ def convert(tokens):
         scanner.append(dfa)
     return scanner
 
-def generate(tokens, entrypoint="", directory=""):
+def generate(tokens, config=None, entrypoint="", directory=""):
     """Generate code from templates."""
+    if not config:
+        config = {}
+
     def get_args(args):
         description = "Generate scanner using jinja2 templates."
         parser = argparse.ArgumentParser(description=description)
@@ -31,7 +34,7 @@ def generate(tokens, entrypoint="", directory=""):
         loader = jinja2.FileSystemLoader(directory)
         env = jinja2.Environment(loader=loader)
         template = env.get_template(entrypoint)
-        return template.render(scanners=convert(tokens))
+        return template.render(scanner=convert(tokens), config=config)
 
     args = sys.argv[1:]
     if entrypoint:

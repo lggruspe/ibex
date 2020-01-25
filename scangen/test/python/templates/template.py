@@ -2,8 +2,8 @@ import sys
 
 class Token:
     EMPTY = "empty"
-    {%- for scanner in scanners %}
-    {{ scanner.token|upper }} = "{{ scanner.token|lower }}"
+    {%- for recognizer in scanner %}
+    {{ recognizer.token|upper }} = "{{ recognizer.token|lower }}"
     {%- endfor %}
 
 class InputStack:
@@ -50,8 +50,8 @@ class BaseRecognizer:
             io.unget(lexeme.pop())
         return self.accept, "".join(lexeme)
 
-{% for scanner in scanners %}
-{% include "scanner.py" %}
+{% for recognizer in scanner %}
+{% include "recognizer.py" %}
 {% endfor %}
 def match_longest(*recs, io=InputStack()):
     token = Token.EMPTY
@@ -68,8 +68,8 @@ def match_longest(*recs, io=InputStack()):
         io.get()
     return token, lexeme
 
-SCANNERS = {
-{%- for scanner in scanners %}
-    "{{ scanner.token }}": {{ scanner.token|title }},
+SCANNER = {
+{%- for recognizer in scanner %}
+    "{{ recognizer.token }}": {{ recognizer.token|title }},
 {%- endfor %}
 }

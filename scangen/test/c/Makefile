@@ -4,7 +4,7 @@ CFLAGS = -g -Wall -Wextra -Wpedantic
 .PHONY:	all
 all:	output/scanners.h output/scanner_utils.h output/scanners.py compile
 
-output/scanners.h:	templates/template.c templates/scanner.c
+output/scanners.h:	templates/template.c templates/recognizer.c
 	python ../example.py template.c -d templates > $@
 
 output/scanner_utils.h:	templates/scanner_utils.c

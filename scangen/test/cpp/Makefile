@@ -4,7 +4,7 @@ CXXFLAGS = -g -std=gnu++17 -Wall -Wextra -Wpedantic
 .PHONY:	all
 all:	output/scanners.hpp output/scanner_utils.hpp compile output/scanners.py
 
-output/scanners.hpp:	templates/template.cpp templates/scanner.cpp
+output/scanners.hpp:	templates/template.cpp templates/recognizer.cpp
 	python ../example.py template.cpp -d templates > $@
 
 output/scanner_utils.hpp:	templates/scanner_utils.cpp

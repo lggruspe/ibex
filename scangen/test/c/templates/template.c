@@ -7,8 +7,8 @@
 #include <string.h>
 
 #define ALL_RECOGNIZERS \
-    {%- for scanner in scanners %}
-    {{ scanner.token|title }}{% if loop.index != loop.length %}, \{% endif %}
+    {%- for recognizer in scanner %}
+    {{ recognizer.token|title }}{% if loop.index != loop.length %}, \{% endif %}
     {%- endfor %}
 
 #define CONSTRUCTORS(...) (recognizer_constructor[]){ __VA_ARGS__, NULL }
@@ -17,8 +17,8 @@
 
 enum token {
     TOKEN_EMPTY = 0,
-    {%- for scanner in scanners %}
-    TOKEN_{{ scanner.token|upper }},
+    {%- for recognizer in scanner %}
+    TOKEN_{{ recognizer.token|upper }},
     {%- endfor %}
 };
 
@@ -27,9 +27,9 @@ int print_token(FILE *fp, enum token token)
     switch (token) {
     case TOKEN_EMPTY:
         return fprintf(fp, "empty");
-    {%- for scanner in scanners %}
-    case TOKEN_{{ scanner.token|upper }}:
-        return fprintf(fp, "{{ scanner.token|lower }}");
+    {%- for recognizer in scanner %}
+    case TOKEN_{{ recognizer.token|upper }}:
+        return fprintf(fp, "{{ recognizer.token|lower }}");
     {%- endfor %}
     default:
         return -1;
@@ -98,9 +98,9 @@ struct recognizer {
     struct transition_output (*transition)(int, uint32_t);
 };
 
-{%- for scanner in scanners %}
+{%- for recognizer in scanner %}
 
-{% include "scanner.c" %}
+{% include "recognizer.c" %}
 {%- endfor %}
 
 struct match_output {

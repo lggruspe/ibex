@@ -489,7 +489,7 @@ def match_longest(*recs, io=InputStack()):
         io.get()
     return token, lexeme
 
-SCANNERS = {
+SCANNER = {
     "identifier": Identifier,
     "whitespace": Whitespace,
     "number": Number,

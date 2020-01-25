@@ -1,5 +1,5 @@
-SCANNERS = [
-    {%- for scanner in scanners %}
-    "{{ scanner.token|lower }}",
+SCANNER = [
+    {%- for recognizer in scanner %}
+    "{{ recognizer.token|lower }}",
     {%- endfor %}
 ]

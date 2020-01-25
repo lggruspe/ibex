@@ -59,19 +59,19 @@ def parametrize_single_match_test(test_case, scanner_type):
 class MatchTest(unittest.TestCase):
     def setUp(self):
         self.test_data = {}
-        for scanner_type in scanners.SCANNERS:
+        for scanner_type in scanners.SCANNER:
             path = os.path.join(os.path.dirname(__file__), f"data/{scanner_type}.csv")
             with open(path, "r") as file:
                 self.test_data[scanner_type] = examples.read(file)
         self.scanner = Scanner()
 
     def test_longest(self):
-        for scanner_type in scanners.SCANNERS:
+        for scanner_type in scanners.SCANNER:
             with self.subTest(scanner_type=scanner_type):
                 parametrize_longest_match_test(self, scanner_type)
 
     def test_single(self):
-        for scanner_type in scanners.SCANNERS:
+        for scanner_type in scanners.SCANNER:
             with self.subTest(scanner_type=scanner_type):
                 parametrize_single_match_test(self, scanner_type)
 
