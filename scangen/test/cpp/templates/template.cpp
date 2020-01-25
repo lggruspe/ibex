@@ -8,10 +8,11 @@
 
 #define ALL_RECOGNIZERS \
     {%- for recognizer in scanner %}
-    scanner::{{ recognizer.token|title }}{% if loop.index != loop.length %}, \{% endif -%}
+    {% if config.cpp_namespace %}{{ config.cpp_namespace }}::{% endif %}{{ recognizer.token|title }}{% if loop.index != loop.length %}, \{% endif -%}
     {% endfor %}
-
-namespace scanner {
+{% if config.cpp_namespace %}
+namespace {{ config.cpp_namespace }} {
+{%- endif %}
 
 enum class Token {
     EMPTY = 0,
@@ -157,4 +158,4 @@ std::pair<Token, std::string> match_longest(std::istream& file = std::cin)
     return match_longest<Recognizers...>(in);
 }
 
-}
+{% if config.cpp_namespace %}}{% endif %}

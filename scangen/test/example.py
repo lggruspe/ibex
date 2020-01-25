@@ -34,4 +34,6 @@ class Scanner:
     lessthan = "<"
     greaterthan = ">"
 
-generate(from_class(Scanner))
+config = {"cpp_namespace": "scanner"}
+
+generate(from_class(Scanner), config=config)
