@@ -1,7 +1,7 @@
 import os.path as op
 import sys
 
-sys.path.append(op.abspath("../../scangen"))
+sys.path.append(op.abspath(op.join(op.dirname(__file__), "../../scangen")))
 
 from scangen import render, from_class
 
