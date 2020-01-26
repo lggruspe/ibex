@@ -4,7 +4,7 @@ import sys
 pardir = os.path.join(os.path.dirname(__file__), os.path.pardir)
 sys.path.append(os.path.abspath(pardir))
 
-from scangen import generate, from_class
+from scangen import render, from_class
 
 class Scanner:
     identifier = "[_a-zA-Z][0-9a-zA-Z_]*"
@@ -36,4 +36,14 @@ class Scanner:
 
 config = {"cpp_namespace": "scanner"}
 
-generate(from_class(Scanner), config=config)
+def render_template(template, output, directory=None):
+    code = render(from_class(Scanner), entrypoint=template, config=config, directory=directory)
+    with open(output, "w") as f:
+        print(code, file=f)
+
+render_template("template.c", "c/output/scanner.h")
+render_template("template.cpp", "cpp/output/scanner.hpp")
+render_template("template.py", "python/output/scanner.py")
+render_template("template.dot", "dot/output/scanner.dot")
+render_template("scanner_utils.c", "c/output/scanner_utils.h", directory=os.path.abspath("c/templates"))
+render_template("scanner_utils.cpp", "cpp/output/scanner_utils.hpp", directory=os.path.abspath("cpp/templates"))

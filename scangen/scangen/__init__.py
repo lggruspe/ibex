@@ -1,6 +1,5 @@
 """A scanner generator that uses Jinja2 templates."""
-import argparse
-import sys
+import os.path as op
 import jinja2
 import scangen.internals as regexp
 
@@ -17,40 +16,13 @@ def convert(tokens):
         scanner.append(dfa)
     return scanner
 
-def generate(tokens, config=None, entrypoint="", directory=""):
-    """Generate code from templates."""
-    if not config:
-        config = {}
-
-    def get_args(args):
-        description = "Generate scanner using jinja2 templates."
-        parser = argparse.ArgumentParser(description=description)
-        parser.add_argument("entrypoint", help="filename of template entrypoint")
-        parser.add_argument("-d", default="", dest="directory",
-                            help="path to templates directory")
-        return parser.parse_args(args)
-
-    def generate_code():
-        loader = jinja2.FileSystemLoader(directory)
-        env = jinja2.Environment(loader=loader)
-        template = env.get_template(entrypoint)
-        return template.render(scanner=convert(tokens), config=config)
-
-    args = sys.argv[1:]
-    if entrypoint:
-        args.append(entrypoint)
+def render(tokens, entrypoint, directory=None, config=None):
+    paths = [op.abspath(op.join(op.dirname(__file__), "templates"))]
     if directory:
-        args.extend(["-d", directory])
-    args = get_args(args)
-    if args.entrypoint:
-        entrypoint = args.entrypoint
-    if args.directory:
-        directory = args.directory
-
-    try:
-        output = generate_code()
-        print(output)
-    except jinja2.exceptions.TemplateNotFound:
-        print("scangen: Template not found:", entrypoint)
+        paths = [directory, *paths]
+    loader = jinja2.FileSystemLoader(paths)
+    env = jinja2.Environment(loader=loader)
+    template = env.get_template(entrypoint)
+    return template.render(scanner=convert(tokens), config=config)
 
 name = "scangen"
