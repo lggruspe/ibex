@@ -7,7 +7,7 @@ if "TEST_DIR" not in os.environ:
     print("Warning: TEST_DIR environment variable not set.", file=sys.stderr)
     print("Using c test data.", file=sys.stderr)
 
-sys.path.append(os.path.join(os.path.dirname(__file__), os.environ.get("TEST_DIR", "c"), "output"))
+sys.path.append(os.path.join(os.path.dirname(__file__), os.environ.get("TEST_DIR", "c")))
 sys.path.append(os.path.join(os.path.dirname(__file__), "tools"))
 
 import examples

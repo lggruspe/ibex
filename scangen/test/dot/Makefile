@@ -1,4 +1,4 @@
-scanner.pdf:	output/scanner.dot
+scanner.pdf:	scanner.dot
 	dot -Tpdf $< -o $@	
 
 .PHONY:	clean
