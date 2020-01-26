@@ -41,9 +41,10 @@ def render_template(template, output, directory=None):
     with open(output, "w") as f:
         print(code, file=f)
 
+path = os.path.abspath("templates")
 render_template("template.c", "c/output/scanner.h")
 render_template("template.cpp", "cpp/output/scanner.hpp")
 render_template("template.py", "python/output/scanner.py")
 render_template("template.dot", "dot/output/scanner.dot")
-render_template("scanner_utils.c", "c/output/scanner_utils.h", directory=os.path.abspath("c/templates"))
-render_template("scanner_utils.cpp", "cpp/output/scanner_utils.hpp", directory=os.path.abspath("cpp/templates"))
+render_template("scanner_utils.c", "c/output/scanner_utils.h", directory=path)
+render_template("scanner_utils.cpp", "cpp/output/scanner_utils.hpp", directory=path)
