@@ -6,4 +6,4 @@ run_match:	run.c
 
 .PHONY:	clean
 clean:
-	-rm -rf run_match
+	-rm -rf run_match scanner.h scanner.py scanner_utils.h __pycache__

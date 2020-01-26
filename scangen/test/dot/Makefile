@@ -3,4 +3,4 @@ scanner.pdf:	scanner.dot
 
 .PHONY:	clean
 clean:
-	-rm -rf scanner.pdf
+	-rm -rf scanner.pdf scanner.dot

@@ -6,4 +6,4 @@ run_match:	run.cpp
 
 .PHONY:	clean
 clean:
-	-rm -rf run_match
+	-rm -rf run_match scanner.hpp scanner.py scanner_utils.hpp __pycache__
