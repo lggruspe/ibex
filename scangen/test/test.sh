@@ -2,7 +2,7 @@
 
 source ../env/bin/activate
 export LD_LIBRARY_PATH=/usr/local/lib
-python example.py
+python generate_code.py
 make -B -C c
 make -B -C cpp
 make -B -C dot
