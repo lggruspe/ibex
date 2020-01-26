@@ -5,7 +5,7 @@ with open("README.md", "r") as f:
 
 setuptools.setup(
     name="scangen",
-    version="0.3a0",
+    version="0.4a0",
     author="Levi Gruspe",
     author_email="mail.levig@gmail.com",
     description="Template-based scanner generator",
