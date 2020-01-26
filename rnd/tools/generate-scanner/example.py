@@ -1,9 +1,9 @@
-import os
+import os.path as op
 import sys
 
-sys.path.append(os.path.abspath("../../../scangen"))
+sys.path.append(op.abspath("../../../scangen"))
 
-from scangen import generate, from_class
+from scangen import render, from_class
 
 class Scanner:
     pipe = r"\|"
@@ -23,4 +23,12 @@ class Scanner:
 
 config = {"cpp_namespace": "scanner"}
 
-generate(from_class(Scanner), config=config)
+def main():
+    code = render(from_class(Scanner), "template.cpp", config=config)
+    relpath = "../../src/regexp/scanner.hpp"
+    abspath = op.abspath(op.join(op.dirname(__file__), relpath))
+    with open(abspath, "w") as f:
+        print(code, file=f)
+
+if __name__ == "__main__":
+    main()
