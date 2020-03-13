@@ -43,7 +43,7 @@ def render_template(template, output, directory=None):
 
 path = os.path.abspath("templates")
 render_template("template.c", "c/scanner.h")
-render_template("template.cpp", "cpp/scanner.hpp")
+render_template("template2.cpp", "cpp/scanner.hpp")
 render_template("template.py", "python/scanner.py")
 render_template("template.dot", "dot/scanner.dot")
 render_template("scanner_utils.c", "c/scanner_utils.h", directory=path)

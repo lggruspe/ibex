@@ -22,7 +22,7 @@ void run_tokenizer()
     InputStack in;
     for (;;) {
         auto [token, lexeme] = match_longest<ALL_RECOGNIZERS>(in);
-        if (token == Token::EMPTY) {
+        if (std::string(token) == std::string("empty")) {
             break;
         }
         std::cout << token << " " << lexeme << std::endl;
