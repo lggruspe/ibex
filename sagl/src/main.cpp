@@ -2,33 +2,7 @@
 #include "scanner.hpp"
 #include <iostream>
 
-enum class Variable { S, A, ERROR };
-
-std::ostream& operator<<(std::ostream& out, const Variable& v)
-{
-    switch (v) {
-    case Variable::S:
-        return out << "S";
-    case Variable::A:
-        return out << "A";
-    default:
-        throw 0;
-    }
-}
-
-std::ostream& operator<<(std::ostream& out, const typename Grammar<Variable>::Symbol& a)
-{
-    switch (a.index()) {
-    case 0:
-        return out << std::get<0>(a);
-    case 1:
-        return out << std::get<1>(a);
-    default:
-        throw 0;
-    }
-}
-
-std::ostream& operator<<(std::ostream& os, Item<Grammar<Variable>::Symbol> item)
+std::ostream& operator<<(std::ostream& os, Item item)
 {
     os << "{" << item.rule.first << " ->";
     for (int i = 0; i < (int)(item.rule.second.size()); ++i) {
@@ -45,7 +19,7 @@ std::ostream& operator<<(std::ostream& os, Item<Grammar<Variable>::Symbol> item)
 
 std::ostream& operator<<(
     std::ostream& os,
-    const Automaton<Grammar<Variable>>::State& state)
+    const Automaton<Grammar>::State& state)
 {
     for (const auto& item: state) {
         os << item << std::endl;
@@ -55,7 +29,7 @@ std::ostream& operator<<(
 
 std::ostream& operator<<(
     std::ostream& os,
-    const Automaton<Grammar<Variable>>& m)
+    const Automaton<Grammar>& m)
 {
     for (const auto& [state, id]: m) {
         os << "CC" << id << ":" << std::endl;
@@ -72,20 +46,11 @@ std::ostream& operator<<(
 
 int main()
 {
-    Grammar<Variable> g({
-        {Variable::S, {Variable::A}},
-        {Variable::A, {"a", Variable::A, "b"}},
-        {Variable::A, {}},
+    Grammar g({
+        {"S", {"A"}},
+        {"A", {"a", "A", "b"}},
+        {"A", {}},
     });
-    /*
-    sagl::Parser p(R"VOGON(
-        S -> A
-        A -> a A b
-        A ->
-        a = a
-        b = b 
-    )VOGON");
-    */
     Parser p(g);
     ParseTreeCallback<decltype(g)::Symbol> callback;
     try {

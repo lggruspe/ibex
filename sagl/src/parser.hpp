@@ -70,7 +70,7 @@ struct Parser {
     }
 
 private:
-    std::pair<Symbol, std::string> scan(InputStack& in)
+    std::pair<char const *, std::string> scan(InputStack& in)
     {
         auto [token, lexeme] = match_longest<ALL_RECOGNIZERS>(in);
         if (token == "whitespace") {
@@ -80,9 +80,9 @@ private:
             uint32_t eof = std::char_traits<char>::eof();
             if (a != eof) {
                 in.unget(a);
-                return std::make_pair(Symbol(Variable::ERROR), lexeme);
+                return std::make_pair("error", lexeme);
             }
         }
-        return std::make_pair(Symbol(token), lexeme);
+        return std::make_pair(token, lexeme);
     }
 };

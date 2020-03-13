@@ -1,17 +1,15 @@
 #pragma once
 #include <set>
 #include <map>
-#include <variant>
 #include <vector>
 
-template <class Variable>
 struct Grammar {
     // symbols are either variables or terminals
     // terminals are represented by string literals
     // "empty" represents the eof
     // assume first lhs in the set of rules is the start symbol
     // rules must be nonempty, rhs must not contain "empty"
-    using Symbol = std::variant<Variable, char const *>;
+    using Symbol = char const *;
     using Sentence = std::vector<Symbol>;
     using Rule = std::pair<Symbol, Sentence>;
 

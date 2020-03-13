@@ -10,7 +10,7 @@ template <class Grammar>
 struct Automaton {
     using Symbol = typename Grammar::Symbol;
     using Sentence = std::vector<Symbol>;
-    using State = std::set<Item<Symbol>>;
+    using State = std::set<Item>;
     State start;
     const Grammar& grammar;
     std::map<int, std::map<Symbol, int>> transitions;
@@ -20,7 +20,7 @@ struct Automaton {
         compute_first_sets();
         auto [lb, ub] = grammar.rules.equal_range(grammar.start);
         for (auto it = lb; it != ub; ++it) {
-            start.insert(Item<Symbol>(*it, grammar.empty));
+            start.insert(Item(*it, grammar.empty));
         }
         closure(start);
         compute_transitions();
@@ -55,7 +55,7 @@ private:
                     Sentence sentence = item.slice(item.position+1);
                     sentence.push_back(item.lookahead);
                     for (const auto& lookahead: first(sentence)) {
-                        auto [_, ok] = state.insert(Item<Symbol>(*it, lookahead));
+                        auto [_, ok] = state.insert(Item(*it, lookahead));
                         changed = ok || changed;
                     }
                 }
