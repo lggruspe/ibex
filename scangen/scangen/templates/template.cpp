@@ -14,27 +14,6 @@
 namespace {{ config.cpp_namespace }} {
 {%- endif %}
 
-enum class Token {
-    EMPTY = 0,
-    {%- for recognizer in scanner %}
-    {{ recognizer.token|upper }},
-    {%- endfor %}
-};
-
-std::ostream& operator<<(std::ostream& out, Token token)
-{
-    switch (token) {
-    case Token::EMPTY:
-        return out << "empty";
-    {%- for recognizer in scanner %}
-    case Token::{{ recognizer.token|upper }}:
-        return out << "{{ recognizer.token }}";
-    {%- endfor %}
-    default:
-        return out;
-    }
-}
-
 struct InputStack {
     std::istream* in;
     std::vector<uint32_t> stack;
@@ -74,10 +53,10 @@ struct InputStack {
 };
 
 struct BaseRecognizer {
-    Token token;
+    char const * const token;
 
     BaseRecognizer(
-        Token token = Token::EMPTY,
+        char const *token = "empty",
         bool accept = false, // should be true if 0 is an accept state
         int error = -1)
         : token(token)
@@ -128,12 +107,12 @@ protected:
 {% include "recognizer.cpp" %}
 {% endfor %}
 template <class... Recognizers>
-std::pair<Token, std::string> match_longest(InputStack& in)
+std::pair<char const*, std::string> match_longest(InputStack& in)
 {
     std::unique_ptr<BaseRecognizer> recs[] = {
         std::make_unique<Recognizers>() ...
     };
-    Token token = Token::EMPTY;
+    char const *token = "empty";
     std::string lexeme;
     for (auto& r: recs) {
         auto [ok, s] = r->match(in);
@@ -152,7 +131,7 @@ std::pair<Token, std::string> match_longest(InputStack& in)
 }
 
 template <class... Recognizers>
-std::pair<Token, std::string> match_longest(std::istream& file = std::cin)
+std::pair<char const*, std::string> match_longest(std::istream& file = std::cin)
 {
     InputStack in(file);
     return match_longest<Recognizers...>(in);

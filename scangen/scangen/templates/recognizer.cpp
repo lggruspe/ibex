@@ -1,5 +1,5 @@
 struct {{ recognizer.token|title }}: public BaseRecognizer {
-    {{ recognizer.token|title }}() : BaseRecognizer(Token::{{ recognizer.token|upper }}, {{ "true" if 0 in recognizer.accepts else "false" }}, {{ recognizer.error }}) {}
+    {{ recognizer.token|title }}() : BaseRecognizer("{{ recognizer.token }}", {{ "true" if 0 in recognizer.accepts else "false" }}, {{ recognizer.error }}) {}
 
     std::pair<int, int> next(int q, uint32_t a) const
     {
