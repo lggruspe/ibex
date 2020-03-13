@@ -73,9 +73,9 @@ private:
     std::pair<Symbol, std::string> scan(InputStack& in)
     {
         auto [token, lexeme] = match_longest<ALL_RECOGNIZERS>(in);
-        if (token == Token::WHITESPACE) {
+        if (token == "whitespace") {
             return scan(in);
-        } else if (Symbol(token) == grammar.empty) {
+        } else if (std::string(token) == std::string(grammar.empty)) {
             uint32_t a = in.get();
             uint32_t eof = std::char_traits<char>::eof();
             if (a != eof) {

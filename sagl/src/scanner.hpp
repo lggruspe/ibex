@@ -12,29 +12,6 @@
     Whitespace
 
 
-enum class Token {
-    EMPTY = 0,
-    A,
-    B,
-    WHITESPACE,
-};
-
-std::ostream& operator<<(std::ostream& out, Token token)
-{
-    switch (token) {
-    case Token::EMPTY:
-        return out << "empty";
-    case Token::A:
-        return out << "a";
-    case Token::B:
-        return out << "b";
-    case Token::WHITESPACE:
-        return out << "whitespace";
-    default:
-        return out;
-    }
-}
-
 struct InputStack {
     std::istream* in;
     std::vector<uint32_t> stack;
@@ -74,10 +51,10 @@ struct InputStack {
 };
 
 struct BaseRecognizer {
-    Token token;
+    char const * const token;
 
     BaseRecognizer(
-        Token token = Token::EMPTY,
+        char const *token = "empty",
         bool accept = false, // should be true if 0 is an accept state
         int error = -1)
         : token(token)
@@ -126,7 +103,7 @@ protected:
 };
 
 struct A: public BaseRecognizer {
-    A() : BaseRecognizer(Token::A, false, 2) {}
+    A() : BaseRecognizer("a", false, 2) {}
 
     std::pair<int, int> next(int q, uint32_t a) const
     {
@@ -144,7 +121,7 @@ struct A: public BaseRecognizer {
 };
 
 struct B: public BaseRecognizer {
-    B() : BaseRecognizer(Token::B, false, 2) {}
+    B() : BaseRecognizer("b", false, 2) {}
 
     std::pair<int, int> next(int q, uint32_t a) const
     {
@@ -162,7 +139,7 @@ struct B: public BaseRecognizer {
 };
 
 struct Whitespace: public BaseRecognizer {
-    Whitespace() : BaseRecognizer(Token::WHITESPACE, false, 2) {}
+    Whitespace() : BaseRecognizer("whitespace", false, 2) {}
 
     std::pair<int, int> next(int q, uint32_t a) const
     {
@@ -184,12 +161,12 @@ struct Whitespace: public BaseRecognizer {
 };
 
 template <class... Recognizers>
-std::pair<Token, std::string> match_longest(InputStack& in)
+std::pair<char const*, std::string> match_longest(InputStack& in)
 {
     std::unique_ptr<BaseRecognizer> recs[] = {
         std::make_unique<Recognizers>() ...
     };
-    Token token = Token::EMPTY;
+    char const *token = "empty";
     std::string lexeme;
     for (auto& r: recs) {
         auto [ok, s] = r->match(in);
@@ -208,7 +185,7 @@ std::pair<Token, std::string> match_longest(InputStack& in)
 }
 
 template <class... Recognizers>
-std::pair<Token, std::string> match_longest(std::istream& file = std::cin)
+std::pair<char const*, std::string> match_longest(std::istream& file = std::cin)
 {
     InputStack in(file);
     return match_longest<Recognizers...>(in);

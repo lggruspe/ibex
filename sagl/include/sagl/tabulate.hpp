@@ -36,7 +36,7 @@ struct Table {
             // set accepts and reductions
             for (const auto& item: state) {
                 if (item.is_complete()) {
-                    if (item.rule.first == grammar.start && item.lookahead == grammar.empty) {
+                    if (item.rule.first == grammar.start && item.lookahead == Symbol(grammar.empty)) {
                         set(p, item.lookahead, Action::ACCEPT);
                     } else {
                         set(p, item.lookahead, Action::REDUCE, rules.index(item.rule));

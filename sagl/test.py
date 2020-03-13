@@ -2,7 +2,7 @@ import subprocess
 import unittest
 
 def run_sagl(terminal_input):
-    out = subprocess.check_output(["bin/sagl"], input=terminal_input.encode())
+    out = subprocess.check_output(["./build/main"], input=terminal_input.encode())
     return out
 
 def test_sagl_output(out, success, counter=None):

@@ -4,23 +4,24 @@
 #include <variant>
 #include <vector>
 
-template <class Variable, class Terminal>
+template <class Variable>
 struct Grammar {
-    // assume Terminal::EMPTY represents the eof
+    // symbols are either variables or terminals
+    // terminals are represented by string literals
+    // "empty" represents the eof
     // assume first lhs in the set of rules is the start symbol
-    // rules must be nonempty, rhs must not contain Terminal::EMPTY
-    using Symbol = std::variant<Variable, Terminal>;
+    // rules must be nonempty, rhs must not contain "empty"
+    using Symbol = std::variant<Variable, char const *>;
     using Sentence = std::vector<Symbol>;
     using Rule = std::pair<Symbol, Sentence>;
 
     std::set<Symbol> symbols;
     std::multimap<Symbol, Sentence> rules;
     Symbol start;
-    Symbol empty;
+    char const * const empty = "empty";
 
     Grammar(const std::vector<Rule>& rules)
         : start(rules.front().first)
-        , empty(Terminal::EMPTY)
     {
         symbols.insert(empty);
         for (const auto& p: rules) {

@@ -16,7 +16,7 @@ std::ostream& operator<<(std::ostream& out, const Variable& v)
     }
 }
 
-std::ostream& operator<<(std::ostream& out, const typename Grammar<Variable, Token>::Symbol& a)
+std::ostream& operator<<(std::ostream& out, const typename Grammar<Variable>::Symbol& a)
 {
     switch (a.index()) {
     case 0:
@@ -28,7 +28,7 @@ std::ostream& operator<<(std::ostream& out, const typename Grammar<Variable, Tok
     }
 }
 
-std::ostream& operator<<(std::ostream& os, Item<Grammar<Variable, Token>::Symbol> item)
+std::ostream& operator<<(std::ostream& os, Item<Grammar<Variable>::Symbol> item)
 {
     os << "{" << item.rule.first << " ->";
     for (int i = 0; i < (int)(item.rule.second.size()); ++i) {
@@ -45,7 +45,7 @@ std::ostream& operator<<(std::ostream& os, Item<Grammar<Variable, Token>::Symbol
 
 std::ostream& operator<<(
     std::ostream& os,
-    const Automaton<Grammar<Variable, Token>>::State& state)
+    const Automaton<Grammar<Variable>>::State& state)
 {
     for (const auto& item: state) {
         os << item << std::endl;
@@ -55,7 +55,7 @@ std::ostream& operator<<(
 
 std::ostream& operator<<(
     std::ostream& os,
-    const Automaton<Grammar<Variable, Token>>& m)
+    const Automaton<Grammar<Variable>>& m)
 {
     for (const auto& [state, id]: m) {
         os << "CC" << id << ":" << std::endl;
@@ -72,9 +72,9 @@ std::ostream& operator<<(
 
 int main()
 {
-    Grammar<Variable, Token> g({
+    Grammar<Variable> g({
         {Variable::S, {Variable::A}},
-        {Variable::A, {Token::A, Variable::A, Token::B}},
+        {Variable::A, {"a", Variable::A, "b"}},
         {Variable::A, {}},
     });
     /*
