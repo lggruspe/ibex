@@ -12,7 +12,7 @@ struct DefaultLR1Callback {
 
     using Rule = std::pair<Symbol, std::vector<Symbol>>;
 
-    void shift(const std::pair<Symbol, std::string>& lookahead)
+    void shift(const std::pair<char const *, std::string>& lookahead)
     {
         (void)lookahead;
     }
@@ -70,17 +70,17 @@ struct Parser {
     }
 
 private:
-    std::pair<Symbol, std::string> scan(scanner::InputStack& in)
+    std::pair<char const *, std::string> scan(scanner::InputStack& in)
     {
         auto [token, lexeme] = scanner::match_longest<ALL_RECOGNIZERS>(in);
-        if (Symbol(token) == grammar.empty) {
+        if (token == grammar.empty) {
             uint32_t a = in.get();
             uint32_t eof = std::char_traits<char>::eof();
             if (a != eof) {
                 in.unget(a);
-                return std::make_pair(Symbol(Variable::ERROR), lexeme);
+                return std::make_pair("error", lexeme);
             }
         }
-        return std::make_pair(Symbol(token), lexeme);
+        return std::make_pair(token, lexeme);
     }
 };

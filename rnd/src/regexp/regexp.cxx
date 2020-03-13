@@ -32,26 +32,26 @@ element -> symbol
 element -> symbol dash symbol
 */
 
-Grammar<Variable, Token> g({
+Grammar<Variable> g({
     {Variable::START,       {Variable::EXPR}},
-    {Variable::EXPR,        {Variable::EXPR, Token::PIPE, Variable::TERM}},
+    {Variable::EXPR,        {Variable::EXPR, "pipe", Variable::TERM}},
     {Variable::EXPR,        {Variable::TERM}},
     {Variable::TERM,        {Variable::TERM, Variable::FACTOR}},
     {Variable::TERM,        {Variable::FACTOR}},
-    {Variable::FACTOR,      {Variable::VALUE, Token::STAR}},
-    {Variable::FACTOR,      {Variable::VALUE, Token::PLUS}},
-    {Variable::FACTOR,      {Variable::VALUE, Token::QUESTION}},
+    {Variable::FACTOR,      {Variable::VALUE, "star"}},
+    {Variable::FACTOR,      {Variable::VALUE, "plus"}},
+    {Variable::FACTOR,      {Variable::VALUE, "question"}},
     {Variable::FACTOR,      {Variable::VALUE}},
     {Variable::VALUE,       {Variable::SIMPLE}},
     {Variable::VALUE,       {Variable::COMPOUND}},
-    {Variable::SIMPLE,      {Token::DOT}},
-    {Variable::SIMPLE,      {Token::SYMBOL}},
-    {Variable::COMPOUND,    {Token::LPAREN, Variable::EXPR, Token::RPAREN}},
-    {Variable::COMPOUND,    {Token::LBRACKET, Variable::LIST, Token::RBRACKET}},
+    {Variable::SIMPLE,      {"dot"}},
+    {Variable::SIMPLE,      {"symbol"}},
+    {Variable::COMPOUND,    {"lparen", Variable::EXPR, "rparen"}},
+    {Variable::COMPOUND,    {"lbracket", Variable::LIST, "rbracket"}},
     {Variable::LIST,        {Variable::LIST, Variable::ELEMENT}},
     {Variable::LIST,        {Variable::ELEMENT}},
-    {Variable::ELEMENT,     {Token::SYMBOL}},
-    {Variable::ELEMENT,     {Token::SYMBOL, Token::DASH, Token::SYMBOL}},
+    {Variable::ELEMENT,     {"symbol"}},
+    {Variable::ELEMENT,     {"symbol", "dash", "symbol"}},
 });
 
 Parser parser(g);

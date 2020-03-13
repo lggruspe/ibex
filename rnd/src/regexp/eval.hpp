@@ -55,21 +55,19 @@ struct Callback {
         return rnd::Automaton(state.back());
     }
 
-    void shift(const std::pair<Symbol, std::string>& lookahead)
+    void shift(const std::pair<char const*, std::string>& lookahead)
     {
         auto [token, lexeme] = lookahead;
-        std::set<Symbol> nulls{scanner::Token::PIPE, scanner::Token::STAR,
-            scanner::Token::LPAREN, scanner::Token::RPAREN,
-            scanner::Token::QUESTION, scanner::Token::PLUS,
-            scanner::Token::LBRACKET, scanner::Token::RBRACKET,
-            scanner::Token::DASH,
+        std::set<std::string> nulls{
+            "pipe", "star", "lparen", "rparen", "question", "plus", "lbracket",
+            "rbracket", "dash",
         };
-        if (nulls.count(token)) {
+        if (nulls.count(std::string(token))) {
             state.push_back(rnd::NExpr(rnd::ZRange(lexeme[0], lexeme[0]+1)));
-        } else if (token == Symbol(scanner::Token::DOT)) {
+        } else if (std::string(token) == std::string("dot")) {
             auto limit = std::numeric_limits<uint32_t>::max();
             state.push_back(rnd::NExpr(rnd::ZRange(0, limit)));
-        } else if (token == Symbol(scanner::Token::SYMBOL)) {
+        } else if (std::string(token) == std::string("symbol")) {
             auto a = to_symbol(lexeme);
             state.push_back(rnd::NExpr(rnd::ZRange(a, a+1)));
         } else {

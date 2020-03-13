@@ -21,53 +21,6 @@
 
 namespace scanner {
 
-enum class Token {
-    EMPTY = 0,
-    PIPE,
-    STAR,
-    LPAREN,
-    RPAREN,
-    DOT,
-    QUESTION,
-    PLUS,
-    LBRACKET,
-    RBRACKET,
-    DASH,
-    SYMBOL,
-};
-
-std::ostream& operator<<(std::ostream& out, Token token)
-{
-    switch (token) {
-    case Token::EMPTY:
-        return out << "empty";
-    case Token::PIPE:
-        return out << "pipe";
-    case Token::STAR:
-        return out << "star";
-    case Token::LPAREN:
-        return out << "lparen";
-    case Token::RPAREN:
-        return out << "rparen";
-    case Token::DOT:
-        return out << "dot";
-    case Token::QUESTION:
-        return out << "question";
-    case Token::PLUS:
-        return out << "plus";
-    case Token::LBRACKET:
-        return out << "lbracket";
-    case Token::RBRACKET:
-        return out << "rbracket";
-    case Token::DASH:
-        return out << "dash";
-    case Token::SYMBOL:
-        return out << "symbol";
-    default:
-        return out;
-    }
-}
-
 struct InputStack {
     std::istream* in;
     std::vector<uint32_t> stack;
@@ -107,10 +60,10 @@ struct InputStack {
 };
 
 struct BaseRecognizer {
-    Token token;
+    char const * const token;
 
     BaseRecognizer(
-        Token token = Token::EMPTY,
+        char const *token = "empty",
         bool accept = false, // should be true if 0 is an accept state
         int error = -1)
         : token(token)
@@ -159,7 +112,7 @@ protected:
 };
 
 struct Pipe: public BaseRecognizer {
-    Pipe() : BaseRecognizer(Token::PIPE, false, 2) {}
+    Pipe() : BaseRecognizer("pipe", false, 2) {}
 
     std::pair<int, int> next(int q, uint32_t a) const
     {
@@ -177,7 +130,7 @@ struct Pipe: public BaseRecognizer {
 };
 
 struct Star: public BaseRecognizer {
-    Star() : BaseRecognizer(Token::STAR, false, 2) {}
+    Star() : BaseRecognizer("star", false, 2) {}
 
     std::pair<int, int> next(int q, uint32_t a) const
     {
@@ -195,7 +148,7 @@ struct Star: public BaseRecognizer {
 };
 
 struct Lparen: public BaseRecognizer {
-    Lparen() : BaseRecognizer(Token::LPAREN, false, 2) {}
+    Lparen() : BaseRecognizer("lparen", false, 2) {}
 
     std::pair<int, int> next(int q, uint32_t a) const
     {
@@ -213,7 +166,7 @@ struct Lparen: public BaseRecognizer {
 };
 
 struct Rparen: public BaseRecognizer {
-    Rparen() : BaseRecognizer(Token::RPAREN, false, 2) {}
+    Rparen() : BaseRecognizer("rparen", false, 2) {}
 
     std::pair<int, int> next(int q, uint32_t a) const
     {
@@ -231,7 +184,7 @@ struct Rparen: public BaseRecognizer {
 };
 
 struct Dot: public BaseRecognizer {
-    Dot() : BaseRecognizer(Token::DOT, false, 2) {}
+    Dot() : BaseRecognizer("dot", false, 2) {}
 
     std::pair<int, int> next(int q, uint32_t a) const
     {
@@ -249,7 +202,7 @@ struct Dot: public BaseRecognizer {
 };
 
 struct Question: public BaseRecognizer {
-    Question() : BaseRecognizer(Token::QUESTION, false, 2) {}
+    Question() : BaseRecognizer("question", false, 2) {}
 
     std::pair<int, int> next(int q, uint32_t a) const
     {
@@ -267,7 +220,7 @@ struct Question: public BaseRecognizer {
 };
 
 struct Plus: public BaseRecognizer {
-    Plus() : BaseRecognizer(Token::PLUS, false, 2) {}
+    Plus() : BaseRecognizer("plus", false, 2) {}
 
     std::pair<int, int> next(int q, uint32_t a) const
     {
@@ -285,7 +238,7 @@ struct Plus: public BaseRecognizer {
 };
 
 struct Lbracket: public BaseRecognizer {
-    Lbracket() : BaseRecognizer(Token::LBRACKET, false, 2) {}
+    Lbracket() : BaseRecognizer("lbracket", false, 2) {}
 
     std::pair<int, int> next(int q, uint32_t a) const
     {
@@ -303,7 +256,7 @@ struct Lbracket: public BaseRecognizer {
 };
 
 struct Rbracket: public BaseRecognizer {
-    Rbracket() : BaseRecognizer(Token::RBRACKET, false, 2) {}
+    Rbracket() : BaseRecognizer("rbracket", false, 2) {}
 
     std::pair<int, int> next(int q, uint32_t a) const
     {
@@ -321,7 +274,7 @@ struct Rbracket: public BaseRecognizer {
 };
 
 struct Dash: public BaseRecognizer {
-    Dash() : BaseRecognizer(Token::DASH, false, 2) {}
+    Dash() : BaseRecognizer("dash", false, 2) {}
 
     std::pair<int, int> next(int q, uint32_t a) const
     {
@@ -339,7 +292,7 @@ struct Dash: public BaseRecognizer {
 };
 
 struct Symbol: public BaseRecognizer {
-    Symbol() : BaseRecognizer(Token::SYMBOL, false, 2) {}
+    Symbol() : BaseRecognizer("symbol", false, 2) {}
 
     std::pair<int, int> next(int q, uint32_t a) const
     {
@@ -449,12 +402,12 @@ struct Symbol: public BaseRecognizer {
 };
 
 template <class... Recognizers>
-std::pair<Token, std::string> match_longest(InputStack& in)
+std::pair<char const*, std::string> match_longest(InputStack& in)
 {
     std::unique_ptr<BaseRecognizer> recs[] = {
         std::make_unique<Recognizers>() ...
     };
-    Token token = Token::EMPTY;
+    char const *token = "empty";
     std::string lexeme;
     for (auto& r: recs) {
         auto [ok, s] = r->match(in);
@@ -473,7 +426,7 @@ std::pair<Token, std::string> match_longest(InputStack& in)
 }
 
 template <class... Recognizers>
-std::pair<Token, std::string> match_longest(std::istream& file = std::cin)
+std::pair<char const*, std::string> match_longest(std::istream& file = std::cin)
 {
     InputStack in(file);
     return match_longest<Recognizers...>(in);
