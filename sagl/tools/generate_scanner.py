@@ -13,7 +13,7 @@ class Scanner:
 config = None
 
 def main():
-    code = render(from_class(Scanner), "template2.cpp", config=config)
+    code = render(from_class(Scanner), "template.cpp", config=config)
     relpath = "../src/scanner.hpp"
     abspath = op.abspath(op.join(op.dirname(__file__), relpath))
     with open(abspath, "w") as f:
