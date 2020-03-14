@@ -1,10 +1,11 @@
 #pragma once
+#include <string>
 #include <tuple>
 #include <utility>
 #include <vector>
 
 struct Item {
-    using Symbol = char const *;
+    using Symbol = std::string;
     using Sentence = std::vector<Symbol>;
     using Rule = std::pair<Symbol, Sentence>;
 
