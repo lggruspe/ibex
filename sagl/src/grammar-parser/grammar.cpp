@@ -1,5 +1,6 @@
 #include "sagl.hpp"
 #include "parser.hpp"
+#include "parsetree.hpp"
 #include "scanner.hpp"
 #include <iostream>
 
@@ -17,4 +18,11 @@ int main()
         {"Rhs",     {}},
     });
     Parser p(g);
+    ParseTreeCallback callback;
+    try {
+        auto root = std::move(p.parse(callback));
+        std::cout << root << std::endl;
+    } catch (SyntaxError e) {
+        std::cout << e.what() << std::endl;
+    }
 }
