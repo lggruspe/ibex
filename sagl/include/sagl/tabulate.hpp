@@ -50,6 +50,28 @@ struct Table {
 
     std::string jsonify() const
     {
+        /* format (example):
+         * {
+         *      "automaton": [
+         *          {
+         *              "state": 0,
+         *              "symbol": "A",
+         *              "terminal": false,
+         *              "type": "reduce",
+         *              "action": 5
+         *          },
+         *          ...
+         *      ],
+         *      "grammar": [
+         *          {
+         *              "id": 4,
+         *              "lhs": "A",
+         *              "rhs": ["a", "A", "b"]
+         *          },
+         *          ...
+         *      ]
+         * }
+         */
         std::vector<std::string> entries;
         for (const auto& [state, actions]: table) {
             for (const auto& [symbol, action]: actions) {
@@ -94,7 +116,7 @@ struct Table {
         automaton += "\n]";
         find_and_replace(json, "@automaton@", automaton);
 
-        // TODO jsonify grammar rules
+        // jsonify grammar rules
         std::string grammar_json;
         for (const auto& [rule, id]: rules) {
             std::string rhs = "[";
