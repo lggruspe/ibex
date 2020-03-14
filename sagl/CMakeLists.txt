@@ -23,8 +23,15 @@ target_include_directories(json PUBLIC
     ${PROJECT_SOURCE_DIR}/include
     ${PROJECT_SOURCE_DIR}/../tools)
 
+add_executable(grammar src/grammar-parser/grammar.cpp)
+
+target_include_directories(grammar PUBLIC
+    ${PROJECT_SOURCE_DIR}/include
+    ${PROJECT_SOURCE_DIR}/../tools)
+
 set_property(TARGET main PROPERTY CXX_STANDARD 17)
 set_property(TARGET json PROPERTY CXX_STANDARD 17)
+set_property(TARGET grammar PROPERTY CXX_STANDARD 17)
 
 enable_testing()
 add_test("main test" "python3 tests/test.py")
