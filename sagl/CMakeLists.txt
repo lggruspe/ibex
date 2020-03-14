@@ -25,3 +25,6 @@ target_include_directories(json PUBLIC
 
 set_property(TARGET main PROPERTY CXX_STANDARD 17)
 set_property(TARGET json PROPERTY CXX_STANDARD 17)
+
+enable_testing()
+add_test("main test" "python3 tests/test.py")
