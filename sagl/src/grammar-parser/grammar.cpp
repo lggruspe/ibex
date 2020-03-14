@@ -19,10 +19,14 @@ int main()
     });
     Parser p(g);
     ParseTreeCallback callback;
+
+    std::vector<std::pair<std::string, std::vector<std::string>>> rules;
     try {
-        auto root = std::move(p.parse(callback));
-        std::cout << root << std::endl;
+        rules = p.parse(callback);
     } catch (SyntaxError e) {
         std::cout << e.what() << std::endl;
     }
+
+    std::cout << rules.size() << std::endl;
+    Grammar result(rules);
 }

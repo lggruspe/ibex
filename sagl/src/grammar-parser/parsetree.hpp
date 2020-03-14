@@ -1,4 +1,5 @@
 #pragma once
+#include <cassert>
 #include <iostream>
 #include <memory>
 #include <utility>
@@ -41,15 +42,17 @@ std::ostream& operator<<(
 }
 
 struct ParseTreeCallback {
-    using Rule = std::pair<std::string, std::vector<std::string>>;
+    using Sentence = std::vector<std::string>;
+    using Rule = std::pair<std::string, Sentence>;
     std::vector<std::unique_ptr<ParseTree>> state;
+    std::vector<Rule> rules;
 
     auto accept(bool acc)
     {
         if (!acc) {
             throw SyntaxError();
         }
-        return std::move(state.back());
+        return rules;
     }
 
     void shift(const std::pair<std::string, std::string>& lookahead)
@@ -71,5 +74,35 @@ struct ParseTreeCallback {
             children.pop_back();
         }
         state.push_back(std::move(node));
+
+        append_rule(rule);
+    }
+
+    void append_rule(const Rule& rule)
+    {
+        if (rule.first == "Rule") {
+            if (rule.second == Sentence{"Lhs", "arrow", "Rhs", "dot"}) {
+                assert(state.back()->children.size() == 4);
+                auto* lhs = state.back()->children[0].get();
+                auto* rhs = state.back()->children[2].get();
+                assert(lhs && lhs->label == "Lhs");
+                assert(rhs && rhs->label == "Rhs");
+                rules.push_back(Rule(lhs->label, fold(rhs)));
+            }
+        }
+    }
+
+private:
+    Sentence fold(ParseTree* t) const
+    {
+        if (t->children.empty()) {
+            return Sentence();
+        }
+        assert(t->children.size() == 2);
+        assert(t->children[0]->label == "Rhs");
+        assert(t->children[1]->label == "identifier");
+        Sentence current = fold(t->children[0].get());
+        current.push_back(t->children[1]->value);
+        return current;
     }
 };
