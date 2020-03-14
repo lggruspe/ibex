@@ -1,6 +1,7 @@
 #pragma once
 #include "sagl/tabulate.hpp"
 #include "scanner.hpp"
+#include <iostream>
 #include <string>
 #include <utility>
 #include <vector>
@@ -34,9 +35,9 @@ struct Parser {
     {}
 
     template <class Handler>
-    auto parse(Handler& handler)
+    auto parse(Handler& handler, std::istream& is = std::cin)
     {
-        InputStack in;
+        InputStack in(is);
         std::vector<int> states = {0};
         auto lookahead = scan(in);
         for (;;) {

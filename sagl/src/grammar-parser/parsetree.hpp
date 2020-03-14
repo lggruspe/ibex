@@ -21,7 +21,7 @@ struct SyntaxError {
     char const* what() const { return "syntax error"; }
 };
 
-std::ostream& operator<<(
+static inline std::ostream& operator<<(
     std::ostream& out,
     std::unique_ptr<ParseTree>& node)
 {

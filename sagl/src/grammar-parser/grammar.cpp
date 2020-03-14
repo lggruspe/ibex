@@ -1,4 +1,5 @@
 #include "sagl.hpp"
+#include "grammar_parser.h"
 #include "parser.hpp"
 #include "parsetree.hpp"
 #include "scanner.hpp"
@@ -31,4 +32,16 @@ int main()
     Table t(result);
     auto s = t.jsonify();
     std::cout << s << std::endl;
+    auto u = parse_grammar(R"(
+        Grammar -> Rules.
+        Rules   -> Rules Rule.
+        Rules   -> .
+        Rule    -> Lhs arrow Rhs dot.
+        Lhs     -> identifier.
+        Rhs     -> Rhs identifier.
+        Rhs     -> .
+    )");
+
+    std::cout << "---" << std::endl;
+    std::cout << u << std::endl;
 }

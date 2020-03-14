@@ -23,7 +23,7 @@ target_include_directories(json PUBLIC
     ${PROJECT_SOURCE_DIR}/include
     ${PROJECT_SOURCE_DIR}/../tools)
 
-add_executable(grammar src/grammar-parser/grammar.cpp)
+add_executable(grammar src/grammar-parser/grammar.cpp src/grammar-parser/grammar_parser.cpp)
 
 target_include_directories(grammar PUBLIC
     ${PROJECT_SOURCE_DIR}/include
