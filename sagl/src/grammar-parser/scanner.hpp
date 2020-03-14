@@ -8,6 +8,7 @@
 
 #define ALL_RECOGNIZERS \
     scanner::Arrow, \
+    scanner::Dot, \
     scanner::Identifier, \
     scanner::Whitespace
 
@@ -121,6 +122,24 @@ struct Arrow: public BaseRecognizer {
             return {-1, 3};
         default:
             return {-1, 3};
+        }
+    }
+};
+
+struct Dot: public BaseRecognizer {
+    Dot() : BaseRecognizer("dot", false, 2) {}
+
+    std::pair<int, int> next(int q, uint32_t a) const
+    {
+        switch (q) {
+        case 0:
+            if (a == 46)
+                return {1, 1};
+            return {-1, 2};
+        case 1:
+            return {-1, 2};
+        default:
+            return {-1, 2};
         }
     }
 };

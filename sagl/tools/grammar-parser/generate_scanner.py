@@ -7,6 +7,7 @@ from scangen import render, from_class
 
 class Scanner:
     arrow = r"\->"
+    dot = r"\."
     identifier = "[_a-zA-Z][_a-zA-Z0-9]*"
     whitespace = "[ \t\n]"
 

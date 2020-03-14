@@ -7,7 +7,7 @@ int main()
         {"Grammar", {"Rules"}},
         {"Rules",   {"Rules", "Rule"}},
         {"Rules",   {}},
-        {"Rule",    {"Lhs", "arrow", "Rhs"}},
+        {"Rule",    {"Lhs", "arrow", "Rhs", "dot"}},
         {"Lhs",     {"identifier"}},
         {"Rhs",     {"Rhs", "identifier"}},
         {"Rhs",     {}},
