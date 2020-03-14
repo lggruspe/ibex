@@ -1,5 +1,9 @@
 #include "sagl.hpp"
+#include "parser.hpp"
+#include "scanner.hpp"
 #include <iostream>
+
+using namespace scanner;
 
 int main()
 {
@@ -12,8 +16,5 @@ int main()
         {"Rhs",     {"Rhs", "identifier"}},
         {"Rhs",     {}},
     });
-
-    Table t(g);
-    auto s = t.jsonify();
-    std::cout << s << std::endl;
+    Parser p(g);
 }
