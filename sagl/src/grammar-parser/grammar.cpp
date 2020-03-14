@@ -27,6 +27,8 @@ int main()
         std::cout << e.what() << std::endl;
     }
 
-    std::cout << rules.size() << std::endl;
     Grammar result(rules);
+    Table t(result);
+    auto s = t.jsonify();
+    std::cout << s << std::endl;
 }

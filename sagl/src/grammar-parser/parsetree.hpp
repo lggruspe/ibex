@@ -87,7 +87,7 @@ struct ParseTreeCallback {
                 auto* rhs = state.back()->children[2].get();
                 assert(lhs && lhs->label == "Lhs");
                 assert(rhs && rhs->label == "Rhs");
-                rules.push_back(Rule(lhs->label, fold(rhs)));
+                rules.push_back(Rule(get_lhs(lhs), fold(rhs)));
             }
         }
     }
@@ -104,5 +104,15 @@ private:
         Sentence current = fold(t->children[0].get());
         current.push_back(t->children[1]->value);
         return current;
+    }
+
+    std::string get_lhs(ParseTree* lhs) const
+    {
+        assert(lhs->label == "Lhs");
+        assert(lhs->children.size() == 1);
+        auto* child = lhs->children.front().get();
+        assert(child->label == "identifier");
+        assert(child->children.empty());
+        return child->value;
     }
 };
