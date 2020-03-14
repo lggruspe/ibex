@@ -1,5 +1,4 @@
 #pragma once
-#include "regexp/variable.hpp"
 #include "regexp/scanner.hpp"
 #include "rnd/automaton.hpp"
 #include "rnd/nexpr.hpp"
@@ -190,21 +189,21 @@ struct Callback {
             state.pop_back();
         }
         auto lhs = rule.first;
-        if (lhs == Symbol(Variable::EXPR)) {
+        if (std::string(lhs) == std::string("expr")) {
             reduce_expr(rhs);
-        } else if (lhs == Symbol(Variable::TERM)) {
+        } else if (std::string(lhs) == std::string("term")) {
             reduce_term(rhs);
-        } else if (lhs == Symbol(Variable::FACTOR)) {
+        } else if (std::string(lhs) == std::string("factor")) {
             reduce_factor(rhs);
-        } else if (lhs == Symbol(Variable::VALUE)) {
+        } else if (std::string(lhs) == std::string("value")) {
             reduce_value(rhs);
-        } else if (lhs == Symbol(Variable::SIMPLE)) {
+        } else if (std::string(lhs) == std::string("simple")) {
             reduce_simple(rhs);
-        } else if (lhs == Symbol(Variable::COMPOUND)) {
+        } else if (std::string(lhs) == std::string("compound")) {
             reduce_compound(rhs);
-        } else if (lhs == Symbol(Variable::LIST)) {
+        } else if (std::string(lhs) == std::string("list")) {
             reduce_list(rhs);
-        } else if (lhs == Symbol(Variable::ELEMENT)) {
+        } else if (std::string(lhs) == std::string("element")) {
             reduce_element(rhs);
         } else {
             throw std::logic_error("invalid reduce");

@@ -32,26 +32,26 @@ element -> symbol
 element -> symbol dash symbol
 */
 
-Grammar<Variable> g({
-    {Variable::START,       {Variable::EXPR}},
-    {Variable::EXPR,        {Variable::EXPR, "pipe", Variable::TERM}},
-    {Variable::EXPR,        {Variable::TERM}},
-    {Variable::TERM,        {Variable::TERM, Variable::FACTOR}},
-    {Variable::TERM,        {Variable::FACTOR}},
-    {Variable::FACTOR,      {Variable::VALUE, "star"}},
-    {Variable::FACTOR,      {Variable::VALUE, "plus"}},
-    {Variable::FACTOR,      {Variable::VALUE, "question"}},
-    {Variable::FACTOR,      {Variable::VALUE}},
-    {Variable::VALUE,       {Variable::SIMPLE}},
-    {Variable::VALUE,       {Variable::COMPOUND}},
-    {Variable::SIMPLE,      {"dot"}},
-    {Variable::SIMPLE,      {"symbol"}},
-    {Variable::COMPOUND,    {"lparen", Variable::EXPR, "rparen"}},
-    {Variable::COMPOUND,    {"lbracket", Variable::LIST, "rbracket"}},
-    {Variable::LIST,        {Variable::LIST, Variable::ELEMENT}},
-    {Variable::LIST,        {Variable::ELEMENT}},
-    {Variable::ELEMENT,     {"symbol"}},
-    {Variable::ELEMENT,     {"symbol", "dash", "symbol"}},
+Grammar g({
+    {"start",       {"expr"}},
+    {"expr",        {"expr", "pipe", "term"}},
+    {"expr",        {"term"}},
+    {"term",        {"term", "factor"}},
+    {"term",        {"factor"}},
+    {"factor",      {"value", "star"}},
+    {"factor",      {"value", "plus"}},
+    {"factor",      {"value", "question"}},
+    {"factor",      {"value"}},
+    {"value",       {"simple"}},
+    {"value",       {"compound"}},
+    {"simple",      {"dot"}},
+    {"simple",      {"symbol"}},
+    {"compound",    {"lparen", "expr", "rparen"}},
+    {"compound",    {"lbracket", "list", "rbracket"}},
+    {"list",        {"list", "element"}},
+    {"list",        {"element"}},
+    {"element",     {"symbol"}},
+    {"element",     {"symbol", "dash", "symbol"}},
 });
 
 Parser parser(g);
