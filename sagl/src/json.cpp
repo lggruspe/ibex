@@ -1,14 +1,12 @@
-#include "sagl/tabulate.hpp"
+#include "grammar-parser/grammar_parser.h"
 #include <iostream>
 
 int main()
 {
-    Grammar g({
-        {"S", {"A"}},
-        {"A", {"a", "A", "b"}},
-        {"A", {}},
-    });
-    Table t(g);
-    auto s = t.jsonify();
+    auto s = parse_grammar(R"(
+        S -> A.
+        A -> a A b.
+        A -> .
+    )");
     std::cout << s << std::endl;
 }

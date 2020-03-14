@@ -8,6 +8,12 @@ project(sagl
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+add_library(grammar_parser STATIC src/grammar-parser/grammar_parser.cpp)
+
+target_include_directories(grammar_parser PRIVATE
+    ${PROJECT_SOURCE_DIR}/include
+    ${PROJECT_SOURCE_DIR}/../tools)
+
 add_executable(main src/main.cpp)
 
 list(APPEND INCLUDE_DIRECTORIES ${PROJECT_SOURCE_DIR} $)
@@ -23,15 +29,20 @@ target_include_directories(json PUBLIC
     ${PROJECT_SOURCE_DIR}/include
     ${PROJECT_SOURCE_DIR}/../tools)
 
-add_executable(grammar src/grammar-parser/grammar.cpp src/grammar-parser/grammar_parser.cpp)
+target_link_libraries(json PUBLIC grammar_parser)
+
+add_executable(grammar src/grammar-parser/grammar.cpp)
 
 target_include_directories(grammar PUBLIC
     ${PROJECT_SOURCE_DIR}/include
     ${PROJECT_SOURCE_DIR}/../tools)
 
+target_link_libraries(grammar PUBLIC grammar_parser)
+
 set_property(TARGET main PROPERTY CXX_STANDARD 17)
 set_property(TARGET json PROPERTY CXX_STANDARD 17)
 set_property(TARGET grammar PROPERTY CXX_STANDARD 17)
+set_property(TARGET grammar_parser PROPERTY CXX_STANDARD 17)
 
 enable_testing()
 add_test("main test" "python3 tests/test.py")
