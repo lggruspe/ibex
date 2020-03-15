@@ -14,6 +14,13 @@ target_include_directories(grammar_parser PRIVATE
     ${PROJECT_SOURCE_DIR}/include
     ${PROJECT_SOURCE_DIR}/../tools)
 
+add_library(sagl SHARED src/sagl.cxx src/grammar-parser/grammar_parser.cpp)
+
+target_include_directories(sagl PRIVATE
+    ${PROJECT_SOURCE_DIR}/include
+    ${PROJECT_SOURCE_DIR}/src
+    ${PROJECT_SOURCE_DIR}/../tools)
+
 add_executable(main src/main.cpp)
 
 list(APPEND INCLUDE_DIRECTORIES ${PROJECT_SOURCE_DIR} $)
@@ -43,6 +50,7 @@ set_property(TARGET main PROPERTY CXX_STANDARD 17)
 set_property(TARGET json PROPERTY CXX_STANDARD 17)
 set_property(TARGET grammar PROPERTY CXX_STANDARD 17)
 set_property(TARGET grammar_parser PROPERTY CXX_STANDARD 17)
+set_property(TARGET sagl PROPERTY CXX_STANDARD 17)
 
 enable_testing()
 add_test("main test" "python3 tests/test.py")
