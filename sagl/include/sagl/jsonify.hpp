@@ -101,11 +101,15 @@ static inline std::string jsonify_rule(int id, const Rule& rule)
 
 static inline std::string jsonify_grammar(const Table& t)
 {
-    std::vector<std::string> rules;
+    std::map<int, std::string> rules;
     for (const auto& [rule, id]: t.rules) {
-        rules.push_back(jsonify_rule(id, rule));
+        rules[id] = jsonify_rule(id, rule);
     }
-    return "[" + join(rules, ", ") + "]";
+    std::vector<std::string> json_rules;
+    for (const auto& [_, rule]: rules) {
+        json_rules.push_back(rule);
+    }
+    return "[" + join(json_rules, ", ") + "]";
 }
 
 static inline std::string jsonify(const Table& t)
