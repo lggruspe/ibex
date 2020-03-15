@@ -31,14 +31,14 @@ static inline std::string jsonify_automaton(const Table& t)
     std::vector<std::string> entries;
     for (const auto& [state, actions]: t.table) {
         for (const auto& [symbol, action]: actions) {
-            std::string entry = R"VOGON(
+            std::string entry = R"(
             {
                 "state": @state@,
                 "symbol": "@symbol@",
                 "terminal": @terminal@,
                 "type": "@type@",
                 "action": @action@
-            })VOGON";
+            })";
             find_and_replace(entry, "@state@", std::to_string(state));
             find_and_replace(entry, "@terminal@", t.grammar_ptr->is_terminal(symbol) ? "true" : "false");
             find_and_replace(entry, "@type@",
@@ -67,60 +67,54 @@ static inline std::string jsonify_automaton(const Table& t)
     return automaton;
 }
 
+static inline std::string join(
+        const std::vector<std::string>& s,
+        const std::string& sep = "")
+{
+    std::string t;
+    if (!s.empty()) {
+        t += s[0];
+    }
+    for (int i = 1; i < s.size(); ++i) {
+        t += sep + s[i];
+    }
+    return t;
+}
+
+template <class Rule = std::pair<std::string, std::vector<std::string>>>
+static inline std::string jsonify_rule(int id, const Rule& rule)
+{
+    std::string json = R"(
+    {
+        "id": @id@,
+        "lhs": @lhs@,
+        "rhs": @rhs@,
+        "rule": @rule@
+    })";
+    const auto& [lhs, rhs] = rule;
+    find_and_replace(json, "@rule@", "\"" + lhs + " -> " + join(rhs, " ") + "\"");
+    find_and_replace(json, "@lhs@", "\"" + lhs + "\"");
+    find_and_replace(json, "@rhs@", "[\"" + join(rhs, "\", \"") + "\"]");
+    find_and_replace(json, "@id@", std::to_string(id));
+    return json;
+}
+
 static inline std::string jsonify_grammar(const Table& t)
 {
-    /* format (example):
-     * "grammar": [
-     *     {
-     *         "id": 4,
-     *         "lhs": "A",
-     *         "rhs": ["a", "A", "b"]
-     *     },
-     *     ...
-     * ]
-     */
-
-    std::string grammar_json;
+    std::vector<std::string> rules;
     for (const auto& [rule, id]: t.rules) {
-        std::string rhs = "[";
-        for (const auto& sym: rule.second) {
-            rhs += "\"";
-            rhs += sym;
-            rhs += "\"";
-            rhs += ", ";
-        }
-        if (rhs.back() != '[') {
-            rhs.pop_back();
-            rhs.pop_back();
-        }
-        rhs += ']';
-
-        std::string entry = R"(
-        {
-            "id": @id@,
-            "lhs": @lhs@,
-            "rhs": @rhs@
-        }
-        )";
-        find_and_replace(entry, "@id@", std::to_string(id));
-        find_and_replace(entry, "@rhs@", rhs);
-        find_and_replace(entry, "@lhs@", "\"" + std::string(rule.first) + "\"");
-        if (!grammar_json.empty()) {
-            grammar_json += ",\n";
-        }
-        grammar_json += entry;
+        rules.push_back(jsonify_rule(id, rule));
     }
-    return "[" + grammar_json + "]";
+    return "[" + join(rules, ", ") + "]";
 }
 
 static inline std::string jsonify(const Table& t)
 {
-    std::string json = R"VOGON(
+    std::string json = R"(
     {
         "automaton": @automaton@,
         "grammar": @grammar@
-    }
-    )VOGON";
+    })";
     find_and_replace(json, "@grammar@", jsonify_grammar(t));
     find_and_replace(json, "@automaton@", jsonify_automaton(t));
     return json;
