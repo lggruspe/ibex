@@ -6,7 +6,6 @@
 #include <set>
 #include <vector>
 
-template <class Grammar>
 struct Automaton {
     using Symbol = typename Grammar::Symbol;
     using Sentence = std::vector<Symbol>;

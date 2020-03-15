@@ -13,7 +13,6 @@ class ShiftReduceConflict {};
 
 class ReduceReduceConflict {};
 
-template <class Grammar>
 struct Table {
     // NOTE empty entry means error
     using Symbol = typename Grammar::Symbol;

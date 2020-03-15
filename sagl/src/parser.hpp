@@ -22,10 +22,9 @@ struct DefaultLR1Callback {
     }
 };
 
-template <class Grammar>
 struct Parser {
     using Symbol = typename Grammar::Symbol;
-    Table<Grammar> table;
+    Table table;
     const Grammar& grammar;
 
     Parser(const Grammar& grammar) : table(grammar), grammar(grammar)
