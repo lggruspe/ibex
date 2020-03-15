@@ -17,8 +17,6 @@ struct Table {
     std::map<int, std::map<Symbol, std::pair<Action, int>>> table;
     HandleSet<typename Grammar::Rule> rules;
 
-    Grammar const* grammar_ptr;
-
     Table(const Grammar& grammar) : grammar_ptr(&grammar)
     {
         for (const auto& rule: grammar.rules) {
@@ -47,6 +45,11 @@ struct Table {
         }
     }
 
+    bool is_terminal(const std::string& symbol) const
+    {
+        return grammar_ptr->is_terminal(symbol);
+    }
+
 private:
 
     void set(int q, Symbol c, Action a, int v = 0)
@@ -60,4 +63,6 @@ private:
         }
         entry = std::make_pair(a, v);
     }
+
+    Grammar const* grammar_ptr;
 };

@@ -40,7 +40,7 @@ static inline std::string jsonify_automaton(const Table& t)
                 "action": @action@
             })";
             find_and_replace(entry, "@state@", std::to_string(state));
-            find_and_replace(entry, "@terminal@", t.grammar_ptr->is_terminal(symbol) ? "true" : "false");
+            find_and_replace(entry, "@terminal@", t.is_terminal(symbol) ? "true" : "false");
             find_and_replace(entry, "@type@",
                     action.first == Action::ERROR ? "error" :
                     action.first == Action::ACCEPT ? "accept" :
