@@ -3,3 +3,4 @@
 #include "sagl/grammar.hpp"
 #include "sagl/items.hpp"
 #include "sagl/tabulate.hpp"
+#include "sagl/jsonify.hpp"

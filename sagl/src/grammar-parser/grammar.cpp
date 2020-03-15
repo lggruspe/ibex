@@ -30,7 +30,7 @@ int main()
 
     Grammar result(rules);
     Table t(result);
-    auto s = t.jsonify();
+    auto s = jsonify(t);
     std::cout << s << std::endl;
     auto u = parse_grammar(R"(
         Grammar -> Rules.

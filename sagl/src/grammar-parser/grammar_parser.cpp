@@ -27,5 +27,5 @@ std::string parse_grammar(const std::string& s)
     auto rules = parser.parse(cb, ss);
     Grammar g(rules);
     Table t(g);
-    return t.jsonify();
+    return jsonify(t);
 }
