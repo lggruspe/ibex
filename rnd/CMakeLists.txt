@@ -11,7 +11,8 @@ add_library(regexp SHARED
 	src/rnd/automaton.cpp
 	src/rnd/nexpr.cpp
 	src/rnd/zsymbols.cpp
-	src/regexp/regexp.cxx)
+	src/regexp/regexp.cxx
+    ../sagl/src/sagl/tabulate.cpp)
 
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
@@ -51,7 +52,8 @@ add_executable(regexp.test
 	src/regexp/regexp.cxx
 	src/rnd/automaton.cpp
     src/rnd/nexpr.cpp
-    src/rnd/zsymbols.cpp)
+    src/rnd/zsymbols.cpp
+    ../sagl/src/sagl/tabulate.cpp)
 
 target_include_directories(regexp.test
     PUBLIC ${PUBLIC_INCLUDE_DIRS}
