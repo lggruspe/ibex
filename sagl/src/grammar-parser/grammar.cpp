@@ -4,12 +4,15 @@
 #include "parsetree.hpp"
 #include "scanner.hpp"
 #include <iostream>
+#include <map>
+#include <tuple>
+#include <vector>
 
 using namespace scanner;
 
 int main()
 {
-    Grammar g({
+    Grammar g("Grammar", {
         {"Grammar", {"Rules"}},
         {"Rules",   {"Rules", "Rule"}},
         {"Rules",   {}},
@@ -21,14 +24,15 @@ int main()
     Parser p(g);
     ParseTreeCallback callback;
 
-    std::vector<std::pair<std::string, std::vector<std::string>>> rules;
+    std::string start;
+    std::multimap<std::string, std::vector<std::string>> rules;
     try {
-        rules = p.parse(callback);
+        std::tie(start, rules) = p.parse(callback);
     } catch (SyntaxError e) {
         std::cout << e.what() << std::endl;
     }
 
-    Grammar result(rules);
+    Grammar result(start, rules);
     Table t(result);
     auto s = jsonify(t);
     std::cout << s << std::endl;

@@ -7,7 +7,7 @@
 
 using namespace scanner;
 
-Grammar grammar({
+Grammar grammar("Grammar", {
     {"Grammar", {"Rules"}},
     {"Rules",   {"Rules", "Rule"}},
     {"Rules",   {}},
@@ -24,8 +24,8 @@ std::string parse_grammar(const std::string& s)
     std::stringstream ss;
     ss << s;
     ParseTreeCallback cb;
-    auto rules = parser.parse(cb, ss);
-    Grammar g(rules);
+    auto [start, rules] = parser.parse(cb, ss);
+    Grammar g(start, rules);
     Table t(g);
     return jsonify(t);
 }

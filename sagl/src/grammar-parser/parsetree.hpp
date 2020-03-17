@@ -1,6 +1,7 @@
 #pragma once
 #include <cassert>
 #include <iostream>
+#include <map>
 #include <memory>
 #include <utility>
 #include <vector>
@@ -52,7 +53,11 @@ struct ParseTreeCallback {
         if (!acc) {
             throw SyntaxError();
         }
-        return rules;
+        std::multimap<std::string, Sentence> grammar_rules;
+        for (const auto& rule: rules) {
+            grammar_rules.insert(rule);
+        }
+        return std::make_pair(rules[0].first, grammar_rules);
     }
 
     void shift(const std::pair<std::string, std::string>& lookahead)

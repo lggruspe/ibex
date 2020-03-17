@@ -6,7 +6,7 @@
 
 int main()
 {
-    Grammar g({
+    Grammar g("S", {
         {"S", {"A"}},
         {"A", {"a", "A", "b"}},
         {"A", {}},

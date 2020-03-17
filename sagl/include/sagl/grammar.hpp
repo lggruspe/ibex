@@ -1,6 +1,5 @@
 #pragma once
 #include <map>
-#include <set>
 #include <string>
 #include <vector>
 
@@ -13,17 +12,14 @@ struct Grammar {
     using Sentence = std::vector<Symbol>;
     using Rule = std::pair<Symbol, Sentence>;
 
-    std::multimap<Symbol, Sentence> rules;
     Symbol start;
+    std::multimap<Symbol, Sentence> rules;
     char const * const empty = "empty";
 
-    Grammar(const std::vector<Rule>& rules)
-        : start(rules.front().first)
-    {
-        for (const auto& p: rules) {
-            this->rules.insert(p);
-        }
-    }
+    Grammar(const Symbol& start, const decltype(rules)& rules)
+        : start(start)
+        , rules(rules)
+    {}
 
     bool is_terminal(const Symbol& symbol) const
     {

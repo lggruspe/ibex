@@ -32,7 +32,7 @@ element -> symbol
 element -> symbol dash symbol
 */
 
-Grammar g({
+Grammar g("start", {
     {"start",       {"expr"}},
     {"expr",        {"expr", "pipe", "term"}},
     {"expr",        {"term"}},
