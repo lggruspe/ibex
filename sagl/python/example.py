@@ -17,7 +17,7 @@ Rhs     -> .
 """)
 
 doc = codegen.render("parser.hpp", context={
-    "table": m["automaton"],
+    "table": m["table"],
     "grammar": m["grammar"],
 })
 

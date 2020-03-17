@@ -1,9 +1,9 @@
 #pragma once
-{% if config and config.scanner_file %}
+{%- if config and config.scanner_file %}
 #include "{{ config.scanner_file }}"
-{% else %}
+{%- else %}
 #include "scanner.hpp"
-{% endif %}
+{%- endif %}
 #include <iostream>
 #include <map>
 #include <memory>
@@ -14,34 +14,31 @@
 
 enum class Action { ERROR = 0, GOTO, SHIFT, REDUCE, ACCEPT };
 
-{% if config and config.parser_namespace %}
+{%- if config and config.parser_namespace %}
 namespace {{ config.parser_namespace }}
 {
-{% endif %}
+{%- endif %}
 
-{% if config and config.scanner_namespace %}
+{%- if config and config.scanner_namespace %}
 using namespace {{ config.scanner_namespace }};
-{% endif %}
+{%- endif %}
 
 std::map<int, std::map<std::string, std::pair<Action, int>>> table {
-    {% for row in table %}
+    {%- for action in table %}
     {
-        {{ row }}, {
-            {% for entry in table[row] %}
+        {{ loop.index0 }}, {
+            {%- for entry in table[loop.index0] %}
             {"{{ entry.symbol }}", {Action::{{ entry.type|upper }}, {{ entry.value }}}},
-            {% endfor %}
+            {%- endfor %}
         }
     },
-    {% endfor %}
+    {%- endfor %}
 };
 
 const std::vector<std::pair<std::string, std::vector<std::string>>> rules = {
-    {% for rule in grammar %}
-    {
-        "{{ rule.lhs }}",
-        { {% for word in rule.rhs %}"{{ word }}",{% endfor %} }
-    },
-    {% endfor %}
+    {%- for rule in grammar %}
+    {"{{ rule.lhs }}", { {%- if rule.rhs %}{% for word in rule.rhs %}"{{ word }}"{% if not loop.last %}, {% endif %}{% endfor %}{% endif -%} }},
+    {%- endfor %}
 };
 
 auto scan(InputStack& in)
@@ -162,6 +159,6 @@ bool {% if config and config.parser_name %}{{ config.parser_name }}{% else %}par
     return {% if config and config.parser_name %}{{ config.parser_name }}{% else %}parse{% endif %}(ss, cb);
 }
 
-{% if config and config.parser_namespace %}
+{%- if config and config.parser_namespace %}
 };
-{% endif %}
+{%- endif %}
