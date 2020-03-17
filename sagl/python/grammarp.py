@@ -12,15 +12,3 @@ def parse_grammar(bnf):
     m = json.loads(ctypes.cast(s, ctypes.c_char_p).value)
     libsagl.grammarp_close(s)
     return m
-
-m = parse_grammar("""
-Grammar -> Rules.
-Rules   -> Rules Rule.
-Rules   -> .
-Rule    -> Lhs arrow Rhs dot.
-Lhs     -> identifier.
-Rhs     -> Rhs identifier.
-Rhs     -> .
-""")
-
-print(m)
