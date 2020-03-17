@@ -62,7 +62,9 @@ auto scan(InputStack& in)
     return std::make_pair(token, lexeme);
 }
 
-struct SyntaxError {};
+struct SyntaxError {
+    char const* what() const { return "syntax error"; }
+};
 
 struct BaseCallback {
     typedef bool (*ShiftHandler)(BaseCallback*, const std::pair<std::string, std::string>&);
