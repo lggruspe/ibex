@@ -143,7 +143,7 @@ bool {% if config and config.parser_name %}{{ config.parser_name }}{% else %}par
             if (bool ok = cb->handle_reduce(rule); !ok) {
                 return false;
             }
-            for (int i = 0; i < rule.second.size(); ++i) {
+            for (int i = 0; i < (int)rule.second.size(); ++i) {
                 states.pop_back();
             }
             states.push_back(table[states.back()][rule.first].second);
