@@ -21,7 +21,7 @@ target_include_directories(sagl PRIVATE
     ${PROJECT_SOURCE_DIR}/src
     ${PROJECT_SOURCE_DIR}/../tools)
 
-add_executable(main src/main.cpp src/sagl/tabulate.cpp)
+add_executable(main src/examples/main.cpp src/sagl/tabulate.cpp)
 
 list(APPEND INCLUDE_DIRECTORIES ${PROJECT_SOURCE_DIR} $)
 
