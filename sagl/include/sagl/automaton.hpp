@@ -2,6 +2,7 @@
 #include "handles.hpp"
 #include "grammar.hpp"
 #include "items.hpp"
+#include <cassert>
 #include <map>
 #include <set>
 #include <vector>
@@ -12,10 +13,12 @@ struct Automaton {
     using State = std::set<Item>;
     State start;
     const Grammar& grammar;
+    std::set<Symbol> grammar_symbols;
     std::map<int, std::map<Symbol, int>> transitions;
 
     Automaton(const Grammar& grammar) : grammar(grammar)
     {
+        compute_grammar_symbols();
         compute_first_sets();
         auto [lb, ub] = grammar.rules.equal_range(grammar.start);
         for (auto it = lb; it != ub; ++it) {
@@ -97,9 +100,21 @@ private:
         }
     }
 
+    void compute_grammar_symbols()
+    {
+        grammar_symbols.insert(grammar.empty);
+        for (const auto& p: grammar.rules) {
+            grammar_symbols.insert(p.first);
+            for (const auto& a: p.second) {
+                assert(a != grammar.start);
+                grammar_symbols.insert(a);
+            }
+        }
+    }
+
     void compute_first_sets()
     {
-        for (const auto& a: grammar.symbols) {
+        for (const auto& a: grammar_symbols) {
             first_sets[a];
             if (grammar.is_terminal(a)) {
                 first_sets[a].insert(a);
