@@ -1,4 +1,3 @@
-#include "sagl.hpp"
 #include "parser.hpp"
 #include "parsetree.hpp"
 #include "scanner.hpp"
@@ -6,17 +5,8 @@
 
 int main()
 {
-    Grammar g("S", {
-        {"S", {"A"}},
-        {"A", {"a", "A", "b"}},
-        {"A", {}},
-    });
-    Parser p(g);
-    ParseTreeCallback<decltype(g)::Symbol> callback;
-    try {
-        auto root = std::move(p.parse(callback));
-        std::cout << root << std::endl;
-    } catch (SyntaxError e) {
-        std::cout << e.what() << std::endl;
-    }
+    ParseTreeCallback cb;
+    bool ok = parse(std::cin, &cb);
+    auto root = std::move(cb.ast(ok));
+    std::cout << root << std::endl;
 }

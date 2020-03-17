@@ -54,3 +54,8 @@ set_property(TARGET sagl PROPERTY CXX_STANDARD 17)
 
 enable_testing()
 add_test("main test" "python3 tests/test.py")
+
+install(TARGETS sagl DESTINATION lib)
+install(FILES include/sagl.h DESTINATION include)
+
+target_compile_options(main PUBLIC -g -Wall -Wextra -Wpedantic)

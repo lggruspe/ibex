@@ -1,26 +1,23 @@
 #pragma once
+#include "parser.hpp"
 #include <iostream>
 #include <memory>
+#include <string>
 #include <utility>
 #include <vector>
 
-template <class Symbol>
 struct ParseTree {
-    using Tree = std::unique_ptr<ParseTree<Symbol>>;
+    using Symbol = std::string;
+    using Tree = std::unique_ptr<ParseTree>;
     std::vector<Tree> children;
     Symbol value;
 
     ParseTree(Symbol value) : value(value) {}
 };
 
-struct SyntaxError {
-    char const* what() const { return "syntax error"; }
-};
-
-template <class Symbol>
 std::ostream& operator<<(
     std::ostream& out,
-    std::unique_ptr<ParseTree<Symbol>>& node)
+    std::unique_ptr<ParseTree>& node)
 {
     if (node == nullptr) {
         return out << "nil";
@@ -38,41 +35,58 @@ std::ostream& operator<<(
     return out;
 }
 
-template <class Symbol>
-struct ParseTreeCallback {
+bool shift_symbol(BaseCallback* cb, const std::pair<std::string, std::string>& lookahead);
+
+bool reduce_rule(BaseCallback* cb, const std::pair<std::string, std::vector<std::string>>& rule);
+
+struct ParseTreeCallback: public BaseCallback {
+    using Symbol = std::string;
     using Rule = std::pair<Symbol, std::vector<Symbol>>;
     std::vector<Symbol> symbols;
-    std::vector<std::unique_ptr<ParseTree<Symbol>>> state;
+    std::vector<std::unique_ptr<ParseTree>> state;
 
-    auto accept(bool acc)
+    ParseTreeCallback()
     {
-        if (!acc) {
+        BaseCallback::shift("a", shift_symbol);
+        BaseCallback::shift("b", shift_symbol);
+        BaseCallback::reduce("S -> A", reduce_rule);
+        BaseCallback::reduce("A -> a A b", reduce_rule);
+        BaseCallback::reduce("A ->", reduce_rule);
+    }
+
+    auto ast(bool ok)
+    {
+        if (!ok) {
             throw SyntaxError();
         }
         return std::move(state.back());
     }
-
-    void shift(const std::pair<Symbol, std::string>& lookahead)
-    {
-        auto a = lookahead.first;
-        symbols.push_back(a);
-        state.push_back(std::make_unique<ParseTree<Symbol>>(a));
-    }
-
-    void reduce(const Rule& rule)
-    {
-        auto node = std::make_unique<ParseTree<Symbol>>(rule.first);
-        std::vector<decltype(node)> children;
-        for (int i = 0; i < (int)(rule.second.size()); ++i) {
-            symbols.pop_back();
-            children.push_back(std::move(state.back()));
-            state.pop_back();
-        }
-        while (!children.empty()) {
-            node->children.push_back(std::move(children.back()));
-            children.pop_back();
-        }
-        symbols.push_back(rule.first);
-        state.push_back(std::move(node));
-    }
 };
+
+bool shift_symbol(BaseCallback* cb, const std::pair<std::string, std::string>& lookahead)
+{
+    ParseTreeCallback* self = (ParseTreeCallback*)cb;
+    auto a = lookahead.first;
+    self->symbols.push_back(a);
+    self->state.push_back(std::make_unique<ParseTree>(a));
+    return true;
+}
+
+bool reduce_rule(BaseCallback* cb, const std::pair<std::string, std::vector<std::string>>& rule)
+{
+    ParseTreeCallback* self = (ParseTreeCallback*)cb;
+    auto node = std::make_unique<ParseTree>(rule.first);
+    std::vector<decltype(node)> children;
+    for (int i = 0; i < (int)(rule.second.size()); ++i) {
+        self->symbols.pop_back();
+        children.push_back(std::move(self->state.back()));
+        self->state.pop_back();
+    }
+    while (!children.empty()) {
+        node->children.push_back(std::move(children.back()));
+        children.pop_back();
+    }
+    self->symbols.push_back(rule.first);
+    self->state.push_back(std::move(node));
+    return true;
+}

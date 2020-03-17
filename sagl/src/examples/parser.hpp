@@ -1,87 +1,185 @@
 #pragma once
-#include "sagl/tabulate.hpp"
 #include "scanner.hpp"
+#include <iostream>
+#include <map>
+#include <memory>
+#include <sstream>
 #include <string>
 #include <utility>
 #include <vector>
 
-template <class Symbol>
-struct DefaultLR1Callback {
-    bool accept(bool acc) { return acc; }
+enum class Action { ERROR = 0, GOTO, SHIFT, REDUCE, ACCEPT };
 
-    using Rule = std::pair<Symbol, std::vector<Symbol>>;
-
-    void shift(const std::pair<Symbol, std::string>& lookahead)
+std::map<int, std::map<std::string, std::pair<Action, int>>> table {
     {
-        (void)lookahead;
+        0, {
+            {"A", {Action::GOTO, 1}},
+            {"a", {Action::SHIFT, 2}},
+            {"empty", {Action::REDUCE, 1}},
+        }
+    },
+    {
+        1, {
+            {"empty", {Action::ACCEPT, 0}},
+        }
+    },
+    {
+        2, {
+            {"A", {Action::GOTO, 3}},
+            {"a", {Action::SHIFT, 4}},
+            {"b", {Action::REDUCE, 1}},
+        }
+    },
+    {
+        3, {
+            {"b", {Action::SHIFT, 5}},
+        }
+    },
+    {
+        4, {
+            {"A", {Action::GOTO, 6}},
+            {"a", {Action::SHIFT, 4}},
+            {"b", {Action::REDUCE, 1}},
+        }
+    },
+    {
+        5, {
+            {"empty", {Action::REDUCE, 0}},
+        }
+    },
+    {
+        6, {
+            {"b", {Action::SHIFT, 7}},
+        }
+    },
+    {
+        7, {
+            {"b", {Action::REDUCE, 0}},
+        }
+    },
+};
+
+const std::vector<std::pair<std::string, std::vector<std::string>>> rules = {
+    {"A", {"a", "A", "b"}},
+    {"A", {}},
+    {"S", {"A"}},
+};
+
+auto scan(InputStack& in)
+{
+    auto [token, lexeme] = match_longest<ALL_RECOGNIZERS>(in);
+    
+    if (std::string(token) == std::string()) {
+        uint32_t a = in.get();
+        uint32_t eof = std::char_traits<char>::eof();
+        if (a != eof) {
+            in.unget(a);
+            return std::make_pair("error", lexeme);
+        }
+    }
+    return std::make_pair(token, lexeme);
+}
+
+struct SyntaxError {
+    char const* what() const { return "syntax error"; }
+};
+
+struct BaseCallback {
+    typedef bool (*ShiftHandler)(BaseCallback*, const std::pair<std::string, std::string>&);
+    typedef bool (*ReduceHandler)(BaseCallback*, const std::pair<std::string, std::vector<std::string>>&);
+
+    std::map<std::string, std::vector<ShiftHandler>> shift_handlers;
+    std::map<std::string, std::vector<ReduceHandler>> reduce_handlers;
+
+    void shift(const std::string& token, ShiftHandler handler)
+    {
+        shift_handlers[token].push_back(handler);
     }
 
-    void reduce(const Rule& rule)
+    void reduce(const std::string& rule, ReduceHandler handler)
     {
-        (void)rule;
+        reduce_handlers[rule].push_back(handler);
+    }
+
+    bool handle_shift(const std::pair<std::string, std::string>& lookahead)
+    {
+        auto it = shift_handlers.find(lookahead.first);
+        if (it == shift_handlers.end()) {
+            return false;
+        }
+        for (auto f: it->second) {
+            if (bool ok = f(this, lookahead); !ok) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    bool handle_reduce(const std::pair<std::string, std::vector<std::string>>& rule)
+    {
+        std::string key = rule.first + " ->";
+        for (const auto& word: rule.second) {
+            key += " " + word;
+        }
+        auto it = reduce_handlers.find(key);
+        if (it == reduce_handlers.end()) {
+            return false;
+        }
+        for (auto f: it->second) {
+            if (bool ok = f(this, rule); !ok) {
+                return false;
+            }
+        }
+        return true;
     }
 };
 
-struct Parser {
-    using Symbol = typename Grammar::Symbol;
-    Table table;
-    const Grammar& grammar;
-
-    Parser(const Grammar& grammar) : table(grammar), grammar(grammar)
-    {}
-
-    template <class Handler>
-    auto parse(Handler& handler)
-    {
-        InputStack in;
-        std::vector<int> states = {0};
-        auto lookahead = scan(in);
-        for (;;) {
-            auto action = table.table[states.back()][lookahead.first];
-            switch (action.first) {
-            case Action::ACCEPT:
-                return handler.accept(true);
-            case Action::REDUCE: {
-                const auto& rule = table.rules.value(action.second);
-                handler.reduce(rule);
-                for (auto it = rule.second.begin(); it != rule.second.end(); ++it) {
-                    states.pop_back();
-                }
-                states.push_back(table.table[states.back()][rule.first].second);
-                break;
-             }
-            case Action::SHIFT:
-                states.push_back(action.second);
-                handler.shift(lookahead);
-                lookahead = scan(in);
-                break;
-            default:
-                return handler.accept(false);
+bool parse(
+        std::istream& is = std::cin,
+        BaseCallback* cb = nullptr)
+{
+    InputStack input_stack(is);
+    std::vector<int> states{0};
+    std::pair<std::string, std::string> lookahead = scan(input_stack);
+    std::unique_ptr<BaseCallback> cb_ptr;
+    if (!cb) {
+        cb_ptr = std::make_unique<BaseCallback>();
+        cb = cb_ptr.get();
+    }
+    for (;;) {
+        auto action = table[states.back()][lookahead.first];
+        switch (action.first) {
+        case Action::ACCEPT:
+            return true;
+        case Action::SHIFT:
+            if (bool ok = cb->handle_shift(lookahead); !ok) {
+                return false;
             }
-        }
-        return handler.accept(false);
-    }
-
-    bool parse()
-    {
-        DefaultLR1Callback<Symbol> handler;
-        return parse(handler);
-    }
-
-private:
-    std::pair<char const *, std::string> scan(InputStack& in)
-    {
-        auto [token, lexeme] = match_longest<ALL_RECOGNIZERS>(in);
-        if (token == "whitespace") {
-            return scan(in);
-        } else if (std::string(token) == std::string(grammar.empty)) {
-            uint32_t a = in.get();
-            uint32_t eof = std::char_traits<char>::eof();
-            if (a != eof) {
-                in.unget(a);
-                return std::make_pair("error", lexeme);
+            lookahead = scan(input_stack);
+            states.push_back(action.second);
+            break;
+        case Action::REDUCE: {
+            const auto& rule = rules[action.second];
+            if (bool ok = cb->handle_reduce(rule); !ok) {
+                return false;
             }
+            for (int i = 0; i < (int)rule.second.size(); ++i) {
+                states.pop_back();
+            }
+            states.push_back(table[states.back()][rule.first].second);
+            break;
         }
-        return std::make_pair(token, lexeme);
+        default:
+            return false;
+        }
     }
-};
+}
+
+bool parse(
+        const std::string& s,
+        BaseCallback* cb = nullptr)
+{
+    std::stringstream ss;
+    ss << s;
+    return parse(ss, cb);
+}
