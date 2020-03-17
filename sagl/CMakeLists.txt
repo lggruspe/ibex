@@ -30,14 +30,6 @@ target_include_directories(main PUBLIC
     ${PROJECT_SOURCE_DIR}/include
     ${PROJECT_SOURCE_DIR}/../tools)
 
-add_executable(json src/json.cpp src/sagl/tabulate.cpp)
-
-target_include_directories(json PUBLIC
-    ${PROJECT_SOURCE_DIR}/include
-    ${PROJECT_SOURCE_DIR}/../tools)
-
-target_link_libraries(json PUBLIC grammar_parser)
-
 add_executable(grammar src/grammar-parser/grammar.cpp src/sagl/tabulate.cpp)
 
 target_include_directories(grammar PUBLIC
@@ -47,7 +39,6 @@ target_include_directories(grammar PUBLIC
 target_link_libraries(grammar PUBLIC grammar_parser)
 
 set_property(TARGET main PROPERTY CXX_STANDARD 17)
-set_property(TARGET json PROPERTY CXX_STANDARD 17)
 set_property(TARGET grammar PROPERTY CXX_STANDARD 17)
 set_property(TARGET grammar_parser PROPERTY CXX_STANDARD 17)
 set_property(TARGET sagl PROPERTY CXX_STANDARD 17)
