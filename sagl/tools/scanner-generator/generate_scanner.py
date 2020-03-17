@@ -18,7 +18,7 @@ def main():
         "scanner": convert(from_class(Scanner)),
         "config": None,
     })
-    relpath = "../../src/scanner.hpp"
+    relpath = "../../src/examples/scanner.hpp"
     with open(abspath(join(dirname(__file__), relpath)), "w") as f:
         print(code, file=f)
 
