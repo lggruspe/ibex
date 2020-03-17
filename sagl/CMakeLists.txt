@@ -14,7 +14,7 @@ target_include_directories(grammar_parser PRIVATE
     ${PROJECT_SOURCE_DIR}/include
     ${PROJECT_SOURCE_DIR}/../tools)
 
-add_library(sagl SHARED src/sagl.cxx src/grammar-parser/grammar_parser.cpp)
+add_library(sagl SHARED src/sagl.cxx src/grammar-parser/grammar_parser.cpp src/sagl/tabulate.cpp)
 
 target_include_directories(sagl PRIVATE
     ${PROJECT_SOURCE_DIR}/include
