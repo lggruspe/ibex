@@ -14,59 +14,6 @@ static inline void find_and_replace(
     }
 }
 
-static inline std::string jsonify_automaton(const Table& t)
-{
-    /* format (example):
-     * "automaton": [
-     *     {
-     *         "state": 0,
-     *         "symbol": "A",
-     *         "terminal": false,
-     *         "type": "reduce",
-     *         "action": 5
-     *     },
-     *     ...
-     * ]
-     */
-    std::vector<std::string> entries;
-    for (const auto& [state, actions]: t.table) {
-        for (const auto& [symbol, action]: actions) {
-            std::string entry = R"(
-            {
-                "state": @state@,
-                "symbol": "@symbol@",
-                "terminal": @terminal@,
-                "type": "@type@",
-                "action": @action@
-            })";
-            find_and_replace(entry, "@state@", std::to_string(state));
-            find_and_replace(entry, "@terminal@", t.is_terminal(symbol) ? "true" : "false");
-            find_and_replace(entry, "@type@",
-                    action.first == Action::ERROR ? "error" :
-                    action.first == Action::ACCEPT ? "accept" :
-                    action.first == Action::GOTO ? "goto" :
-                    action.first == Action::REDUCE ? "reduce" :
-                    action.first == Action::SHIFT ? "shift"
-                        : "error");
-            find_and_replace(entry, "@action@",
-                    action.first == Action::ERROR ? "0" : std::to_string(action.second));
-            // @symbol@ is replaced last, because symbol might contain
-            // @...@, which could affect the other substitutions
-            find_and_replace(entry, "@symbol@", symbol);
-            entries.push_back(entry);
-        }
-    }
-    std::string automaton = "[\n";
-    if (!entries.empty()) {
-        automaton += entries[0];
-        for (int i = 1; i < entries.size(); ++i) {
-            automaton += ",\n" + entries[i];
-        }
-    }
-    automaton += "\n]";
-    return automaton;
-}
-
 static inline std::string join(
         const std::vector<std::string>& s,
         const std::string& sep = "")
@@ -79,6 +26,73 @@ static inline std::string join(
         t += sep + s[i];
     }
     return t;
+}
+
+static inline std::string jsonify_action(
+        int state,
+        const std::string& symbol,
+        Action type,
+        int value)
+{
+    std::string action = R"(
+    {
+        "state": @state@,
+        "symbol": "@symbol@",
+        "type": "@type@",
+        "value": @value@
+    })";
+    find_and_replace(action, "@value@", std::to_string(value));
+    find_and_replace(action, "@type@",
+            type == Action::GOTO ? "goto" :
+            type == Action::SHIFT ? "shift" :
+            type == Action::REDUCE ? "reduce" :
+            type == Action::ACCEPT ? "accept" :
+            "error");
+    find_and_replace(action, "@symbol@", symbol);
+    find_and_replace(action, "@state@", std::to_string(state));
+    return action;
+}
+
+static inline std::string jsonify_actions(
+        const Table& t,
+        int state,
+        const std::map<std::string, std::pair<Action, int>>& state_actions)
+{
+    std::vector<std::string> actions;
+    for (const auto& [symbol, action]: state_actions) {
+        actions.push_back(jsonify_action(state, symbol, action.first, action.second));
+    }
+    return "[" + join(actions, " ,") + "]";
+}
+
+static inline std::string jsonify_table(const Table& t)
+{
+    /* format (example):
+     * "table": [
+     *     {
+     *         "state": 0,
+     *         "symbol": "A",
+     *         "terminal": false,
+     *         "type": "reduce",
+     *         "action": 5
+     *     },
+     *     ...
+     * ]
+     */
+    std::vector<std::string> rows;
+    for (const auto& [state, actions]: t.table) {
+        rows.push_back(jsonify_actions(t, state, actions));
+    }
+    return "[" + join(rows, ",") + "]";
+}
+
+static inline std::string jsonify_rhs(const std::vector<std::string>& rhs)
+{
+    std::vector<std::string> words;
+    for (const auto& word: rhs) {
+        words.push_back("\"" + word + "\"");
+    }
+    return "[" + join(words, ", ") + "]";
 }
 
 template <class Rule = std::pair<std::string, std::vector<std::string>>>
@@ -94,7 +108,7 @@ static inline std::string jsonify_rule(int id, const Rule& rule)
     const auto& [lhs, rhs] = rule;
     find_and_replace(json, "@rule@", "\"" + lhs + " -> " + join(rhs, " ") + "\"");
     find_and_replace(json, "@lhs@", "\"" + lhs + "\"");
-    find_and_replace(json, "@rhs@", "[\"" + join(rhs, "\", \"") + "\"]");
+    find_and_replace(json, "@rhs@", jsonify_rhs(rhs));
     find_and_replace(json, "@id@", std::to_string(id));
     return json;
 }
@@ -116,10 +130,10 @@ static inline std::string jsonify(const Table& t)
 {
     std::string json = R"(
     {
-        "automaton": @automaton@,
+        "table": @table@,
         "grammar": @grammar@
     })";
     find_and_replace(json, "@grammar@", jsonify_grammar(t));
-    find_and_replace(json, "@automaton@", jsonify_automaton(t));
+    find_and_replace(json, "@table@", jsonify_table(t));
     return json;
 }
