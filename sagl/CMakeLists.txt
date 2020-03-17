@@ -21,7 +21,7 @@ target_include_directories(sagl PRIVATE
     ${PROJECT_SOURCE_DIR}/src
     ${PROJECT_SOURCE_DIR}/../tools)
 
-add_executable(main src/main.cpp)
+add_executable(main src/main.cpp src/sagl/tabulate.cpp)
 
 list(APPEND INCLUDE_DIRECTORIES ${PROJECT_SOURCE_DIR} $)
 
@@ -30,7 +30,7 @@ target_include_directories(main PUBLIC
     ${PROJECT_SOURCE_DIR}/include
     ${PROJECT_SOURCE_DIR}/../tools)
 
-add_executable(json src/json.cpp)
+add_executable(json src/json.cpp src/sagl/tabulate.cpp)
 
 target_include_directories(json PUBLIC
     ${PROJECT_SOURCE_DIR}/include
@@ -38,7 +38,7 @@ target_include_directories(json PUBLIC
 
 target_link_libraries(json PUBLIC grammar_parser)
 
-add_executable(grammar src/grammar-parser/grammar.cpp)
+add_executable(grammar src/grammar-parser/grammar.cpp src/sagl/tabulate.cpp)
 
 target_include_directories(grammar PUBLIC
     ${PROJECT_SOURCE_DIR}/include

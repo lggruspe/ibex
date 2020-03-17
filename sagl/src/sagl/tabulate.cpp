@@ -1,6 +1,6 @@
-#pragma once
+#include "sagl/tabulate.hpp"
+#include "sagl/grammar.hpp"
 #include "handles.hpp"
-#include "grammar.hpp"
 #include <cassert>
 #include <map>
 #include <set>
@@ -198,3 +198,43 @@ private:
         return first_set;
     }
 };
+
+void Table::set(int q, Symbol c, Action a, int v = 0)
+{
+    auto& entry = table[q][c];
+    if (entry != std::make_pair(Action::ERROR, 0)) {
+        if (entry.first == a) {
+            throw ReduceReduceConflict();
+        }
+        throw ShiftReduceConflict();
+    }
+    entry = std::make_pair(a, v);
+}
+
+Table::Table(const Grammar& grammar) : grammar_ptr(&grammar)
+{
+    for (const auto& rule: grammar.rules) {
+        rules.insert(rule);
+    }
+    Automaton m(grammar);
+    for (const auto& [state, p]: m) {
+        // set shifts and gotos
+        for (const auto& [a, q]: m.transitions[p]) {
+            if (grammar.is_terminal(a)) {
+                set(p, a, Action::SHIFT, q);
+            } else {
+                set(p, a, Action::GOTO, q);
+            }
+        }
+        // set accepts and reductions
+        for (const auto& item: state) {
+            if (item.is_complete()) {
+                if (item.rule.first == grammar.start && item.lookahead == Symbol(grammar.empty)) {
+                    set(p, item.lookahead, Action::ACCEPT);
+                } else {
+                    set(p, item.lookahead, Action::REDUCE, rules.index(item.rule));
+                }
+            }
+        }
+    }
+}
