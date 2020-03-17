@@ -28,7 +28,7 @@ std::map<int, std::map<std::string, std::pair<Action, int>>> table {
     {
         {{ row }}, {
             {% for entry in table[row] %}
-            {"{{ entry.symbol }}", {Action::{{ entry::type|upper }}, {{ entry.value }}}},
+            {"{{ entry.symbol }}", {Action::{{ entry.type|upper }}, {{ entry.value }}}},
             {% endfor %}
         }
     },
@@ -70,7 +70,7 @@ struct SyntaxError {}
 struct BaseCallback {
     typedef void (*ShiftHandler)(BaseCallback*, const std::pair<std::string, std::string>&);
     typedef void (*ReduceHandler)(BaseCallback*, const std::pair<std::string, std::vector<std::string>>&);
-    
+
     std::map<std::string, std::vector<ShiftHandler>> shift_handlers;
     std::map<std::string, std::vector<ReduceHandler>> reduce_handlers;
 
