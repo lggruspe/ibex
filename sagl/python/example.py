@@ -19,6 +19,9 @@ Rhs     -> .
 doc = codegen.render("parser.hpp", context={
     "table": m["table"],
     "grammar": m["grammar"],
+    "config": {
+        "scanner_namespace": "scanner",
+    },
 })
 
 print(doc)

@@ -62,11 +62,11 @@ auto scan(InputStack& in)
     return std::make_pair(token, lexeme);
 }
 
-struct SyntaxError {}
+struct SyntaxError {};
 
 struct BaseCallback {
-    typedef void (*ShiftHandler)(BaseCallback*, const std::pair<std::string, std::string>&);
-    typedef void (*ReduceHandler)(BaseCallback*, const std::pair<std::string, std::vector<std::string>>&);
+    typedef bool (*ShiftHandler)(BaseCallback*, const std::pair<std::string, std::string>&);
+    typedef bool (*ReduceHandler)(BaseCallback*, const std::pair<std::string, std::vector<std::string>>&);
 
     std::map<std::string, std::vector<ShiftHandler>> shift_handlers;
     std::map<std::string, std::vector<ReduceHandler>> reduce_handlers;
@@ -95,7 +95,7 @@ struct BaseCallback {
         return true;
     }
 
-    void handle_reduce(const std::pair<std::string, std::vector<std::string>>& rule)
+    bool handle_reduce(const std::pair<std::string, std::vector<std::string>>& rule)
     {
         std::string key = rule.first + " ->";
         for (const auto& word: rule.second) {
@@ -132,18 +132,23 @@ bool {% if config and config.parser_name %}{{ config.parser_name }}{% else %}par
         case Action::ACCEPT:
             return true;
         case Action::SHIFT:
-            cb->handle_shift(lookahead);
+            if (bool ok = cb->handle_shift(lookahead); !ok) {
+                return false;
+            }
             lookahead = scan(input_stack);
             states.push_back(action.second);
             break;
-        case Action::REDUCE:
+        case Action::REDUCE: {
             const auto& rule = rules[action.second];
-            cb->handle_reduce(rule);
+            if (bool ok = cb->handle_reduce(rule); !ok) {
+                return false;
+            }
             for (int i = 0; i < rule.second.size(); ++i) {
                 states.pop_back();
             }
             states.push_back(table[states.back()][rule.first].second);
             break;
+        }
         default:
             return false;
         }
