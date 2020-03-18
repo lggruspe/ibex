@@ -1,38 +1,12 @@
 #include "regexp.h"
 #include "regexp/eval.hpp"
-#include "regexp/parser.hpp"
-#include "regexp/scanner.hpp"
-#include "sagl.hpp"
+#include "regexp/parser/parser.hpp"
 #include <cstdlib>
 #include <cstring>
 #include <sstream>
 #include <string>
 
 using namespace scanner;
-
-Grammar g("start", {
-    {"start",       {"expr"}},
-    {"expr",        {"expr", "pipe", "term"}},
-    {"expr",        {"term"}},
-    {"term",        {"term", "factor"}},
-    {"term",        {"factor"}},
-    {"factor",      {"value", "star"}},
-    {"factor",      {"value", "plus"}},
-    {"factor",      {"value", "question"}},
-    {"factor",      {"value"}},
-    {"value",       {"simple"}},
-    {"value",       {"compound"}},
-    {"simple",      {"dot"}},
-    {"simple",      {"symbol"}},
-    {"compound",    {"lparen", "expr", "rparen"}},
-    {"compound",    {"lbracket", "list", "rbracket"}},
-    {"list",        {"list", "element"}},
-    {"list",        {"element"}},
-    {"element",     {"symbol"}},
-    {"element",     {"symbol", "dash", "symbol"}},
-});
-
-Parser parser(g);
 
 char const* serialize(const rnd::Automaton& fsm)
 {
@@ -81,10 +55,9 @@ char const* serialize(const rnd::Automaton& fsm)
 
 char const* regexp_open(char const* re)
 {
-    std::string s = re;
-    std::istringstream is(s);
-    eval::Callback<decltype(g)::Symbol> cb;
-    auto m = parser.parse(cb, is);
+    eval::Callback cb;
+    bool ok = parser::parse(re, &cb);
+    auto m = cb.accept(ok);
     return serialize(m);
 }
 

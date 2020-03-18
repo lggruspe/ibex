@@ -89,7 +89,7 @@ struct BaseCallback {
         reduce_handlers[rule].push_back(handler);
     }
 
-    bool handle_shift(const std::pair<std::string, std::string>& lookahead)
+    virtual bool handle_shift(const std::pair<std::string, std::string>& lookahead)
     {
         auto it = shift_handlers.find(lookahead.first);
         if (it == shift_handlers.end()) {
@@ -103,7 +103,7 @@ struct BaseCallback {
         return true;
     }
 
-    bool handle_reduce(const std::pair<std::string, std::vector<std::string>>& rule)
+    virtual bool handle_reduce(const std::pair<std::string, std::vector<std::string>>& rule)
     {
         std::string key = rule.first + " ->";
         for (const auto& word: rule.second) {
