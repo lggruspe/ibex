@@ -1,5 +1,5 @@
 #pragma once
-#include "regexp/scanner.hpp"
+#include "regexp/parser/scanner.hpp"
 #include "rnd/automaton.hpp"
 #include "rnd/nexpr.hpp"
 #include "rnd/zsymbols.hpp"
