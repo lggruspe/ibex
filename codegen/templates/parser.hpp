@@ -12,8 +12,6 @@
 #include <utility>
 #include <vector>
 
-enum class Action { ERROR = 0, GOTO, SHIFT, REDUCE, ACCEPT };
-
 {%- if config and config.parser_namespace %}
 namespace {{ config.parser_namespace }}
 {
@@ -22,6 +20,8 @@ namespace {{ config.parser_namespace }}
 {%- if config and config.scanner_namespace %}
 using namespace {{ config.scanner_namespace }};
 {%- endif %}
+
+enum class Action { ERROR = 0, GOTO, SHIFT, REDUCE, ACCEPT };
 
 std::map<int, std::map<std::string, std::pair<Action, int>>> table {
     {%- for action in table %}
