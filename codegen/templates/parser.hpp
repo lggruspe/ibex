@@ -66,12 +66,18 @@ struct SyntaxError {
     char const* what() const { return "syntax error"; }
 };
 
+template <class T>
 struct BaseCallback {
-    typedef bool (*ShiftHandler)(BaseCallback*, const std::pair<std::string, std::string>&);
-    typedef bool (*ReduceHandler)(BaseCallback*, const std::pair<std::string, std::vector<std::string>>&);
+    using ShiftHandler = bool (*)(T&, const std::pair<std::string, std::string>&);
+    using ReduceHandler = bool (*)(T&, const std::pair<std::string, std::vector<std::string>>&);
 
     std::map<std::string, std::vector<ShiftHandler>> shift_handlers;
     std::map<std::string, std::vector<ReduceHandler>> reduce_handlers;
+    T state;
+
+    BaseCallback() {}
+
+    BaseCallback(const T& state) : state(state) {}
 
     void shift(const std::string& token, ShiftHandler handler)
     {
@@ -90,7 +96,7 @@ struct BaseCallback {
             return false;
         }
         for (auto f: it->second) {
-            if (bool ok = f(this, lookahead); !ok) {
+            if (bool ok = f(state, lookahead); !ok) {
                 return false;
             }
         }
@@ -108,7 +114,7 @@ struct BaseCallback {
             return false;
         }
         for (auto f: it->second) {
-            if (bool ok = f(this, rule); !ok) {
+            if (bool ok = f(state, rule); !ok) {
                 return false;
             }
         }
@@ -116,16 +122,17 @@ struct BaseCallback {
     }
 };
 
+template <class T>
 bool {% if config and config.parser_name %}{{ config.parser_name }}{% else %}parse{% endif %}(
         std::istream& is = std::cin,
-        BaseCallback* cb = nullptr)
+        BaseCallback<T>* cb = nullptr)
 {
     InputStack input_stack(is);
     std::vector<int> states{0};
     std::pair<std::string, std::string> lookahead = scan(input_stack);
-    std::unique_ptr<BaseCallback> cb_ptr;
+    std::unique_ptr<BaseCallback<T>> cb_ptr;
     if (!cb) {
-        cb_ptr = std::make_unique<BaseCallback>();
+        cb_ptr = std::make_unique<BaseCallback<T>>();
         cb = cb_ptr.get();
     }
     for (;;) {
@@ -157,9 +164,10 @@ bool {% if config and config.parser_name %}{{ config.parser_name }}{% else %}par
     }
 }
 
+template <class T>
 bool {% if config and config.parser_name %}{{ config.parser_name }}{% else %}parse{% endif %}(
         const std::string& s,
-        BaseCallback* cb = nullptr)
+        BaseCallback<T>* cb = nullptr)
 {
     std::stringstream ss;
     ss << s;
