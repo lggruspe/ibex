@@ -62,10 +62,10 @@ parser = render("parser.hpp", context={
     }
 })
 
-outdir = join(BASEDIR, "rnd/src/regexp")
+outdir = join(BASEDIR, "rnd/src/regexp/parser")
 
 with open(join(outdir, "scanner.hpp"), "w") as f:
     print(scanner, file=f)
 
-#with open(join(outdir, "parser.hpp"), "w") as f:
-#    print(parser, file=f)
+with open(join(outdir, "parser.hpp"), "w") as f:
+    print(parser, file=f)
