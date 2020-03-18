@@ -1,12 +1,14 @@
 from os.path import abspath, dirname, join
 import sys
 
-BASEDIR = abspath(dirname(__file__))
-sys.path.append(join(BASEDIR, "../../codegen"))
-sys.path.append(join(BASEDIR, "../python"))
+BASEDIR = abspath(join(dirname(__file__), "../.."))
+sys.path.append(join(BASEDIR, "codegen"))
+sys.path.append(join(BASEDIR, "rnd/python"))
+sys.path.append(join(BASEDIR, "sagl/python"))
 
 from codegen import render
 from rnd import convert, from_class
+import grammarp
 
 class Scanner:
     pipe = r"\|"
@@ -24,16 +26,46 @@ class Scanner:
     __not_escaped = r"[\x0-\x5a\x5e-\xfffffffe]"
     symbol = rf"({__escaped})|({__hex})|({__not_escaped})"
 
-config = {"cpp_namespace": "scanner"}
+grammar = """
+start -> expr.
+expr -> expr pipe term.
+expr -> term.
+term -> term factor.
+term -> factor.
+factor -> value star.
+factor -> value plus.
+factor -> value question.
+factor -> value.
+value -> simple.
+value -> compound.
+simple -> dot.
+simple -> symbol.
+compound -> lparen expr rparen.
+compound -> lbracket list rbracket.
+list -> list element.
+list -> element.
+element -> symbol.
+element -> symbol dash symbol.
+"""
 
-def main():
-    code = render("template.cpp", context={
-        "scanner": convert(from_class(Scanner)),
-        "config": config,
-    })
-    relpath = "../src/regexp/scanner.hpp"
-    with open(join(BASEDIR, relpath), "w") as f:
-        print(code, file=f)
+scanner = render("template.cpp", context={
+    "scanner": convert(from_class(Scanner)),
+    "config": {
+        "cpp_namespace": "scanner",
+    }
+})
 
-if __name__ == "__main__":
-    main()
+parser = render("parser.hpp", context={
+    **grammarp.parse_grammar(grammar),
+    "config": {
+        "scanner_namespace": "scanner",
+    }
+})
+
+outdir = join(BASEDIR, "rnd/src/regexp")
+
+with open(join(outdir, "scanner.hpp"), "w") as f:
+    print(scanner, file=f)
+
+#with open(join(outdir, "parser.hpp"), "w") as f:
+#    print(parser, file=f)

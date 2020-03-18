@@ -10,28 +10,6 @@
 
 using namespace scanner;
 
-/*
-start -> expr
-expr -> expr pipe term
-expr -> term
-term -> term factor
-term -> factor
-factor -> value star
-factor -> value plus
-factor -> value question
-factor -> value
-value -> simple
-value -> compound
-simple -> dot
-simple -> symbol
-compound -> lparen expr rparen
-compound -> lbracket list rbracket
-list -> list element
-list -> element
-element -> symbol
-element -> symbol dash symbol
-*/
-
 Grammar g("start", {
     {"start",       {"expr"}},
     {"expr",        {"expr", "pipe", "term"}},
