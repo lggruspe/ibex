@@ -20,11 +20,11 @@ target_include_directories(sagl PRIVATE
     ${PROJECT_SOURCE_DIR}/include
     ${PROJECT_SOURCE_DIR}/src)
 
-add_executable(main src/sagl/examples/main.cpp src/sagl/internals/tabulate.cpp)
+add_executable(example examples/example.cpp src/sagl/internals/tabulate.cpp)
 
 list(APPEND INCLUDE_DIRECTORIES ${PROJECT_SOURCE_DIR} $)
 
-target_include_directories(main PUBLIC
+target_include_directories(example PUBLIC
     ${PROJECT_SOURCE_DIR}/src
     ${PROJECT_SOURCE_DIR}/include)
 
@@ -36,15 +36,15 @@ target_include_directories(grammar PUBLIC
 
 target_link_libraries(grammar PUBLIC grammar_parser)
 
-set_property(TARGET main PROPERTY CXX_STANDARD 17)
+set_property(TARGET example PROPERTY CXX_STANDARD 17)
 set_property(TARGET grammar PROPERTY CXX_STANDARD 17)
 set_property(TARGET grammar_parser PROPERTY CXX_STANDARD 17)
 set_property(TARGET sagl PROPERTY CXX_STANDARD 17)
 
 enable_testing()
-add_test("main test" "python3 tests/test.py")
+add_test("example test" "python3 tests/test.py")
 
 install(TARGETS sagl DESTINATION lib)
 install(FILES include/sagl.h DESTINATION include)
 
-target_compile_options(main PUBLIC -g -Wall -Wextra -Wpedantic)
+target_compile_options(example PUBLIC -g -Wall -Wextra -Wpedantic)
