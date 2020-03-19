@@ -41,7 +41,7 @@ const std::vector<std::pair<std::string, std::vector<std::string>>> rules = {
     {%- endfor %}
 };
 
-auto scan(InputStack& in)
+std::pair<std::string, std::string> scan(InputStack& in)
 {
     auto [token, lexeme] = match_longest<ALL_RECOGNIZERS>(in);
     {%- if config and config.parser_ignores %}

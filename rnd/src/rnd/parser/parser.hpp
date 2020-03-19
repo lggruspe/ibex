@@ -520,10 +520,9 @@ const std::vector<std::pair<std::string, std::vector<std::string>>> rules = {
     {"value", {"compound"}},
 };
 
-auto scan(InputStack& in)
+std::pair<std::string, std::string> scan(InputStack& in)
 {
     auto [token, lexeme] = match_longest<ALL_RECOGNIZERS>(in);
-    
     if (std::string(token) == std::string()) {
         uint32_t a = in.get();
         uint32_t eof = std::char_traits<char>::eof();
