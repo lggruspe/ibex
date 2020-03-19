@@ -6,7 +6,7 @@ A simple code generator that uses Jinja2 templates.
 Installation
 ------------
 
-`pip install codegen`.
+`pip install ibex-codegen`.
 
 Usage
 -----
