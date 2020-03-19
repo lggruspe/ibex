@@ -4,7 +4,6 @@ import sys
 BASEDIR = abspath(join(dirname(__file__), "../../.."))
 sys.path.append(join(BASEDIR, "codegen"))
 sys.path.append(join(BASEDIR, "rnd/python"))
-sys.path.append(join(BASEDIR, "sagl/python"))
 
 from codegen import render
 from rnd import convert, from_class
