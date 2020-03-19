@@ -44,13 +44,13 @@ const std::vector<std::pair<std::string, std::vector<std::string>>> rules = {
 auto scan(InputStack& in)
 {
     auto [token, lexeme] = match_longest<ALL_RECOGNIZERS>(in);
-    {% if config and config.parser_ignores %}
-    {% for ignore in config.parser_ignores %}
+    {%- if config and config.parser_ignores %}
+    {%- for ignore in config.parser_ignores %}
     if (token == "{{ ignore }}") {
         return scan(in);
     }
-    {% endfor %}
-    {% endif %}
+    {%- endfor %}
+    {%- endif %}
     if (std::string(token) == std::string({{ grammar.empty }})) {
         uint32_t a = in.get();
         uint32_t eof = std::char_traits<char>::eof();
