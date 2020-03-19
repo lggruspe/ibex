@@ -28,16 +28,7 @@ target_include_directories(example PUBLIC
     ${PROJECT_SOURCE_DIR}/src
     ${PROJECT_SOURCE_DIR}/include)
 
-add_executable(grammar src/sagl/grammar-parser/grammar.cpp src/sagl/internals/tabulate.cpp)
-
-target_include_directories(grammar PUBLIC
-    ${PROJECT_SOURCE_DIR}/include
-    ${PROJECT_SOURCE_DIR}/src)
-
-target_link_libraries(grammar PUBLIC grammar_parser)
-
 set_property(TARGET example PROPERTY CXX_STANDARD 17)
-set_property(TARGET grammar PROPERTY CXX_STANDARD 17)
 set_property(TARGET grammar_parser PROPERTY CXX_STANDARD 17)
 set_property(TARGET sagl PROPERTY CXX_STANDARD 17)
 
