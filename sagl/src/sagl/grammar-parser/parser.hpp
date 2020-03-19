@@ -1,5 +1,5 @@
 #pragma once
-#include "sagl/tabulate.hpp"
+#include "sagl/internals/tabulate.hpp"
 #include "scanner.hpp"
 #include <iostream>
 #include <string>

@@ -8,19 +8,19 @@ project(sagl
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-add_library(grammar_parser STATIC src/grammar-parser/grammar_parser.cpp)
+add_library(grammar_parser STATIC src/sagl/grammar-parser/grammar_parser.cpp)
 
 target_include_directories(grammar_parser PRIVATE
     ${PROJECT_SOURCE_DIR}/include
     ${PROJECT_SOURCE_DIR}/src)
 
-add_library(sagl SHARED src/sagl.cxx src/grammar-parser/grammar_parser.cpp src/sagl/tabulate.cpp)
+add_library(sagl SHARED src/sagl/sagl.cxx src/sagl/grammar-parser/grammar_parser.cpp src/sagl/internals/tabulate.cpp)
 
 target_include_directories(sagl PRIVATE
     ${PROJECT_SOURCE_DIR}/include
     ${PROJECT_SOURCE_DIR}/src)
 
-add_executable(main src/examples/main.cpp src/sagl/tabulate.cpp)
+add_executable(main src/sagl/examples/main.cpp src/sagl/internals/tabulate.cpp)
 
 list(APPEND INCLUDE_DIRECTORIES ${PROJECT_SOURCE_DIR} $)
 
@@ -28,7 +28,7 @@ target_include_directories(main PUBLIC
     ${PROJECT_SOURCE_DIR}/src
     ${PROJECT_SOURCE_DIR}/include)
 
-add_executable(grammar src/grammar-parser/grammar.cpp src/sagl/tabulate.cpp)
+add_executable(grammar src/sagl/grammar-parser/grammar.cpp src/sagl/internals/tabulate.cpp)
 
 target_include_directories(grammar PUBLIC
     ${PROJECT_SOURCE_DIR}/include

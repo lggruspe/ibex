@@ -1,4 +1,4 @@
-#include "sagl.hpp"
+#include "sagl/sagl.hpp"
 #include "grammar_parser.h"
 #include "parser.hpp"
 #include "parsetree.hpp"
