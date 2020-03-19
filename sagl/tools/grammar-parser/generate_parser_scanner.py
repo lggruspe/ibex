@@ -40,7 +40,7 @@ parser = render("parser.hpp", context={
     }
 })
 
-outdir = abspath(join(dirname(__file__), "../../src/sagl/grammar-parser"))
+outdir = abspath(join(dirname(__file__), "../../src/sagl/parser"))
 
 with open(join(outdir, "scanner.hpp"), "w") as f:
     print(scanner, file=f)
