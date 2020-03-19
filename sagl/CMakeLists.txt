@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.13)
 
 project(sagl
-    VERSION 0.4
+    VERSION 0.5
     DESCRIPTION "Parse table generator"
     LANGUAGES CXX)
 
@@ -12,14 +12,13 @@ add_library(grammar_parser STATIC src/grammar-parser/grammar_parser.cpp)
 
 target_include_directories(grammar_parser PRIVATE
     ${PROJECT_SOURCE_DIR}/include
-    ${PROJECT_SOURCE_DIR}/../tools)
+    ${PROJECT_SOURCE_DIR}/src)
 
 add_library(sagl SHARED src/sagl.cxx src/grammar-parser/grammar_parser.cpp src/sagl/tabulate.cpp)
 
 target_include_directories(sagl PRIVATE
     ${PROJECT_SOURCE_DIR}/include
-    ${PROJECT_SOURCE_DIR}/src
-    ${PROJECT_SOURCE_DIR}/../tools)
+    ${PROJECT_SOURCE_DIR}/src)
 
 add_executable(main src/examples/main.cpp src/sagl/tabulate.cpp)
 
@@ -27,14 +26,13 @@ list(APPEND INCLUDE_DIRECTORIES ${PROJECT_SOURCE_DIR} $)
 
 target_include_directories(main PUBLIC
     ${PROJECT_SOURCE_DIR}/src
-    ${PROJECT_SOURCE_DIR}/include
-    ${PROJECT_SOURCE_DIR}/../tools)
+    ${PROJECT_SOURCE_DIR}/include)
 
 add_executable(grammar src/grammar-parser/grammar.cpp src/sagl/tabulate.cpp)
 
 target_include_directories(grammar PUBLIC
     ${PROJECT_SOURCE_DIR}/include
-    ${PROJECT_SOURCE_DIR}/../tools)
+    ${PROJECT_SOURCE_DIR}/src)
 
 target_link_libraries(grammar PUBLIC grammar_parser)
 

@@ -3,13 +3,13 @@
 #include <cstdlib>
 #include <cstring>
 
-char const *grammarp_open(char const* bnf)
+char const *sagl_open(char const* bnf)
 {
     auto json = parse_grammar(bnf);
     return strdup(json.c_str());
 }
 
-void grammarp_close(void* m)
+void sagl_close(void* m)
 {
     free(m);
 }

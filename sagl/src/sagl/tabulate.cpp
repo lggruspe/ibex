@@ -1,6 +1,6 @@
-#include "sagl/tabulate.hpp"
-#include "sagl/grammar.hpp"
-#include "handles.hpp"
+#include "tabulate.hpp"
+#include "grammar.hpp"
+#include "utils/handles.hpp"
 #include <cassert>
 #include <map>
 #include <set>
