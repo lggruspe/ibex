@@ -9,11 +9,6 @@ Prerequisites
 
 Building the library requires a C++17 compiler.
 
-Usage
------
-
-See `examples/example.c` for examples in C.
-
 License
 -------
 
