@@ -1,9 +1,9 @@
 from os.path import abspath, dirname, join
 import sys
 
-BASEDIR = abspath(join(dirname(__file__), "../../.."))
-sys.path.append(join(BASEDIR, "codegen"))
-sys.path.append(join(BASEDIR, "rnd/python"))
+BASEDIR = abspath(join(dirname(__file__), "../.."))
+sys.path.append(join(BASEDIR, "python"))
+sys.path.append(join(BASEDIR, "python/codegen"))
 
 from codegen import render
 from rnd import convert, from_class
@@ -39,7 +39,7 @@ parser = render("parser.hpp", context={
     }
 })
 
-outdir = abspath(join(dirname(__file__), "../../src/sagl/parser"))
+outdir = join(BASEDIR, "src/sagl/parser")
 
 with open(join(outdir, "scanner.hpp"), "w") as f:
     print(scanner, file=f)

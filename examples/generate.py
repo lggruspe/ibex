@@ -1,9 +1,8 @@
 from os.path import abspath, dirname, join
 import sys
 
-BASEDIR = abspath(join(dirname(__file__), "../.."))
-sys.path.append(join(BASEDIR, "codegen"))
-sys.path.append(join(BASEDIR, "rnd/python"))
+sys.path.append(abspath(join(dirname(__file__), "../python")))
+sys.path.append(abspath(join(dirname(__file__), "../python/codegen")))
 
 import codegen
 import rnd
