@@ -1,6 +1,6 @@
 #define CATCH_CONFIG_MAIN
-#include "rnd/nexpr.hpp"
-#include "rnd/zsymbols.hpp"
+#include "nexpr.hpp"
+#include "zsymbols.hpp"
 #include <catch2/catch.hpp>
 #include <cstdint>
 #include <limits>

@@ -1,5 +1,5 @@
 #pragma once
-#include "rnd/zsymbols.hpp"
+#include "zsymbols.hpp"
 #include <map>
 #include <set>
 

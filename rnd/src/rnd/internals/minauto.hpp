@@ -1,7 +1,7 @@
 #pragma once
-#include "rnd/zsymbols.hpp"
-#include "rnd/automaton.hpp"
-#include "handles.hpp"
+#include "zsymbols.hpp"
+#include "automaton.hpp"
+#include "utils/handles.hpp"
 
 namespace rnd {
 

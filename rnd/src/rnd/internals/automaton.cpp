@@ -1,7 +1,7 @@
 #include "automaton.hpp"
-#include "handles.hpp"
-#include "rnd/nexpr.hpp"
-#include "rnd/zsymbols.hpp"
+#include "nexpr.hpp"
+#include "zsymbols.hpp"
+#include "utils/handles.hpp"
 #include <cassert>
 #include <iterator>
 #include <map>

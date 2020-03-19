@@ -1,6 +1,6 @@
-#include "regexp.h"
-#include "regexp/eval.hpp"
-#include "regexp/parser/parser.hpp"
+#include "rnd.h"
+#include "rnd/parser/eval.hpp"
+#include "rnd/parser/parser.hpp"
 #include <cstdlib>
 #include <cstring>
 #include <sstream>
@@ -53,7 +53,7 @@ char const* serialize(const rnd::Automaton& fsm)
     return strdup(json.str().c_str());
 }
 
-char const* regexp_open(char const* re)
+char const* rnd_open(char const* re)
 {
     eval::Callback cb;
     bool ok = parser::parse(re, &cb);
@@ -61,7 +61,7 @@ char const* regexp_open(char const* re)
     return serialize(m);
 }
 
-void regexp_close(void* re)
+void rnd_close(void* re)
 {
     free(re);
 }

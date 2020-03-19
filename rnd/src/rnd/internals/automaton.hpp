@@ -1,6 +1,6 @@
 #pragma once
-#include "rnd/zsymbols.hpp"
-#include "rnd/nexpr.hpp"
+#include "zsymbols.hpp"
+#include "nexpr.hpp"
 #include <map>
 
 namespace rnd {

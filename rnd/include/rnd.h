@@ -3,9 +3,9 @@
 #ifdef __cplusplus
 extern "C"
 #endif
-char const *regexp_open(char const *s);
+char const *rnd_open(char const *s);
 
 #ifdef __cplusplus
 extern "C"
 #endif
-void regexp_close(void *re);
+void rnd_close(void *re);

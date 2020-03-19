@@ -1,9 +1,9 @@
 #pragma once
-#include "regexp/parser/scanner.hpp"
-#include "regexp/parser/parser.hpp"
-#include "rnd/automaton.hpp"
-#include "rnd/nexpr.hpp"
-#include "rnd/zsymbols.hpp"
+#include "scanner.hpp"
+#include "parser.hpp"
+#include "rnd/internals/automaton.hpp"
+#include "rnd/internals/nexpr.hpp"
+#include "rnd/internals/zsymbols.hpp"
 #include <cstdint>
 #include <exception>
 #include <limits>

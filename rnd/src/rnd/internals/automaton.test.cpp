@@ -1,8 +1,8 @@
 #define CATCH_CONFIG_MAIN
-#include "rnd/minauto.hpp"
-#include "rnd/automaton.hpp"
-#include "rnd/nexpr.hpp"
-#include "rnd/zsymbols.hpp"
+#include "minauto.hpp"
+#include "automaton.hpp"
+#include "nexpr.hpp"
+#include "zsymbols.hpp"
 #include <catch2/catch.hpp>
 #include <tuple>
 

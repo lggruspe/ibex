@@ -1,5 +1,5 @@
 #define CATCH_CONFIG_MAIN
-#include "rnd/zsymbols.hpp"
+#include "zsymbols.hpp"
 #include <catch2/catch.hpp>
 #include <cstdint>
 #include <limits>

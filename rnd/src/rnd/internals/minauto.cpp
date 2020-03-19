@@ -1,6 +1,6 @@
-#include "rnd/minauto.hpp"
-#include "rnd/automaton.hpp"
-#include "rnd/zsymbols.hpp"
+#include "minauto.hpp"
+#include "automaton.hpp"
+#include "zsymbols.hpp"
 #include <map>
 #include <set>
 #include <vector>

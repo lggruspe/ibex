@@ -1,4 +1,4 @@
-#include "rnd/zsymbols.hpp"
+#include "zsymbols.hpp"
 #include <cassert>
 #include <cstdint>
 #include <iterator>
