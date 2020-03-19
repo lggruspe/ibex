@@ -36,6 +36,7 @@ parser = render("parser.hpp", context={
     "config": {
         "scanner_namespace": "scanner",
         "parser_namespace": "parser",
+        "parser_ignores": ["whitespace"],
     }
 })
 
