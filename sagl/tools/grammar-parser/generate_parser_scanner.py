@@ -8,7 +8,7 @@ sys.path.append(join(BASEDIR, "sagl/python"))
 
 from codegen import render
 from rnd import convert, from_class
-import grammarp
+import sagl
 
 class Scanner:
     arrow = r"\->"
@@ -32,7 +32,7 @@ scanner = render("template.cpp", context={
 })
 
 parser = render("parser.hpp", context={
-    **grammarp.parse_grammar(grammar),
+    **sagl.parse_grammar(grammar),
     "config": {
         "scanner_namespace": "scanner",
         "parser_namespace": "parser",

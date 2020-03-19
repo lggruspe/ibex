@@ -8,7 +8,7 @@ sys.path.append(join(BASEDIR, "sagl/python"))
 
 import codegen
 import rnd
-import grammarp
+import sagl
 
 class Scanner:
     a = "a"
@@ -27,7 +27,7 @@ scanner = codegen.render("template.cpp", context={
 })
 
 parser = codegen.render("parser.hpp", context={
-    **grammarp.parse_grammar(grammar),
+    **sagl.parse_grammar(grammar),
 })
 
 with open("scanner.hpp", "w") as f:

@@ -6,7 +6,7 @@ sys.path.append(abspath(join(dirname(__file__), "..")))
 sys.path.append(abspath(join(dirname(__file__), "../../../rnd/python")))
 
 import codegen
-from grammarp import parse_grammar
+from sagl import parse_grammar
 import rnd
 
 m = parse_grammar("""
