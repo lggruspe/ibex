@@ -45,5 +45,5 @@ outdir = abspath(join(dirname(__file__), "../../src/sagl/grammar-parser"))
 with open(join(outdir, "scanner.hpp"), "w") as f:
     print(scanner, file=f)
 
-#with open(join(outdir, "parser.hpp"), "w") as f:
-#    print(parser, file=f)
+with open(join(outdir, "parser.hpp"), "w") as f:
+    print(parser, file=f)

@@ -1,4 +1,5 @@
 #pragma once
+#include "parser.hpp"
 #include <cassert>
 #include <iostream>
 #include <map>
@@ -42,10 +43,11 @@ static inline std::ostream& operator<<(
     return out;
 }
 
-struct ParseTreeCallback {
+using Context = std::vector<std::unique_ptr<ParseTree>>;
+
+struct ParseTreeCallback: public parser::BaseCallback<Context> {
     using Sentence = std::vector<std::string>;
     using Rule = std::pair<std::string, Sentence>;
-    std::vector<std::unique_ptr<ParseTree>> state;
     std::vector<Rule> rules;
 
     auto accept(bool acc)
@@ -60,13 +62,14 @@ struct ParseTreeCallback {
         return std::make_pair(rules[0].first, grammar_rules);
     }
 
-    void shift(const std::pair<std::string, std::string>& lookahead)
+    bool handle_shift(const std::pair<std::string, std::string>& lookahead)
     {
         const auto& [tok, lex] = lookahead;
         state.push_back(std::make_unique<ParseTree>(tok, lex));
+        return true;
     }
 
-    void reduce(const Rule& rule)
+    bool handle_reduce(const Rule& rule)
     {
         auto node = std::make_unique<ParseTree>(rule.first);
         std::vector<decltype(node)> children;
@@ -81,6 +84,7 @@ struct ParseTreeCallback {
         state.push_back(std::move(node));
 
         append_rule(rule);
+        return true;
     }
 
     void append_rule(const Rule& rule)
