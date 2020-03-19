@@ -8,11 +8,6 @@ Installation
 
 `pip install ibex-codegen`.
 
-Usage
------
-
-See `examples`.
-
 License
 -------
 
