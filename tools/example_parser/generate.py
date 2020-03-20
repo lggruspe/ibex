@@ -1,8 +1,9 @@
-from os.path import abspath, dirname, join
+from os.path import abspath, dirname, join, pardir
 import sys
 
-sys.path.append(abspath(join(dirname(__file__), "../python")))
-sys.path.append(abspath(join(dirname(__file__), "../python/codegen")))
+BASEDIR = abspath(join(dirname(__file__), pardir, pardir))
+sys.path.append(join(BASEDIR, "python"))
+sys.path.append(join(BASEDIR, "python/codegen"))
 
 import codegen
 import rnd
@@ -28,8 +29,8 @@ parser = codegen.render("parser.hpp", context={
     **sagl.parse_grammar(grammar),
 })
 
-with open("scanner.hpp", "w") as f:
+with open(join(BASEDIR, "examples", "scanner.hpp"), "w") as f:
     print(scanner, file=f)
 
-with open("parser.hpp", "w") as f:
+with open(join(BASEDIR, "examples", "parser.hpp"), "w") as f:
     print(parser, file=f)
