@@ -175,5 +175,5 @@ bool {% if config and config.parser_name %}{{ config.parser_name }}{% else %}par
 }
 
 {%- if config and config.parser_namespace %}
-};
+}
 {%- endif %}
