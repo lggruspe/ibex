@@ -8,6 +8,9 @@
 #include <utility>
 #include <vector>
 
+namespace parser
+{
+
 enum class Action { ERROR = 0, GOTO, SHIFT, REDUCE, ACCEPT };
 
 std::map<int, std::map<std::string, std::pair<Action, int>>> table {
@@ -189,4 +192,6 @@ bool parse(
     std::stringstream ss;
     ss << s;
     return parse(ss, cb);
+}
+
 }

@@ -12,10 +12,8 @@
 #include <utility>
 #include <vector>
 
-{%- if config and config.parser_namespace %}
-namespace {{ config.parser_namespace }}
+namespace {% if config and config.parser_namespace %}{{ config.parser_namespace }}{% else %}parser{% endif %}
 {
-{%- endif %}
 
 {%- if config and config.scanner_namespace %}
 using namespace {{ config.scanner_namespace }};
@@ -174,6 +172,4 @@ bool {% if config and config.parser_name %}{{ config.parser_name }}{% else %}par
     return {% if config and config.parser_name %}{{ config.parser_name }}{% else %}parse{% endif %}(ss, cb);
 }
 
-{%- if config and config.parser_namespace %}
 }
-{%- endif %}

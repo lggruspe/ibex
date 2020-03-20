@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 #include <vector>
+
 namespace parser
 {
 using namespace scanner;
@@ -645,4 +646,5 @@ bool parse(
     ss << s;
     return parse(ss, cb);
 }
+
 }

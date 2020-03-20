@@ -34,7 +34,6 @@ parser = render("parser.hpp", context={
     **sagl.parse_grammar(grammar),
     "config": {
         "scanner_namespace": "scanner",
-        "parser_namespace": "parser",
         "parser_ignores": ["whitespace"],
     }
 })

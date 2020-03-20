@@ -6,6 +6,8 @@
 #include <utility>
 #include <vector>
 
+namespace parser {
+
 struct ParseTree {
     using Symbol = std::string;
     using Tree = std::unique_ptr<ParseTree>;
@@ -86,3 +88,5 @@ struct ParseTreeCallback: public BaseCallback<ParseContext> {
         return std::move(state.state.back());
     }
 };
+
+}

@@ -3,6 +3,8 @@
 #include "scanner.hpp"
 #include <iostream>
 
+using namespace parser;
+
 int main()
 {
     ParseTreeCallback cb;
