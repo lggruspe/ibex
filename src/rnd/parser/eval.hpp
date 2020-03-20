@@ -155,6 +155,8 @@ bool reduce_value(Context& self, const Rule& rule)
 
 bool reduce_simple(Context& self, const Rule& rule)
 {
+    (void)(self);
+    (void)(rule);
     return true;
 }
 

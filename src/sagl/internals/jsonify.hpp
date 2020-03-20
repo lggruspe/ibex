@@ -22,7 +22,7 @@ static inline std::string join(
     if (!s.empty()) {
         t += s[0];
     }
-    for (int i = 1; i < s.size(); ++i) {
+    for (int i = 1; i < (int)s.size(); ++i) {
         t += sep + s[i];
     }
     return t;
@@ -54,7 +54,6 @@ static inline std::string jsonify_action(
 }
 
 static inline std::string jsonify_actions(
-        const Table& t,
         int state,
         const std::map<std::string, std::pair<Action, int>>& state_actions)
 {
@@ -81,7 +80,7 @@ static inline std::string jsonify_table(const Table& t)
      */
     std::vector<std::string> rows;
     for (const auto& [state, actions]: t.table) {
-        rows.push_back(jsonify_actions(t, state, actions));
+        rows.push_back(jsonify_actions(state, actions));
     }
     return "[" + join(rows, ",") + "]";
 }
