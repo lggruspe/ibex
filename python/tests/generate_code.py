@@ -1,10 +1,11 @@
-import os
+from os.path import abspath, dirname, join, pardir
 import sys
 
-pardir = os.path.join(os.path.dirname(__file__), os.path.pardir)
-sys.path.append(os.path.abspath(pardir))
+sys.path.append(abspath(join(dirname(__file__), pardir)))
+sys.path.append(abspath(join(dirname(__file__), pardir, "codegen")))
 
-from scangen import render, from_class
+import codegen
+import rnd
 
 class Scanner:
     identifier = "[_a-zA-Z][0-9a-zA-Z_]*"
@@ -34,14 +35,17 @@ class Scanner:
     lessthan = "<"
     greaterthan = ">"
 
-config = {"cpp_namespace": "scanner"}
-
 def render_template(template, output, directory=None):
-    code = render(from_class(Scanner), entrypoint=template, config=config, directory=directory)
+    code = codegen.render(template, context={
+        "scanner": rnd.convert(rnd.from_class(Scanner)),
+        "config": {
+            "cpp_namespace": "scanner",
+        }
+    }, directory=directory)
     with open(output, "w") as f:
         print(code, file=f)
 
-path = os.path.abspath("templates")
+path = abspath(join(dirname(__file__), "templates"))
 render_template("template.c", "c/scanner.h")
 render_template("template.cpp", "cpp/scanner.hpp")
 render_template("template.py", "python/scanner.py")
