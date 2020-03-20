@@ -402,7 +402,7 @@ struct Symbol: public BaseRecognizer {
 };
 
 template <class... Recognizers>
-std::pair<char const*, std::string> match_longest(InputStack& in)
+std::pair<std::string, std::string> match_longest(InputStack& in)
 {
     std::unique_ptr<BaseRecognizer> recs[] = {
         std::make_unique<Recognizers>() ...
