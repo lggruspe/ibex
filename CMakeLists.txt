@@ -69,8 +69,6 @@ target_include_directories(sagl PRIVATE
 
 add_executable(example examples/example.cpp src/sagl/internals/tabulate.cpp)
 
-list(APPEND INCLUDE_DIRECTORIES ${PROJECT_SOURCE_DIR} $)
-
 target_include_directories(example PUBLIC
     ${PROJECT_SOURCE_DIR}/src
     ${PROJECT_SOURCE_DIR}/include)
