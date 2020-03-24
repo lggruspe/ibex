@@ -25,7 +25,7 @@ Rhs     -> Rhs identifier.
 Rhs     -> .
 """
 
-scanner = render("template.cpp", context={
+scanner = render("scanner.cpp", context={
     "scanner": convert(from_class(Scanner)),
     "config": {"cpp_namespace": "scanner"},
 })

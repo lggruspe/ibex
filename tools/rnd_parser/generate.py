@@ -47,7 +47,7 @@ element -> symbol.
 element -> symbol dash symbol.
 """
 
-scanner = render("template.cpp", context={
+scanner = render("scanner.cpp", context={
     "scanner": convert(from_class(Scanner)),
     "config": {
         "cpp_namespace": "scanner",

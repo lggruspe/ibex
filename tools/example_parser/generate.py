@@ -20,7 +20,7 @@ A -> a A b.
 A -> .
 """
 
-scanner = codegen.render("template.cpp", context={
+scanner = codegen.render("scanner.cpp", context={
     "scanner": rnd.convert(rnd.from_class(Scanner)),
     "config": None,
 })

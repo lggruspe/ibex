@@ -46,9 +46,9 @@ def render_template(template, output, directory=None):
         print(code, file=f)
 
 path = abspath(join(dirname(__file__), "templates"))
-render_template("template.c", "c/scanner.h")
-render_template("template.cpp", "cpp/scanner.hpp")
-render_template("template.py", "python/scanner.py")
+render_template("scanner.c", "c/scanner.h")
+render_template("scanner.cpp", "cpp/scanner.hpp")
+render_template("scanner.py", "python/scanner.py")
 render_template("template.dot", "dot/scanner.dot")
 render_template("scanner_utils.c", "c/scanner_utils.h", directory=path)
 render_template("scanner_utils.cpp", "cpp/scanner_utils.hpp", directory=path)
