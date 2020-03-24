@@ -426,7 +426,7 @@ std::pair<std::string, std::string> match_longest(InputStack& in)
 }
 
 template <class... Recognizers>
-std::pair<char const*, std::string> match_longest(std::istream& file = std::cin)
+std::pair<std::string, std::string> match_longest(std::istream& file = std::cin)
 {
     InputStack in(file);
     return match_longest<Recognizers...>(in);
