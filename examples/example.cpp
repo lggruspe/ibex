@@ -1,14 +1,25 @@
-#include "parser.hpp"
+#include "parser.h"
 #include "parsetree.hpp"
-#include "scanner.hpp"
+#include "scanner.h"
 #include <iostream>
+#include <string>
 
 using namespace parser;
 
+std::string getlines()
+{
+    std::string s, t;
+    while (std::getline(std::cin, s)) {
+        t += s;
+    }
+    return t;
+}
+
 int main()
 {
-    ParseTreeCallback cb;
-    bool ok = parse(std::cin, &cb);
-    auto root = std::move(cb.ast(ok));
+    std::string s = getlines();
+    ExampleParser parser;
+    bool ok = parser.parse(s.c_str());
+    auto root = std::move(parser.ast(ok));
     std::cout << root << std::endl;
 }

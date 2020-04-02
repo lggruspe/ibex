@@ -67,11 +67,12 @@ target_include_directories(sagl PRIVATE
     ${PROJECT_SOURCE_DIR}/include
     ${PROJECT_SOURCE_DIR}/src)
 
-add_executable(example examples/example.cpp src/sagl/internals/tabulate.cpp)
+add_executable(example examples/example.cpp examples/parser.cpp examples/scanner.c)
 
 target_include_directories(example PUBLIC
     ${PROJECT_SOURCE_DIR}/src
-    ${PROJECT_SOURCE_DIR}/include)
+    ${PROJECT_SOURCE_DIR}/include
+    ${PROJECT_SOURCE_DIR}/examples)
 
 set_property(TARGET rnd PROPERTY CXX_STANDARD 17)
 set_property(TARGET nexpr.test PROPERTY CXX_STANDARD 17)
