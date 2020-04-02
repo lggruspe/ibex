@@ -1,4 +1,6 @@
-#include "scanner.h"
+extern "C" {
+    #include "scanner.h"
+}
 #include "parser.h"
 #include <map>
 #include <set>
