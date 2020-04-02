@@ -5,10 +5,13 @@ make -B -C c
 make -B -C cpp
 make -B -C dot
 make -B -C python
+make -B -C c2
 TEST_DIR=c python3 test.py
 TEST_DIR=cpp python3 test.py
 TEST_DIR=python python3 test.py
+TEST_DIR=c2 python3 test.py
 make clean -C c
 make clean -C cpp
 make clean -C dot
 make clean -C python
+make clean -C c2

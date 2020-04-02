@@ -54,3 +54,8 @@ render_template("scanner_utils.c", "c/scanner_utils.h", directory=path)
 render_template("scanner_utils.cpp", "cpp/scanner_utils.hpp", directory=path)
 render_template("scanner.py", "c/scanner.py", directory=path)
 render_template("scanner.py", "cpp/scanner.py", directory=path)
+
+render_template("cscanner/scanner.h", "c2/scanner.h")
+render_template("cscanner/scanner.c", "c2/scanner.c")
+render_template("utils.c", "c2/utils.h", directory=path)
+render_template("scanner.py", "c2/scanner.py", directory=path)
