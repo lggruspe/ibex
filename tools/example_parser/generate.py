@@ -20,17 +20,27 @@ A -> a A b.
 A -> .
 """
 
-scanner = codegen.render("scanner.cpp", context={
+scanner_h = codegen.render("cscanner/scanner.h", context={})
+
+scanner_c = codegen.render("cscanner/scanner.c", context={
     "scanner": rnd.convert(rnd.from_class(Scanner)),
     "config": None,
 })
 
-parser = codegen.render("parser.hpp", context={
+parser_h = codegen.render("cparser/parser.h", context={})
+
+parser_cpp = codegen.render("cparser/parser.cpp", context={
     **sagl.parse_grammar(grammar),
 })
 
-with open(join(BASEDIR, "examples", "scanner.hpp"), "w") as f:
-    print(scanner, file=f)
+with open(join(BASEDIR, "examples", "scanner.h"), "w") as f:
+    print(scanner_h, file=f)
 
-with open(join(BASEDIR, "examples", "parser.hpp"), "w") as f:
-    print(parser, file=f)
+with open(join(BASEDIR, "examples", "scanner.c"), "w") as f:
+    print(scanner_c, file=f)
+
+with open(join(BASEDIR, "examples", "parser.h"), "w") as f:
+    print(parser_h, file=f)
+
+with open(join(BASEDIR, "examples", "parser.cpp"), "w") as f:
+    print(parser_cpp, file=f)
