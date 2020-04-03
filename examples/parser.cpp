@@ -2,9 +2,11 @@ extern "C" {
     #include "scanner.h"
 }
 #include "parser.h"
+#include <array>
 #include <map>
 #include <set>
 #include <string>
+#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -63,11 +65,10 @@ std::map<int, std::map<std::string, std::pair<Action, int>>> parse_table {
     },
 };
 
-// NULL terminated
-std::vector<std::pair<char const*, std::vector<char const*>>> rules {
-    {"A", { "a", "A", "b", nullptr }},
-    {"A", { nullptr }},
-    {"S", { "A", nullptr }},
+constexpr std::array<std::tuple<char const*, char const*, int>, 3> rules {
+    std::make_tuple("A", "a A b", 3),
+    std::make_tuple("A", "", 0),
+    std::make_tuple("S", "A", 1),
 };
 
 std::pair<std::string, std::string> scan(const char*& text)
@@ -89,7 +90,7 @@ std::pair<std::string, std::string> scan(const char*& text)
 bool parse(
     char const *text,
     bool (*shift)(void*, char const*, char const*),
-    bool (*reduce)(void*, char const*, char const* const*),
+    bool (*reduce)(void*, char const*, char const*, int),
     void *arg)
 {
     std::vector<int> states {0};
@@ -110,16 +111,13 @@ bool parse(
             break;
         case Action::REDUCE: {
             const auto& rule = rules[action.second];
-            if (reduce && !reduce(arg, rule.first, &rule.second[0])) {
+            if (reduce && !reduce(arg, std::get<0>(rule), std::get<1>(rule), std::get<2>(rule))) {
                 return false;
             }
-            for (const auto& s: rule.second) {
-                if (!s) {
-                    break;
-                }
+            for (int i = 0; i < std::get<2>(rule); ++i) {
                 states.pop_back();
             }
-            states.push_back(parse_table[states.back()][rule.first].second);
+            states.push_back(parse_table[states.back()][std::get<0>(rule)].second);
             break;
         }
         default:

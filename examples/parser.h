@@ -8,5 +8,5 @@
 bool parse(
     char const *text,
     bool (*shift)(void*, char const*, char const*),
-    bool (*reduce)(void*, char const*, char const* const*),
+    bool (*reduce)(void*, char const*, char const*, int),
     void *arg);

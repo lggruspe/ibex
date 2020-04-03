@@ -32,9 +32,9 @@ public:
     {
         shift["a"] = shift_a;
         shift["b"] = shift_b;
-        reduce[{"S", {"A"}}] = reduce_S_A;
-        reduce[{"A", {"a", "A", "b"}}] = reduce_A_aAb;
-        reduce[{"A", {}}] = reduce_A;
+        reduce["S -> A"] = reduce_S_A;
+        reduce["A -> a A b"] = reduce_A_aAb;
+        reduce["A ->"] = reduce_A;
     }
 
     auto ast()

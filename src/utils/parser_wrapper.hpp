@@ -16,16 +16,14 @@ bool shift(void* arg, char const* tok, char const* lex)
 }
 
 template <class T>
-bool reduce(void* arg, char const* lhs, char const* const* rhs)
+bool reduce(void* arg, char const* lhs, char const* rhs, int len)
 {
     T* self = (T*)arg;
-    std::vector<std::string> rhs_vec;
-    for (auto w = rhs; *w; ++w) {
-        rhs_vec.push_back(*w);
-    }
-    auto it = self->reduce.find({lhs, rhs_vec});
+    std::string query = rhs;
+    query = std::string(lhs) + (query.empty() ? " ->" : " -> " + query);
+    auto it = self->reduce.find(query);
     if (it == self->reduce.end()) {
-        return self->default_reduce(lhs, rhs_vec);
+        return self->default_reduce(lhs, rhs, len);
     }
     return it->second(self);
 }
@@ -38,7 +36,7 @@ public:
 
     bool ok = false;
     std::map<std::string, ShiftHandler> shift;
-    std::map<std::pair<std::string, std::vector<std::string>>, ReduceHandler> reduce;
+    std::map<std::string, ReduceHandler> reduce;
 
     T* parse(char const* text)
     {
@@ -53,10 +51,11 @@ public:
         return false;
     }
 
-    bool default_reduce(const std::string& lhs, const std::vector<std::string>& rhs)
+    bool default_reduce(const std::string& lhs, const std::string& rhs, int len)
     {
         (void)lhs;
         (void)rhs;
+        (void)len;
         return false;
     }
 };
