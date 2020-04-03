@@ -19,8 +19,10 @@ template <class T>
 bool reduce(void* arg, char const* lhs, char const* const* rhs)
 {
     T* self = (T*)arg;
-    int n = sizeof(rhs) / sizeof(char const*) - 1;
-    std::vector<std::string> rhs_vec(rhs, rhs+n);
+    std::vector<std::string> rhs_vec;
+    for (auto w = rhs; *w; ++w) {
+        rhs_vec.push_back(*w);
+    }
     auto it = self->reduce.find({lhs, rhs_vec});
     if (it == self->reduce.end()) {
         return false;
