@@ -10,7 +10,7 @@ bool shift(void* arg, char const* tok, char const* lex)
     T* self = (T*)arg;
     auto it = self->shift.find(tok);
     if (it == self->shift.end()) {
-        return false;
+        return self->default_shift(tok, lex);
     }
     return it->second(self, lex);
 }
@@ -25,7 +25,7 @@ bool reduce(void* arg, char const* lhs, char const* const* rhs)
     }
     auto it = self->reduce.find({lhs, rhs_vec});
     if (it == self->reduce.end()) {
-        return false;
+        return self->default_reduce(lhs, rhs_vec);
     }
     return it->second(self);
 }
@@ -44,5 +44,19 @@ public:
     {
         ok = ::parse(text, ::shift<T>, ::reduce<T>, this);
         return (T*)this;
+    }
+
+    bool default_shift(const std::string& tok, const std::string& lex)
+    {
+        (void)tok;
+        (void)lex;
+        return false;
+    }
+
+    bool default_reduce(const std::string& lhs, const std::vector<std::string>& rhs)
+    {
+        (void)lhs;
+        (void)rhs;
+        return false;
     }
 };
