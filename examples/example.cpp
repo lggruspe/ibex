@@ -1,6 +1,7 @@
 #include "parser.h"
 #include "parsetree.hpp"
 #include "scanner.h"
+#include "exampleparser.hpp"
 #include <iostream>
 #include <string>
 
@@ -18,8 +19,6 @@ std::string getlines()
 int main()
 {
     std::string s = getlines();
-    ExampleParser parser;
-    bool ok = parser.parse(s.c_str());
-    auto root = std::move(parser.ast(ok));
+    auto root = ExampleParser().parse(s.c_str())->ast();
     std::cout << root << std::endl;
 }
