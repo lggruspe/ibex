@@ -36,32 +36,17 @@ impl<A: symbol::SymbolLike + Clone + Ord> Nfa<A> {
         }
     }
 
-    fn translate(mut self, offset: Q) -> Nfa<A> {
-        self.start += offset;
-        self.accept += offset;
-        let transitions = self.transitions;
-        self.transitions = HashMap::new();
-        for (state, map) in transitions.iter() {
-            for (key, set) in map.iter() {
-                for val in set.iter() {
-                    self.link(*state, key.clone(), *val);
-                }
-            }
-        }
-        self
-    }
-
-    fn merge(self, other: &Nfa<A>) -> Nfa<A> {
-        let offset = other.order();
-        let mut nfa = self.translate(offset);
+    fn merge(&mut self, other: &Nfa<A>) {
+        let offset = self.order();
         for (state, map) in other.transitions.iter() {
             for (key, set) in map.iter() {
                 for val in set.iter() {
-                    nfa.link(*state, key.clone(), *val);
+                    self.link(*state + offset, key.clone(), *val + offset);
                 }
             }
         }
-        nfa
+        self.add(other.start + offset);
+        self.add(other.accept + offset);
     }
 
     pub fn empty() -> Nfa<A> {
@@ -87,8 +72,10 @@ impl<A: symbol::SymbolLike + Clone + Ord> Nfa<A> {
         nfa
     }
 
-    pub fn union(self, other: &Nfa<A>) -> Nfa<A> {
-        let mut nfa = self.merge(other);
+    /// Invariant: states are a permutation of 0, 1, ..., order.
+    pub fn union(mut self, other: &Nfa<A>) -> Nfa<A> {
+        self.merge(other);
+        let mut nfa = self;
         let start = nfa.order();
         let accept = start + 1;
         nfa.link(start, A::epsilon(), nfa.start);
@@ -96,11 +83,14 @@ impl<A: symbol::SymbolLike + Clone + Ord> Nfa<A> {
         nfa.link(nfa.accept, A::epsilon(), accept);
         nfa.link(other.accept, A::epsilon(), accept);
         nfa.add(accept);
+        nfa.start = start;
+        nfa.accept = accept;
         nfa
     }
 
-    pub fn concatenation(self, other: &Nfa<A>) -> Nfa<A> {
-        let mut nfa = self.merge(other);
+    pub fn concatenation(mut self, other: &Nfa<A>) -> Nfa<A> {
+        self.merge(other);
+        let mut nfa = self;
         let start = nfa.order();
         let accept = start + 1;
         nfa.link(start, A::epsilon(), nfa.start);
@@ -108,6 +98,8 @@ impl<A: symbol::SymbolLike + Clone + Ord> Nfa<A> {
         nfa.link(nfa.accept, A::epsilon(), accept);
         nfa.link(other.accept, A::epsilon(), accept);
         nfa.add(accept);
+        nfa.start = start;
+        nfa.accept = accept;
         nfa
     }
 
@@ -118,14 +110,46 @@ impl<A: symbol::SymbolLike + Clone + Ord> Nfa<A> {
         self.link(self.accept, A::epsilon(), accept);
         self.link(self.accept, A::epsilon(), self.start);
         self.add(accept);
+        self.start = start;
+        self.accept = accept;
         self
     }
 }
 
 #[cfg(test)]
 mod tests {
+    use super::*;
+    use crate::symbol;
+
+    #[derive(Clone, Eq, Ord, PartialEq, PartialOrd)]
+    enum Symbol {
+        Epsilon,
+        Character(char),
+    }
+
+    impl symbol::SymbolLike for Symbol {
+        fn epsilon() -> Symbol {
+            Symbol::Epsilon
+        }
+    }
+
     #[test]
-    fn it_works() {
-        assert_eq!(2 + 3, 3);
+    fn nfa_order_returns_number_of_states() {
+        assert_eq!(Nfa::<Symbol>::empty().order(), 2);
+        assert_eq!(Nfa::<Symbol>::epsilon().order(), 2);
+
+        let nfa = Nfa::single(Symbol::Character('c'));
+        assert_eq!(nfa.order(), 2);
+
+        let nfa = nfa.closure();
+        assert_eq!(nfa.order(), 4);
+
+        let other = Nfa::<Symbol>::empty();
+        let nfa = nfa.union(&other);
+        assert_eq!(nfa.order(), 8);
+
+        let other = Nfa::<Symbol>::epsilon();
+        let nfa = nfa.concatenation(&other);
+        assert_eq!(nfa.order(), 12);
     }
 }
