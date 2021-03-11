@@ -18,7 +18,6 @@ impl Interval {
 
 #[derive(Clone, Eq, Ord, PartialEq, PartialOrd)]
 pub struct Partition {
-    not: bool,
     set: BTreeSet<BoundaryPoint>,
 }
 

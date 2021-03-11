@@ -1,16 +1,15 @@
 use crate::symbol;
 use std::collections::{BTreeMap, HashMap, HashSet};
 
-type Q = u32;
-type A = symbol::Symbol;
+type Q = u64;
 
-struct Nfa {
+struct Nfa<A: symbol::SymbolLike> {
     transitions: HashMap<Q, BTreeMap<A, HashSet<Q>>>,
     start: Q,
     accept: Q,
 }
 
-impl Nfa {
+impl<A: symbol::SymbolLike + Clone + Ord> Nfa<A> {
     fn order(&self) -> Q {
         self.transitions.len() as Q // panics?
     }
@@ -37,7 +36,7 @@ impl Nfa {
         }
     }
 
-    fn translate(mut self, offset: Q) -> Nfa {
+    fn translate(mut self, offset: Q) -> Nfa<A> {
         self.start += offset;
         self.accept += offset;
         let transitions = self.transitions;
@@ -52,7 +51,7 @@ impl Nfa {
         self
     }
 
-    fn merge(self, other: &Nfa) -> Nfa {
+    fn merge(self, other: &Nfa<A>) -> Nfa<A> {
         let offset = other.order();
         let mut nfa = self.translate(offset);
         for (state, map) in other.transitions.iter() {
@@ -65,7 +64,7 @@ impl Nfa {
         nfa
     }
 
-    pub fn empty() -> Nfa {
+    pub fn empty() -> Nfa<A> {
         let mut transitions = HashMap::new();
         transitions.insert(0, BTreeMap::new());
         transitions.insert(1, BTreeMap::new());
@@ -76,58 +75,48 @@ impl Nfa {
         }
     }
 
-    pub fn epsilon() -> Nfa {
+    pub fn epsilon() -> Nfa<A> {
         let mut nfa = Nfa::empty();
-        let map = nfa.transitions.get_mut(&nfa.start).unwrap();
-        if let Some(transitions) = map.get_mut(&symbol::Symbol::Epsilon) {
-            transitions.insert(nfa.accept);
-        } else {
-            let mut transitions = HashSet::new();
-            transitions.insert(nfa.accept);
-            map.insert(symbol::Symbol::Epsilon, transitions);
-        }
+        nfa.link(nfa.start, A::epsilon(), nfa.accept);
         nfa
     }
 
-    pub fn single(c: symbol::Symbol) -> Nfa {
+    pub fn single(c: A) -> Nfa<A> {
         let mut nfa = Nfa::empty();
         nfa.link(nfa.start, c, nfa.accept);
         nfa
     }
 
-    pub fn union(self, other: &Nfa) -> Nfa {
+    pub fn union(self, other: &Nfa<A>) -> Nfa<A> {
         let mut nfa = self.merge(other);
         let start = nfa.order();
         let accept = start + 1;
-        let eps = symbol::Symbol::Epsilon;
-        nfa.link(start, eps.clone(), nfa.start);
-        nfa.link(start, eps.clone(), other.start);
-        nfa.link(nfa.accept, eps.clone(), accept);
-        nfa.link(other.accept, eps, accept);
+        nfa.link(start, A::epsilon(), nfa.start);
+        nfa.link(start, A::epsilon(), other.start);
+        nfa.link(nfa.accept, A::epsilon(), accept);
+        nfa.link(other.accept, A::epsilon(), accept);
         nfa.add(accept);
         nfa
     }
 
-    pub fn concatenation(self, other: &Nfa) -> Nfa {
+    pub fn concatenation(self, other: &Nfa<A>) -> Nfa<A> {
         let mut nfa = self.merge(other);
         let start = nfa.order();
         let accept = start + 1;
-        let eps = symbol::Symbol::Epsilon;
-        nfa.link(start, eps.clone(), nfa.start);
-        nfa.link(start, eps.clone(), other.start);
-        nfa.link(nfa.accept, eps.clone(), accept);
-        nfa.link(other.accept, eps, accept);
+        nfa.link(start, A::epsilon(), nfa.start);
+        nfa.link(start, A::epsilon(), other.start);
+        nfa.link(nfa.accept, A::epsilon(), accept);
+        nfa.link(other.accept, A::epsilon(), accept);
         nfa.add(accept);
         nfa
     }
 
-    pub fn closure(mut self) -> Nfa {
+    pub fn closure(mut self) -> Nfa<A> {
         let start = self.order();
         let accept = start + 1;
-        let eps = symbol::Symbol::Epsilon;
-        self.link(start, eps.clone(), self.start);
-        self.link(self.accept, eps.clone(), accept);
-        self.link(self.accept, eps, self.start);
+        self.link(start, A::epsilon(), self.start);
+        self.link(self.accept, A::epsilon(), accept);
+        self.link(self.accept, A::epsilon(), self.start);
         self.add(accept);
         self
     }
