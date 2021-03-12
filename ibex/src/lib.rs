@@ -1,3 +1,4 @@
+mod dfa;
 pub mod nfa;
 mod partition;
 mod symbol;
