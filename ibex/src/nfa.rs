@@ -3,14 +3,18 @@ use std::collections::{BTreeMap, HashMap, HashSet};
 
 type Q = u64;
 
-struct Nfa<A: symbol::SymbolLike> {
+pub struct Nfa<A: symbol::SymbolLike> {
     transitions: HashMap<Q, BTreeMap<A, HashSet<Q>>>,
     start: Q,
-    accept: Q,
+    pub accept: Q,
 }
 
+/// Invariants:
+/// - States are a permutation of 0, 1, ..., order.
+/// - Has one start state with no incoming transitions.
+/// - Has one accept state with no outgoing transitions.
 impl<A: symbol::SymbolLike + Clone + Ord> Nfa<A> {
-    fn order(&self) -> Q {
+    pub fn order(&self) -> Q {
         self.transitions.len() as Q // panics?
     }
 
@@ -72,7 +76,6 @@ impl<A: symbol::SymbolLike + Clone + Ord> Nfa<A> {
         nfa
     }
 
-    /// Invariant: states are a permutation of 0, 1, ..., order.
     pub fn union(mut self, other: &Nfa<A>) -> Nfa<A> {
         self.merge(other);
         let mut nfa = self;

@@ -3,6 +3,8 @@ pub mod nfa;
 mod partition;
 mod symbol;
 
+mod ma_nfa;
+
 #[cfg(test)]
 mod tests {
     #[test]
